@@ -1,4 +1,4 @@
-rootProject.name = "damaba"
+rootProject.name = "damaba-server"
 
 include(
     "user",
