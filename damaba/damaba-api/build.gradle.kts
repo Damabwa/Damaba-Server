@@ -1,6 +1,7 @@
 dependencies {
     /* Main Server Dependencies */
     implementation(project(":common-logging"))
+    implementation(project(":common-exception"))
     implementation(project(":user:user-api"))
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
