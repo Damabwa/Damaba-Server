@@ -75,7 +75,7 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         Logger.error("UnHandled exception raised", ex)
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(ErrorResponse(GENERAL_ERROR_CODE, GENERAL_ERROR_MESSAGE))
+            .body(ErrorResponse(GENERAL_ERROR_CODE, GENERAL_ERROR_MESSAGE + ex.message))
     }
 
     private fun getFieldNameFromConstraintViolation(violation: ConstraintViolation<*>): String {
