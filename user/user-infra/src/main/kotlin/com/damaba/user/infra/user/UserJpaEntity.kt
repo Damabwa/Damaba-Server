@@ -2,8 +2,11 @@ package com.damaba.user.infra.user
 
 import com.damaba.user.domain.user.User
 import com.damaba.user.domain.user.constant.LoginType
+import com.damaba.user.domain.user.constant.UserRoleType
 import com.damaba.user.infra.common.BaseJpaEntity
+import com.damaba.user.infra.user.converter.UserRoleTypesConverter
 import jakarta.persistence.Column
+import jakarta.persistence.Convert
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
@@ -17,6 +20,7 @@ import java.time.LocalDateTime
 @Table(name = "user")
 class UserJpaEntity(
     id: Long,
+    roles: Set<UserRoleType>,
     oAuthLoginUid: String,
     loginType: LoginType,
     createdAt: LocalDateTime,
@@ -26,6 +30,7 @@ class UserJpaEntity(
     companion object {
         fun from(user: User): UserJpaEntity = UserJpaEntity(
             id = user.id,
+            roles = user.roles,
             oAuthLoginUid = user.oAuthLoginUid,
             loginType = user.loginType,
             createdAt = user.createdAt,
@@ -38,6 +43,11 @@ class UserJpaEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     var id: Long = id
+        private set
+
+    @Convert(converter = UserRoleTypesConverter::class)
+    @Column(name = "roles", nullable = false)
+    var roles: Set<UserRoleType> = roles
         private set
 
     @Column(name = "o_auth_login_uid", nullable = false)
@@ -54,11 +64,12 @@ class UserJpaEntity(
         private set
 
     fun toDomain(): User = User(
-        id = id,
-        oAuthLoginUid = oAuthLoginUid,
-        loginType = loginType,
-        createdAt = createdAt,
-        updatedAt = updatedAt,
-        deletedAt = deletedAt,
+        id = this.id,
+        roles = this.roles,
+        oAuthLoginUid = this.oAuthLoginUid,
+        loginType = this.loginType,
+        createdAt = this.createdAt,
+        updatedAt = this.updatedAt,
+        deletedAt = this.deletedAt,
     )
 }
