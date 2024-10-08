@@ -11,21 +11,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
         "com.damaba.common_logging",
         "com.damaba.common_exception",
         "com.damaba.damaba.api",
-        "com.damaba.user.api",
-        "com.damaba.user.domain",
-        "com.damaba.user.infra",
+        "com.damaba.user",
     ],
 )
-@EntityScan(
-    basePackages = [
-        "com.damaba.user.infra",
-    ],
-)
-@EnableJpaRepositories(
-    basePackages = [
-        "com.damaba.user.infra",
-    ],
-)
+@EntityScan(basePackages = [ "com.damaba.user" ])
+@EnableJpaRepositories(basePackages = [ "com.damaba.user" ])
 @EnableJpaAuditing
 class DamabaApiApplication
 

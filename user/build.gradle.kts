@@ -6,54 +6,62 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
 }
 
-allprojects {
-    group = "com.damaba.user"
-    version = "0.0.1"
+group = "com.damaba.user"
+version = "0.0.1"
 
-    repositories {
-        mavenCentral()
+repositories {
+    mavenCentral()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
-subprojects {
-    apply(plugin = "kotlin")
-    apply(plugin = "kotlin-spring")
-    apply(plugin = "org.springframework.boot")
-    apply(plugin = "io.spring.dependency-management")
-    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+dependencies {
+    /**
+     * Controller(API)
+     */
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
-    java {
-        toolchain {
-            languageVersion = JavaLanguageVersion.of(17)
-        }
-    }
+    /**
+     * Infrastructure
+     */
+    // JPA
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
-    dependencies {
-        implementation("org.springframework.boot:spring-boot-starter")
-        implementation("org.jetbrains.kotlin:kotlin-reflect")
-        testImplementation("org.springframework.boot:spring-boot-starter-test")
-        testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    }
+    // RDB
+    implementation("com.h2database:h2")
+    implementation("com.mysql:mysql-connector-j")
 
-    kotlin {
-        compilerOptions {
-            freeCompilerArgs.addAll("-Xjsr305=strict")
-        }
-    }
+    /**
+     * Global
+     */
+    implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
 
-    tasks.withType<Test> {
-        useJUnitPlatform()
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.addAll("-Xjsr305=strict")
     }
+}
 
-    ktlint {
-        android.set(false)
-        outputToConsole.set(true)
-        ignoreFailures.set(false)
-        filter {
-            exclude("**/generated/**")
-        }
-    }
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
+
+ktlint {
+    android.set(false)
+    outputToConsole.set(true)
+    ignoreFailures.set(false)
+    filter { exclude("**/generated/**") }
 }
 
 tasks.bootJar { enabled = false }
