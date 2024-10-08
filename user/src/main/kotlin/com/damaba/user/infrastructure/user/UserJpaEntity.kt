@@ -3,7 +3,7 @@ package com.damaba.user.infrastructure.user
 import com.damaba.user.domain.user.User
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.constant.UserRoleType
-import com.damaba.user.infrastructure.common.BaseJpaEntity
+import com.damaba.user.infrastructure.common.BaseJpaTimeEntity
 import com.damaba.user.infrastructure.user.converter.UserRoleTypesConverter
 import jakarta.persistence.Column
 import jakarta.persistence.Convert
@@ -14,26 +14,21 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
-import java.time.LocalDateTime
 
-@Entity
 @Table(name = "user")
+@Entity
 class UserJpaEntity(
     id: Long,
     roles: Set<UserRoleType>,
     oAuthLoginUid: String,
     loginType: LoginType,
 ) : BaseJpaTimeEntity() {
-    deletedAt: LocalDateTime?,
     companion object {
         fun from(user: User): UserJpaEntity = UserJpaEntity(
             id = user.id,
             roles = user.roles,
             oAuthLoginUid = user.oAuthLoginUid,
             loginType = user.loginType,
-            createdAt = user.createdAt,
-            updatedAt = user.updatedAt,
-            deletedAt = user.deletedAt,
         )
     }
 
@@ -57,10 +52,6 @@ class UserJpaEntity(
     var loginType: LoginType = loginType
         private set
 
-    @Column(name = "deleted_at")
-    var deletedAt: LocalDateTime? = deletedAt
-        private set
-
     fun toDomain(): User = User(
         id = this.id,
         roles = this.roles,
@@ -68,6 +59,5 @@ class UserJpaEntity(
         loginType = this.loginType,
         createdAt = this.createdAt,
         updatedAt = this.updatedAt,
-        deletedAt = this.deletedAt,
     )
 }

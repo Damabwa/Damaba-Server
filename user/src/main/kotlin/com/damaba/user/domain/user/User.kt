@@ -11,5 +11,5 @@ data class User(
     val loginType: LoginType,
     val createdAt: LocalDateTime = LocalDateTime.MIN,
     val updatedAt: LocalDateTime = LocalDateTime.MIN,
-    val deletedAt: LocalDateTime? = null,
+) {
 )

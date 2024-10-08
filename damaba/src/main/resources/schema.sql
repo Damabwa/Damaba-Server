@@ -8,6 +8,5 @@ CREATE TABLE `user`
     login_type       VARCHAR(255) NOT NULL,
     created_at       DATETIME     NOT NULL,
     updated_at       DATETIME     NOT NULL,
-    deleted_at       DATETIME,
     PRIMARY KEY (id)
 )
