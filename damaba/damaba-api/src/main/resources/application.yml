@@ -2,6 +2,12 @@ spring:
   application:
     name: damaba-api
 
+  servlet:
+    multipart:
+      # 담아봐-프로모션 이미지 정책: 장당 3MB, 최대 10장까지 업로드 가능
+      max-file-size: 3MB
+      max-request-size: 33MB
+
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
