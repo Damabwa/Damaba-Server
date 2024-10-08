@@ -1,4 +1,4 @@
-package com.damaba.user.infra.common
+package com.damaba.user.infrastructure.common
 
 import jakarta.persistence.Column
 import jakarta.persistence.EntityListeners

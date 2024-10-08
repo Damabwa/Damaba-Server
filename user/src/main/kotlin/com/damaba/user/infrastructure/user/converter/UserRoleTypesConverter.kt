@@ -1,4 +1,4 @@
-package com.damaba.user.infra.user.converter
+package com.damaba.user.infrastructure.user.converter
 
 import com.damaba.user.domain.user.constant.UserRoleType
 import jakarta.persistence.AttributeConverter

@@ -1,10 +1,10 @@
-package com.damaba.user.infra.user
+package com.damaba.user.infrastructure.user
 
 import com.damaba.user.domain.user.User
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.constant.UserRoleType
-import com.damaba.user.infra.common.BaseJpaEntity
-import com.damaba.user.infra.user.converter.UserRoleTypesConverter
+import com.damaba.user.infrastructure.common.BaseJpaEntity
+import com.damaba.user.infrastructure.user.converter.UserRoleTypesConverter
 import jakarta.persistence.Column
 import jakarta.persistence.Convert
 import jakarta.persistence.Entity
