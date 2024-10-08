@@ -48,7 +48,11 @@ class LogApiInfoFilter : OncePerRequestFilter() {
                 runCatching {
                     // TODO: multipart/form-data type인 요청에 대해 세부 정보 로깅 기능 구현
                     if (isMultipartFormData(request.contentType)) {
-                        Logger.info("Request: [{}] uri={}, payload=multipart/form-data", request.method, request.requestURI)
+                        Logger.info(
+                            "Request: [{}] uri={}, payload=multipart/form-data",
+                            request.method,
+                            request.requestURI,
+                        )
                         filterChain.doFilter(request, responseWrapper)
                     } else {
                         val requestWrapper = RequestWrapper(request)
@@ -122,27 +126,27 @@ class LogApiInfoFilter : OncePerRequestFilter() {
 
     private fun isMediaTypeVisible(mediaType: MediaType): Boolean =
         VISIBLE_TYPES.any { visibleType -> visibleType.includes(mediaType) }
-}
 
-class RequestWrapper(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
-    private val cachedInputStream: ByteArray? by lazy {
-        StreamUtils.copyToByteArray(request.inputStream)
-    }
+    class RequestWrapper(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
+        private val cachedInputStream: ByteArray? by lazy {
+            StreamUtils.copyToByteArray(request.inputStream)
+        }
 
-    override fun getInputStream(): ServletInputStream {
-        val byteArray = cachedInputStream ?: return super.getInputStream()
-        return object : ServletInputStream() {
-            private val inputStream = ByteArrayInputStream(byteArray)
+        override fun getInputStream(): ServletInputStream {
+            val byteArray = cachedInputStream ?: return super.getInputStream()
+            return object : ServletInputStream() {
+                private val inputStream = ByteArrayInputStream(byteArray)
 
-            override fun isFinished(): Boolean = inputStream.available() == 0
+                override fun isFinished(): Boolean = inputStream.available() == 0
 
-            override fun isReady(): Boolean = true
+                override fun isReady(): Boolean = true
 
-            override fun setReadListener(listener: ReadListener): Unit = throw UnsupportedOperationException()
+                override fun setReadListener(listener: ReadListener): Unit = throw UnsupportedOperationException()
 
-            override fun read(): Int = inputStream.read()
+                override fun read(): Int = inputStream.read()
+            }
         }
     }
-}
 
-class ResponseWrapper(response: HttpServletResponse) : ContentCachingResponseWrapper(response)
+    class ResponseWrapper(response: HttpServletResponse) : ContentCachingResponseWrapper(response)
+}
