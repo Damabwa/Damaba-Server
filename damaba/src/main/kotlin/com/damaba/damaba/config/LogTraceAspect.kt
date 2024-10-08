@@ -1,4 +1,4 @@
-package com.damaba.damaba.api.config
+package com.damaba.damaba.config
 
 import com.damaba.common_logging.LogTrace
 import com.damaba.common_logging.TraceStatus
@@ -12,10 +12,10 @@ import org.springframework.stereotype.Component
 @Aspect
 class LogTraceAspect(private val logTrace: LogTrace) {
     @Around(
-        value = "com.damaba.damaba.api.config.Pointcuts.controllerPoint() || " +
-            "com.damaba.damaba.api.config.Pointcuts.useCasePoint() || " +
-            "com.damaba.damaba.api.config.Pointcuts.domainServicePoint() || " +
-            "com.damaba.damaba.api.config.Pointcuts.repositoryPoint()",
+        value = "com.damaba.damaba.config.Pointcuts.controllerPoint() || " +
+            "com.damaba.damaba.config.Pointcuts.useCasePoint() || " +
+            "com.damaba.damaba.config.Pointcuts.domainServicePoint() || " +
+            "com.damaba.damaba.config.Pointcuts.repositoryPoint()",
     )
     fun execute(joinPoint: ProceedingJoinPoint): Any? {
         var status: TraceStatus? = null

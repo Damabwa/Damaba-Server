@@ -1,4 +1,4 @@
-package com.damaba.damaba.api.config
+package com.damaba.damaba.config
 
 import jakarta.servlet.Filter
 import org.springframework.boot.web.servlet.FilterRegistrationBean

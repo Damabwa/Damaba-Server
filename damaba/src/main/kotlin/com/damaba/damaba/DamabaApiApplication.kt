@@ -1,4 +1,4 @@
-package com.damaba.damaba.api
+package com.damaba.damaba
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
     scanBasePackages = [
         "com.damaba.common_logging",
         "com.damaba.common_exception",
-        "com.damaba.damaba.api",
+        "com.damaba.damaba",
         "com.damaba.user",
     ],
 )

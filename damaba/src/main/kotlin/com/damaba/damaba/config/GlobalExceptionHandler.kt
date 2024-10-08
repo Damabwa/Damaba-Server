@@ -1,4 +1,4 @@
-package com.damaba.damaba.api.config
+package com.damaba.damaba.config
 
 import com.damaba.common_exception.CustomException
 import com.damaba.common_logging.Logger
