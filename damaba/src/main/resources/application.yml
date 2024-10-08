@@ -1,6 +1,6 @@
 spring:
   application:
-    name: damaba-api
+    name: damaba-damaba
 
   servlet:
     multipart:
