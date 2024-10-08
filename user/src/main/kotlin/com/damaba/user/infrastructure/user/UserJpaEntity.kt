@@ -23,10 +23,8 @@ class UserJpaEntity(
     roles: Set<UserRoleType>,
     oAuthLoginUid: String,
     loginType: LoginType,
-    createdAt: LocalDateTime,
-    updatedAt: LocalDateTime,
+) : BaseJpaTimeEntity() {
     deletedAt: LocalDateTime?,
-) : BaseJpaEntity(createdAt, updatedAt) {
     companion object {
         fun from(user: User): UserJpaEntity = UserJpaEntity(
             id = user.id,
