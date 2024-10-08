@@ -17,8 +17,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 @EntityScan(basePackages = [ "com.damaba.user" ])
 @EnableJpaRepositories(basePackages = [ "com.damaba.user" ])
 @EnableJpaAuditing
-class DamabaApiApplication
+class DamabaApplication
 
 fun main(args: Array<String>) {
-    runApplication<DamabaApiApplication>(*args)
+    runApplication<DamabaApplication>(*args)
 }
