@@ -3,11 +3,16 @@ dependencies {
     implementation(project(":common-logging"))
     implementation(project(":common-exception"))
     implementation(project(":user:user-api"))
+    implementation(project(":user:user-domain"))
+    implementation(project(":user:user-infra"))
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-aop")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+
+    // Swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.6.0")
-    implementation("org.springframework.boot:spring-boot-starter-aop")
 
     /* Dependencies for damaba-api module */
 //    implementation(project(":damaba:damaba-domain"))
