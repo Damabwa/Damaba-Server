@@ -20,6 +20,14 @@ java {
     }
 }
 
+extra["springCloudVersion"] = "2023.0.3"
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+    }
+}
+
 dependencies {
     /**
      * Main Server Dependencies
@@ -42,19 +50,20 @@ dependencies {
     /**
      * Infrastructure
      */
-    // JPA
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
 
     // RDB
     implementation("com.h2database:h2")
     implementation("com.mysql:mysql-connector-j")
 
     /**
-     * Global
+     * Common
      */
     implementation(project(":common-logging"))
     implementation(project(":common-exception"))
 
+    implementation("org.springframework.cloud:spring-cloud-starter-loadbalancer")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
