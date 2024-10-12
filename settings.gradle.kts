@@ -5,5 +5,4 @@ include(
     "common-logging",
     "user",
     "damaba",
-    "damaba:damaba-api",
 )
