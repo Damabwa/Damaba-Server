@@ -17,6 +17,8 @@ spring:
       data-locations:
 
   jpa:
+    hibernate:
+      ddl-auto: create-drop
     properties:
       hibernate:
         format_sql: true

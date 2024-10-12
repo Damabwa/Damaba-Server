@@ -1,7 +1,6 @@
-package com.damaba.damaba
+package com.damaba.user.infrastructure
 
-import org.junit.jupiter.api.Test
-import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
@@ -11,10 +10,8 @@ import org.testcontainers.junit.jupiter.Testcontainers
 
 @ActiveProfiles("test")
 @Testcontainers
-@SpringBootTest
-class DamabaApplicationTests {
-
-    // Testcontainers Redis Setting
+@DataRedisTest
+abstract class RedisTest {
     companion object {
         private const val DOCKER_REDIS_IMAGE = "redis:7.4.1-alpine"
 
@@ -28,9 +25,5 @@ class DamabaApplicationTests {
             registry.add("spring.data.redis.host", redisContainer::getHost)
             registry.add("spring.data.redis.port") { redisContainer.getMappedPort(6379).toString() }
         }
-    }
-
-    @Test
-    fun contextLoads() {
     }
 }

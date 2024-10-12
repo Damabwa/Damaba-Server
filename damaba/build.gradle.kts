@@ -63,6 +63,10 @@ dependencies {
     implementation(project(":common-logging"))
     implementation(project(":common-exception"))
 
+    // Test container
+    testImplementation("org.testcontainers:testcontainers:1.20.2")
+    testImplementation("org.testcontainers:junit-jupiter:1.20.2")
+
     implementation("org.springframework.cloud:spring-cloud-starter-loadbalancer")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
