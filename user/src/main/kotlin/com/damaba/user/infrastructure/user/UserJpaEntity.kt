@@ -15,7 +15,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 
-@Table(name = "user")
+@Table(name = "`user`")
 @Entity
 class UserJpaEntity(
     id: Long,
