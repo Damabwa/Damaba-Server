@@ -24,6 +24,15 @@ spring:
         show_sql: false
         default_batch_fetch_size: 1000
 
+  cloud:
+    openfeign.client.config:
+      default:
+        connect-timeout: 3000
+        read-timeout: 5000
+        logger-level: none
+      KakaoKApiClient:
+        url: https://kapi.kakao.com
+
 logging:
   level:
     com.damaba: info

@@ -1,0 +1,30 @@
+damaba:
+  auth:
+    jwt-secret: jwtSecretForOnlyTestEnvironment12345678901234567890
+
+spring:
+  datasource:
+    # Test용 embedded DB 설정
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  sql:
+    init:
+      mode: embedded
+      schema-locations: classpath:schema.sql
+      data-locations:
+
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+
+logging:
+  level:
+    com.damaba: debug
+    org:
+      hibernate:
+        type: trace
+        SQL: debug

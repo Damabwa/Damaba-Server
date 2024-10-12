@@ -5,8 +5,12 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        show_sql: true
     defer-datasource-initialization: false
+
+  cloud:
+    openfeign.client.config:
+      KakaoKApiClient:
+        logger-level: full
 
 springdoc:
   show-actuator: true
