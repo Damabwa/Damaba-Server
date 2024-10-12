@@ -1,6 +1,7 @@
 package com.damaba.user.infrastructure.auth
 
 import com.damaba.user.domain.auth.RefreshToken
+import com.damaba.user.domain.auth.RefreshTokenRepository
 import com.damaba.user.infrastructure.RedisTest
 import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
@@ -17,7 +18,7 @@ class RefreshTokenRedisRepositoryTest @Autowired constructor(
         private const val REFRESH_TOKEN_TTL = 60 * 1000L
     }
 
-    private val sut = RefreshTokenRedisRepository(redisTemplate)
+    private val sut: RefreshTokenRepository = RefreshTokenRedisRepository(redisTemplate)
 
     @BeforeEach
     fun redisInit() {
@@ -36,7 +37,7 @@ class RefreshTokenRedisRepositoryTest @Autowired constructor(
         sut.save(refreshToken, REFRESH_TOKEN_TTL)
 
         // Then
-        val savedRefreshToken = sut.findRefreshToken(refreshToken.userId)
+        val savedRefreshToken = sut.findByUserId(refreshToken.userId)
         assertThat(savedRefreshToken).isNotNull()
         assertThat(savedRefreshToken).isEqualTo(refreshToken)
     }
@@ -49,7 +50,7 @@ class RefreshTokenRedisRepositoryTest @Autowired constructor(
         sut.save(expectedResult, REFRESH_TOKEN_TTL)
 
         // When
-        val actualResult = sut.findRefreshToken(userId)
+        val actualResult = sut.findByUserId(userId)
 
         // Then
         assertThat(actualResult).isNotNull()
@@ -62,7 +63,7 @@ class RefreshTokenRedisRepositoryTest @Autowired constructor(
         val userId = randomLong()
 
         // When
-        val result = sut.findRefreshToken(userId)
+        val result = sut.findByUserId(userId)
 
         // Then
         assertThat(result).isNull()
