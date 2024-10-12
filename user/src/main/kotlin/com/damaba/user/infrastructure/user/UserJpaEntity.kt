@@ -19,7 +19,6 @@ import jakarta.persistence.Table
 @Table(name = "`user`")
 @Entity
 class UserJpaEntity(
-    id: Long,
     roles: Set<UserRoleType>,
     loginType: LoginType,
     oAuthLoginUid: String,
@@ -30,7 +29,6 @@ class UserJpaEntity(
 ) : BaseJpaTimeEntity() {
     companion object {
         fun from(user: User): UserJpaEntity = UserJpaEntity(
-            id = user.id,
             roles = user.roles,
             loginType = user.loginType,
             oAuthLoginUid = user.oAuthLoginUid,
@@ -44,8 +42,7 @@ class UserJpaEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    var id: Long = id
-        private set
+    val id: Long = 0
 
     @Convert(converter = UserRoleTypesConverter::class)
     @Column(name = "roles", nullable = false)
@@ -87,7 +84,5 @@ class UserJpaEntity(
         gender = this.gender,
         age = this.age,
         instagramId = this.instagramId,
-        createdAt = this.createdAt,
-        updatedAt = this.updatedAt,
     )
 }
