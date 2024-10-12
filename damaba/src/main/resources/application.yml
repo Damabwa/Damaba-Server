@@ -28,5 +28,4 @@ logging:
   level:
     com.damaba: info
     org:
-      hibernate:
-        SQL: info
+      hibernate.SQL: info
