@@ -5,6 +5,7 @@ plugins {
     id("org.springframework.boot") version "3.3.4"
     id("io.spring.dependency-management") version "1.1.6"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
+    id("jacoco")
 }
 
 group = "com.damaba.user"
@@ -68,6 +69,67 @@ ktlint {
     outputToConsole.set(true)
     ignoreFailures.set(false)
     filter { exclude("**/generated/**") }
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+tasks.test {
+    finalizedBy(tasks.ktlintCheck)
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required = false
+        csv.required = false
+        html.required = true
+        classDirectories.setFrom(
+            sourceSets.main.get().output.asFileTree.matching {
+                include(
+                    listOf(
+                        "**/controller/**/*Controller*",
+                        "**/application/**/*UseCase*",
+                        "**/domain/**/*Service*",
+                        "**/infrastructure/**/*RepositoryImpl*",
+                        "**/infrastructure/**/*ServiceImpl*",
+                    ),
+                )
+            },
+        )
+    }
+    finalizedBy(tasks.jacocoTestCoverageVerification)
+}
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            isEnabled = true
+            element = "CLASS"
+
+            limit {
+                counter = "BRANCH"
+                value = "COVEREDRATIO"
+                minimum = 0.9.toBigDecimal()
+            }
+
+            limit {
+                counter = "LINE"
+                value = "COVEREDRATIO"
+                minimum = 0.9.toBigDecimal()
+            }
+
+            includes = listOf(
+                "*.controller.*.*Controller*",
+                "*.application.*.*UseCase*",
+                "*.domain.*.*Service*",
+                "*.infrastructure.*.*RepositoryImpl*",
+                "*.infrastructure.*.*ServiceImpl*",
+            )
+        }
+    }
 }
 
 tasks.bootJar { enabled = false }
