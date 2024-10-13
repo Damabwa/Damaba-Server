@@ -1,6 +1,9 @@
 package com.damaba.user.domain.user
 
+import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
+import com.damaba.user.domain.user.exception.NicknameAlreadyExistsException
+import com.damaba.user.domain.user.exception.UserNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -32,4 +35,31 @@ class UserService(private val userRepository: UserRepository) {
     @Transactional
     fun createNewUser(oAuthLoginUid: String, loginType: LoginType): User =
         userRepository.save(User(oAuthLoginUid = oAuthLoginUid, loginType = loginType))
+
+    /**
+     * 유저 정보를 수정한다.
+     *
+     * @param userId 정보를 수정할 유저의 id
+     * @param nickname 수정할 nickname
+     * @param gender 수정할 gender
+     * @param age 수정할 age
+     * @param instagramId 수정할 instagramId
+     * @return 수정된 유저 정보
+     * @throws UserNotFoundException `userId`와 일치하는 유저 정보를 찾지 못한 경우
+     * @throws NicknameAlreadyExistsException `nickname`이 이미 사용중인 닉네임인 경우
+     */
+    @Transactional
+    fun updateUserInfo(
+        userId: Long,
+        nickname: String?,
+        gender: Gender?,
+        age: Int?,
+        instagramId: String?,
+    ): User {
+        if (nickname != null && userRepository.existsByNickname(nickname)) {
+            throw NicknameAlreadyExistsException(nickname)
+        }
+        val user = userRepository.getById(userId)
+        return userRepository.update(user.update(nickname, gender, age, instagramId))
+    }
 }

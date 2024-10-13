@@ -1,27 +1,29 @@
 package com.damaba.user.controller.auth
 
 import com.damaba.user.application.auth.OAuthLoginUseCase
+import com.damaba.user.config.ControllerTestConfig
 import com.damaba.user.controller.auth.dto.OAuthLoginRequest
-import com.damaba.user.domain.auth.AuthToken
-import com.damaba.user.domain.user.User
 import com.damaba.user.domain.user.constant.LoginType
-import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
+import com.damaba.user.util.TestFixture.createAuthToken
+import com.damaba.user.util.TestFixture.createUser
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import java.time.LocalDateTime
 
+@Import(ControllerTestConfig::class)
 @WebMvcTest(AuthController::class)
 class AuthControllerTest @Autowired constructor(
     private val mvc: MockMvc,
@@ -45,7 +47,9 @@ class AuthControllerTest @Autowired constructor(
             accessToken = createAuthToken(),
             refreshToken = createAuthToken(),
         )
-        every { oAuthLoginUseCase.invoke(any(OAuthLoginUseCase.Command::class)) } returns expectedResult
+        every {
+            oAuthLoginUseCase.invoke(OAuthLoginUseCase.Command(requestBody.loginType, requestBody.authKey))
+        } returns expectedResult
 
         // when & then
         mvc.perform(
@@ -57,6 +61,7 @@ class AuthControllerTest @Autowired constructor(
             .andExpect(jsonPath("$.user.id").value(expectedResult.user.id))
             .andExpect(jsonPath("$.accessToken.value").value(expectedResult.accessToken.value))
             .andExpect(jsonPath("$.refreshToken.value").value(expectedResult.refreshToken.value))
+        verify { oAuthLoginUseCase.invoke(OAuthLoginUseCase.Command(requestBody.loginType, requestBody.authKey)) }
     }
 
     @Test
@@ -70,7 +75,9 @@ class AuthControllerTest @Autowired constructor(
             accessToken = createAuthToken(),
             refreshToken = createAuthToken(),
         )
-        every { oAuthLoginUseCase.invoke(any(OAuthLoginUseCase.Command::class)) } returns expectedResult
+        every {
+            oAuthLoginUseCase.invoke(OAuthLoginUseCase.Command(requestBody.loginType, requestBody.authKey))
+        } returns expectedResult
 
         // when & then
         mvc.perform(
@@ -82,23 +89,6 @@ class AuthControllerTest @Autowired constructor(
             .andExpect(jsonPath("$.user.id").value(expectedResult.user.id))
             .andExpect(jsonPath("$.accessToken.value").value(expectedResult.accessToken.value))
             .andExpect(jsonPath("$.refreshToken.value").value(expectedResult.refreshToken.value))
+        verify { oAuthLoginUseCase.invoke(OAuthLoginUseCase.Command(requestBody.loginType, requestBody.authKey)) }
     }
-
-    private fun createUser(
-        id: Long = randomLong(),
-        oAuthLoginUid: String = randomString(),
-        loginType: LoginType = LoginType.KAKAO,
-    ): User = User(
-        id = id,
-        oAuthLoginUid = oAuthLoginUid,
-        loginType = loginType,
-    )
-
-    private fun createAuthToken(
-        value: String = randomString(),
-        expiresAt: LocalDateTime = LocalDateTime.now(),
-    ): AuthToken = AuthToken(
-        value = value,
-        expiresAt = expiresAt,
-    )
 }
