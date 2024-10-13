@@ -7,15 +7,11 @@ import com.damaba.user.domain.auth.exception.InvalidAuthTokenException
 import com.damaba.user.domain.user.User
 import com.damaba.user.property.AuthProperties
 import io.jsonwebtoken.Claims
-import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jws
 import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.MalformedJwtException
 import io.jsonwebtoken.SignatureAlgorithm
-import io.jsonwebtoken.UnsupportedJwtException
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
-import io.jsonwebtoken.security.SignatureException
 import jakarta.annotation.PostConstruct
 import org.springframework.stereotype.Service
 import java.security.Key
@@ -61,16 +57,8 @@ class AuthTokenServiceImpl(
                 .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token)
-        } catch (ex: UnsupportedJwtException) {
-            throw InvalidAuthTokenException("The claimsJws argument does not represent an Claims JWS", ex)
-        } catch (ex: MalformedJwtException) {
-            throw InvalidAuthTokenException("The claimsJws string is not a valid JWS", ex)
-        } catch (ex: SignatureException) {
-            throw InvalidAuthTokenException("The claimsJws JWS signature validation fails", ex)
-        } catch (ex: ExpiredJwtException) {
-            throw InvalidAuthTokenException("The Claims has an expiration time before the time this method is invoked.", ex)
-        } catch (ex: IllegalArgumentException) {
-            throw InvalidAuthTokenException("The claimsJws string is null or empty or only whitespace", ex)
+        } catch (ex: Exception) {
+            throw InvalidAuthTokenException(cause = ex)
         }
     }
 

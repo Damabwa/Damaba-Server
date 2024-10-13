@@ -1,18 +1,16 @@
 package com.damaba.user.application.auth
 
-import com.damaba.user.domain.auth.AuthToken
 import com.damaba.user.domain.auth.AuthTokenService
 import com.damaba.user.domain.auth.OAuthService
-import com.damaba.user.domain.user.User
 import com.damaba.user.domain.user.UserService
 import com.damaba.user.domain.user.constant.LoginType
-import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
+import com.damaba.user.util.TestFixture.createAuthToken
+import com.damaba.user.util.TestFixture.createUser
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifyOrder
 import org.assertj.core.api.Assertions.assertThat
-import java.time.LocalDateTime
 import kotlin.test.Test
 
 class OAuthLoginUseCaseTest {
@@ -84,22 +82,4 @@ class OAuthLoginUseCaseTest {
         assertThat(result.accessToken).isEqualTo(accessToken)
         assertThat(result.refreshToken).isEqualTo(refreshToken)
     }
-
-    private fun createUser(
-        id: Long = randomLong(),
-        oAuthLoginUid: String = randomString(),
-        loginType: LoginType = LoginType.KAKAO,
-    ): User = User(
-        id = id,
-        oAuthLoginUid = oAuthLoginUid,
-        loginType = loginType,
-    )
-
-    private fun createAuthToken(
-        value: String = randomString(),
-        expiresAt: LocalDateTime = LocalDateTime.now(),
-    ): AuthToken = AuthToken(
-        value = value,
-        expiresAt = expiresAt,
-    )
 }

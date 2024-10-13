@@ -85,4 +85,11 @@ class UserJpaEntity(
         age = this.age,
         instagramId = this.instagramId,
     )
+
+    fun update(user: User) {
+        this.nickname = user.nickname
+        this.age = user.age
+        this.gender = user.gender
+        this.instagramId = user.instagramId
+    }
 }

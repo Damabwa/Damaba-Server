@@ -12,6 +12,7 @@ enum class CustomExceptionType(
 
     // User
     USER_NOT_FOUND("USR_0100", "일치하는 유저 정보를 찾을 수 없습니다."),
+    NICKNAME_ALREADY_EXISTS("USR_0101", "이미 사용중인 닉네임입니다."),
 
     // Kakao
     KAKAO_API("KKA_0000", "카카오 서버와의 통신에서 에러가 발생했습니다. 요청 데이터가 잘못되지는 않았는지 다시 한 번 확인해주세요."),

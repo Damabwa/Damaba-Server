@@ -1,10 +1,13 @@
 package com.damaba.user.infrastructure.user
 
-import com.damaba.user.domain.user.User
-import com.damaba.user.domain.user.constant.LoginType
+import com.damaba.user.domain.user.constant.Gender
+import com.damaba.user.domain.user.exception.UserNotFoundException
+import com.damaba.user.util.RandomTestUtils.Companion.randomInt
 import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
+import com.damaba.user.util.TestFixture.createUser
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.catchThrowable
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.context.annotation.Import
@@ -17,20 +20,6 @@ import kotlin.test.Test
 class UserRepositoryImplTest @Autowired constructor(
     private val userRepository: UserRepositoryImpl,
 ) {
-    @Test
-    fun `신규 유저를 저장한다`() {
-        // given
-        val user = createUser()
-
-        // when
-        val savedUser = userRepository.save(user)
-
-        // then
-        val foundUser = userRepository.findById(savedUser.id)
-        assertThat(savedUser).isNotNull()
-        assertThat(foundUser).isNotNull()
-        assertThat(savedUser).isEqualTo(foundUser)
-    }
 
     @Test
     fun `특정 유저의 id가 주어지고, 주어진 id에 해당하는 유저를 조회하면, 유저 정보가 반환된다`() {
@@ -72,6 +61,54 @@ class UserRepositoryImplTest @Autowired constructor(
     }
 
     @Test
+    fun `(Get) 특정 유저의 id가 주어지고, 주어진 id에 해당하는 유저를 조회하면, 유저 정보가 반환된다`() {
+        // given
+        val savedUser = userRepository.save(createUser())
+
+        // when
+        val result = userRepository.getById(savedUser.id)
+
+        // then
+        assertThat(result).isNotNull()
+        assertThat(result.id).isEqualTo(savedUser.id)
+    }
+
+    @Test
+    fun `존재하지 않는 유저의 id가 주어지고, 주어진 id에 해당하는 유저를 조회하면, 예외가 발생한다`() {
+        // given
+
+        // when
+        val ex = catchThrowable { userRepository.getById(id = randomLong()) }
+
+        // then
+        assertThat(ex).isInstanceOf(UserNotFoundException::class.java)
+    }
+
+    @Test
+    fun `닉네임이 주어지고, 주어진 닉네임이 존재하는지 확인한다, 만약 사용중인 닉네임이라면 true가 반환된다`() {
+        // given
+        val nickname = randomString()
+        userRepository.save(createUser(nickname = nickname))
+
+        // when
+        val exists = userRepository.existsByNickname(nickname)
+
+        // then
+        assertThat(exists).isTrue()
+    }
+
+    @Test
+    fun `닉네임이 주어지고, 주어진 닉네임이 존재하는지 확인한다, 만약 사용중인 닉네임이 아니라면 false가 반환된다`() {
+        // given
+
+        // when
+        val exists = userRepository.existsByNickname(randomString())
+
+        // then
+        assertThat(exists).isFalse()
+    }
+
+    @Test
     fun `존재하지 않는 유저의 OAuth login user id가 주어지고, uid로 유저를 조회하면, null이 반환된다`() {
         // given
 
@@ -82,13 +119,38 @@ class UserRepositoryImplTest @Autowired constructor(
         assertThat(result).isNull()
     }
 
-    private fun createUser(
-        id: Long = randomLong(),
-        oAuthLoginUid: String = randomString(),
-        loginType: LoginType = LoginType.KAKAO,
-    ): User = User(
-        id = id,
-        oAuthLoginUid = oAuthLoginUid,
-        loginType = loginType,
-    )
+    @Test
+    fun `신규 유저를 저장한다`() {
+        // given
+        val user = createUser()
+
+        // when
+        val savedUser = userRepository.save(user)
+
+        // then
+        val foundUser = userRepository.findById(savedUser.id)
+        assertThat(savedUser).isNotNull()
+        assertThat(foundUser).isNotNull()
+        assertThat(savedUser).isEqualTo(foundUser)
+    }
+
+    @Test
+    fun `유저 정보를 수정하면, 수정된 유저 정보가 반환된다`() {
+        // given
+        val originalUser = userRepository.save(createUser())
+        val newNickname = randomString()
+        val newGender = Gender.FEMALE
+        val newAge = randomInt()
+        val newInstagramId = randomString()
+
+        // when
+        val updatedUser = userRepository.update(originalUser.update(newNickname, newGender, newAge, newInstagramId))
+
+        // then
+        assertThat(updatedUser).isNotNull()
+        assertThat(updatedUser.nickname).isEqualTo(newNickname)
+        assertThat(updatedUser.gender).isEqualTo(newGender)
+        assertThat(updatedUser.age).isEqualTo(newAge)
+        assertThat(updatedUser.instagramId).isEqualTo(newInstagramId)
+    }
 }

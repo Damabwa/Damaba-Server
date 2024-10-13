@@ -18,4 +18,16 @@ data class User(
 ) {
     val isRegistrationCompleted
         get() = (age == -1)
+
+    fun update(
+        nickname: String?,
+        gender: Gender?,
+        age: Int?,
+        instagramId: String?,
+    ): User = this.copy(
+        nickname = nickname ?: this.nickname,
+        gender = gender ?: this.gender,
+        age = age ?: this.age,
+        instagramId = instagramId ?: this.instagramId,
+    )
 }
