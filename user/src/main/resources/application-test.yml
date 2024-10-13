@@ -20,7 +20,7 @@ spring:
   cloud:
     openfeign.client.config:
       default:
-        logger-level: full
+        logger-level: basic
       KakaoKApiClient:
         url: https://kapi.kakao.com
 

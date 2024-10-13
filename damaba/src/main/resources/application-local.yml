@@ -10,7 +10,7 @@ spring:
   cloud:
     openfeign.client.config:
       KakaoKApiClient:
-        logger-level: full
+        logger-level: basic
 
 springdoc:
   show-actuator: true
