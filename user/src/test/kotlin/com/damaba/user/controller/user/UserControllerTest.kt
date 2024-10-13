@@ -1,12 +1,14 @@
 package com.damaba.user.controller.user
 
 import com.damaba.user.application.user.CheckNicknameAvailabilityUseCase
+import com.damaba.user.application.user.GetMyInfoUseCase
 import com.damaba.user.application.user.UpdateMyInfoUseCase
 import com.damaba.user.config.ControllerTestConfig
 import com.damaba.user.controller.user.dto.UpdateMyInfoRequest
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.util.RandomTestUtils.Companion.randomBoolean
 import com.damaba.user.util.RandomTestUtils.Companion.randomInt
+import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
 import com.damaba.user.util.TestAuthUtils.createAuthenticationToken
 import com.damaba.user.util.TestFixture.createUser
@@ -33,16 +35,36 @@ import kotlin.test.Test
 class UserControllerTest @Autowired constructor(
     private val mvc: MockMvc,
     private val mapper: ObjectMapper,
-    private val updateMyInfoUseCase: UpdateMyInfoUseCase,
+    private val getMyInfoUseCase: GetMyInfoUseCase,
     private val checkNicknameAvailabilityUseCase: CheckNicknameAvailabilityUseCase,
+    private val updateMyInfoUseCase: UpdateMyInfoUseCase,
 ) {
     @TestConfiguration
     class TestBeanSetUp {
         @Bean
-        fun updateMyInfoUseCase(): UpdateMyInfoUseCase = mockk()
+        fun getMyInfoUseCase(): GetMyInfoUseCase = mockk()
 
         @Bean
         fun checkNicknameAvailabilityUseCase(): CheckNicknameAvailabilityUseCase = mockk()
+
+        @Bean
+        fun updateMyInfoUseCase(): UpdateMyInfoUseCase = mockk()
+    }
+
+    @Test
+    fun `내 정보를 조회하면, 내 정보가 응답된다`() {
+        // given
+        val userId = randomLong()
+        val me = createUser(id = userId)
+        every { getMyInfoUseCase.invoke(userId) } returns me
+
+        // when & then
+        mvc.perform(
+            get("/api/v1/users/me")
+                .with(authentication(createAuthenticationToken(me))),
+        ).andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").value(me.id))
+            .andExpect(jsonPath("$.nickname").value(me.nickname))
     }
 
     @Test

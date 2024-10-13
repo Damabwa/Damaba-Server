@@ -26,6 +26,15 @@ class UserService(private val userRepository: UserRepository) {
         userRepository.findByOAuthLoginUid(oAuthLoginUid)
 
     /**
+     * @param userId 조회하고자 하는 유저의 id
+     * @return 조회된 유저
+     * @throws UserNotFoundException 조회된 유저가 없을 경우
+     */
+    @Transactional(readOnly = true)
+    fun getUserById(userId: Long): User =
+        userRepository.getById(userId)
+
+    /**
      * 닉네임이 사용중인지 확인한다.
      *
      * @param nickname 사용중인지 확인할 닉네임

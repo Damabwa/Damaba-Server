@@ -51,6 +51,21 @@ class UserServiceTest {
     }
 
     @Test
+    fun `(Get) 유저의 id가 주어지고, 주어진 id에 해당하는 유저를 조회한다`() {
+        // given
+        val userId = randomLong()
+        val expectedResult = createUser()
+        every { userRepository.getById(userId) } returns expectedResult
+
+        // when
+        val actualResult = sut.getUserById(userId)
+
+        // then
+        verify { userRepository.getById(userId) }
+        assertThat(actualResult).isEqualTo(expectedResult)
+    }
+
+    @Test
     fun `닉네임이 주어지고, 주어진 닉네임이 존재하는지 확인한다`() {
         // given
         val nickname = randomString()

@@ -1,6 +1,7 @@
 package com.damaba.user.controller.user
 
 import com.damaba.user.application.user.CheckNicknameAvailabilityUseCase
+import com.damaba.user.application.user.GetMyInfoUseCase
 import com.damaba.user.application.user.UpdateMyInfoUseCase
 import com.damaba.user.controller.user.dto.CheckNicknameAvailabilityResponse
 import com.damaba.user.controller.user.dto.UpdateMyInfoRequest
@@ -22,9 +23,21 @@ import org.springframework.web.bind.annotation.RestController
 @Tag(name = "유저 관련 API")
 @RestController
 class UserController(
-    private val updateMyInfoUseCase: UpdateMyInfoUseCase,
+    private val getMyInfoUseCase: GetMyInfoUseCase,
     private val checkNicknameAvailabilityUseCase: CheckNicknameAvailabilityUseCase,
+    private val updateMyInfoUseCase: UpdateMyInfoUseCase,
 ) {
+    @Operation(
+        summary = "내 정보 조회",
+        description = "내 정보를 조회합니다.",
+        security = [SecurityRequirement(name = "access-token")],
+    )
+    @GetMapping("/api/v1/users/me")
+    fun getMyInfoV1(@AuthenticationPrincipal requestUser: User): UserResponse {
+        val me = getMyInfoUseCase(requestUser.id)
+        return UserResponse.from(me)
+    }
+
     @Operation(
         summary = "닉네임 이용가능성 확인",
         description = "이용 가능한 닉네임인지 확인합니다.",
