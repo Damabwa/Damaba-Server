@@ -1,0 +1,33 @@
+damaba:
+  auth:
+    jwt-secret: jwtSecretForOnlyTestEnvironment12345678901234567890
+    access-token-duration-millis: 7200000  # 2 day
+    refresh-token-duration-millis: 2592000 # 1 month
+
+spring:
+  datasource:
+    # Test용 embedded DB 설정
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+
+  cloud:
+    openfeign.client.config:
+      default:
+        logger-level: full
+      KakaoKApiClient:
+        url: https://kapi.kakao.com
+
+logging:
+  level:
+    com.damaba: debug
+    org:
+      hibernate:
+        type: trace
+        SQL: debug

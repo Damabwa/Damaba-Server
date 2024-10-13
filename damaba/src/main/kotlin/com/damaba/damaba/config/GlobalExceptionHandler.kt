@@ -83,20 +83,20 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         val dotIdx = propertyPath.lastIndexOf(".")
         return propertyPath.substring(dotIdx + 1)
     }
+
+    data class ErrorResponse(
+        val code: String,
+        val message: String,
+    )
+
+    data class ValidationErrorResponse(
+        val code: String,
+        val message: String,
+        val errors: List<ValidationErrorDetailResponse>,
+    )
+
+    data class ValidationErrorDetailResponse(
+        val field: String,
+        val message: String?,
+    )
 }
-
-data class ErrorResponse(
-    val code: String,
-    val message: String,
-)
-
-data class ValidationErrorResponse(
-    val code: String,
-    val message: String,
-    val errors: List<ValidationErrorDetailResponse>,
-)
-
-data class ValidationErrorDetailResponse(
-    val field: String,
-    val message: String?,
-)

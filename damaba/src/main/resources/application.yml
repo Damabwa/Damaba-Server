@@ -1,3 +1,10 @@
+damaba:
+  web-url: ${DAMABA_WEB_URL}
+  auth:
+    jwt-secret: ${JWT_SECRET}
+    access-token-duration-millis: 7200000  # 2 day
+    refresh-token-duration-millis: 2592000 # 1 month
+
 spring:
   application:
     name: damaba-damaba
@@ -24,9 +31,22 @@ spring:
         show_sql: false
         default_batch_fetch_size: 1000
 
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+
+  cloud:
+    openfeign.client.config:
+      default:
+        connect-timeout: 3000
+        read-timeout: 5000
+        logger-level: none
+      KakaoKApiClient:
+        url: https://kapi.kakao.com
+
 logging:
   level:
     com.damaba: info
     org:
-      hibernate:
-        SQL: info
+      hibernate.SQL: info
