@@ -13,8 +13,7 @@ import org.springframework.stereotype.Component
 class LogTraceAspect(private val logTrace: LogTrace) {
     @Around(
         value = "com.damaba.damaba.config.Pointcuts.controllerPoint() || " +
-            "com.damaba.damaba.config.Pointcuts.useCasePoint() || " +
-            "com.damaba.damaba.config.Pointcuts.domainServicePoint() || " +
+            "com.damaba.damaba.config.Pointcuts.servicePoint() || " +
             "com.damaba.damaba.config.Pointcuts.repositoryPoint()",
     )
     fun execute(joinPoint: ProceedingJoinPoint): Any? {
@@ -37,19 +36,15 @@ class LogTraceAspect(private val logTrace: LogTrace) {
 }
 
 class Pointcuts {
-    @Pointcut("execution(* com.damaba..controller..*Controller.*(..))")
+    @Pointcut("@within(org.springframework.stereotype.Controller) || @within(org.springframework.web.bind.annotation.RestController)")
     fun controllerPoint() {
     }
 
-    @Pointcut("execution(* com.damaba..application..*UseCase.*(..))")
-    fun useCasePoint() {
+    @Pointcut("@within(org.springframework.stereotype.Service)")
+    fun servicePoint() {
     }
 
-    @Pointcut("execution(* com.damaba..domain..*Service.*(..))")
-    fun domainServicePoint() {
-    }
-
-    @Pointcut("execution(* com.damaba..infra*..*Repository.*(..))")
+    @Pointcut("@within(org.springframework.stereotype.Repository)")
     fun repositoryPoint() {
     }
 }
