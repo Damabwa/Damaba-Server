@@ -6,5 +6,5 @@ import org.springframework.stereotype.Service
 @Service
 class CheckNicknameAvailabilityUseCase(private val userService: UserService) {
     operator fun invoke(nickname: String): Boolean =
-        userService.doesNicknameExist(nickname)
+        !userService.doesNicknameExist(nickname)
 }
