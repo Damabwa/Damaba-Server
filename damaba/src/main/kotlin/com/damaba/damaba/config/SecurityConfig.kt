@@ -38,6 +38,7 @@ class SecurityConfig {
         // 특정 endpoint, HTTP method에 대해서만 허용
         val AUTH_WHITE_LIST = mapOf(
             "/api/v*/auth/login" to HttpMethod.POST,
+            "/api/v*/users/nicknames/availability" to HttpMethod.GET,
         )
     }
 

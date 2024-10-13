@@ -26,6 +26,16 @@ class UserService(private val userRepository: UserRepository) {
         userRepository.findByOAuthLoginUid(oAuthLoginUid)
 
     /**
+     * 닉네임이 사용중인지 확인한다.
+     *
+     * @param nickname 사용중인지 확인할 닉네임
+     * @return 사용중인 닉네임이라면 `true`, 사용중이지 않은 닉네임이라면 `false`
+     */
+    @Transactional(readOnly = true)
+    fun doesNicknameExist(nickname: String): Boolean =
+        userRepository.existsByNickname(nickname)
+
+    /**
      * 신규 유저를 생성 및 저장한다.
      *
      * @param oAuthLoginUid

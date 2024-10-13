@@ -3,6 +3,7 @@ package com.damaba.user.domain.user
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.exception.NicknameAlreadyExistsException
+import com.damaba.user.util.RandomTestUtils.Companion.randomBoolean
 import com.damaba.user.util.RandomTestUtils.Companion.randomInt
 import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
@@ -46,6 +47,21 @@ class UserServiceTest {
 
         // then
         verify { userRepository.findByOAuthLoginUid(oAuthUserId) }
+        assertThat(actualResult).isEqualTo(expectedResult)
+    }
+
+    @Test
+    fun `닉네임이 주어지고, 주어진 닉네임이 존재하는지 확인한다`() {
+        // given
+        val nickname = randomString()
+        val expectedResult = randomBoolean()
+        every { userRepository.existsByNickname(nickname) } returns expectedResult
+
+        // when
+        val actualResult = sut.doesNicknameExist(nickname)
+
+        // then
+        verify { userRepository.existsByNickname(nickname) }
         assertThat(actualResult).isEqualTo(expectedResult)
     }
 

@@ -46,7 +46,7 @@ class LogApiInfoFilter : OncePerRequestFilter() {
                 val doLog = LOG_BLACK_LIST.none { request.requestURI.startsWith(it) }
                 val responseWrapper = ResponseWrapper(response)
                 runCatching {
-                    // TODO: multipart/form-data type인 요청에 대해 세부 정보 로깅 기능 구현
+                    // : multipart/form-data type인 요청에 대해 세부 정보 로깅 기능 구현
                     if (isMultipartFormData(request.contentType)) {
                         Logger.info(
                             "Request: [{}] uri={}, payload=multipart/form-data",

@@ -1,6 +1,8 @@
 package com.damaba.user.controller.user
 
+import com.damaba.user.application.user.CheckNicknameAvailabilityUseCase
 import com.damaba.user.application.user.UpdateMyInfoUseCase
+import com.damaba.user.controller.user.dto.CheckNicknameAvailabilityResponse
 import com.damaba.user.controller.user.dto.UpdateMyInfoRequest
 import com.damaba.user.controller.user.dto.UserResponse
 import com.damaba.user.domain.user.User
@@ -11,15 +13,28 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @Tag(name = "유저 관련 API")
 @RestController
 class UserController(
     private val updateMyInfoUseCase: UpdateMyInfoUseCase,
+    private val checkNicknameAvailabilityUseCase: CheckNicknameAvailabilityUseCase,
 ) {
+    @Operation(
+        summary = "닉네임 이용가능성 확인",
+        description = "이용 가능한 닉네임인지 확인합니다.",
+    )
+    @GetMapping("/api/v1/users/nicknames/availability")
+    fun checkNicknameAvailabilityV1(@RequestParam nickname: String): CheckNicknameAvailabilityResponse {
+        val availability = checkNicknameAvailabilityUseCase(nickname)
+        return CheckNicknameAvailabilityResponse(nickname, availability)
+    }
+
     @Operation(
         summary = "내 정보 수정",
         description = "내 정보를 수정합니다. 요청 시, 수정하고자 하는 정보들만 전달하면 됩니다.",
