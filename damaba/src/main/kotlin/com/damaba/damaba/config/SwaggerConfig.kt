@@ -1,7 +1,9 @@
 package com.damaba.damaba.config
 
+import io.swagger.v3.oas.models.Components
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.info.Info
+import io.swagger.v3.oas.models.security.SecurityScheme
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.ResourceLoader
@@ -21,16 +23,15 @@ class SwaggerConfig(private val resourceLoader: ResourceLoader) {
                     .title("Damaba 통합 API Server")
                     .description(loadApiDoc()),
             )
-    // TODO: Spring Security 도입 후 추가 필요
-//            .components(
-//                Components().addSecuritySchemes(
-//                    "access-token",
-//                    SecurityScheme()
-//                        .type(SecurityScheme.Type.HTTP)
-//                        .scheme("Bearer")
-//                        .bearerFormat("JWT"),
-//                ),
-//            )
+            .components(
+                Components().addSecuritySchemes(
+                    "access-token",
+                    SecurityScheme()
+                        .type(SecurityScheme.Type.HTTP)
+                        .scheme("Bearer")
+                        .bearerFormat("JWT"),
+                ),
+            )
 
     private fun loadApiDoc(): String {
         val resource = resourceLoader.getResource(API_DOC_DESCRIPTION_FILE_PATH)
