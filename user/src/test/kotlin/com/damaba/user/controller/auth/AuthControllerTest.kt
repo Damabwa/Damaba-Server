@@ -1,6 +1,7 @@
 package com.damaba.user.controller.auth
 
 import com.damaba.user.application.auth.OAuthLoginUseCase
+import com.damaba.user.config.ControllerTestConfig
 import com.damaba.user.controller.auth.dto.OAuthLoginRequest
 import com.damaba.user.domain.auth.AuthToken
 import com.damaba.user.domain.user.User
@@ -22,6 +23,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDateTime
 
+@Import(ControllerTestConfig::class)
 @WebMvcTest(AuthController::class)
 class AuthControllerTest @Autowired constructor(
     private val mvc: MockMvc,

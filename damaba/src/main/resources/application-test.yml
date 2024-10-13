@@ -1,4 +1,5 @@
 damaba:
+  web-url: http://damaba.test
   auth:
     jwt-secret: jwtSecretForOnlyTestEnvironment12345678901234567890
 
