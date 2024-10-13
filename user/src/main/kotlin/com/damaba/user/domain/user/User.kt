@@ -10,7 +10,7 @@ data class User(
     val oAuthLoginUid: String,
 
     val id: Long = 0,
-    val roles: Set<UserRoleType> = setOf(UserRoleType.ROLE_USER),
+    val roles: Set<UserRoleType> = setOf(UserRoleType.USER),
     val nickname: String = UUID.randomUUID().toString(),
     val gender: Gender = Gender.PRIVATE,
     val age: Int = -1,

@@ -7,8 +7,14 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class UserService(private val userRepository: UserRepository) {
     /**
-     * `OAuthLoginUid`로 유저를 단건 조회한다.
-     *
+     * @param userId 조회하고자 하는 유저의 id
+     * @return 조회된 유저
+     */
+    @Transactional(readOnly = true)
+    fun findUserById(userId: Long): User? =
+        userRepository.findById(userId)
+
+    /**
      * @param oAuthLoginUid 조회하고자 하는 유저의 OAuth login user id
      * @return 조회된 유저
      */
