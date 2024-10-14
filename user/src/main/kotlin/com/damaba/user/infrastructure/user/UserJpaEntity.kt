@@ -23,6 +23,7 @@ class UserJpaEntity(
     loginType: LoginType,
     oAuthLoginUid: String,
     nickname: String,
+    profileImageUrl: String,
     gender: Gender,
     age: Int,
     instagramId: String?,
@@ -33,6 +34,7 @@ class UserJpaEntity(
             loginType = user.loginType,
             oAuthLoginUid = user.oAuthLoginUid,
             nickname = user.nickname,
+            profileImageUrl = user.profileImageUrl,
             gender = user.gender,
             age = user.age,
             instagramId = user.instagramId,
@@ -62,6 +64,10 @@ class UserJpaEntity(
     var nickname: String = nickname
         private set
 
+    @Column(name = "profile_image_url", nullable = false)
+    var profileImageUrl: String = profileImageUrl
+        private set
+
     @Enumerated(EnumType.STRING)
     @Column(name = "gender", nullable = false)
     var gender: Gender = gender
@@ -81,6 +87,7 @@ class UserJpaEntity(
         oAuthLoginUid = this.oAuthLoginUid,
         loginType = this.loginType,
         nickname = this.nickname,
+        profileImageUrl = this.profileImageUrl,
         gender = this.gender,
         age = this.age,
         instagramId = this.instagramId,

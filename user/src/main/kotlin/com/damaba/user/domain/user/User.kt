@@ -12,12 +12,17 @@ data class User(
     val id: Long = 0,
     val roles: Set<UserRoleType> = setOf(UserRoleType.USER),
     val nickname: String = UUID.randomUUID().toString(),
+    val profileImageUrl: String = DEFAULT_PROFILE_IMAGE_URL,
     val gender: Gender = Gender.PRIVATE,
     val age: Int = -1,
     val instagramId: String? = null,
 ) {
+    companion object {
+        private const val DEFAULT_PROFILE_IMAGE_URL = "https://dummyimage.com/244x100.png/cc0000/ffffff"
+    }
+
     val isRegistrationCompleted
-        get() = (age == -1)
+        get() = age == -1
 
     fun update(
         nickname: String?,

@@ -15,6 +15,9 @@ data class UserResponse(
     @Schema(description = "닉네임", example = "홍길동")
     val nickname: String,
 
+    @Schema(description = "프로필 이미지 url", example = "https://user-profile-image-url")
+    val profileImageUrl: String,
+
     @Schema(description = "성별")
     val gender: Gender,
 
@@ -29,6 +32,7 @@ data class UserResponse(
             id = user.id,
             loginType = user.loginType,
             nickname = user.nickname,
+            profileImageUrl = user.profileImageUrl,
             gender = user.gender,
             age = user.age,
             instagramId = user.instagramId,
