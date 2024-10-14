@@ -53,7 +53,7 @@ class UserService(private val userRepository: UserRepository) {
      */
     @Transactional
     fun createNewUser(oAuthLoginUid: String, loginType: LoginType): User =
-        userRepository.save(User(oAuthLoginUid = oAuthLoginUid, loginType = loginType))
+        userRepository.save(User.create(loginType, oAuthLoginUid))
 
     /**
      * 유저 정보를 수정한다.
