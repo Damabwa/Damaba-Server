@@ -9,7 +9,7 @@ import com.damaba.user.util.TestFixture.createUser
 import org.assertj.core.api.Assertions.assertThat
 import kotlin.test.Test
 
-class UserDomainEntityTest {
+class UserTest {
     @Test
     fun `신규 유저를 생성한다`() {
         // given
