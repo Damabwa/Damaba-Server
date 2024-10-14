@@ -114,7 +114,7 @@ tasks.jacocoTestReport {
                     listOf(
                         "**/controller/**/*Controller*",
                         "**/application/**/*UseCase*",
-                        "**/domain/**/*Service*",
+                        "**/domain/**/*",
                         "**/infrastructure/**/*Repository*",
                         "**/infrastructure/**/*Service*",
                     ),
@@ -146,7 +146,7 @@ tasks.jacocoTestCoverageVerification {
             includes = listOf(
                 "*.controller.*.*Controller*",
                 "*.application.*.*UseCase*",
-                "*.domain.*.*Service*",
+                "*.domain.*.*",
                 "*.infrastructure.*.*Repository*",
                 "*.infrastructure.*.*Service*",
             )
