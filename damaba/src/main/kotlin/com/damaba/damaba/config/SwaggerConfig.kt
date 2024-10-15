@@ -7,7 +7,6 @@ import io.swagger.v3.oas.models.security.SecurityScheme
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.ResourceLoader
-import java.nio.file.Files
 
 @Configuration
 class SwaggerConfig(private val resourceLoader: ResourceLoader) {
@@ -35,7 +34,6 @@ class SwaggerConfig(private val resourceLoader: ResourceLoader) {
 
     private fun loadApiDoc(): String {
         val resource = resourceLoader.getResource(API_DOC_DESCRIPTION_FILE_PATH)
-        val file = resource.file.toPath()
-        return String(Files.readAllBytes(file))
+        return resource.inputStream.bufferedReader().use { it.readText() }
     }
 }
