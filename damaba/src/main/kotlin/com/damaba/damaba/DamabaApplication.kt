@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
 import org.springframework.cloud.openfeign.EnableFeignClients
+import org.springframework.context.annotation.PropertySource
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @SpringBootApplication(
@@ -16,6 +17,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
         "com.damaba.user",
     ],
 )
+@PropertySource("classpath:env.properties")
 @EnableConfigurationProperties(AuthProperties::class)
 @EntityScan(basePackages = ["com.damaba.user"])
 @EnableJpaRepositories(basePackages = ["com.damaba.user"])
