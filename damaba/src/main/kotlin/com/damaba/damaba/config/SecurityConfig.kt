@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.env.Environment
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -26,7 +27,7 @@ import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @Configuration
-class SecurityConfig {
+class SecurityConfig(private val env: Environment) {
     companion object {
         // HTTP method 상관 없이, endpoint에 대해 허용
         val AUTH_WHITE_PATHS = listOf(
@@ -49,12 +50,13 @@ class SecurityConfig {
         customAccessDeniedHandler: CustomAccessDeniedHandler,
         customAuthenticationEntryPoint: CustomAuthenticationEntryPoint,
         @Value("\${damaba.web-url}") damabaWebUrl: String,
+        @Value("\${damaba.server-url}") damabaServerUrl: String,
     ): SecurityFilterChain = httpSecurity
         .csrf { it.disable() }
         .httpBasic { it.disable() }
         .formLogin { it.disable() }
         .sessionManagement { session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-        .cors { it.configurationSource(corsConfigurationSource(damabaWebUrl)) }
+        .cors { it.configurationSource(corsConfigurationSource(listOf(damabaWebUrl, damabaServerUrl))) }
         .authorizeHttpRequests { auth ->
             auth.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
             AUTH_WHITE_PATHS.forEach { authWhitePath -> auth.requestMatchers(authWhitePath).permitAll() }
@@ -68,13 +70,25 @@ class SecurityConfig {
                 .authenticationEntryPoint(customAuthenticationEntryPoint)
         }.build()
 
-    private fun corsConfigurationSource(damabaWebUrl: String): CorsConfigurationSource {
+    private fun corsConfigurationSource(allowedOrigins: List<String>): CorsConfigurationSource {
         val corsConfig = CorsConfiguration()
-        corsConfig.allowedOrigins = listOf(damabaWebUrl)
-        corsConfig.allowedMethods = listOf("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+        if (env.activeProfiles.contains("prod")) {
+            corsConfig.allowCredentials = true
+            corsConfig.allowedOrigins = allowedOrigins
+        } else {
+            corsConfig.allowCredentials = false
+            corsConfig.allowedOrigins = listOf("*")
+        }
+        corsConfig.allowedMethods = listOf(
+            HttpMethod.GET.name(),
+            HttpMethod.POST.name(),
+            HttpMethod.PUT.name(),
+            HttpMethod.PATCH.name(),
+            HttpMethod.DELETE.name(),
+            HttpMethod.OPTIONS.name(),
+        )
         corsConfig.allowedHeaders = listOf("*")
         corsConfig.exposedHeaders = listOf("*")
-        corsConfig.allowCredentials = true
         return UrlBasedCorsConfigurationSource().apply {
             registerCorsConfiguration("/**", corsConfig)
         }

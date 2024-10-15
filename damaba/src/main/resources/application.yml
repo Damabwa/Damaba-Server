@@ -1,5 +1,6 @@
 damaba:
   web-url: ${DAMABA_WEB_URL}
+  server-url: ${DAMABA_SERVER_URL}
   auth:
     jwt-secret: ${JWT_SECRET}
     access-token-duration-millis: 7200000  # 2 day
@@ -44,6 +45,10 @@ spring:
         logger-level: none
       KakaoKApiClient:
         url: https://kapi.kakao.com
+
+springdoc:
+  swagger-ui:
+    operations-sorter: method
 
 logging:
   level:
