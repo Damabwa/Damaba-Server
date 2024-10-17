@@ -5,6 +5,7 @@ import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.util.RandomTestUtils.Companion.randomInt
 import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
+import com.damaba.user.util.TestFixture.createUploadFile
 import com.damaba.user.util.TestFixture.createUser
 import io.mockk.every
 import io.mockk.mockk
@@ -24,6 +25,7 @@ class UpdateMyInfoUseCaseTest {
         val newGender = Gender.FEMALE
         val newAge = randomInt()
         val newInstagramId = randomString()
+        val newProfileImage = createUploadFile()
         val expectedResult = createUser(id = userId)
         every {
             userService.updateUserInfo(
@@ -32,15 +34,16 @@ class UpdateMyInfoUseCaseTest {
                 newGender,
                 newAge,
                 newInstagramId,
+                newProfileImage,
             )
         } returns expectedResult
 
         // when
         val actualResult =
-            sut.invoke(UpdateMyInfoUseCase.Command(userId, newNickname, newGender, newAge, newInstagramId))
+            sut.invoke(UpdateMyInfoUseCase.Command(userId, newNickname, newGender, newAge, newInstagramId, newProfileImage))
 
         // then
-        verify { userService.updateUserInfo(userId, newNickname, newGender, newAge, newInstagramId) }
+        verify { userService.updateUserInfo(userId, newNickname, newGender, newAge, newInstagramId, newProfileImage) }
         assertThat(actualResult).isEqualTo(expectedResult)
     }
 }

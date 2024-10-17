@@ -1,5 +1,7 @@
 package com.damaba.user.domain.user
 
+import com.damaba.user.domain.file.FileStorageRepository
+import com.damaba.user.domain.file.UploadFile
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.exception.NicknameAlreadyExistsException
@@ -8,7 +10,14 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class UserService(private val userRepository: UserRepository) {
+class UserService(
+    private val userRepository: UserRepository,
+    private val fileStorageRepository: FileStorageRepository,
+) {
+    companion object {
+        private const val USER_PROFILE_IMAGE_UPLOAD_PATH = "user/profile-image/"
+    }
+
     /**
      * @param userId 조회하고자 하는 유저의 id
      * @return 조회된 유저
@@ -63,6 +72,7 @@ class UserService(private val userRepository: UserRepository) {
      * @param gender 수정할 gender
      * @param age 수정할 age
      * @param instagramId 수정할 instagramId
+     * @param profileImage 프로필 이미지
      * @return 수정된 유저 정보
      * @throws UserNotFoundException `userId`와 일치하는 유저 정보를 찾지 못한 경우
      * @throws NicknameAlreadyExistsException `nickname`이 이미 사용중인 닉네임인 경우
@@ -74,11 +84,19 @@ class UserService(private val userRepository: UserRepository) {
         gender: Gender?,
         age: Int?,
         instagramId: String?,
+        profileImage: UploadFile?,
     ): User {
         if (nickname != null && userRepository.existsByNickname(nickname)) {
             throw NicknameAlreadyExistsException(nickname)
         }
         val user = userRepository.getById(userId)
-        return userRepository.update(user.update(nickname, gender, age, instagramId))
+
+        val uploadedProfileImage = profileImage?.let {
+            fileStorageRepository.upload(profileImage, USER_PROFILE_IMAGE_UPLOAD_PATH)
+        }
+
+        return userRepository.update(
+            user.update(nickname, gender, age, instagramId, uploadedProfileImage?.url),
+        )
     }
 }
