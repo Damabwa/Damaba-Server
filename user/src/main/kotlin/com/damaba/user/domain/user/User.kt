@@ -40,10 +40,12 @@ data class User(
         gender: Gender?,
         age: Int?,
         instagramId: String?,
+        profileImageUrl: String?,
     ): User = this.copy(
         nickname = nickname ?: this.nickname,
         gender = gender ?: this.gender,
         age = age ?: this.age,
         instagramId = instagramId ?: this.instagramId,
+        profileImageUrl = profileImageUrl ?: this.profileImageUrl,
     )
 }

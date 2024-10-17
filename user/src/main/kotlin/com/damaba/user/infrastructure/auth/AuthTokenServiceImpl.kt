@@ -5,7 +5,7 @@ import com.damaba.user.domain.auth.AuthTokenService
 import com.damaba.user.domain.auth.RefreshToken
 import com.damaba.user.domain.auth.exception.InvalidAuthTokenException
 import com.damaba.user.domain.user.User
-import com.damaba.user.property.AuthProperties
+import com.damaba.user.property.DamabaProperties
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws
 import io.jsonwebtoken.Jwts
@@ -20,7 +20,7 @@ import java.util.Date
 
 @Service
 class AuthTokenServiceImpl(
-    private val authProperties: AuthProperties,
+    private val damabaProperties: DamabaProperties,
     private val refreshTokenRepository: RefreshTokenRedisRepository,
 ) : AuthTokenService {
     companion object {
@@ -31,7 +31,7 @@ class AuthTokenServiceImpl(
 
     @PostConstruct
     fun init() {
-        val secret = authProperties.jwtSecret
+        val secret = damabaProperties.auth.jwtSecret
         if (secret.isBlank()) {
             throw IllegalArgumentException("JWT token 생성 및 검증에 필요한 secret key(salt)가 입력되지 않았습니다.")
         }
@@ -63,13 +63,13 @@ class AuthTokenServiceImpl(
     }
 
     override fun createAccessToken(user: User): AuthToken =
-        createToken(user, authProperties.accessTokenDurationMillis)
+        createToken(user, damabaProperties.auth.accessTokenDurationMillis)
 
     override fun createRefreshToken(user: User): AuthToken {
-        val token = createToken(user, authProperties.refreshTokenDurationMillis)
+        val token = createToken(user, damabaProperties.auth.refreshTokenDurationMillis)
         refreshTokenRepository.save(
             refreshToken = RefreshToken(user.id, token.value),
-            ttlMillis = authProperties.refreshTokenDurationMillis,
+            ttlMillis = damabaProperties.auth.refreshTokenDurationMillis,
         )
         return token
     }

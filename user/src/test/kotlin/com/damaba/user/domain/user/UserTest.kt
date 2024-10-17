@@ -42,6 +42,7 @@ class UserTest {
         val newGender = Gender.FEMALE
         val newAge = randomInt()
         val newInstagramId = randomString()
+        val newProfileImageUrl = randomString()
 
         // when
         val updatedUser = originalUser.update(
@@ -49,6 +50,7 @@ class UserTest {
             gender = newGender,
             age = newAge,
             instagramId = newInstagramId,
+            profileImageUrl = newProfileImageUrl,
         )
 
         // then
@@ -56,12 +58,12 @@ class UserTest {
         assertThat(updatedUser.gender).isEqualTo(newGender)
         assertThat(updatedUser.age).isEqualTo(newAge)
         assertThat(updatedUser.instagramId).isEqualTo(newInstagramId)
+        assertThat(updatedUser.profileImageUrl).isEqualTo(newProfileImageUrl)
 
         assertThat(updatedUser.id).isEqualTo(originalUser.id)
         assertThat(updatedUser.roles).isEqualTo(originalUser.roles)
         assertThat(updatedUser.loginType).isEqualTo(originalUser.loginType)
         assertThat(updatedUser.oAuthLoginUid).isEqualTo(originalUser.oAuthLoginUid)
-        assertThat(updatedUser.profileImageUrl).isEqualTo(originalUser.profileImageUrl)
     }
 
     @Test
@@ -75,6 +77,7 @@ class UserTest {
             gender = null,
             age = null,
             instagramId = null,
+            profileImageUrl = null,
         )
 
         // then

@@ -1,4 +1,5 @@
 damaba:
+  file-server-url: https://damaba-file-server.test
   auth:
     jwt-secret: jwtSecretForOnlyTestEnvironment12345678901234567890
     access-token-duration-millis: 7200000  # 2 day
@@ -24,10 +25,16 @@ spring:
       KakaoKApiClient:
         url: https://kapi.kakao.com
 
+aws:
+  s3:
+    bucket-name: aws-s3-bucket-name
+    access-key: aws-s3-access-key
+    secret-key: aws-s3-secret-key
+
 logging:
   level:
     com.damaba: debug
     org:
       hibernate:
-        type: trace
+        orm.jdbc.bind: trace
         SQL: debug

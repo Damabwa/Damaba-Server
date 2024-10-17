@@ -14,7 +14,7 @@ import java.time.LocalDateTime
 class UserProfileImageJpaEntity(
     userId: Long,
     url: String,
-    storedName: String,
+    name: String,
 ) : BaseJpaTimeEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,15 +25,19 @@ class UserProfileImageJpaEntity(
     var userId: Long = userId
         private set
 
-    @Column(name = "url", nullable = false)
-    var url: String = url
+    @Column(name = "name", nullable = false)
+    var name: String = name
         private set
 
-    @Column(name = "stored_name", nullable = false)
-    var storedName: String = storedName
+    @Column(name = "url", nullable = false)
+    var url: String = url
         private set
 
     @Column(name = "deleted_at", nullable = true)
     var deletedAt: LocalDateTime? = null
         private set
+
+    fun delete() {
+        this.deletedAt = LocalDateTime.now()
+    }
 }

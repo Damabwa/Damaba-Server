@@ -3,7 +3,7 @@ package com.damaba.user.infrastructure.auth
 import com.damaba.user.domain.auth.AuthTokenService
 import com.damaba.user.domain.auth.RefreshToken
 import com.damaba.user.domain.auth.exception.InvalidAuthTokenException
-import com.damaba.user.property.AuthProperties
+import com.damaba.user.property.DamabaProperties
 import com.damaba.user.util.TestFixture.createUser
 import io.mockk.Runs
 import io.mockk.every
@@ -24,22 +24,22 @@ class AuthTokenServiceImplTest {
         private const val MONTH_MILLIS: Long = 30 * DAY_MILLIS
     }
 
-    private val authProperties: AuthProperties = mockk()
+    private val damabaProperties: DamabaProperties = mockk()
     private val refreshTokenRepository: RefreshTokenRedisRepository = mockk()
-    private val sut: AuthTokenService = AuthTokenServiceImpl(authProperties, refreshTokenRepository)
+    private val sut: AuthTokenService = AuthTokenServiceImpl(damabaProperties, refreshTokenRepository)
 
     @BeforeEach
     fun setup() {
-        every { authProperties.jwtSecret } returns "jwtSecretForOnlyTestEnvironment12345678901234567890"
-        every { authProperties.accessTokenDurationMillis } returns HOUR_MILLIS
-        every { authProperties.refreshTokenDurationMillis } returns MONTH_MILLIS
+        every { damabaProperties.auth.jwtSecret } returns "jwtSecretForOnlyTestEnvironment12345678901234567890"
+        every { damabaProperties.auth.accessTokenDurationMillis } returns HOUR_MILLIS
+        every { damabaProperties.auth.refreshTokenDurationMillis } returns MONTH_MILLIS
         (sut as AuthTokenServiceImpl).init()
     }
 
     @Test
     fun `jwtSecret이 비어있을 때, init 메서드가 초기화 로직을 수행하면, 예외가 발생한다`() {
         // given
-        every { authProperties.jwtSecret } returns ""
+        every { damabaProperties.auth.jwtSecret } returns ""
 
         // when
         val ex = catchThrowable { (sut as AuthTokenServiceImpl).init() }

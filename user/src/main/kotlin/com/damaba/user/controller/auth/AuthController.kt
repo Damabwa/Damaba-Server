@@ -18,7 +18,7 @@ import java.net.URI
 
 @Tag(name = "인증 관련 API")
 @RestController
-class AuthController(private val oAuthLoginUseCase: OAuthLoginUseCase) {
+class AuthController(private val oAuthLogin: OAuthLoginUseCase) {
     @Operation(
         summary = "OAuth 로그인",
         description = "<p>로그인을 수행합니다. 만약 신규 유저라면, 신규 유저 데이터를 생성 및 저장합니다." +
@@ -32,7 +32,7 @@ class AuthController(private val oAuthLoginUseCase: OAuthLoginUseCase) {
     @PostMapping("/api/v1/auth/login")
     fun oAuthLoginV1(@RequestBody @Valid request: OAuthLoginRequest): ResponseEntity<OAuthLoginResponse> {
         val (isNewUser, user, accessToken, refreshToken) =
-            oAuthLoginUseCase(OAuthLoginUseCase.Command(loginType = LoginType.KAKAO, authKey = request.authKey))
+            oAuthLogin(OAuthLoginUseCase.Command(loginType = LoginType.KAKAO, authKey = request.authKey))
 
         return if (isNewUser) {
             ResponseEntity

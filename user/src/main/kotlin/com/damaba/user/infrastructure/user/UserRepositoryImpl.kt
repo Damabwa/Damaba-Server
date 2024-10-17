@@ -6,15 +6,18 @@ import com.damaba.user.domain.user.exception.UserNotFoundException
 import org.springframework.stereotype.Repository
 
 @Repository
-class UserRepositoryImpl(private val userJpaRepository: UserJpaRepository) : UserRepository {
+class UserRepositoryImpl(
+    private val userJpaRepository: UserJpaRepository,
+    private val userProfileImageJpaRepository: UserProfileImageJpaRepository,
+) : UserRepository {
     override fun findById(id: Long): User? =
-        findJpaEntityById(id)?.toDomain()
+        findUserJpaEntityById(id)?.toDomain()
 
     override fun findByOAuthLoginUid(oAuthLoginUid: String): User? =
         userJpaRepository.findByOAuthLoginUid(oAuthLoginUid)?.toDomain()
 
     override fun getById(id: Long): User =
-        getJpaEntityById(id).toDomain()
+        getUserJpaEntityById(id).toDomain()
 
     override fun existsByNickname(nickname: String): Boolean =
         userJpaRepository.existsByNickname(nickname)
@@ -25,14 +28,32 @@ class UserRepositoryImpl(private val userJpaRepository: UserJpaRepository) : Use
     }
 
     override fun update(user: User): User {
-        val userJpaEntity = getJpaEntityById(user.id)
-        userJpaEntity.update(user)
-        return userJpaEntity.toDomain()
+        val originalUser = getUserJpaEntityById(user.id)
+
+        if (originalUser.profileImageUrl != user.profileImageUrl) {
+            val originalProfileImage = userProfileImageJpaRepository.findByUrl(originalUser.profileImageUrl)
+            originalProfileImage?.delete()
+            userProfileImageJpaRepository.save(
+                UserProfileImageJpaEntity(
+                    userId = user.id,
+                    url = user.profileImageUrl,
+                    name = extractProfileImageFileName(user.profileImageUrl),
+                ),
+            )
+        }
+
+        originalUser.update(user)
+        return originalUser.toDomain()
     }
 
-    private fun findJpaEntityById(id: Long): UserJpaEntity? =
+    private fun findUserJpaEntityById(id: Long): UserJpaEntity? =
         userJpaRepository.findById(id).orElseGet { null }
 
-    private fun getJpaEntityById(id: Long): UserJpaEntity =
+    private fun getUserJpaEntityById(id: Long): UserJpaEntity =
         userJpaRepository.findById(id).orElseThrow { UserNotFoundException() }
+
+    // https://image.damaba.me/profile-image-1.jpg => profile-image-1
+    private fun extractProfileImageFileName(profileImageUrl: String) =
+        profileImageUrl.substringBeforeLast(".")
+            .substringAfterLast("/")
 }

@@ -1,5 +1,6 @@
 package com.damaba.user.application.user
 
+import com.damaba.user.domain.file.UploadFile
 import com.damaba.user.domain.user.User
 import com.damaba.user.domain.user.UserService
 import com.damaba.user.domain.user.constant.Gender
@@ -19,16 +20,15 @@ class UpdateMyInfoUseCase(private val userService: UserService) {
      * @throws NicknameAlreadyExistsException `nickname`이 이미 사용중인 닉네임인 경우
      */
     @Transactional
-    operator fun invoke(command: Command): User {
-        val updateUser = userService.updateUserInfo(
+    operator fun invoke(command: Command): User =
+        userService.updateUserInfo(
             userId = command.userId,
             nickname = command.nickname,
             gender = command.gender,
             age = command.age,
             instagramId = command.instagramId,
+            profileImage = command.profileImage,
         )
-        return updateUser
-    }
 
     data class Command(
         val userId: Long,
@@ -36,5 +36,6 @@ class UpdateMyInfoUseCase(private val userService: UserService) {
         val gender: Gender?,
         val age: Int?,
         val instagramId: String?,
+        val profileImage: UploadFile?,
     )
 }

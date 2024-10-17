@@ -1,5 +1,7 @@
 package com.damaba.user.domain.user
 
+import com.damaba.user.domain.file.FileStorageRepository
+import com.damaba.user.domain.file.UploadedFile
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.exception.NicknameAlreadyExistsException
@@ -7,7 +9,9 @@ import com.damaba.user.util.RandomTestUtils.Companion.randomBoolean
 import com.damaba.user.util.RandomTestUtils.Companion.randomInt
 import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
+import com.damaba.user.util.TestFixture.createUploadFile
 import com.damaba.user.util.TestFixture.createUser
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -17,8 +21,9 @@ import org.assertj.core.api.Assertions.catchThrowable
 import kotlin.test.Test
 
 class UserServiceTest {
-    private val userRepository = mockk<UserRepository>()
-    private val sut = UserService(userRepository)
+    private val userRepository: UserRepository = mockk()
+    private val fileStorageRepository: FileStorageRepository = mockk()
+    private val sut = UserService(userRepository, fileStorageRepository)
 
     @Test
     fun `유저의 id가 주어지고, 주어진 id에 해당하는 유저를 조회한다`() {
@@ -32,6 +37,7 @@ class UserServiceTest {
 
         // then
         verify { userRepository.findById(userId) }
+        confirmVerifiedEveryMocks()
         assertThat(actualResult).isEqualTo(expectedResult)
     }
 
@@ -47,6 +53,7 @@ class UserServiceTest {
 
         // then
         verify { userRepository.findByOAuthLoginUid(oAuthUserId) }
+        confirmVerifiedEveryMocks()
         assertThat(actualResult).isEqualTo(expectedResult)
     }
 
@@ -62,6 +69,7 @@ class UserServiceTest {
 
         // then
         verify { userRepository.getById(userId) }
+        confirmVerifiedEveryMocks()
         assertThat(actualResult).isEqualTo(expectedResult)
     }
 
@@ -77,6 +85,7 @@ class UserServiceTest {
 
         // then
         verify { userRepository.existsByNickname(nickname) }
+        confirmVerifiedEveryMocks()
         assertThat(actualResult).isEqualTo(expectedResult)
     }
 
@@ -93,6 +102,7 @@ class UserServiceTest {
 
         // then
         verify { userRepository.save(any(User::class)) }
+        confirmVerifiedEveryMocks()
         assertThat(actualResult).isEqualTo(expectedResult)
     }
 
@@ -105,25 +115,32 @@ class UserServiceTest {
         val newGender = Gender.FEMALE
         val newAge = randomInt()
         val newInstagramId = randomString()
-        val expectedResult = user.update(newNickname, newGender, newAge, newInstagramId)
+        val newProfileImage = createUploadFile()
+        val uploadedFile = UploadedFile(randomString(), randomString())
+        val expectedResult = user.update(newNickname, newGender, newAge, newInstagramId, uploadedFile.url)
 
         every { userRepository.existsByNickname(newNickname) } returns false
         every { userRepository.getById(userId) } returns user
+        every { fileStorageRepository.upload(newProfileImage, any(String::class)) } returns uploadedFile
         every { userRepository.update(expectedResult) } returns expectedResult
+
         // when
-        val actualResult = sut.updateUserInfo(userId, newNickname, newGender, newAge, newInstagramId)
+        val actualResult = sut.updateUserInfo(userId, newNickname, newGender, newAge, newInstagramId, newProfileImage)
 
         // then
         verifyOrder {
             userRepository.existsByNickname(newNickname)
             userRepository.getById(userId)
+            fileStorageRepository.upload(newProfileImage, any(String::class))
             userRepository.update(expectedResult)
         }
+        confirmVerifiedEveryMocks()
         assertThat(actualResult.id).isEqualTo(expectedResult.id)
         assertThat(actualResult.nickname).isEqualTo(expectedResult.nickname)
         assertThat(actualResult.gender).isEqualTo(expectedResult.gender)
         assertThat(actualResult.age).isEqualTo(expectedResult.age)
         assertThat(actualResult.instagramId).isEqualTo(expectedResult.instagramId)
+        assertThat(actualResult.profileImageUrl).isEqualTo(expectedResult.profileImageUrl)
     }
 
     @Test
@@ -134,10 +151,11 @@ class UserServiceTest {
         every { userRepository.existsByNickname(existingNickname) } returns true
 
         // when
-        val ex = catchThrowable { sut.updateUserInfo(userId, existingNickname, null, null, null) }
+        val ex = catchThrowable { sut.updateUserInfo(userId, existingNickname, null, null, null, null) }
 
         // then
         verify { userRepository.existsByNickname(existingNickname) }
+        confirmVerifiedEveryMocks()
         assertThat(ex).isInstanceOf(NicknameAlreadyExistsException::class.java)
     }
 
@@ -147,19 +165,24 @@ class UserServiceTest {
         val userId = randomLong()
         val user = createUser(id = userId)
         val newAge = randomInt()
-        val expectedResult = user.update(null, null, newAge, null)
+        val expectedResult = user.update(null, null, newAge, null, null)
 
         every { userRepository.getById(userId) } returns user
         every { userRepository.update(expectedResult) } returns expectedResult
         // when
-        val actualResult = sut.updateUserInfo(userId, null, null, newAge, null)
+        val actualResult = sut.updateUserInfo(userId, null, null, newAge, null, null)
 
         // then
         verifyOrder {
             userRepository.getById(userId)
             userRepository.update(expectedResult)
         }
+        confirmVerifiedEveryMocks()
         assertThat(actualResult.id).isEqualTo(expectedResult.id)
         assertThat(actualResult.age).isEqualTo(expectedResult.age)
+    }
+
+    private fun confirmVerifiedEveryMocks() {
+        confirmVerified(userRepository, fileStorageRepository)
     }
 }

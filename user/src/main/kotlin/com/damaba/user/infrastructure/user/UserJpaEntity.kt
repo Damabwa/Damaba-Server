@@ -98,5 +98,6 @@ class UserJpaEntity(
         this.age = user.age
         this.gender = user.gender
         this.instagramId = user.instagramId
+        this.profileImageUrl = user.profileImageUrl
     }
 }

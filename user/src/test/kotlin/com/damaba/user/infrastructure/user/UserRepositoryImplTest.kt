@@ -1,8 +1,6 @@
 package com.damaba.user.infrastructure.user
 
-import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.exception.UserNotFoundException
-import com.damaba.user.util.RandomTestUtils.Companion.randomInt
 import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
 import com.damaba.user.util.TestFixture.createUser
@@ -19,6 +17,7 @@ import kotlin.test.Test
 @DataJpaTest
 class UserRepositoryImplTest @Autowired constructor(
     private val userRepository: UserRepositoryImpl,
+    private val userProfileImageJpaRepository: UserProfileImageJpaRepository,
 ) {
 
     @Test
@@ -135,22 +134,66 @@ class UserRepositoryImplTest @Autowired constructor(
     }
 
     @Test
-    fun `유저 정보를 수정하면, 수정된 유저 정보가 반환된다`() {
+    fun `변경되지 않은 기존 유저 정보가 주어지고, 유저를 업데이트하면, 아무런 일도 일어나지 않는다`() {
         // given
         val originalUser = userRepository.save(createUser())
-        val newNickname = randomString()
-        val newGender = Gender.FEMALE
-        val newAge = randomInt()
-        val newInstagramId = randomString()
 
         // when
-        val updatedUser = userRepository.update(originalUser.update(newNickname, newGender, newAge, newInstagramId))
+        val result = userRepository.update(originalUser)
 
         // then
-        assertThat(updatedUser).isNotNull()
-        assertThat(updatedUser.nickname).isEqualTo(newNickname)
-        assertThat(updatedUser.gender).isEqualTo(newGender)
-        assertThat(updatedUser.age).isEqualTo(newAge)
-        assertThat(updatedUser.instagramId).isEqualTo(newInstagramId)
+        assertThat(result).isEqualTo(originalUser)
+    }
+
+    @Test
+    fun `갱신할 유저 정보가 주어지고, 유저를 업데이트하면, 수정된 유저 정보가 반환된다`() {
+        // given
+        val originalUser =
+            userRepository.save(createUser(profileImageUrl = "https://file.test/original-image.jpg"))
+
+        // when
+        val result =
+            userRepository.update(createUser(id = originalUser.id, profileImageUrl = "https://file.test/new-image.jpg"))
+
+        // then
+        val updatedUser = userRepository.getById(originalUser.id)
+        assertThat(result).isEqualTo(updatedUser)
+        assertThat(result.nickname).isEqualTo(updatedUser.nickname)
+        assertThat(result.age).isEqualTo(updatedUser.age)
+        assertThat(result.gender).isEqualTo(updatedUser.gender)
+        assertThat(result.instagramId).isEqualTo(updatedUser.instagramId)
+        assertThat(result.profileImageUrl).isEqualTo(updatedUser.profileImageUrl)
+    }
+
+    @Test
+    fun `갱신할 유저 정보와 새로운 프로필 이미지가 주어지고, 유저를 업데이트하면, 수정된 유저 정보가 반환되고 기존 프로필 이미지는 삭제된다`() {
+        // given
+        val originalUser = userRepository.save(
+            createUser(profileImageUrl = "https://file.test/original-image.jpg"),
+        )
+        userProfileImageJpaRepository.save(
+            UserProfileImageJpaEntity(
+                userId = originalUser.id,
+                url = originalUser.profileImageUrl,
+                name = "original-image",
+            ),
+        )
+
+        // when
+        val result =
+            userRepository.update(createUser(id = originalUser.id, profileImageUrl = "https://file.test/new-image.jpg"))
+
+        // then
+        val updatedUser = userRepository.getById(originalUser.id)
+        assertThat(result).isEqualTo(updatedUser)
+        assertThat(result.nickname).isEqualTo(updatedUser.nickname)
+        assertThat(result.age).isEqualTo(updatedUser.age)
+        assertThat(result.gender).isEqualTo(updatedUser.gender)
+        assertThat(result.instagramId).isEqualTo(updatedUser.instagramId)
+        assertThat(result.profileImageUrl).isEqualTo(updatedUser.profileImageUrl)
+
+        val foundOriginalProfileImage = userProfileImageJpaRepository.findByUrl(originalUser.profileImageUrl)
+        assertThat(foundOriginalProfileImage).isNotNull()
+        assertThat(foundOriginalProfileImage?.delete()).isNotNull()
     }
 }

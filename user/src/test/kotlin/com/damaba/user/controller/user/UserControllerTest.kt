@@ -12,7 +12,6 @@ import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
 import com.damaba.user.util.TestAuthUtils.createAuthenticationToken
 import com.damaba.user.util.TestFixture.createUser
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -23,6 +22,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
@@ -30,11 +30,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import kotlin.test.Test
 
+@ActiveProfiles("test")
 @Import(ControllerTestConfig::class)
-@WebMvcTest(UserController::class)
+@WebMvcTest(controllers = [UserController::class])
 class UserControllerTest @Autowired constructor(
     private val mvc: MockMvc,
-    private val mapper: ObjectMapper,
     private val getMyInfoUseCase: GetMyInfoUseCase,
     private val checkNicknameAvailabilityUseCase: CheckNicknameAvailabilityUseCase,
     private val updateMyInfoUseCase: UpdateMyInfoUseCase,
@@ -76,6 +76,7 @@ class UserControllerTest @Autowired constructor(
             gender = Gender.FEMALE,
             age = randomInt(),
             instagramId = randomString(),
+            profileImage = null,
         )
         val expectedResult = createUser(
             id = requestUser.id,
@@ -89,8 +90,11 @@ class UserControllerTest @Autowired constructor(
         // when & then
         mvc.perform(
             patch("/api/v1/users/me")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(request))
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .queryParam("nickname", request.nickname)
+                .queryParam("gender", request.gender.toString())
+                .queryParam("age", request.age.toString())
+                .queryParam("instagramId", request.instagramId)
                 .with(authentication(createAuthenticationToken(requestUser))),
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(requestUser.id))
