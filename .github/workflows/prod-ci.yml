@@ -1,0 +1,34 @@
+name: CI for production
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  ENV_FILE_NAME: env.properties
+  DAMABA_ENV: ${{secrets.PROD_ENV}}
+  DAMABA_ENV_DIR: user/src/main/resources
+
+jobs:
+  build:
+    name: CI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Set environments
+        run: echo $DAMABA_ENV > $DAMABA_ENV_DIR/$ENV_FILE_NAME
+
+      - name: Build with Gradle
+        run: ./gradlew build
