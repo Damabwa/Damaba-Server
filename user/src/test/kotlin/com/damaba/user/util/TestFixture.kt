@@ -1,6 +1,7 @@
 package com.damaba.user.util
 
 import com.damaba.user.domain.auth.AuthToken
+import com.damaba.user.domain.file.UploadFile
 import com.damaba.user.domain.user.User
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
@@ -39,5 +40,14 @@ object TestFixture {
     ): AuthToken = AuthToken(
         value = value,
         expiresAt = expiresAt,
+    )
+
+    fun createUploadFile(
+        name: String? = randomString(),
+    ): UploadFile = UploadFile(
+        name = name,
+        size = randomLong(positive = true),
+        contentType = "jpg",
+        inputStream = randomString().byteInputStream(),
     )
 }

@@ -1,4 +1,5 @@
 damaba:
+  file-server-url: https://damaba-file-server.test
   auth:
     jwt-secret: jwtSecretForOnlyTestEnvironment12345678901234567890
     access-token-duration-millis: 7200000  # 2 day
