@@ -61,6 +61,10 @@ dependencies {
     implementation("com.h2database:h2")
     implementation("com.mysql:mysql-connector-j")
 
+    // AWS S3
+    implementation(platform("software.amazon.awssdk:bom:2.27.21"))
+    implementation("software.amazon.awssdk:s3")
+
     /**
      * Common
      */

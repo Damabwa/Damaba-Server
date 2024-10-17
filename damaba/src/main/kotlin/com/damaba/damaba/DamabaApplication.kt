@@ -1,6 +1,7 @@
 package com.damaba.damaba
 
-import com.damaba.user.property.AuthProperties
+import com.damaba.user.property.AwsProperties
+import com.damaba.user.property.DamabaProperties
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -18,7 +19,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
     ],
 )
 @PropertySource("classpath:env.properties")
-@EnableConfigurationProperties(AuthProperties::class)
+@EnableConfigurationProperties(DamabaProperties::class, AwsProperties::class)
 @EntityScan(basePackages = ["com.damaba.user"])
 @EnableJpaRepositories(basePackages = ["com.damaba.user"])
 @EnableFeignClients(basePackages = ["com.damaba.user"])

@@ -24,10 +24,16 @@ spring:
       KakaoKApiClient:
         url: https://kapi.kakao.com
 
+aws:
+  s3:
+    bucket-name: aws-s3-bucket-name
+    access-key: aws-s3-access-key
+    secret-key: aws-s3-secret-key
+
 logging:
   level:
     com.damaba: debug
     org:
       hibernate:
-        type: trace
+        orm.jdbc.bind: trace
         SQL: debug
