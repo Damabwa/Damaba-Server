@@ -6,9 +6,10 @@ import com.damaba.user.domain.user.User
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.constant.UserRoleType
-import com.damaba.user.util.RandomTestUtils.Companion.randomInt
+import com.damaba.user.util.RandomTestUtils.Companion.randomLocalDate
 import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 object TestFixture {
@@ -20,7 +21,7 @@ object TestFixture {
         nickname: String = randomString(),
         profileImageUrl: String = randomString(),
         gender: Gender = Gender.MALE,
-        age: Int = randomInt(),
+        birthDate: LocalDate = randomLocalDate(),
         instagramId: String = randomString(),
     ): User = User(
         id = id,
@@ -30,7 +31,7 @@ object TestFixture {
         nickname = nickname,
         profileImageUrl = profileImageUrl,
         gender = gender,
-        age = age,
+        birthDate = birthDate,
         instagramId = instagramId,
     )
 

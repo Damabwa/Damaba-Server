@@ -5,6 +5,7 @@ import com.damaba.user.domain.file.UploadFile
 import com.damaba.user.domain.user.constant.Gender
 import io.swagger.v3.oas.annotations.media.Schema
 import org.springframework.web.multipart.MultipartFile
+import java.time.LocalDate
 
 // TODO: 유저 정보 관련 정책 기획이 완료된 후, 적절한 validation 추가
 data class UpdateMyInfoRequest(
@@ -14,8 +15,8 @@ data class UpdateMyInfoRequest(
     @Schema(description = "성별")
     val gender: Gender?,
 
-    @Schema(description = "나이", example = "25")
-    val age: Int?,
+    @Schema(description = "생년월일")
+    val birthDate: LocalDate?,
 
     @Schema(description = "인스타 아이디", example = "damaba.unofficial")
     val instagramId: String?,
@@ -37,7 +38,7 @@ data class UpdateMyInfoRequest(
             userId = requestUserId,
             nickname = this.nickname,
             gender = this.gender,
-            age = this.age,
+            birthDate = this.birthDate,
             instagramId = this.instagramId,
             profileImage = profileImage,
         )

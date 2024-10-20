@@ -6,7 +6,7 @@ import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.exception.NicknameAlreadyExistsException
 import com.damaba.user.util.RandomTestUtils.Companion.randomBoolean
-import com.damaba.user.util.RandomTestUtils.Companion.randomInt
+import com.damaba.user.util.RandomTestUtils.Companion.randomLocalDate
 import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
 import com.damaba.user.util.TestFixture.createUploadFile
@@ -113,11 +113,11 @@ class UserServiceTest {
         val user = createUser(id = userId)
         val newNickname = randomString()
         val newGender = Gender.FEMALE
-        val newAge = randomInt()
+        val newBirthDate = randomLocalDate()
         val newInstagramId = randomString()
         val newProfileImage = createUploadFile()
         val uploadedFile = UploadedFile(randomString(), randomString())
-        val expectedResult = user.update(newNickname, newGender, newAge, newInstagramId, uploadedFile.url)
+        val expectedResult = user.update(newNickname, newGender, newBirthDate, newInstagramId, uploadedFile.url)
 
         every { userRepository.existsByNickname(newNickname) } returns false
         every { userRepository.getById(userId) } returns user
@@ -125,7 +125,7 @@ class UserServiceTest {
         every { userRepository.update(expectedResult) } returns expectedResult
 
         // when
-        val actualResult = sut.updateUserInfo(userId, newNickname, newGender, newAge, newInstagramId, newProfileImage)
+        val actualResult = sut.updateUserInfo(userId, newNickname, newGender, newBirthDate, newInstagramId, newProfileImage)
 
         // then
         verifyOrder {
@@ -138,7 +138,7 @@ class UserServiceTest {
         assertThat(actualResult.id).isEqualTo(expectedResult.id)
         assertThat(actualResult.nickname).isEqualTo(expectedResult.nickname)
         assertThat(actualResult.gender).isEqualTo(expectedResult.gender)
-        assertThat(actualResult.age).isEqualTo(expectedResult.age)
+        assertThat(actualResult.birthDate).isEqualTo(expectedResult.birthDate)
         assertThat(actualResult.instagramId).isEqualTo(expectedResult.instagramId)
         assertThat(actualResult.profileImageUrl).isEqualTo(expectedResult.profileImageUrl)
     }
@@ -164,13 +164,13 @@ class UserServiceTest {
         // given
         val userId = randomLong()
         val user = createUser(id = userId)
-        val newAge = randomInt()
-        val expectedResult = user.update(null, null, newAge, null, null)
+        val newBirthDate = randomLocalDate()
+        val expectedResult = user.update(null, null, newBirthDate, null, null)
 
         every { userRepository.getById(userId) } returns user
         every { userRepository.update(expectedResult) } returns expectedResult
         // when
-        val actualResult = sut.updateUserInfo(userId, null, null, newAge, null, null)
+        val actualResult = sut.updateUserInfo(userId, null, null, newBirthDate, null, null)
 
         // then
         verifyOrder {
@@ -179,7 +179,7 @@ class UserServiceTest {
         }
         confirmVerifiedEveryMocks()
         assertThat(actualResult.id).isEqualTo(expectedResult.id)
-        assertThat(actualResult.age).isEqualTo(expectedResult.age)
+        assertThat(actualResult.birthDate).isEqualTo(expectedResult.birthDate)
     }
 
     private fun confirmVerifiedEveryMocks() {

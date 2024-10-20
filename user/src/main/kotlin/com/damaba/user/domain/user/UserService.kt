@@ -8,6 +8,7 @@ import com.damaba.user.domain.user.exception.NicknameAlreadyExistsException
 import com.damaba.user.domain.user.exception.UserNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 
 @Service
 class UserService(
@@ -82,7 +83,7 @@ class UserService(
         userId: Long,
         nickname: String?,
         gender: Gender?,
-        age: Int?,
+        birthDate: LocalDate?,
         instagramId: String?,
         profileImage: UploadFile?,
     ): User {
@@ -96,7 +97,7 @@ class UserService(
         }
 
         return userRepository.update(
-            user.update(nickname, gender, age, instagramId, uploadedProfileImage?.url),
+            user.update(nickname, gender, birthDate, instagramId, uploadedProfileImage?.url),
         )
     }
 }

@@ -8,6 +8,7 @@ import com.damaba.user.domain.user.exception.NicknameAlreadyExistsException
 import com.damaba.user.domain.user.exception.UserNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 
 @Service
 class UpdateMyInfoUseCase(private val userService: UserService) {
@@ -25,7 +26,7 @@ class UpdateMyInfoUseCase(private val userService: UserService) {
             userId = command.userId,
             nickname = command.nickname,
             gender = command.gender,
-            age = command.age,
+            birthDate = command.birthDate,
             instagramId = command.instagramId,
             profileImage = command.profileImage,
         )
@@ -34,7 +35,7 @@ class UpdateMyInfoUseCase(private val userService: UserService) {
         val userId: Long,
         val nickname: String?,
         val gender: Gender?,
-        val age: Int?,
+        val birthDate: LocalDate?,
         val instagramId: String?,
         val profileImage: UploadFile?,
     )

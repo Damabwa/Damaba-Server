@@ -15,6 +15,7 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import java.time.LocalDate
 
 @Table(name = "`user`")
 @Entity
@@ -25,7 +26,7 @@ class UserJpaEntity(
     nickname: String,
     profileImageUrl: String,
     gender: Gender,
-    age: Int,
+    birthDate: LocalDate,
     instagramId: String?,
 ) : BaseJpaTimeEntity() {
     companion object {
@@ -36,7 +37,7 @@ class UserJpaEntity(
             nickname = user.nickname,
             profileImageUrl = user.profileImageUrl,
             gender = user.gender,
-            age = user.age,
+            birthDate = user.birthDate,
             instagramId = user.instagramId,
         )
     }
@@ -73,8 +74,8 @@ class UserJpaEntity(
     var gender: Gender = gender
         private set
 
-    @Column(name = "age", nullable = false)
-    var age: Int = age
+    @Column(name = "birth_date", nullable = false)
+    var birthDate: LocalDate = birthDate
         private set
 
     @Column(name = "instagram_id", nullable = true)
@@ -89,13 +90,13 @@ class UserJpaEntity(
         nickname = this.nickname,
         profileImageUrl = this.profileImageUrl,
         gender = this.gender,
-        age = this.age,
+        birthDate = this.birthDate,
         instagramId = this.instagramId,
     )
 
     fun update(user: User) {
         this.nickname = user.nickname
-        this.age = user.age
+        this.birthDate = user.birthDate
         this.gender = user.gender
         this.instagramId = user.instagramId
         this.profileImageUrl = user.profileImageUrl

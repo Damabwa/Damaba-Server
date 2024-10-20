@@ -3,10 +3,11 @@ package com.damaba.user.domain.user
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.constant.UserRoleType
-import com.damaba.user.util.RandomTestUtils.Companion.randomInt
+import com.damaba.user.util.RandomTestUtils.Companion.randomLocalDate
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
 import com.damaba.user.util.TestFixture.createUser
 import org.assertj.core.api.Assertions.assertThat
+import java.time.LocalDate
 import kotlin.test.Test
 
 class UserTest {
@@ -27,7 +28,7 @@ class UserTest {
         assertThat(userCreated.nickname).isNotBlank()
         assertThat(userCreated.profileImageUrl).isEqualTo(User.DEFAULT_PROFILE_IMAGE_URL)
         assertThat(userCreated.gender).isEqualTo(Gender.PRIVATE)
-        assertThat(userCreated.age).isEqualTo(-1)
+        assertThat(userCreated.birthDate).isEqualTo(LocalDate.MIN)
         assertThat(userCreated.instagramId).isNull()
 
         // 유저가 생성된 직후에는 isRegistrationCompleted가 false
@@ -40,7 +41,7 @@ class UserTest {
         val originalUser = createUser()
         val newNickname = randomString()
         val newGender = Gender.FEMALE
-        val newAge = randomInt()
+        val newBirthDate = randomLocalDate()
         val newInstagramId = randomString()
         val newProfileImageUrl = randomString()
 
@@ -48,7 +49,7 @@ class UserTest {
         val updatedUser = originalUser.update(
             nickname = newNickname,
             gender = newGender,
-            age = newAge,
+            birthDate = newBirthDate,
             instagramId = newInstagramId,
             profileImageUrl = newProfileImageUrl,
         )
@@ -56,7 +57,7 @@ class UserTest {
         // then
         assertThat(updatedUser.nickname).isEqualTo(newNickname)
         assertThat(updatedUser.gender).isEqualTo(newGender)
-        assertThat(updatedUser.age).isEqualTo(newAge)
+        assertThat(updatedUser.birthDate).isEqualTo(newBirthDate)
         assertThat(updatedUser.instagramId).isEqualTo(newInstagramId)
         assertThat(updatedUser.profileImageUrl).isEqualTo(newProfileImageUrl)
 
@@ -75,7 +76,7 @@ class UserTest {
         val updatedUser = originalUser.update(
             nickname = null,
             gender = null,
-            age = null,
+            birthDate = null,
             instagramId = null,
             profileImageUrl = null,
         )

@@ -2,7 +2,7 @@ package com.damaba.user.application.user
 
 import com.damaba.user.domain.user.UserService
 import com.damaba.user.domain.user.constant.Gender
-import com.damaba.user.util.RandomTestUtils.Companion.randomInt
+import com.damaba.user.util.RandomTestUtils.Companion.randomLocalDate
 import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
 import com.damaba.user.util.TestFixture.createUploadFile
@@ -23,7 +23,7 @@ class UpdateMyInfoUseCaseTest {
         val userId = randomLong()
         val newNickname = randomString()
         val newGender = Gender.FEMALE
-        val newAge = randomInt()
+        val newBirthDate = randomLocalDate()
         val newInstagramId = randomString()
         val newProfileImage = createUploadFile()
         val expectedResult = createUser(id = userId)
@@ -32,7 +32,7 @@ class UpdateMyInfoUseCaseTest {
                 userId,
                 newNickname,
                 newGender,
-                newAge,
+                newBirthDate,
                 newInstagramId,
                 newProfileImage,
             )
@@ -40,10 +40,28 @@ class UpdateMyInfoUseCaseTest {
 
         // when
         val actualResult =
-            sut.invoke(UpdateMyInfoUseCase.Command(userId, newNickname, newGender, newAge, newInstagramId, newProfileImage))
+            sut.invoke(
+                UpdateMyInfoUseCase.Command(
+                    userId,
+                    newNickname,
+                    newGender,
+                    newBirthDate,
+                    newInstagramId,
+                    newProfileImage,
+                ),
+            )
 
         // then
-        verify { userService.updateUserInfo(userId, newNickname, newGender, newAge, newInstagramId, newProfileImage) }
+        verify {
+            userService.updateUserInfo(
+                userId,
+                newNickname,
+                newGender,
+                newBirthDate,
+                newInstagramId,
+                newProfileImage,
+            )
+        }
         assertThat(actualResult).isEqualTo(expectedResult)
     }
 }
