@@ -1,6 +1,6 @@
 package com.damaba.user.infrastructure.user
 
-import com.damaba.user.infrastructure.common.BaseJpaTimeEntity
+import com.damaba.user.infrastructure.common.BaseJpaEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -15,7 +15,7 @@ class UserProfileImageJpaEntity(
     userId: Long,
     url: String,
     name: String,
-) : BaseJpaTimeEntity() {
+) : BaseJpaEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
