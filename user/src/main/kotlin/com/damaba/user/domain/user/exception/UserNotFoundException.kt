@@ -1,10 +1,10 @@
 package com.damaba.user.domain.user.exception
 
 import com.damaba.common_exception.CustomException
-import com.damaba.common_exception.CustomExceptionType
 
 class UserNotFoundException :
     CustomException(
         httpStatusCode = 404,
-        exceptionType = CustomExceptionType.USER_NOT_FOUND,
+        code = "USER_NOT_FOUND",
+        message = "일치하는 유저 정보를 찾을 수 없습니다.",
     )

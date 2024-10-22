@@ -57,8 +57,8 @@ class UserController(
     )
     @ApiResponses(
         ApiResponse(responseCode = "200"),
-        ApiResponse(responseCode = "404", description = "[USR_0100] 유저 정보를 찾을 수 없는 경우", content = [Content()]),
-        ApiResponse(responseCode = "409", description = "[USR_0101] 수정하고자 하는 닉네임이 이미 사용중인 경우", content = [Content()]),
+        ApiResponse(responseCode = "404", description = "유저 정보를 찾을 수 없는 경우", content = [Content()]),
+        ApiResponse(responseCode = "409", description = "수정하고자 하는 닉네임이 이미 사용중인 경우", content = [Content()]),
     )
     @PatchMapping("/api/v1/users/me", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateMyInfoV1(

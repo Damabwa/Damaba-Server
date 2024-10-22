@@ -18,7 +18,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
 
     companion object {
-        private const val GENERAL_ERROR_CODE = "COM_0000"
         private const val GENERAL_ERROR_MESSAGE = "알 수 없는 서버 에러가 발생했습니다."
         private const val VALIDATION_ERROR_MESSAGE = "요청 데이터가 잘못되었습니다. 요청 데이터의 값 또는 형식이 잘못되었거나, 필수값이 누락되지는 않았는지 확인해주세요."
     }
@@ -43,7 +42,7 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         }
         return ResponseEntity
             .status(HttpStatus.UNPROCESSABLE_ENTITY)
-            .body(ValidationErrorResponse(GENERAL_ERROR_CODE, VALIDATION_ERROR_MESSAGE, errorDetails))
+            .body(ValidationErrorResponse("VALIDATION", VALIDATION_ERROR_MESSAGE, errorDetails))
     }
 
     @ExceptionHandler(ConstraintViolationException::class)
@@ -54,7 +53,7 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         }
         return ResponseEntity
             .status(HttpStatus.UNPROCESSABLE_ENTITY)
-            .body(ValidationErrorResponse(GENERAL_ERROR_CODE, VALIDATION_ERROR_MESSAGE, errorDetails))
+            .body(ValidationErrorResponse("VALIDATION", VALIDATION_ERROR_MESSAGE, errorDetails))
     }
 
     override fun handleExceptionInternal(
@@ -67,7 +66,7 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         Logger.error("Spring MVC Basic exception raised", ex)
         return ResponseEntity
             .status(statusCode)
-            .body(ErrorResponse(GENERAL_ERROR_CODE, "${ex.message}"))
+            .body(ErrorResponse("UNHANDLED", "${ex.message}"))
     }
 
     @ExceptionHandler(Exception::class)
@@ -75,7 +74,7 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         Logger.error("UnHandled exception raised", ex)
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(ErrorResponse(GENERAL_ERROR_CODE, GENERAL_ERROR_MESSAGE + ex.message))
+            .body(ErrorResponse("UNHANDLED", GENERAL_ERROR_MESSAGE + ex.message))
     }
 
     private fun getFieldNameFromConstraintViolation(violation: ConstraintViolation<*>): String {
