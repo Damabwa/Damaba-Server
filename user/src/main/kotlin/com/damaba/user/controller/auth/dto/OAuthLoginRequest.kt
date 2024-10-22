@@ -2,7 +2,6 @@ package com.damaba.user.controller.auth.dto
 
 import com.damaba.user.domain.user.constant.LoginType
 import io.swagger.v3.oas.annotations.media.Schema
-import jakarta.validation.constraints.NotBlank
 
 data class OAuthLoginRequest(
     @Schema(description = "로그인 종류")
@@ -15,6 +14,5 @@ data class OAuthLoginRequest(
             "<li>Kakao: kakao에서 발급받은 access token</li>" +
             "</ul>",
     )
-    @field:NotBlank
     val authKey: String,
 )

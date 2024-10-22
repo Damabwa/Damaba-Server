@@ -1,5 +1,6 @@
 package com.damaba.user.application.auth
 
+import com.damaba.common_exception.ValidationException
 import com.damaba.user.domain.auth.AuthTokenService
 import com.damaba.user.domain.auth.OAuthService
 import com.damaba.user.domain.user.UserService
@@ -7,10 +8,12 @@ import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
 import com.damaba.user.util.TestFixture.createAuthToken
 import com.damaba.user.util.TestFixture.createUser
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifyOrder
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.catchThrowable
 import kotlin.test.Test
 
 class OAuthLoginUseCaseTest {
@@ -47,6 +50,7 @@ class OAuthLoginUseCaseTest {
             authTokenService.createAccessToken(newUser)
             authTokenService.createRefreshToken(newUser)
         }
+        confirmVerifiedEveryMocks()
         assertThat(result.user).isEqualTo(newUser)
         assertThat(result.accessToken).isEqualTo(accessToken)
         assertThat(result.refreshToken).isEqualTo(refreshToken)
@@ -78,8 +82,28 @@ class OAuthLoginUseCaseTest {
             authTokenService.createAccessToken(user)
             authTokenService.createRefreshToken(user)
         }
+        confirmVerifiedEveryMocks()
         assertThat(result.user).isEqualTo(user)
         assertThat(result.accessToken).isEqualTo(accessToken)
         assertThat(result.refreshToken).isEqualTo(refreshToken)
+    }
+
+    @Test
+    fun `auth key가 공백으로 주어지고, OAuth 로그인을 진행하면, validation 예외가 발생한다`() {
+        // given
+        val authKey = ""
+
+        // when
+        val ex = catchThrowable {
+            sut.invoke(OAuthLoginUseCase.Command(loginType = LoginType.KAKAO, authKey = authKey))
+        }
+
+        // then
+        confirmVerifiedEveryMocks()
+        assertThat(ex).isInstanceOf(ValidationException::class.java)
+    }
+
+    private fun confirmVerifiedEveryMocks() {
+        confirmVerified(oAuthService, authTokenService, userService)
     }
 }
