@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class CheckNicknameAvailabilityUseCase(private val userService: UserService) {
+class CheckNicknameExistenceUseCase(private val userService: UserService) {
     @Transactional(readOnly = true)
     operator fun invoke(command: Command): Boolean =
         !userService.doesNicknameExist(command.nickname)
