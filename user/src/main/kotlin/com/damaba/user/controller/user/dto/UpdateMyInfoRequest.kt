@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.media.Schema
 import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDate
 
-// TODO: 유저 정보 관련 정책 기획이 완료된 후, 적절한 validation 추가
 data class UpdateMyInfoRequest(
     @Schema(description = "닉네임", example = "치와와")
     val nickname: String?,

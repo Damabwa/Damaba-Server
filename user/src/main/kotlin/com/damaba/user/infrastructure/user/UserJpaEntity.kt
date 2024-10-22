@@ -61,7 +61,7 @@ class UserJpaEntity(
     var oAuthLoginUid: String = oAuthLoginUid
         private set
 
-    @Column(name = "nickname", nullable = false, unique = true)
+    @Column(name = "nickname", length = 7, nullable = false, unique = true)
     var nickname: String = nickname
         private set
 
@@ -78,7 +78,7 @@ class UserJpaEntity(
     var birthDate: LocalDate = birthDate
         private set
 
-    @Column(name = "instagram_id", nullable = true)
+    @Column(name = "instagram_id", length = 30, nullable = true)
     var instagramId: String? = instagramId
         private set
 

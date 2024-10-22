@@ -18,11 +18,11 @@ object TestFixture {
         roles: Set<UserRoleType> = setOf(UserRoleType.USER),
         oAuthLoginUid: String = randomString(),
         loginType: LoginType = LoginType.KAKAO,
-        nickname: String = randomString(),
+        nickname: String = randomString(len = 7),
         profileImageUrl: String = randomString(),
         gender: Gender = Gender.MALE,
         birthDate: LocalDate = randomLocalDate(),
-        instagramId: String = randomString(),
+        instagramId: String = randomString(len = 30),
     ): User = User(
         id = id,
         roles = roles,

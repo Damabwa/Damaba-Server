@@ -72,7 +72,7 @@ class UserControllerTest @Autowired constructor(
         // given
         val requestUser = createUser()
         val request = UpdateMyInfoRequest(
-            nickname = randomString(),
+            nickname = randomString(len = 7),
             gender = Gender.FEMALE,
             birthDate = randomLocalDate(),
             instagramId = randomString(),
@@ -108,9 +108,9 @@ class UserControllerTest @Autowired constructor(
     @Test
     fun `닉네임이 주어지고, 주어진 닉네임의 이용가능성을 확인한다`() {
         // given
-        val nickname = randomString()
+        val nickname = randomString(len = 7)
         val expectedResult = randomBoolean()
-        every { checkNicknameAvailabilityUseCase.invoke(nickname) } returns expectedResult
+        every { checkNicknameAvailabilityUseCase.invoke(CheckNicknameAvailabilityUseCase.Command(nickname)) } returns expectedResult
 
         // when & then
         mvc.perform(
@@ -119,6 +119,6 @@ class UserControllerTest @Autowired constructor(
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.nickname").value(nickname))
             .andExpect(jsonPath("$.availability").value(expectedResult))
-        verify { checkNicknameAvailabilityUseCase.invoke(nickname) }
+        verify { checkNicknameAvailabilityUseCase.invoke(CheckNicknameAvailabilityUseCase.Command(nickname)) }
     }
 }

@@ -16,16 +16,17 @@ class UserTest {
         // given
         val loginType = LoginType.KAKAO
         val oAuthLoginUid = randomString()
+        val nickname = randomString(len = 7)
 
         // when
-        val userCreated = User.create(loginType, oAuthLoginUid)
+        val userCreated = User.create(loginType, oAuthLoginUid, nickname)
 
         // then
         assertThat(userCreated.id).isEqualTo(0L)
         assertThat(userCreated.roles).containsOnly(UserRoleType.USER)
         assertThat(userCreated.loginType).isEqualTo(loginType)
         assertThat(userCreated.oAuthLoginUid).isEqualTo(oAuthLoginUid)
-        assertThat(userCreated.nickname).isNotBlank()
+        assertThat(userCreated.nickname).isEqualTo(nickname)
         assertThat(userCreated.profileImageUrl).isEqualTo(User.DEFAULT_PROFILE_IMAGE_URL)
         assertThat(userCreated.gender).isEqualTo(Gender.PRIVATE)
         assertThat(userCreated.birthDate).isEqualTo(LocalDate.MIN)

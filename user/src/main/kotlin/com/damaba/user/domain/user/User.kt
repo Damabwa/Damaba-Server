@@ -4,7 +4,6 @@ import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.constant.UserRoleType
 import java.time.LocalDate
-import java.util.UUID
 
 data class User(
     val id: Long,
@@ -20,12 +19,12 @@ data class User(
     companion object {
         const val DEFAULT_PROFILE_IMAGE_URL = "https://dummyimage.com/244x100.png/cc0000/ffffff"
 
-        fun create(loginType: LoginType, oAuthLoginUid: String): User = User(
+        fun create(loginType: LoginType, oAuthLoginUid: String, nickname: String): User = User(
             id = 0,
             roles = setOf(UserRoleType.USER),
             loginType = loginType,
             oAuthLoginUid = oAuthLoginUid,
-            nickname = UUID.randomUUID().toString(),
+            nickname = nickname,
             profileImageUrl = DEFAULT_PROFILE_IMAGE_URL,
             gender = Gender.PRIVATE,
             birthDate = LocalDate.MIN,

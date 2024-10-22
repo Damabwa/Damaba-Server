@@ -8,6 +8,7 @@ import com.damaba.user.controller.user.dto.UpdateMyInfoRequest
 import com.damaba.user.controller.user.dto.UserResponse
 import com.damaba.user.domain.user.User
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
@@ -45,8 +46,13 @@ class UserController(
         description = "이용 가능한 닉네임인지 확인합니다.",
     )
     @GetMapping("/api/v1/users/nicknames/availability")
-    fun checkNicknameAvailabilityV1(@RequestParam nickname: String): CheckNicknameAvailabilityResponse {
-        val availability = checkNicknameAvailability(nickname)
+    fun checkNicknameAvailabilityV1(
+        @Parameter(
+            description = "확인할 닉네임",
+            example = "치와와",
+        ) @RequestParam nickname: String,
+    ): CheckNicknameAvailabilityResponse {
+        val availability = checkNicknameAvailability(CheckNicknameAvailabilityUseCase.Command(nickname))
         return CheckNicknameAvailabilityResponse(nickname, availability)
     }
 

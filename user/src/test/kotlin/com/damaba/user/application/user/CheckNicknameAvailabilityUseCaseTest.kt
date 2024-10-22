@@ -17,11 +17,11 @@ class CheckNicknameAvailabilityUseCaseTest {
     @ParameterizedTest
     fun `닉네임이 주어지고, 주어진 닉네임의 이용가능성을 확인한다`(doesNicknameExist: Boolean) {
         // given
-        val nickname = randomString()
+        val nickname = randomString(len = 5)
         every { userService.doesNicknameExist(nickname) } returns doesNicknameExist
 
         // when
-        val result = sut.invoke(nickname)
+        val result = sut.invoke(CheckNicknameAvailabilityUseCase.Command(nickname))
 
         // then
         verify { userService.doesNicknameExist(nickname) }

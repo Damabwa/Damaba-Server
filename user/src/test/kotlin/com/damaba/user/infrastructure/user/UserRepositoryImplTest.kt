@@ -86,7 +86,7 @@ class UserRepositoryImplTest @Autowired constructor(
     @Test
     fun `닉네임이 주어지고, 주어진 닉네임이 존재하는지 확인한다, 만약 사용중인 닉네임이라면 true가 반환된다`() {
         // given
-        val nickname = randomString()
+        val nickname = randomString(len = 7)
         userRepository.save(createUser(nickname = nickname))
 
         // when
@@ -99,9 +99,10 @@ class UserRepositoryImplTest @Autowired constructor(
     @Test
     fun `닉네임이 주어지고, 주어진 닉네임이 존재하는지 확인한다, 만약 사용중인 닉네임이 아니라면 false가 반환된다`() {
         // given
+        val nickname = randomString(len = 7)
 
         // when
-        val exists = userRepository.existsByNickname(randomString())
+        val exists = userRepository.existsByNickname(nickname)
 
         // then
         assertThat(exists).isFalse()

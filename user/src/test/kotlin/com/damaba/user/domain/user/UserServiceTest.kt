@@ -96,12 +96,14 @@ class UserServiceTest {
         val loginType = LoginType.KAKAO
         val expectedResult = createUser(oAuthLoginUid = oAuthLoginUid, loginType = loginType)
         every { userRepository.save(any(User::class)) } returns expectedResult
+        every { userRepository.existsByNickname(any(String::class)) } returns true andThen false
 
         // when
         val actualResult = sut.createNewUser(oAuthLoginUid, loginType)
 
         // then
         verify { userRepository.save(any(User::class)) }
+        verify(exactly = 2) { userRepository.existsByNickname(any(String::class)) }
         confirmVerifiedEveryMocks()
         assertThat(actualResult).isEqualTo(expectedResult)
     }
@@ -125,7 +127,8 @@ class UserServiceTest {
         every { userRepository.update(expectedResult) } returns expectedResult
 
         // when
-        val actualResult = sut.updateUserInfo(userId, newNickname, newGender, newBirthDate, newInstagramId, newProfileImage)
+        val actualResult =
+            sut.updateUserInfo(userId, newNickname, newGender, newBirthDate, newInstagramId, newProfileImage)
 
         // then
         verifyOrder {
@@ -160,7 +163,7 @@ class UserServiceTest {
     }
 
     @Test
-    fun `수정할 유저의 나이가 주어지고, 유저 정보를 수정하면, 수정된 유저 정보가 반환된다`() {
+    fun `수정할 유저의 생년월일이 주어지고, 유저 정보를 수정하면, 수정된 유저 정보가 반환된다`() {
         // given
         val userId = randomLong()
         val user = createUser(id = userId)
