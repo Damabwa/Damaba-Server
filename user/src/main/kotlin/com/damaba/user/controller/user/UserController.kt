@@ -1,9 +1,9 @@
 package com.damaba.user.controller.user
 
-import com.damaba.user.application.user.CheckNicknameAvailabilityUseCase
+import com.damaba.user.application.user.CheckNicknameExistenceUseCase
 import com.damaba.user.application.user.GetMyInfoUseCase
 import com.damaba.user.application.user.UpdateMyInfoUseCase
-import com.damaba.user.controller.user.dto.CheckNicknameAvailabilityResponse
+import com.damaba.user.controller.user.dto.CheckNicknameExistenceResponse
 import com.damaba.user.controller.user.dto.UpdateMyInfoRequest
 import com.damaba.user.controller.user.dto.UserResponse
 import com.damaba.user.domain.user.User
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class UserController(
     private val getMyInfo: GetMyInfoUseCase,
-    private val checkNicknameAvailability: CheckNicknameAvailabilityUseCase,
+    private val checkNicknameExistence: CheckNicknameExistenceUseCase,
     private val updateMyInfo: UpdateMyInfoUseCase,
 ) {
     @Operation(
@@ -42,18 +42,18 @@ class UserController(
     }
 
     @Operation(
-        summary = "닉네임 이용가능성 확인",
-        description = "이용 가능한 닉네임인지 확인합니다.",
+        summary = "닉네임 사용여부 확인",
+        description = "사용중인 닉네임인지 확인합니다.",
     )
-    @GetMapping("/api/v1/users/nicknames/availability")
-    fun checkNicknameAvailabilityV1(
+    @GetMapping("/api/v1/users/nicknames/existence")
+    fun checkNicknameExistenceV1(
         @Parameter(
-            description = "확인할 닉네임",
+            description = "사용중인지 확인할 닉네임",
             example = "치와와",
         ) @RequestParam nickname: String,
-    ): CheckNicknameAvailabilityResponse {
-        val availability = checkNicknameAvailability(CheckNicknameAvailabilityUseCase.Command(nickname))
-        return CheckNicknameAvailabilityResponse(nickname, availability)
+    ): CheckNicknameExistenceResponse {
+        val doesNicknameExists = checkNicknameExistence(CheckNicknameExistenceUseCase.Command(nickname))
+        return CheckNicknameExistenceResponse(nickname, doesNicknameExists)
     }
 
     @Operation(

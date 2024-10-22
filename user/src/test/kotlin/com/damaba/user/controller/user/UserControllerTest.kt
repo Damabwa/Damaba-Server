@@ -1,6 +1,6 @@
 package com.damaba.user.controller.user
 
-import com.damaba.user.application.user.CheckNicknameAvailabilityUseCase
+import com.damaba.user.application.user.CheckNicknameExistenceUseCase
 import com.damaba.user.application.user.GetMyInfoUseCase
 import com.damaba.user.application.user.UpdateMyInfoUseCase
 import com.damaba.user.config.ControllerTestConfig
@@ -36,7 +36,7 @@ import kotlin.test.Test
 class UserControllerTest @Autowired constructor(
     private val mvc: MockMvc,
     private val getMyInfoUseCase: GetMyInfoUseCase,
-    private val checkNicknameAvailabilityUseCase: CheckNicknameAvailabilityUseCase,
+    private val checkNicknameExistenceUseCase: CheckNicknameExistenceUseCase,
     private val updateMyInfoUseCase: UpdateMyInfoUseCase,
 ) {
     @TestConfiguration
@@ -45,7 +45,7 @@ class UserControllerTest @Autowired constructor(
         fun getMyInfoUseCase(): GetMyInfoUseCase = mockk()
 
         @Bean
-        fun checkNicknameAvailabilityUseCase(): CheckNicknameAvailabilityUseCase = mockk()
+        fun checkNicknameExistenceUseCase(): CheckNicknameExistenceUseCase = mockk()
 
         @Bean
         fun updateMyInfoUseCase(): UpdateMyInfoUseCase = mockk()
@@ -110,15 +110,15 @@ class UserControllerTest @Autowired constructor(
         // given
         val nickname = randomString(len = 7)
         val expectedResult = randomBoolean()
-        every { checkNicknameAvailabilityUseCase.invoke(CheckNicknameAvailabilityUseCase.Command(nickname)) } returns expectedResult
+        every { checkNicknameExistenceUseCase.invoke(CheckNicknameExistenceUseCase.Command(nickname)) } returns expectedResult
 
         // when & then
         mvc.perform(
-            get("/api/v1/users/nicknames/availability")
+            get("/api/v1/users/nicknames/existence")
                 .queryParam("nickname", nickname),
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.nickname").value(nickname))
-            .andExpect(jsonPath("$.availability").value(expectedResult))
-        verify { checkNicknameAvailabilityUseCase.invoke(CheckNicknameAvailabilityUseCase.Command(nickname)) }
+            .andExpect(jsonPath("$.exists").value(expectedResult))
+        verify { checkNicknameExistenceUseCase.invoke(CheckNicknameExistenceUseCase.Command(nickname)) }
     }
 }

@@ -9,9 +9,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
-class CheckNicknameAvailabilityUseCaseTest {
+class CheckNicknameExistenceUseCaseTest {
     private val userService: UserService = mockk()
-    private val sut: CheckNicknameAvailabilityUseCase = CheckNicknameAvailabilityUseCase(userService)
+    private val sut: CheckNicknameExistenceUseCase = CheckNicknameExistenceUseCase(userService)
 
     @ValueSource(booleans = [true, false])
     @ParameterizedTest
@@ -21,7 +21,7 @@ class CheckNicknameAvailabilityUseCaseTest {
         every { userService.doesNicknameExist(nickname) } returns doesNicknameExist
 
         // when
-        val result = sut.invoke(CheckNicknameAvailabilityUseCase.Command(nickname))
+        val result = sut.invoke(CheckNicknameExistenceUseCase.Command(nickname))
 
         // then
         verify { userService.doesNicknameExist(nickname) }
