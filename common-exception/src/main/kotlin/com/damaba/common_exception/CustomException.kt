@@ -2,17 +2,7 @@ package com.damaba.common_exception
 
 abstract class CustomException(
     val httpStatusCode: Int,
-    val exceptionType: CustomExceptionType,
-    val optionalMessage: String? = null,
+    val code: String,
+    override val message: String,
     override val cause: Throwable? = null,
-) : RuntimeException() {
-    val code: String
-        get() = exceptionType.code
-
-    override val message: String
-        get() = if (optionalMessage.isNullOrBlank()) {
-            exceptionType.message
-        } else {
-            "${exceptionType.message} $optionalMessage"
-        }
-}
+) : RuntimeException()

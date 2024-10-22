@@ -8,6 +8,8 @@ import com.damaba.user.domain.user.exception.NicknameAlreadyExistsException
 import com.damaba.user.domain.user.exception.UserNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
+import java.util.UUID
 
 @Service
 class UserService(
@@ -61,8 +63,10 @@ class UserService(
      * @return 생성된 유저
      */
     @Transactional
-    fun createNewUser(oAuthLoginUid: String, loginType: LoginType): User =
-        userRepository.save(User.create(loginType, oAuthLoginUid))
+    fun createNewUser(oAuthLoginUid: String, loginType: LoginType): User {
+        val nickname = generateUniqueNickname()
+        return userRepository.save(User.create(loginType, oAuthLoginUid, nickname))
+    }
 
     /**
      * 유저 정보를 수정한다.
@@ -70,7 +74,7 @@ class UserService(
      * @param userId 정보를 수정할 유저의 id
      * @param nickname 수정할 nickname
      * @param gender 수정할 gender
-     * @param age 수정할 age
+     * @param birthDate 수정할 생년월일
      * @param instagramId 수정할 instagramId
      * @param profileImage 프로필 이미지
      * @return 수정된 유저 정보
@@ -82,7 +86,7 @@ class UserService(
         userId: Long,
         nickname: String?,
         gender: Gender?,
-        age: Int?,
+        birthDate: LocalDate?,
         instagramId: String?,
         profileImage: UploadFile?,
     ): User {
@@ -96,7 +100,15 @@ class UserService(
         }
 
         return userRepository.update(
-            user.update(nickname, gender, age, instagramId, uploadedProfileImage?.url),
+            user.update(nickname, gender, birthDate, instagramId, uploadedProfileImage?.url),
         )
+    }
+
+    private fun generateUniqueNickname(): String {
+        var nickname: String
+        do {
+            nickname = UUID.randomUUID().toString().substring(0, 7)
+        } while (userRepository.existsByNickname(nickname))
+        return nickname
     }
 }

@@ -1,6 +1,5 @@
 package com.damaba.damaba.config
 
-import com.damaba.common_exception.CustomExceptionType
 import com.damaba.common_logging.Logger
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.http.HttpServletRequest
@@ -108,8 +107,8 @@ class SecurityConfig(private val env: Environment) {
             response.writer.write(
                 mapper.writeValueAsString(
                     GlobalExceptionHandler.ErrorResponse(
-                        code = CustomExceptionType.ACCESS_DENIED.code,
-                        message = "${CustomExceptionType.ACCESS_DENIED.message} ${accessDeniedException.message}",
+                        code = "ACCESS_DENIED",
+                        message = "접근이 거부되었습니다. 접근을 위한 권한을 확인해주세요. ${accessDeniedException.message}",
                     ),
                 ),
             )
@@ -130,8 +129,8 @@ class SecurityConfig(private val env: Environment) {
             response.writer.write(
                 mapper.writeValueAsString(
                     GlobalExceptionHandler.ErrorResponse(
-                        code = CustomExceptionType.INVALID_AUTH_CREDENTIALS.code,
-                        message = "${CustomExceptionType.INVALID_AUTH_CREDENTIALS.message} ${authenticationException.message}",
+                        code = "INVALID_AUTH_CREDENTIALS",
+                        message = "유효하지 않은 자격 증명입니다. 인증/인가를 위한 토큰이 잘못되지는 않았는지 확인해주세요. ${authenticationException.message}",
                     ),
                 ),
             )

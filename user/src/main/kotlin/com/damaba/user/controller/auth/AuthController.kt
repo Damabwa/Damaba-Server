@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
-import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -27,10 +26,10 @@ class AuthController(private val oAuthLogin: OAuthLoginUseCase) {
     @ApiResponses(
         ApiResponse(responseCode = "200", description = "OK. 기존 유저가 로그인한 경우"),
         ApiResponse(responseCode = "201", description = "Created. 신규 유저가 로그인하여, 회원가입이 진행된 경우"),
-        ApiResponse(responseCode = "400", description = "[KKA_0000] Kakao API 서버로부터 4XX 에러를 응답받은 경우.", content = [Content()]),
+        ApiResponse(responseCode = "400", description = "Kakao API 서버로부터 4XX 에러를 응답받은 경우.", content = [Content()]),
     )
     @PostMapping("/api/v1/auth/login")
-    fun oAuthLoginV1(@RequestBody @Valid request: OAuthLoginRequest): ResponseEntity<OAuthLoginResponse> {
+    fun oAuthLoginV1(@RequestBody request: OAuthLoginRequest): ResponseEntity<OAuthLoginResponse> {
         val (isNewUser, user, accessToken, refreshToken) =
             oAuthLogin(OAuthLoginUseCase.Command(loginType = LoginType.KAKAO, authKey = request.authKey))
 

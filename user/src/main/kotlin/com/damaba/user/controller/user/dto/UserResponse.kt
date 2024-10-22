@@ -4,6 +4,7 @@ import com.damaba.user.domain.user.User
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import io.swagger.v3.oas.annotations.media.Schema
+import java.time.LocalDate
 
 data class UserResponse(
     @Schema(description = "Id of user", example = "1")
@@ -21,8 +22,8 @@ data class UserResponse(
     @Schema(description = "성별")
     val gender: Gender,
 
-    @Schema(description = "나이", example = "20")
-    val age: Int,
+    @Schema(description = "생년월일")
+    val birthDate: LocalDate,
 
     @Schema(description = "(Nullable) 인스타 아이디", example = "damaba.official")
     val instagramId: String?,
@@ -34,7 +35,7 @@ data class UserResponse(
             nickname = user.nickname,
             profileImageUrl = user.profileImageUrl,
             gender = user.gender,
-            age = user.age,
+            birthDate = user.birthDate,
             instagramId = user.instagramId,
         )
     }

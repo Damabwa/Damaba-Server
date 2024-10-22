@@ -1,5 +1,6 @@
 package com.damaba.user.application.auth
 
+import com.damaba.common_exception.ValidationException
 import com.damaba.user.domain.auth.AuthToken
 import com.damaba.user.domain.auth.AuthTokenService
 import com.damaba.user.domain.auth.OAuthService
@@ -47,7 +48,13 @@ class OAuthLoginUseCase(
     data class Command(
         val loginType: LoginType,
         val authKey: String,
-    )
+    ) {
+        init {
+            if (authKey.isBlank()) {
+                throw ValidationException("Auth key는 공백일 수 없습니다.")
+            }
+        }
+    }
 
     data class Result(
         val isNewUser: Boolean,

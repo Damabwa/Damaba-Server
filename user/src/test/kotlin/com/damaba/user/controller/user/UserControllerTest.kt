@@ -7,7 +7,7 @@ import com.damaba.user.config.ControllerTestConfig
 import com.damaba.user.controller.user.dto.UpdateMyInfoRequest
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.util.RandomTestUtils.Companion.randomBoolean
-import com.damaba.user.util.RandomTestUtils.Companion.randomInt
+import com.damaba.user.util.RandomTestUtils.Companion.randomLocalDate
 import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
 import com.damaba.user.util.TestAuthUtils.createAuthenticationToken
@@ -72,9 +72,9 @@ class UserControllerTest @Autowired constructor(
         // given
         val requestUser = createUser()
         val request = UpdateMyInfoRequest(
-            nickname = randomString(),
+            nickname = randomString(len = 7),
             gender = Gender.FEMALE,
-            age = randomInt(),
+            birthDate = randomLocalDate(),
             instagramId = randomString(),
             profileImage = null,
         )
@@ -82,7 +82,7 @@ class UserControllerTest @Autowired constructor(
             id = requestUser.id,
             nickname = request.nickname!!,
             gender = request.gender!!,
-            age = request.age!!,
+            birthDate = request.birthDate!!,
             instagramId = request.instagramId!!,
         )
         every { updateMyInfoUseCase.invoke(request.toCommand(requestUser.id)) } returns expectedResult
@@ -93,14 +93,14 @@ class UserControllerTest @Autowired constructor(
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .queryParam("nickname", request.nickname)
                 .queryParam("gender", request.gender.toString())
-                .queryParam("age", request.age.toString())
+                .queryParam("birthDate", request.birthDate.toString())
                 .queryParam("instagramId", request.instagramId)
                 .with(authentication(createAuthenticationToken(requestUser))),
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(requestUser.id))
             .andExpect(jsonPath("$.nickname").value(expectedResult.nickname))
             .andExpect(jsonPath("$.gender").value(expectedResult.gender.toString()))
-            .andExpect(jsonPath("$.age").value(expectedResult.age))
+            .andExpect(jsonPath("$.birthDate").value(expectedResult.birthDate.toString()))
             .andExpect(jsonPath("$.instagramId").value(expectedResult.instagramId))
         verify { updateMyInfoUseCase.invoke(request.toCommand(requestUser.id)) }
     }
@@ -108,9 +108,9 @@ class UserControllerTest @Autowired constructor(
     @Test
     fun `닉네임이 주어지고, 주어진 닉네임의 이용가능성을 확인한다`() {
         // given
-        val nickname = randomString()
+        val nickname = randomString(len = 7)
         val expectedResult = randomBoolean()
-        every { checkNicknameAvailabilityUseCase.invoke(nickname) } returns expectedResult
+        every { checkNicknameAvailabilityUseCase.invoke(CheckNicknameAvailabilityUseCase.Command(nickname)) } returns expectedResult
 
         // when & then
         mvc.perform(
@@ -119,6 +119,6 @@ class UserControllerTest @Autowired constructor(
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.nickname").value(nickname))
             .andExpect(jsonPath("$.availability").value(expectedResult))
-        verify { checkNicknameAvailabilityUseCase.invoke(nickname) }
+        verify { checkNicknameAvailabilityUseCase.invoke(CheckNicknameAvailabilityUseCase.Command(nickname)) }
     }
 }

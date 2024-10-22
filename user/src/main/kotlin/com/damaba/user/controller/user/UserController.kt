@@ -8,6 +8,7 @@ import com.damaba.user.controller.user.dto.UpdateMyInfoRequest
 import com.damaba.user.controller.user.dto.UserResponse
 import com.damaba.user.domain.user.User
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
@@ -45,8 +46,13 @@ class UserController(
         description = "이용 가능한 닉네임인지 확인합니다.",
     )
     @GetMapping("/api/v1/users/nicknames/availability")
-    fun checkNicknameAvailabilityV1(@RequestParam nickname: String): CheckNicknameAvailabilityResponse {
-        val availability = checkNicknameAvailability(nickname)
+    fun checkNicknameAvailabilityV1(
+        @Parameter(
+            description = "확인할 닉네임",
+            example = "치와와",
+        ) @RequestParam nickname: String,
+    ): CheckNicknameAvailabilityResponse {
+        val availability = checkNicknameAvailability(CheckNicknameAvailabilityUseCase.Command(nickname))
         return CheckNicknameAvailabilityResponse(nickname, availability)
     }
 
@@ -57,8 +63,8 @@ class UserController(
     )
     @ApiResponses(
         ApiResponse(responseCode = "200"),
-        ApiResponse(responseCode = "404", description = "[USR_0100] 유저 정보를 찾을 수 없는 경우", content = [Content()]),
-        ApiResponse(responseCode = "409", description = "[USR_0101] 수정하고자 하는 닉네임이 이미 사용중인 경우", content = [Content()]),
+        ApiResponse(responseCode = "404", description = "유저 정보를 찾을 수 없는 경우", content = [Content()]),
+        ApiResponse(responseCode = "409", description = "수정하고자 하는 닉네임이 이미 사용중인 경우", content = [Content()]),
     )
     @PatchMapping("/api/v1/users/me", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateMyInfoV1(
