@@ -8,6 +8,7 @@ import com.damaba.user.property.DamabaProperties
 import org.springframework.stereotype.Repository
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
 import java.util.UUID
 
@@ -32,6 +33,15 @@ class AwsS3FileStorageRepository(
         return UploadedFile(
             name = storedFileName,
             url = "${damabaProperties.fileServerUrl}/$storedFileName",
+        )
+    }
+
+    override fun delete(file: UploadedFile) {
+        s3Client.deleteObject(
+            DeleteObjectRequest.builder()
+                .bucket(awsProperties.s3.bucketName)
+                .key(file.name)
+                .build(),
         )
     }
 

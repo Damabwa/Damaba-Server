@@ -1,5 +1,6 @@
 package com.damaba.user.infrastructure.file
 
+import com.damaba.user.domain.file.UploadedFile
 import com.damaba.user.property.AwsProperties
 import com.damaba.user.property.DamabaProperties
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
@@ -15,9 +16,12 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest
+import software.amazon.awssdk.services.s3.model.DeleteObjectResponse
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
 import software.amazon.awssdk.services.s3.model.PutObjectResponse
 import java.util.stream.Stream
+import kotlin.test.Test
 
 class AwsS3FileStorageRepositoryTest {
     companion object {
@@ -59,6 +63,22 @@ class AwsS3FileStorageRepositoryTest {
         confirmVerifiedEveryMocks()
         assertThat(result.name).isNotBlank()
         assertThat(result.url).isNotBlank()
+    }
+
+    @Test
+    fun `삭제할 파일 정보가 주어지고, 파일을 삭제한다`() {
+        // given
+        val fileForDelete = UploadedFile(name = randomString(), url = randomString())
+        every {
+            s3Client.deleteObject(any(DeleteObjectRequest::class))
+        } returns DeleteObjectResponse.builder().build()
+
+        // when
+        sut.delete(fileForDelete)
+
+        // then
+        verify { s3Client.deleteObject(any(DeleteObjectRequest::class)) }
+        confirmVerifiedEveryMocks()
     }
 
     private fun confirmVerifiedEveryMocks() {

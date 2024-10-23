@@ -121,6 +121,7 @@ tasks.jacocoTestReport {
                         "**/domain/**/*",
                         "**/infrastructure/**/*Repository*",
                         "**/infrastructure/**/*Service*",
+                        "**/infrastructure/**/*EventListener*",
                     ),
                 )
             },
@@ -153,6 +154,7 @@ tasks.jacocoTestCoverageVerification {
                 "*.domain.*.*",
                 "*.infrastructure.*.*Repository*",
                 "*.infrastructure.*.*Service*",
+                "*.infrastructure.*.*EventListener*",
             )
         }
     }
