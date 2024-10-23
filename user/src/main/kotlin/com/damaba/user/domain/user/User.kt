@@ -17,6 +17,7 @@ data class User(
     val instagramId: String?,
 ) {
     companion object {
+        val DEFAULT_BIRTH_DATE: LocalDate = LocalDate.of(1, 1, 1)
         const val DEFAULT_PROFILE_IMAGE_URL = "https://dummyimage.com/244x100.png/cc0000/ffffff"
 
         fun create(loginType: LoginType, oAuthLoginUid: String, nickname: String): User = User(
@@ -27,13 +28,13 @@ data class User(
             nickname = nickname,
             profileImageUrl = DEFAULT_PROFILE_IMAGE_URL,
             gender = Gender.PRIVATE,
-            birthDate = LocalDate.MIN,
+            birthDate = DEFAULT_BIRTH_DATE,
             instagramId = null,
         )
     }
 
     val isRegistrationCompleted
-        get() = birthDate != LocalDate.MIN
+        get() = birthDate != DEFAULT_BIRTH_DATE
 
     fun update(
         nickname: String?,

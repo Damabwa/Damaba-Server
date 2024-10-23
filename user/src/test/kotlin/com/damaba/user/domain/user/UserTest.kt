@@ -7,7 +7,6 @@ import com.damaba.user.util.RandomTestUtils.Companion.randomLocalDate
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
 import com.damaba.user.util.TestFixture.createUser
 import org.assertj.core.api.Assertions.assertThat
-import java.time.LocalDate
 import kotlin.test.Test
 
 class UserTest {
@@ -29,7 +28,7 @@ class UserTest {
         assertThat(userCreated.nickname).isEqualTo(nickname)
         assertThat(userCreated.profileImageUrl).isEqualTo(User.DEFAULT_PROFILE_IMAGE_URL)
         assertThat(userCreated.gender).isEqualTo(Gender.PRIVATE)
-        assertThat(userCreated.birthDate).isEqualTo(LocalDate.MIN)
+        assertThat(userCreated.birthDate).isEqualTo(User.DEFAULT_BIRTH_DATE)
         assertThat(userCreated.instagramId).isNull()
 
         // 유저가 생성된 직후에는 isRegistrationCompleted가 false
