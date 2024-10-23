@@ -194,7 +194,6 @@ class UserRepositoryImplTest @Autowired constructor(
         assertThat(result.profileImageUrl).isEqualTo(updatedUser.profileImageUrl)
 
         val foundOriginalProfileImage = userProfileImageJpaRepository.findByUrl(originalUser.profileImageUrl)
-        assertThat(foundOriginalProfileImage).isNotNull()
-        assertThat(foundOriginalProfileImage?.delete()).isNotNull()
+        assertThat(foundOriginalProfileImage).isNull()
     }
 }
