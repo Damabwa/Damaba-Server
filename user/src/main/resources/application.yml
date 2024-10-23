@@ -1,8 +1,2 @@
-damaba:
-  auth:
-    jwt-secret: ${JWT_SECRET}
-    access-token-duration-millis: 7200000  # 2 day
-    refresh-token-duration-millis: 2592000 # 1 month
-
 spring:
   application.name: damaba-user
