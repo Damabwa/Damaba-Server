@@ -8,13 +8,17 @@ import jakarta.servlet.ServletInputStream
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletRequestWrapper
 import jakarta.servlet.http.HttpServletResponse
+import jakarta.servlet.http.Part
 import org.springframework.http.MediaType
-import org.springframework.util.ObjectUtils
 import org.springframework.util.StreamUtils
 import org.springframework.web.filter.OncePerRequestFilter
 import org.springframework.web.util.ContentCachingResponseWrapper
+import java.io.BufferedReader
 import java.io.ByteArrayInputStream
-import java.io.IOException
+import java.io.InputStreamReader
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
+import java.util.stream.Collectors
 
 class LogApiInfoFilter : OncePerRequestFilter() {
     companion object {
@@ -22,14 +26,6 @@ class LogApiInfoFilter : OncePerRequestFilter() {
             "/swagger",
             "/v3/api-docs",
             "/actuator",
-        )
-
-        private val VISIBLE_TYPES: Set<MediaType> = setOf(
-            MediaType.valueOf("text/*"),
-            MediaType.APPLICATION_FORM_URLENCODED,
-            MediaType.APPLICATION_JSON,
-            MediaType.APPLICATION_XML,
-            MediaType.MULTIPART_FORM_DATA,
         )
     }
 
@@ -39,114 +35,119 @@ class LogApiInfoFilter : OncePerRequestFilter() {
         filterChain: FilterChain,
     ) {
         MdcLogTraceManager.setLogTraceIdIfAbsent()
-        runCatching {
-            if (isAsyncDispatch(request)) {
+        try {
+            if (isAsyncDispatch(request) || LOG_BLACK_LIST.any { request.requestURI.startsWith(it) }) {
                 filterChain.doFilter(request, response)
-            } else {
-                val doLog = LOG_BLACK_LIST.none { request.requestURI.startsWith(it) }
-                val responseWrapper = ResponseWrapper(response)
-                runCatching {
-                    // : multipart/form-data type인 요청에 대해 세부 정보 로깅 기능 구현
-                    if (isMultipartFormData(request.contentType)) {
-                        Logger.info(
-                            "Request: [{}] uri={}, payload=multipart/form-data",
-                            request.method,
-                            request.requestURI,
-                        )
-                        filterChain.doFilter(request, responseWrapper)
-                    } else {
-                        val requestWrapper = RequestWrapper(request)
-                        if (doLog) logRequest(requestWrapper)
-                        filterChain.doFilter(requestWrapper, responseWrapper)
-                    }
-                }.also {
-                    if (doLog) logResponse(responseWrapper)
-                    responseWrapper.copyBodyToResponse()
-                }
+                return
             }
-        }.also { MdcLogTraceManager.clearAllLogTraceInfo() }
+
+            val res = ResponseWrapper(response)
+            val req = when {
+                request.contentType == null -> RequestWrapper(request)
+                request.contentType.contains(MediaType.MULTIPART_FORM_DATA_VALUE) -> request
+                else -> RequestWrapper(request)
+            }
+
+            logRequest(req)
+            filterChain.doFilter(req, res)
+            logResponse(res)
+            res.copyBodyToResponse()
+        } finally {
+            MdcLogTraceManager.clearAllLogTraceInfo()
+        }
     }
 
-    @Throws(IOException::class)
-    private fun logRequest(request: RequestWrapper) {
-        var uri = request.requestURI
-        val queryString = request.queryString
-        if (queryString != null) {
-            uri += "?$queryString"
+    private fun logRequest(request: HttpServletRequest) {
+        val uri = if (request.queryString != null) {
+            val queryParams = URLDecoder.decode(request.queryString, StandardCharsets.UTF_8)
+            "${request.requestURI}?$queryParams"
+        } else {
+            request.requestURI
         }
 
-        val content = StreamUtils.copyToByteArray(request.inputStream)
-        if (ObjectUtils.isEmpty(content)) {
-            Logger.info("Request: [{}] uri={}", request.method, uri)
-        } else {
-            val payloadInfo = getPayloadInfo(request.contentType, content)
-            Logger.info("Request: [{}] uri={}, {}", request.method, uri, payloadInfo)
+        if (request.contentType.isNullOrBlank()) {
+            Logger.info("Request: ({}) uri={}", request.method, uri)
+            return
         }
+
+        if (request.contentType.contains(MediaType.MULTIPART_FORM_DATA_VALUE)) {
+            try {
+                val payload = request.parts.joinToString(", ") { part -> processPart(part) }
+                Logger.info(
+                    "Request: ({}) uri={}, content-type=multipart/form-data, content={}",
+                    request.method,
+                    request.requestURI,
+                    payload,
+                )
+            } catch (ex: IllegalStateException) {
+                Logger.info(
+                    "Request: ({}) uri={}, content-type=multipart/form-data, request file size limit exceeded",
+                    request.method,
+                    request.requestURI,
+                )
+            }
+            return
+        }
+
+        val contentByteArray = StreamUtils.copyToByteArray(request.inputStream)
+        val payload = if (contentByteArray.isEmpty()) {
+            "no content"
+        } else {
+            getPayload(request.contentType, contentByteArray)
+        }
+        Logger.info(
+            "Request: ({}) uri={} content-type={} content={}",
+            request.method,
+            uri,
+            request.contentType,
+            payload,
+        )
     }
 
     private fun logResponse(response: ContentCachingResponseWrapper) {
-        Logger.info("Response: status={}", response.status)
-    }
-
-    private fun getPayloadInfo(contentType: String?, content: ByteArray): String {
-        var type: String? = contentType
-        var payloadInfo = "content-type=$type, payload="
-
-        if (type == null) {
-            type = MediaType.APPLICATION_JSON_VALUE
-        }
-
-        if (MediaType.valueOf(type) == MediaType.valueOf("text/html") ||
-            MediaType.valueOf(
-                type,
-            ) == MediaType.valueOf("text/css")
-        ) {
-            return payloadInfo + "HTML/CSS Content"
-        }
-        if (!isMediaTypeVisible(MediaType.valueOf(type))) {
-            return payloadInfo + "Binary Content"
-        }
-
-        if (content.size >= 10000) {
-            return payloadInfo + "too many data."
-        }
-
-        val contentString = String(content)
-        payloadInfo += if (type == MediaType.APPLICATION_JSON_VALUE) {
-            contentString.replace("\n *".toRegex(), "").replace(",".toRegex(), ", ")
+        val contentByteArray = StreamUtils.copyToByteArray(response.contentInputStream)
+        val content = if (contentByteArray.isEmpty()) {
+            "no content"
         } else {
-            contentString
+            getPayload(response.contentType, contentByteArray)
         }
-
-        return payloadInfo
+        Logger.info("Response: ({}) content-type={} content={}", response.status, response.contentType, content)
     }
 
-    private fun isMultipartFormData(contentType: String?): Boolean =
-        contentType != null && contentType.contains(MediaType.MULTIPART_FORM_DATA_VALUE)
+    private fun getPayload(contentType: String, content: ByteArray): String {
+        var payload = String(content)
+        if (contentType.contains(MediaType.APPLICATION_JSON_VALUE)) {
+            payload = payload.replace("\n\\s*".toRegex(), "")
+        }
+        return payload
+    }
 
-    private fun isMediaTypeVisible(mediaType: MediaType): Boolean =
-        VISIBLE_TYPES.any { visibleType -> visibleType.includes(mediaType) }
-
-    class RequestWrapper(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
-        private val cachedInputStream: ByteArray? by lazy {
-            StreamUtils.copyToByteArray(request.inputStream)
+    private fun processPart(part: Part): String =
+        if (part.contentType == null) {
+            // 파일이 아닌, 텍스트 데이터인 경우
+            val value = BufferedReader(InputStreamReader(part.inputStream))
+                .lines()
+                .collect(Collectors.joining(","))
+            "${part.name}: $value"
+        } else {
+            // 파일 데이터인 경우
+            val fileSize = String.format("%.2f", convertByteToKB(part.size))
+            "${part.name}: ${part.submittedFileName}(${fileSize}KB)"
         }
 
-        override fun getInputStream(): ServletInputStream {
-            val byteArray = cachedInputStream ?: return super.getInputStream()
-            return object : ServletInputStream() {
-                private val inputStream = ByteArrayInputStream(byteArray)
+    private fun convertByteToKB(sizeInByte: Long): Double = sizeInByte / 1024.0
 
-                override fun isFinished(): Boolean = inputStream.available() == 0
+    private class RequestWrapper(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
+        private val cachedInputStream: ByteArray = StreamUtils.copyToByteArray(request.inputStream)
 
-                override fun isReady(): Boolean = true
-
-                override fun setReadListener(listener: ReadListener): Unit = throw UnsupportedOperationException()
-
-                override fun read(): Int = inputStream.read()
-            }
+        override fun getInputStream(): ServletInputStream = object : ServletInputStream() {
+            private val inputStream = ByteArrayInputStream(cachedInputStream)
+            override fun isFinished(): Boolean = inputStream.available() == 0
+            override fun isReady(): Boolean = true
+            override fun setReadListener(listener: ReadListener): Unit = throw UnsupportedOperationException()
+            override fun read(): Int = inputStream.read()
         }
     }
 
-    class ResponseWrapper(response: HttpServletResponse) : ContentCachingResponseWrapper(response)
+    private class ResponseWrapper(response: HttpServletResponse) : ContentCachingResponseWrapper(response)
 }
