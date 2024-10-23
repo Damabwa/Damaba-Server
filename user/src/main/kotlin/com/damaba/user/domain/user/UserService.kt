@@ -1,11 +1,13 @@
 package com.damaba.user.domain.user
 
 import com.damaba.user.domain.file.FileStorageRepository
+import com.damaba.user.domain.file.FileUploadRollbackEvent
 import com.damaba.user.domain.file.UploadFile
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.exception.NicknameAlreadyExistsException
 import com.damaba.user.domain.user.exception.UserNotFoundException
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -15,6 +17,7 @@ import java.util.UUID
 class UserService(
     private val userRepository: UserRepository,
     private val fileStorageRepository: FileStorageRepository,
+    private val eventPublisher: ApplicationEventPublisher,
 ) {
     companion object {
         private const val USER_PROFILE_IMAGE_UPLOAD_PATH = "user/profile-image/"
@@ -99,9 +102,13 @@ class UserService(
             fileStorageRepository.upload(profileImage, USER_PROFILE_IMAGE_UPLOAD_PATH)
         }
 
-        return userRepository.update(
-            user.update(nickname, gender, birthDate, instagramId, uploadedProfileImage?.url),
-        )
+        return runCatching {
+            userRepository.update(user.update(nickname, gender, birthDate, instagramId, uploadedProfileImage?.url))
+        }.onFailure {
+            if (uploadedProfileImage != null) {
+                eventPublisher.publishEvent(FileUploadRollbackEvent(uploadedFiles = listOf(uploadedProfileImage)))
+            }
+        }.getOrThrow()
     }
 
     private fun generateUniqueNickname(): String {

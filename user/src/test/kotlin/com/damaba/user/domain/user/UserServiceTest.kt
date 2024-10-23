@@ -1,6 +1,7 @@
 package com.damaba.user.domain.user
 
 import com.damaba.user.domain.file.FileStorageRepository
+import com.damaba.user.domain.file.FileUploadRollbackEvent
 import com.damaba.user.domain.file.UploadedFile
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
@@ -11,19 +12,23 @@ import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
 import com.damaba.user.util.TestFixture.createUploadFile
 import com.damaba.user.util.TestFixture.createUser
+import io.mockk.Runs
 import io.mockk.confirmVerified
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifyOrder
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
+import org.springframework.context.ApplicationEventPublisher
 import kotlin.test.Test
 
 class UserServiceTest {
     private val userRepository: UserRepository = mockk()
     private val fileStorageRepository: FileStorageRepository = mockk()
-    private val sut = UserService(userRepository, fileStorageRepository)
+    private val eventPublisher: ApplicationEventPublisher = mockk()
+    private val sut = UserService(userRepository, fileStorageRepository, eventPublisher)
 
     @Test
     fun `유저의 id가 주어지고, 주어진 id에 해당하는 유저를 조회한다`() {
@@ -172,6 +177,7 @@ class UserServiceTest {
 
         every { userRepository.getById(userId) } returns user
         every { userRepository.update(expectedResult) } returns expectedResult
+
         // when
         val actualResult = sut.updateUserInfo(userId, null, null, newBirthDate, null, null)
 
@@ -185,7 +191,72 @@ class UserServiceTest {
         assertThat(actualResult.birthDate).isEqualTo(expectedResult.birthDate)
     }
 
+    @Test
+    fun `수정할 유저 정보가 주어지고, 유저 정보를 수정한다, 만약 유저 수정에 실패했다면 예외가 발생한다`() {
+        // given
+        val userId = randomLong()
+        val originalUser = createUser(id = userId)
+        val newNickname = randomString()
+        val updatedUser = originalUser.update(newNickname, null, null, null, null)
+        val expectedThrownException = IllegalStateException()
+
+        every { userRepository.existsByNickname(newNickname) } returns false
+        every { userRepository.getById(userId) } returns originalUser
+        every { userRepository.update(updatedUser) } throws expectedThrownException // 알 수 없는 에러 발생
+
+        // when
+        val ex = catchThrowable {
+            sut.updateUserInfo(userId, newNickname, null, null, null, null)
+        }
+
+        // then
+        verifyOrder {
+            userRepository.existsByNickname(newNickname)
+            userRepository.getById(userId)
+            userRepository.update(updatedUser)
+        }
+        confirmVerifiedEveryMocks()
+        assertThat(ex).isInstanceOf(expectedThrownException::class.java)
+    }
+
+    @Test
+    fun `수정할 유저 정보가 주어지고, 유저 정보를 수정한다, 만약 파일 업로드에는 성공했으나 유저 수정에는 실패했다면, 파일 업로드를 취소하는 이벤트를 발행한다`() {
+        // given
+        val userId = randomLong()
+        val user = createUser(id = userId)
+        val newNickname = randomString()
+        val newGender = Gender.FEMALE
+        val newBirthDate = randomLocalDate()
+        val newInstagramId = randomString()
+        val newProfileImage = createUploadFile()
+        val uploadedFile = UploadedFile(randomString(), randomString())
+        val updatedUser = user.update(newNickname, newGender, newBirthDate, newInstagramId, uploadedFile.url)
+        val expectedThrownException = IllegalStateException()
+
+        every { userRepository.existsByNickname(newNickname) } returns false
+        every { userRepository.getById(userId) } returns user
+        every { fileStorageRepository.upload(newProfileImage, any(String::class)) } returns uploadedFile
+        every { userRepository.update(updatedUser) } throws expectedThrownException // 알 수 없는 에러 발생
+        every { eventPublisher.publishEvent(FileUploadRollbackEvent(listOf(uploadedFile))) } just Runs
+
+        // when
+        val ex = catchThrowable {
+            sut.updateUserInfo(userId, newNickname, newGender, newBirthDate, newInstagramId, newProfileImage)
+        }
+
+        // then
+        verifyOrder {
+            userRepository.existsByNickname(newNickname)
+            userRepository.getById(userId)
+            fileStorageRepository.upload(newProfileImage, any(String::class))
+            userRepository.update(updatedUser)
+            eventPublisher.publishEvent(FileUploadRollbackEvent(listOf(uploadedFile)))
+        }
+        confirmVerifiedEveryMocks()
+        assertThat(ex).isInstanceOf(expectedThrownException::class.java)
+    }
+
     private fun confirmVerifiedEveryMocks() {
-        confirmVerified(userRepository, fileStorageRepository)
+        confirmVerified(userRepository, fileStorageRepository, eventPublisher)
     }
 }

@@ -9,4 +9,11 @@ interface FileStorageRepository {
      * @return 업로드된 파일 정보
      */
     fun upload(file: UploadFile, path: String): UploadedFile
+
+    /**
+     * 업로드 된 파일을 삭제합니다.
+     *
+     * @param file 삭제할 파일 정보
+     */
+    fun delete(file: UploadedFile)
 }
