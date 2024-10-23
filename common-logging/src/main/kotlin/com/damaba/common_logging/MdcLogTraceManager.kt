@@ -11,7 +11,7 @@ object MdcLogTraceManager {
     val logTraceId: String?
         get() = MDC.get(LOG_TRACE_ID_MDC_KEY)
 
-    val requesterId: Long?
+    val requestUserId: Long?
         get() = MDC.get(REQUEST_USER_ID_MDC_KEY)?.toLong()
 
     fun setLogTraceIdIfAbsent() {
@@ -20,12 +20,18 @@ object MdcLogTraceManager {
         }
     }
 
+    fun setRequestUserIdIfAbsent(requestUserId: Long) {
+        if (this.requestUserId == null) {
+            setRequestUserId(requestUserId)
+        }
+    }
+
     private fun setRandomLogTraceId() {
         MDC.put(LOG_TRACE_ID_MDC_KEY, UUID.randomUUID().toString().substring(0, 8))
     }
 
-    fun setRequestUserId(requestUserId: String) {
-        MDC.put(REQUEST_USER_ID_MDC_KEY, requestUserId)
+    private fun setRequestUserId(requestUserId: Long) {
+        MDC.put(REQUEST_USER_ID_MDC_KEY, requestUserId.toString())
     }
 
     fun clearAllLogTraceInfo() {

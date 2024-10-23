@@ -1,5 +1,6 @@
 package com.damaba.damaba.config
 
+import com.damaba.common_logging.MdcLogTraceManager
 import com.damaba.damaba.config.SecurityConfig.Companion.AUTH_WHITE_LIST
 import com.damaba.damaba.config.SecurityConfig.Companion.AUTH_WHITE_PATHS
 import com.damaba.user.domain.auth.AuthTokenService
@@ -22,7 +23,6 @@ class AuthFilter(
     private val authTokenService: AuthTokenService,
     private val userService: UserService,
 ) : OncePerRequestFilter() {
-
     companion object {
         private const val BEARER_PREFIX = "Bearer "
         private val pathMatcher = AntPathMatcher()
@@ -44,6 +44,8 @@ class AuthFilter(
 
                 val userId = authTokenService.parseUserId(accessToken)
                 val user = userService.findUserById(userId) ?: throw UserNotFoundException()
+                MdcLogTraceManager.setRequestUserIdIfAbsent(user.id)
+
                 val authorities = user.roles
                     .map { roleType -> "ROLE_${roleType.name}" }
                     .map { roleName -> SimpleGrantedAuthority(roleName) }

@@ -81,11 +81,11 @@ object Logger {
 
     private fun buildLogMessage(message: String): String {
         val logTraceId = MdcLogTraceManager.logTraceId ?: "(no-trace-id)"
-        val requesterId = MdcLogTraceManager.requesterId
+        val requesterId = MdcLogTraceManager.requestUserId
         return if (requesterId == null) {
             "[$logTraceId] $message"
         } else {
-            "[$logTraceId/$requesterId] $message"
+            "[$logTraceId] [UserID: $requesterId] $message"
         }
     }
 }

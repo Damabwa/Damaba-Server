@@ -1,8 +1,8 @@
 package com.damaba.damaba
 
+import com.damaba.damaba.property.ThreadPoolProperties
 import com.damaba.user.property.AwsProperties
 import com.damaba.user.property.DamabaProperties
-import com.damaba.user.property.ThreadPoolProperties
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.context.properties.EnableConfigurationProperties
