@@ -1,4 +1,4 @@
-name: CI for production
+name: CI for prod
 
 on:
   pull_request:
@@ -6,8 +6,7 @@ on:
 
 env:
   ENV_FILE_NAME: env.properties
-  DAMABA_ENV: ${{secrets.PROD_ENV}}
-  DAMABA_ENV_DIR: user/src/main/resources
+  DAMABA_ENV_DIR: ./damaba/src/main/resources
 
 jobs:
   build:
@@ -22,13 +21,12 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: 'adopt'
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+          distribution: 'temurin'
 
       - name: Set environments
-        run: echo $DAMABA_ENV > $DAMABA_ENV_DIR/$ENV_FILE_NAME
+        run: echo "${{secrets.DEV_ENV}}" > $DAMABA_ENV_DIR/$ENV_FILE_NAME
 
       - name: Build with Gradle
-        run: ./gradlew build
+        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+        with:
+          arguments: build

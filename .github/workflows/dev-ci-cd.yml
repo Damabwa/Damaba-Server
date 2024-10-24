@@ -1,0 +1,54 @@
+name: CI/CD for dev
+
+on:
+  push:
+    branches: [ "develop" ]
+
+env:
+  ENV_FILE_NAME: env.properties
+  ENV_DIR: ./damaba/src/main/resources
+  DOCKER_FILE: Dockerfile-dev
+  DOCKER_IMAGE_PLATFORM: linux/amd64
+
+jobs:
+  build:
+    name: CI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set environments
+        run: echo "${{secrets.DEV_ENV}}" > $ENV_DIR/$ENV_FILE_NAME
+
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+        with:
+          arguments: build
+
+      - name: Configure AWS credentials for dev
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{secrets.DEV_AWS_IAM_ACCESS_KEY}}
+          aws-secret-access-key: ${{secrets.DEV_AWS_IAM_SECRET_KEY}}
+          aws-region: ap-northeast-2
+
+      - name: Login to AWS ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build and push docker image to AWS ECR
+        run: |
+          docker build -t damaba --platform $DOCKER_IMAGE_PLATFORM -f $DOCKER_FILE .
+          docker tag damaba ${{secrets.DEV_AWS_ECR_REGISTRY}}/${{secrets.DEV_AWS_ECR_REPOSITORY}}
+          docker push ${{secrets.DEV_AWS_ECR_REGISTRY}}/${{secrets.DEV_AWS_ECR_REPOSITORY}}:latest
+
+      - name: Deploy to ECS
+        run: aws ecs update-service --cluster ${{secrets.DEV_AWS_ECS_CLUSTER}} --service ${{secrets.DEV_AWS_ECS_SERVICE}} --force-new-deployment
