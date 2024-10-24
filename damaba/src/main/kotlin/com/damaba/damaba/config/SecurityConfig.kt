@@ -1,10 +1,10 @@
 package com.damaba.damaba.config
 
 import com.damaba.common_logging.Logger
+import com.damaba.user.property.DamabaProperties
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -48,14 +48,13 @@ class SecurityConfig(private val env: Environment) {
         authFilter: AuthFilter,
         customAccessDeniedHandler: CustomAccessDeniedHandler,
         customAuthenticationEntryPoint: CustomAuthenticationEntryPoint,
-        @Value("\${damaba.web-url}") damabaWebUrl: String,
-        @Value("\${damaba.server-url}") damabaServerUrl: String,
+        damabaProperties: DamabaProperties,
     ): SecurityFilterChain = httpSecurity
         .csrf { it.disable() }
         .httpBasic { it.disable() }
         .formLogin { it.disable() }
         .sessionManagement { session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-        .cors { it.configurationSource(corsConfigurationSource(listOf(damabaWebUrl, damabaServerUrl))) }
+        .cors { it.configurationSource(corsConfigurationSource(listOf(damabaProperties.webUrl, damabaProperties.serverUrl))) }
         .authorizeHttpRequests { auth ->
             auth.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
             AUTH_WHITE_PATHS.forEach { authWhitePath -> auth.requestMatchers(authWhitePath).permitAll() }

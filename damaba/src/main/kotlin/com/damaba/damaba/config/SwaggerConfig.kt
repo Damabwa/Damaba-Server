@@ -1,11 +1,11 @@
 package com.damaba.damaba.config
 
+import com.damaba.user.property.DamabaProperties
 import io.swagger.v3.oas.models.Components
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.info.Info
 import io.swagger.v3.oas.models.security.SecurityScheme
 import io.swagger.v3.oas.models.servers.Server
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.ResourceLoader
@@ -17,14 +17,14 @@ class SwaggerConfig(private val resourceLoader: ResourceLoader) {
     }
 
     @Bean
-    fun openApi(@Value("\${damaba.server-url}") serverUrl: String): OpenAPI =
+    fun openApi(damabaProperties: DamabaProperties): OpenAPI =
         OpenAPI()
             .info(
                 Info()
                     .title("Damaba 통합 API Server")
                     .description(loadApiDoc()),
             )
-            .servers(listOf(Server().url(serverUrl)))
+            .servers(listOf(Server().url(damabaProperties.serverUrl)))
             .components(
                 Components().addSecuritySchemes(
                     "access-token",

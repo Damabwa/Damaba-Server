@@ -1,4 +1,6 @@
 damaba:
+  web-url: https://damaba-web.test
+  server-url: https://damaba-server.test
   file-server-url: https://damaba-file-server.test
   auth:
     jwt-secret: jwtSecretForOnlyTestEnvironment12345678901234567890
