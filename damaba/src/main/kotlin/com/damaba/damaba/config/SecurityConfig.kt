@@ -39,6 +39,7 @@ class SecurityConfig(private val env: Environment) {
         val AUTH_WHITE_LIST = mapOf(
             "/api/v*/auth/login" to HttpMethod.POST,
             "/api/v*/users/nicknames/existence" to HttpMethod.GET,
+            "/api/v*/regions/groups" to HttpMethod.GET,
         )
     }
 
@@ -54,8 +55,9 @@ class SecurityConfig(private val env: Environment) {
         .httpBasic { it.disable() }
         .formLogin { it.disable() }
         .sessionManagement { session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-        .cors { it.configurationSource(corsConfigurationSource(listOf(damabaProperties.webUrl, damabaProperties.serverUrl))) }
-        .authorizeHttpRequests { auth ->
+        .cors {
+            it.configurationSource(corsConfigurationSource(listOf(damabaProperties.webUrl, damabaProperties.serverUrl)))
+        }.authorizeHttpRequests { auth ->
             auth.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
             AUTH_WHITE_PATHS.forEach { authWhitePath -> auth.requestMatchers(authWhitePath).permitAll() }
             AUTH_WHITE_LIST.forEach { (path, httpMethod) -> auth.requestMatchers(httpMethod, path).permitAll() }
