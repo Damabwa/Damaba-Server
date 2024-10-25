@@ -102,8 +102,10 @@ class UserService(
             fileStorageRepository.upload(profileImage, USER_PROFILE_IMAGE_UPLOAD_PATH)
         }
 
+        user.update(nickname, gender, birthDate, instagramId, uploadedProfileImage?.url)
+
         return runCatching {
-            userRepository.update(user.update(nickname, gender, birthDate, instagramId, uploadedProfileImage?.url))
+            userRepository.update(user)
         }.onFailure {
             if (uploadedProfileImage != null) {
                 eventPublisher.publishEvent(FileUploadRollbackEvent(uploadedFiles = listOf(uploadedProfileImage)))

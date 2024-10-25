@@ -140,10 +140,15 @@ class UserRepositoryImplTest @Autowired constructor(
         val originalUser = userRepository.save(createUser())
 
         // when
-        val result = userRepository.update(originalUser)
+        val updatedUser = userRepository.update(originalUser)
 
         // then
-        assertThat(result).isEqualTo(originalUser)
+        assertThat(updatedUser.id).isEqualTo(originalUser.id)
+        assertThat(updatedUser.nickname).isEqualTo(originalUser.nickname)
+        assertThat(updatedUser.birthDate).isEqualTo(originalUser.birthDate)
+        assertThat(updatedUser.gender).isEqualTo(originalUser.gender)
+        assertThat(updatedUser.instagramId).isEqualTo(originalUser.instagramId)
+        assertThat(updatedUser.profileImageUrl).isEqualTo(originalUser.profileImageUrl)
     }
 
     @Test
