@@ -28,7 +28,6 @@ dependencies {
      * Controller(API)
      */
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     // Spring Security
@@ -65,9 +64,6 @@ dependencies {
      */
     implementation(project(":common-exception"))
 
-    // Mockk
-    testImplementation("io.mockk:mockk:1.13.13")
-
     // Test container
     testImplementation("org.testcontainers:testcontainers:1.20.2")
     testImplementation("org.testcontainers:junit-jupiter:1.20.2")
@@ -77,6 +73,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    testImplementation("io.mockk:mockk:1.13.13")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

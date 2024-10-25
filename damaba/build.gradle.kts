@@ -5,20 +5,15 @@ plugins {
     id("org.springframework.boot") version "3.3.4"
     id("io.spring.dependency-management") version "1.1.6"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
+    id("jacoco")
 }
 
 group = "com.damaba.damaba"
 version = "0.0.1"
 
-repositories {
-    mavenCentral()
-}
+repositories { mavenCentral() }
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
-}
+java { toolchain { languageVersion = JavaLanguageVersion.of(17) } }
 
 extra["springCloudVersion"] = "2023.0.3"
 
@@ -40,7 +35,6 @@ dependencies {
      * Controller(API)
      */
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     // Spring Security
@@ -80,6 +74,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    testImplementation("io.mockk:mockk:1.13.13")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
@@ -97,7 +92,68 @@ ktlint {
     android.set(false)
     outputToConsole.set(true)
     ignoreFailures.set(false)
-    filter {
-        exclude("**/generated/**")
+    filter { exclude("**/generated/**") }
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+tasks.test {
+    finalizedBy(tasks.ktlintCheck)
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required = false
+        csv.required = false
+        html.required = true
+        classDirectories.setFrom(
+            sourceSets.main.get().output.asFileTree.matching {
+                include(
+                    listOf(
+                        "**/controller/**/*Controller*",
+                        "**/application/**/*UseCase*",
+                        "**/domain/**/*",
+                        "**/infrastructure/**/*Repository*",
+                        "**/infrastructure/**/*Service*",
+                        "**/infrastructure/**/*EventListener*",
+                    ),
+                )
+            },
+        )
+    }
+    finalizedBy(tasks.jacocoTestCoverageVerification)
+}
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            isEnabled = true
+            element = "CLASS"
+
+            limit {
+                counter = "BRANCH"
+                value = "COVEREDRATIO"
+                minimum = 0.9.toBigDecimal()
+            }
+
+            limit {
+                counter = "LINE"
+                value = "COVEREDRATIO"
+                minimum = 0.9.toBigDecimal()
+            }
+
+            includes = listOf(
+                "*.controller.*.*Controller*",
+                "*.application.*.*UseCase*",
+                "*.domain.*.*",
+                "*.infrastructure.*.*Repository*",
+                "*.infrastructure.*.*Service*",
+                "*.infrastructure.*.*EventListener*",
+            )
+        }
     }
 }
