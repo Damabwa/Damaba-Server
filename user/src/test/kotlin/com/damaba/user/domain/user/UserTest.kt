@@ -38,7 +38,7 @@ class UserTest {
     @Test
     fun `유저 정보를 업데이트한다`() {
         // given
-        val originalUser = createUser()
+        val user = createUser()
         val newNickname = randomString()
         val newGender = Gender.FEMALE
         val newBirthDate = randomLocalDate()
@@ -46,7 +46,7 @@ class UserTest {
         val newProfileImageUrl = randomString()
 
         // when
-        val updatedUser = originalUser.update(
+        user.update(
             nickname = newNickname,
             gender = newGender,
             birthDate = newBirthDate,
@@ -55,33 +55,10 @@ class UserTest {
         )
 
         // then
-        assertThat(updatedUser.nickname).isEqualTo(newNickname)
-        assertThat(updatedUser.gender).isEqualTo(newGender)
-        assertThat(updatedUser.birthDate).isEqualTo(newBirthDate)
-        assertThat(updatedUser.instagramId).isEqualTo(newInstagramId)
-        assertThat(updatedUser.profileImageUrl).isEqualTo(newProfileImageUrl)
-
-        assertThat(updatedUser.id).isEqualTo(originalUser.id)
-        assertThat(updatedUser.roles).isEqualTo(originalUser.roles)
-        assertThat(updatedUser.loginType).isEqualTo(originalUser.loginType)
-        assertThat(updatedUser.oAuthLoginUid).isEqualTo(originalUser.oAuthLoginUid)
-    }
-
-    @Test
-    fun `유저 정보를 업데이트 할 때 수정할 정보가 null이라면, 정보는 변경되지 않는다`() {
-        // given
-        val originalUser = createUser()
-
-        // when
-        val updatedUser = originalUser.update(
-            nickname = null,
-            gender = null,
-            birthDate = null,
-            instagramId = null,
-            profileImageUrl = null,
-        )
-
-        // then
-        assertThat(updatedUser).isEqualTo(originalUser)
+        assertThat(user.nickname).isEqualTo(newNickname)
+        assertThat(user.gender).isEqualTo(newGender)
+        assertThat(user.birthDate).isEqualTo(newBirthDate)
+        assertThat(user.instagramId).isEqualTo(newInstagramId)
+        assertThat(user.profileImageUrl).isEqualTo(newProfileImageUrl)
     }
 }

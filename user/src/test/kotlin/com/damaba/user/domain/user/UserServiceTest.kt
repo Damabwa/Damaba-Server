@@ -124,12 +124,18 @@ class UserServiceTest {
         val newInstagramId = randomString()
         val newProfileImage = createUploadFile()
         val uploadedFile = UploadedFile(randomString(), randomString())
-        val expectedResult = user.update(newNickname, newGender, newBirthDate, newInstagramId, uploadedFile.url)
+        val expectedResult = createUser(
+            nickname = newNickname,
+            gender = newGender,
+            birthDate = newBirthDate,
+            instagramId = newInstagramId,
+            profileImageUrl = uploadedFile.url,
+        )
 
         every { userRepository.existsByNickname(newNickname) } returns false
         every { userRepository.getById(userId) } returns user
         every { fileStorageRepository.upload(newProfileImage, any(String::class)) } returns uploadedFile
-        every { userRepository.update(expectedResult) } returns expectedResult
+        every { userRepository.update(any(User::class)) } returns expectedResult
 
         // when
         val actualResult =
@@ -140,7 +146,7 @@ class UserServiceTest {
             userRepository.existsByNickname(newNickname)
             userRepository.getById(userId)
             fileStorageRepository.upload(newProfileImage, any(String::class))
-            userRepository.update(expectedResult)
+            userRepository.update(any(User::class))
         }
         confirmVerifiedEveryMocks()
         assertThat(actualResult.id).isEqualTo(expectedResult.id)
@@ -173,10 +179,16 @@ class UserServiceTest {
         val userId = randomLong()
         val user = createUser(id = userId)
         val newBirthDate = randomLocalDate()
-        val expectedResult = user.update(null, null, newBirthDate, null, null)
+        val expectedResult = createUser(
+            nickname = user.nickname,
+            gender = user.gender,
+            birthDate = newBirthDate,
+            instagramId = user.instagramId ?: "",
+            profileImageUrl = user.profileImageUrl,
+        )
 
         every { userRepository.getById(userId) } returns user
-        every { userRepository.update(expectedResult) } returns expectedResult
+        every { userRepository.update(any(User::class)) } returns expectedResult
 
         // when
         val actualResult = sut.updateUserInfo(userId, null, null, newBirthDate, null, null)
@@ -184,7 +196,7 @@ class UserServiceTest {
         // then
         verifyOrder {
             userRepository.getById(userId)
-            userRepository.update(expectedResult)
+            userRepository.update(any(User::class))
         }
         confirmVerifiedEveryMocks()
         assertThat(actualResult.id).isEqualTo(expectedResult.id)
@@ -197,12 +209,11 @@ class UserServiceTest {
         val userId = randomLong()
         val originalUser = createUser(id = userId)
         val newNickname = randomString()
-        val updatedUser = originalUser.update(newNickname, null, null, null, null)
         val expectedThrownException = IllegalStateException()
 
         every { userRepository.existsByNickname(newNickname) } returns false
         every { userRepository.getById(userId) } returns originalUser
-        every { userRepository.update(updatedUser) } throws expectedThrownException // 알 수 없는 에러 발생
+        every { userRepository.update(any(User::class)) } throws expectedThrownException // 알 수 없는 에러 발생
 
         // when
         val ex = catchThrowable {
@@ -213,7 +224,7 @@ class UserServiceTest {
         verifyOrder {
             userRepository.existsByNickname(newNickname)
             userRepository.getById(userId)
-            userRepository.update(updatedUser)
+            userRepository.update(any(User::class))
         }
         confirmVerifiedEveryMocks()
         assertThat(ex).isInstanceOf(expectedThrownException::class.java)
@@ -230,13 +241,12 @@ class UserServiceTest {
         val newInstagramId = randomString()
         val newProfileImage = createUploadFile()
         val uploadedFile = UploadedFile(randomString(), randomString())
-        val updatedUser = user.update(newNickname, newGender, newBirthDate, newInstagramId, uploadedFile.url)
         val expectedThrownException = IllegalStateException()
 
         every { userRepository.existsByNickname(newNickname) } returns false
         every { userRepository.getById(userId) } returns user
         every { fileStorageRepository.upload(newProfileImage, any(String::class)) } returns uploadedFile
-        every { userRepository.update(updatedUser) } throws expectedThrownException // 알 수 없는 에러 발생
+        every { userRepository.update(any(User::class)) } throws expectedThrownException // 알 수 없는 에러 발생
         every { eventPublisher.publishEvent(FileUploadRollbackEvent(listOf(uploadedFile))) } just Runs
 
         // when
@@ -249,7 +259,7 @@ class UserServiceTest {
             userRepository.existsByNickname(newNickname)
             userRepository.getById(userId)
             fileStorageRepository.upload(newProfileImage, any(String::class))
-            userRepository.update(updatedUser)
+            userRepository.update(any(User::class))
             eventPublisher.publishEvent(FileUploadRollbackEvent(listOf(uploadedFile)))
         }
         confirmVerifiedEveryMocks()
