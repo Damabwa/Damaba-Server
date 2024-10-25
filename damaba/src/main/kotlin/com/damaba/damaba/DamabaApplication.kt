@@ -9,7 +9,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
 import org.springframework.cloud.openfeign.EnableFeignClients
 import org.springframework.context.annotation.PropertySource
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @SpringBootApplication(
     scanBasePackages = [
@@ -21,8 +20,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 )
 @PropertySource("classpath:env.properties")
 @EnableConfigurationProperties(DamabaProperties::class, ThreadPoolProperties::class, AwsProperties::class)
-@EntityScan(basePackages = ["com.damaba.user"])
-@EnableJpaRepositories(basePackages = ["com.damaba.user"])
+@EntityScan(basePackages = ["com.damaba.user", "com.damaba.damaba"])
 @EnableFeignClients(basePackages = ["com.damaba.user"])
 class DamabaApplication
 
