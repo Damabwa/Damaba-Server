@@ -1,6 +1,6 @@
-package com.damaba.damaba.controller.region
+package com.damaba.damaba.adapter.inbound.region
 
-import com.damaba.damaba.application.region.FindRegionGroupsUseCase
+import com.damaba.damaba.application.port.inbound.region.FindRegionGroupsUseCase
 import com.damaba.damaba.config.ControllerTestConfig
 import com.damaba.damaba.util.TestFixture.createRegionGroups
 import io.mockk.every
@@ -35,13 +35,13 @@ class RegionControllerTest @Autowired constructor(
     fun `전체 지역 리스트를 조회한다`() {
         // given
         val expectedResult = createRegionGroups()
-        every { findRegionGroupsUseCase.invoke() } returns expectedResult
+        every { findRegionGroupsUseCase.findRegionGroups() } returns expectedResult
 
         // when & then
         mvc.perform(
             get("/api/v1/regions/groups"),
         ).andExpect(status().isOk)
             .andExpect(jsonPath("regionGroups.size()").value(expectedResult.size))
-        verify { findRegionGroupsUseCase.invoke() }
+        verify { findRegionGroupsUseCase.findRegionGroups() }
     }
 }

@@ -1,4 +1,4 @@
-package com.damaba.damaba.controller.region.dto
+package com.damaba.damaba.adapter.inbound.region.dto
 
 import com.damaba.damaba.domain.region.RegionGroup
 import io.swagger.v3.oas.annotations.media.Schema

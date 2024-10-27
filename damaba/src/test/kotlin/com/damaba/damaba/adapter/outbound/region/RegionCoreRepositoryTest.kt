@@ -1,4 +1,4 @@
-package com.damaba.damaba.infrastructure.region
+package com.damaba.damaba.adapter.outbound.region
 
 import org.assertj.core.api.Assertions.assertThat
 import org.springframework.beans.factory.annotation.Autowired
@@ -10,10 +10,10 @@ import kotlin.test.Test
 
 @ActiveProfiles("test")
 @AutoConfigureJsonTesters
-@Import(RegionRepositoryImpl::class)
+@Import(RegionCoreRepository::class)
 @DataJpaTest
-class RegionRepositoryImplTest @Autowired constructor(
-    private val regionRepository: RegionRepositoryImpl,
+class RegionCoreRepositoryTest @Autowired constructor(
+    private val regionRepository: RegionCoreRepository,
 ) {
     @Test
     fun `전체 지역 리스트를 조회한다`() {
