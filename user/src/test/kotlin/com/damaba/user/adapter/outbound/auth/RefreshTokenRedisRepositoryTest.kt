@@ -1,6 +1,5 @@
-package com.damaba.user.adapter.outbound.persistence.auth
+package com.damaba.user.adapter.outbound.auth
 
-import com.damaba.user.adapter.outbound.auth.RefreshTokenRedisRepository
 import com.damaba.user.config.RedisTest
 import com.damaba.user.domain.auth.RefreshToken
 import com.damaba.user.util.RandomTestUtils.Companion.randomLong

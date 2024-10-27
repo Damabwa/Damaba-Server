@@ -1,6 +1,6 @@
 package com.damaba.user.application.port.inbound.user
 
-import com.damaba.user.domain.file.UploadFile
+import com.damaba.common_file.domain.UploadFile
 import com.damaba.user.domain.user.User
 import com.damaba.user.domain.user.UserValidator
 import com.damaba.user.domain.user.constant.Gender

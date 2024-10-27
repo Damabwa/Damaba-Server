@@ -1,15 +1,15 @@
 package com.damaba.user.application.service.user
 
 import com.damaba.common_exception.ValidationException
+import com.damaba.common_file.application.port.outbound.UploadFilePort
+import com.damaba.common_file.domain.FileUploadRollbackEvent
+import com.damaba.common_file.domain.UploadedFile
 import com.damaba.user.application.port.inbound.user.CheckNicknameExistenceUseCase
 import com.damaba.user.application.port.inbound.user.UpdateMyInfoUseCase
 import com.damaba.user.application.port.outbound.common.PublishEventPort
-import com.damaba.user.application.port.outbound.file.UploadFilePort
 import com.damaba.user.application.port.outbound.user.CheckNicknameExistencePort
 import com.damaba.user.application.port.outbound.user.GetUserPort
 import com.damaba.user.application.port.outbound.user.UpdateUserPort
-import com.damaba.user.domain.file.FileUploadRollbackEvent
-import com.damaba.user.domain.file.UploadedFile
 import com.damaba.user.domain.user.User
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.exception.NicknameAlreadyExistsException

@@ -1,9 +1,9 @@
-package com.damaba.user.adapter.outbound.file
+package com.damaba.damaba.adapter.outbound.file
 
-import com.damaba.user.application.port.outbound.file.DeleteFilePort
-import com.damaba.user.application.port.outbound.file.UploadFilePort
-import com.damaba.user.domain.file.UploadFile
-import com.damaba.user.domain.file.UploadedFile
+import com.damaba.common_file.application.port.outbound.DeleteFilePort
+import com.damaba.common_file.application.port.outbound.UploadFilePort
+import com.damaba.common_file.domain.UploadFile
+import com.damaba.common_file.domain.UploadedFile
 import com.damaba.user.property.AwsProperties
 import com.damaba.user.property.DamabaProperties
 import org.springframework.stereotype.Component

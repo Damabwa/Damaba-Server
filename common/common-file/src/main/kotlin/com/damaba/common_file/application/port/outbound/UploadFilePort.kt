@@ -1,7 +1,7 @@
-package com.damaba.user.application.port.outbound.file
+package com.damaba.common_file.application.port.outbound
 
-import com.damaba.user.domain.file.UploadFile
-import com.damaba.user.domain.file.UploadedFile
+import com.damaba.common_file.domain.UploadFile
+import com.damaba.common_file.domain.UploadedFile
 
 interface UploadFilePort {
     /**

@@ -63,6 +63,7 @@ dependencies {
      * Common
      */
     implementation(project(":common:common-exception"))
+    implementation(project(":common:common-file"))
 
     // Test container
     testImplementation("org.testcontainers:testcontainers:1.20.2")

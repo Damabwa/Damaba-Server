@@ -1,6 +1,5 @@
-package com.damaba.user.adapter.outbound.integration.auth
+package com.damaba.user.adapter.outbound.auth
 
-import com.damaba.user.adapter.outbound.auth.AuthTokenAdapter
 import com.damaba.user.domain.auth.exception.InvalidAuthTokenException
 import com.damaba.user.property.AuthProperties
 import com.damaba.user.util.TestFixture.createUser

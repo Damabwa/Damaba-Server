@@ -1,7 +1,7 @@
-package com.damaba.user.application.listener.file
+package com.damaba.damaba.application.listener
 
-import com.damaba.user.application.port.outbound.file.DeleteFilePort
-import com.damaba.user.domain.file.FileUploadRollbackEvent
+import com.damaba.common_file.application.port.outbound.DeleteFilePort
+import com.damaba.common_file.domain.FileUploadRollbackEvent
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 import org.springframework.transaction.event.TransactionPhase

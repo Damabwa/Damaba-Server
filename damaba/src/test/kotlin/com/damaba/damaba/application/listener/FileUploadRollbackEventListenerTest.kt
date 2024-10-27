@@ -1,9 +1,9 @@
-package com.damaba.user.application.listener.file
+package com.damaba.damaba.application.listener
 
-import com.damaba.user.application.port.outbound.file.DeleteFilePort
-import com.damaba.user.domain.file.FileUploadRollbackEvent
-import com.damaba.user.domain.file.UploadedFile
-import com.damaba.user.util.RandomTestUtils.Companion.randomString
+import com.damaba.common_file.application.port.outbound.DeleteFilePort
+import com.damaba.common_file.domain.FileUploadRollbackEvent
+import com.damaba.common_file.domain.UploadedFile
+import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just

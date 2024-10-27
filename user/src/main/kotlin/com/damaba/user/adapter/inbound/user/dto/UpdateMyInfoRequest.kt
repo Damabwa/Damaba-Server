@@ -1,7 +1,7 @@
 package com.damaba.user.adapter.inbound.user.dto
 
+import com.damaba.common_file.domain.UploadFile
 import com.damaba.user.application.port.inbound.user.UpdateMyInfoUseCase
-import com.damaba.user.domain.file.UploadFile
 import com.damaba.user.domain.user.constant.Gender
 import io.swagger.v3.oas.annotations.media.Schema
 import org.springframework.web.multipart.MultipartFile

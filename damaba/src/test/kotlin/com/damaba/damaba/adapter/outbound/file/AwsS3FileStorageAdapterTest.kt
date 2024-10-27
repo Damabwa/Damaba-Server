@@ -1,11 +1,10 @@
-package com.damaba.user.adapter.outbound.client.file
+package com.damaba.damaba.adapter.outbound.file
 
-import com.damaba.user.adapter.outbound.file.AwsS3FileStorageAdapter
-import com.damaba.user.domain.file.UploadedFile
+import com.damaba.common_file.domain.UploadedFile
+import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
+import com.damaba.damaba.util.TestFixture.createUploadFile
 import com.damaba.user.property.AwsProperties
 import com.damaba.user.property.DamabaProperties
-import com.damaba.user.util.RandomTestUtils.Companion.randomString
-import com.damaba.user.util.TestFixture.createUploadFile
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
