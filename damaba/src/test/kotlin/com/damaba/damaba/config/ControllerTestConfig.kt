@@ -9,7 +9,7 @@ import org.springframework.security.web.SecurityFilterChain
 @TestConfiguration
 class ControllerTestConfig {
     @Bean
-    fun authFilter(): AuthFilter = AuthFilter(mockk(), mockk())
+    fun authFilter(): AuthFilter = AuthFilter(mockk(), mockk(), mockk())
 
     @Bean
     fun securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain =
