@@ -1,6 +1,7 @@
 package com.damaba.damaba
 
 import com.damaba.damaba.property.ThreadPoolProperties
+import com.damaba.user.property.AuthProperties
 import com.damaba.user.property.AwsProperties
 import com.damaba.user.property.DamabaProperties
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -19,7 +20,12 @@ import org.springframework.context.annotation.PropertySource
     ],
 )
 @PropertySource("classpath:env.properties")
-@EnableConfigurationProperties(DamabaProperties::class, ThreadPoolProperties::class, AwsProperties::class)
+@EnableConfigurationProperties(
+    DamabaProperties::class,
+    AuthProperties::class,
+    ThreadPoolProperties::class,
+    AwsProperties::class,
+)
 @EntityScan(basePackages = ["com.damaba.user", "com.damaba.damaba"])
 @EnableFeignClients(basePackages = ["com.damaba.user"])
 class DamabaApplication

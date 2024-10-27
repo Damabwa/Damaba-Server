@@ -62,8 +62,9 @@ dependencies {
     /**
      * Common
      */
-    implementation(project(":common-logging"))
-    implementation(project(":common-exception"))
+    implementation(project(":common:common-logging"))
+    implementation(project(":common:common-exception"))
+    implementation(project(":common:common-file"))
 
     // Test container
     testImplementation("org.testcontainers:testcontainers:1.20.2")
@@ -114,12 +115,12 @@ tasks.jacocoTestReport {
             sourceSets.main.get().output.asFileTree.matching {
                 include(
                     listOf(
-                        "**/controller/**/*Controller*",
-                        "**/application/**/*UseCase*",
-                        "**/domain/**/*",
-                        "**/infrastructure/**/*Repository*",
-                        "**/infrastructure/**/*Service*",
-                        "**/infrastructure/**/*EventListener*",
+                        "**/adapter/inbound/**/*Controller*",
+                        "**/adapter/outbound/**/*Repository*",
+                        "**/adapter/outbound/**/*Adapter*",
+                        "**/application/listener/**/*EventListener*",
+                        "**/application/service/**",
+                        "**/domain/**",
                     ),
                 )
             },
@@ -147,12 +148,12 @@ tasks.jacocoTestCoverageVerification {
             }
 
             includes = listOf(
-                "*.controller.*.*Controller*",
-                "*.application.*.*UseCase*",
+                "*.adapter.inbound.*.*Controller*",
+                "*.adapter.outbound.*.*Repository*",
+                "*.adapter.outbound.*.*Adapter*",
+                "*.application.listener.*.*EventListener*",
+                "*.application.service.*.*",
                 "*.domain.*.*",
-                "*.infrastructure.*.*Repository*",
-                "*.infrastructure.*.*Service*",
-                "*.infrastructure.*.*EventListener*",
             )
         }
     }

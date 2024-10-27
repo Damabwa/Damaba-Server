@@ -1,7 +1,7 @@
 package com.damaba.user.util
 
+import com.damaba.common_file.domain.UploadFile
 import com.damaba.user.domain.auth.AuthToken
-import com.damaba.user.domain.file.UploadFile
 import com.damaba.user.domain.user.User
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType

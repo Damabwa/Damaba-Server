@@ -1,8 +1,9 @@
 rootProject.name = "damaba-server"
 
 include(
-    "common-exception",
-    "common-logging",
+    "common:common-exception",
+    "common:common-logging",
+    "common:common-file",
     "user",
     "damaba",
 )
