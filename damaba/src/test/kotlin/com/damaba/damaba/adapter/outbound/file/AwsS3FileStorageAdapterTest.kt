@@ -2,6 +2,7 @@ package com.damaba.damaba.adapter.outbound.file
 
 import com.damaba.common_file.domain.UploadedFile
 import com.damaba.damaba.property.AwsProperties
+import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.TestFixture.createUploadFile
 import com.damaba.user.property.DamabaProperties
@@ -24,16 +25,6 @@ import java.util.stream.Stream
 import kotlin.test.Test
 
 class AwsS3FileStorageAdapterTest {
-    companion object {
-        @JvmStatic
-        private fun uploadFileNames(): Stream<Arguments> = Stream.of(
-            Arguments.of("test-image.jpg"),
-            Arguments.of("test-image"),
-            Arguments.of(""),
-            Arguments.of(null),
-        )
-    }
-
     private val s3Client: S3Client = mockk()
     private val damabaProperties: DamabaProperties = mockk()
     private val awsProperties: AwsProperties = mockk()
@@ -66,6 +57,24 @@ class AwsS3FileStorageAdapterTest {
     }
 
     @Test
+    fun `업로드할 파일들과 경로가 주어지고, 파일들을 업로드하면, 업로드된 파일들의 정보가 반환된다`() {
+        // given
+        val uploadFiles = generateRandomList(maxSize = 5) { createUploadFile() }
+        val uploadPath = randomString()
+        every {
+            s3Client.putObject(any(PutObjectRequest::class), any(RequestBody::class))
+        } returns PutObjectResponse.builder().build()
+
+        // when
+        val result = sut.upload(uploadFiles, uploadPath)
+
+        // then
+        verify(exactly = uploadFiles.size) { s3Client.putObject(any(PutObjectRequest::class), any(RequestBody::class)) }
+        confirmVerifiedEveryMocks()
+        assertThat(result.size).isEqualTo(uploadFiles.size)
+    }
+
+    @Test
     fun `삭제할 파일 정보가 주어지고, 파일을 삭제한다`() {
         // given
         val fileForDelete = UploadedFile(name = randomString(), url = randomString())
@@ -83,5 +92,15 @@ class AwsS3FileStorageAdapterTest {
 
     private fun confirmVerifiedEveryMocks() {
         confirmVerified(s3Client)
+    }
+
+    companion object {
+        @JvmStatic
+        private fun uploadFileNames(): Stream<Arguments> = Stream.of(
+            Arguments.of("test-image.jpg"),
+            Arguments.of("test-image"),
+            Arguments.of(""),
+            Arguments.of(null),
+        )
     }
 }

@@ -31,5 +31,15 @@ class RandomTestUtils {
             randomInt(positive = true) % 12 + 1,
             randomInt(positive = true) % 25 + 1,
         )
+
+        fun <T> generateRandomList(maxSize: Int, generator: () -> T): List<T> =
+            generateSequence { generator() }
+                .take(randomInt(positive = true, max = maxSize))
+                .toList()
+
+        fun <T> generateRandomSet(maxSize: Int, generator: () -> T): Set<T> =
+            generateSequence { generator() }
+                .take(randomInt(positive = true, max = maxSize))
+                .toSet()
     }
 }

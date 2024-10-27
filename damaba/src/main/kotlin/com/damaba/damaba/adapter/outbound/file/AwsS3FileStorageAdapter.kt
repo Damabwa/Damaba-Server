@@ -2,6 +2,7 @@ package com.damaba.damaba.adapter.outbound.file
 
 import com.damaba.common_file.application.port.outbound.DeleteFilePort
 import com.damaba.common_file.application.port.outbound.UploadFilePort
+import com.damaba.common_file.application.port.outbound.UploadFilesPort
 import com.damaba.common_file.domain.UploadFile
 import com.damaba.common_file.domain.UploadedFile
 import com.damaba.damaba.property.AwsProperties
@@ -19,6 +20,7 @@ class AwsS3FileStorageAdapter(
     private val damabaProperties: DamabaProperties,
     private val awsProperties: AwsProperties,
 ) : UploadFilePort,
+    UploadFilesPort,
     DeleteFilePort {
     override fun upload(file: UploadFile, path: String): UploadedFile {
         val originalFileName = file.name
@@ -37,6 +39,9 @@ class AwsS3FileStorageAdapter(
             url = "${damabaProperties.fileServerUrl}/$storedFileName",
         )
     }
+
+    override fun upload(files: List<UploadFile>, path: String): List<UploadedFile> =
+        files.map { file -> upload(file, path) }
 
     override fun delete(file: UploadedFile) {
         s3Client.deleteObject(
