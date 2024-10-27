@@ -113,12 +113,12 @@ tasks.jacocoTestReport {
             sourceSets.main.get().output.asFileTree.matching {
                 include(
                     listOf(
-                        "**/controller/**/*Controller*",
-                        "**/application/**/*UseCase*",
-                        "**/domain/**/*",
-                        "**/infrastructure/**/*Repository*",
-                        "**/infrastructure/**/*Service*",
-                        "**/infrastructure/**/*EventListener*",
+                        "**/adapter/inbound/**/*Controller*",
+                        "**/adapter/outbound/**/*Repository*",
+                        "**/adapter/outbound/**/*Adapter*",
+                        "**/application/listener/**/*EventListener*",
+                        "**/application/service/**",
+                        "**/domain/**",
                     ),
                 )
             },
@@ -146,12 +146,12 @@ tasks.jacocoTestCoverageVerification {
             }
 
             includes = listOf(
-                "*.controller.*.*Controller*",
-                "*.application.*.*UseCase*",
-                "*.domain.*.*",
-                "*.infrastructure.*.*Repository*",
-                "*.infrastructure.*.*Service*",
-                "*.infrastructure.*.*EventListener*",
+                "*.adapter.inbound.*.*Controller*",
+                "*.adapter.outbound.*.*Repository*",
+                "*.adapter.outbound.*.*Adapter*",
+                "*.application.listener.*.*EventListener*",
+                "*.application.service.*",
+                "*.domain.*",
             )
         }
     }
