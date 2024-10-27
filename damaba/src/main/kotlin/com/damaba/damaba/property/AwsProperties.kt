@@ -1,4 +1,4 @@
-package com.damaba.user.property
+package com.damaba.damaba.property
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 

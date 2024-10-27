@@ -4,7 +4,7 @@ import com.damaba.common_file.application.port.outbound.DeleteFilePort
 import com.damaba.common_file.application.port.outbound.UploadFilePort
 import com.damaba.common_file.domain.UploadFile
 import com.damaba.common_file.domain.UploadedFile
-import com.damaba.user.property.AwsProperties
+import com.damaba.damaba.property.AwsProperties
 import com.damaba.user.property.DamabaProperties
 import org.springframework.stereotype.Component
 import software.amazon.awssdk.core.sync.RequestBody

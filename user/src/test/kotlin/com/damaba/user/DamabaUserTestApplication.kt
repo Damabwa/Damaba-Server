@@ -1,7 +1,6 @@
 package com.damaba.user
 
 import com.damaba.user.property.AuthProperties
-import com.damaba.user.property.AwsProperties
 import com.damaba.user.property.DamabaProperties
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -14,6 +13,5 @@ import org.springframework.test.context.ActiveProfiles
 @EnableConfigurationProperties(
     DamabaProperties::class,
     AuthProperties::class,
-    AwsProperties::class,
 )
 class DamabaUserTestApplication
