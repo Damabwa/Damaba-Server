@@ -10,7 +10,7 @@ import com.damaba.user.util.RandomTestUtils.Companion.randomBoolean
 import com.damaba.user.util.RandomTestUtils.Companion.randomLocalDate
 import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
-import com.damaba.user.util.TestAuthUtils.createAuthenticationToken
+import com.damaba.user.util.TestFixture.createAuthenticationToken
 import com.damaba.user.util.TestFixture.createUser
 import io.mockk.every
 import io.mockk.mockk

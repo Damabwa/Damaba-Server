@@ -1,6 +1,6 @@
 package com.damaba.damaba.config
 
-import com.damaba.user.property.AwsProperties
+import com.damaba.damaba.property.AwsProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials

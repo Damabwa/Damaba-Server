@@ -9,10 +9,23 @@ import com.damaba.user.domain.user.constant.UserRoleType
 import com.damaba.user.util.RandomTestUtils.Companion.randomLocalDate
 import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 object TestFixture {
+    fun createAuthenticationToken(user: User): Authentication =
+        UsernamePasswordAuthenticationToken(
+            user,
+            null,
+            user.roles
+                .map { roleType -> "ROLE_$roleType" }
+                .map { roleName -> SimpleGrantedAuthority(roleName) }
+                .toMutableList(),
+        )
+
     fun createUser(
         id: Long = randomLong(),
         roles: Set<UserRoleType> = setOf(UserRoleType.USER),

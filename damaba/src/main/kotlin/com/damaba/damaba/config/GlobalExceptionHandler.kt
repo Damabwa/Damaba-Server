@@ -41,7 +41,7 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
             ValidationErrorDetailResponse(fieldError.field, fieldError.defaultMessage)
         }
         return ResponseEntity
-            .status(HttpStatus.UNPROCESSABLE_ENTITY)
+            .status(status)
             .body(ValidationErrorResponse("VALIDATION", VALIDATION_ERROR_MESSAGE, errorDetails))
     }
 
@@ -74,7 +74,7 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
         Logger.error("UnHandled exception raised", ex)
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(ErrorResponse("UNHANDLED", GENERAL_ERROR_MESSAGE + ex.message))
+            .body(ErrorResponse("UNHANDLED", "$GENERAL_ERROR_MESSAGE ${ex.message}"))
     }
 
     private fun getFieldNameFromConstraintViolation(violation: ConstraintViolation<*>): String {
