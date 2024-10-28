@@ -31,10 +31,10 @@ data class PostPromotionRequest(
     val sigungu: String,
 
     @Schema(description = "도로명 주소. 도로명 주소와 지번 주소 중 최소 하나는 입력되어야 합니다.", example = "경기 성남시 분당구 판교역로 166")
-    val roadAddress: String?,
+    val roadAddress: String,
 
     @Schema(description = "지번 주소. 도로명 주소와 지번 주소 중 최소 하나는 입력되어야 합니다.", example = "경기 성남시 분당구 백현동 532")
-    val jibunAddress: String?,
+    val jibunAddress: String,
 
     @Schema(description = "이벤트 관련 외부 링크", example = "https://promotion-instagram-post")
     val externalLink: String?,

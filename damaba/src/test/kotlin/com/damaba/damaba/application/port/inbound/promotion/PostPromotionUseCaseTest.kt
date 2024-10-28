@@ -23,11 +23,6 @@ class PostPromotionUseCaseTest {
     @Nested
     inner class CommandTest {
         @ParameterizedTest
-        @MethodSource("com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCaseTest#validCommandProvider")
-        fun `valid command creation test`(command: PostPromotionUseCase.Command) {
-        }
-
-        @ParameterizedTest
         @MethodSource("com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCaseTest#invalidAddressProvider")
         fun `유효하지 않은 주소가 입력되면 ValidationException이 발생한다`(address: Address) {
             val exception = catchThrowable { createCommand(address = address) }
@@ -69,18 +64,11 @@ class PostPromotionUseCaseTest {
 
     companion object {
         @JvmStatic
-        fun validCommandProvider() = listOf(
-            Arguments.of(createCommand(address = Address("서울", "강남구", "도로명 주소", " "))),
-            Arguments.of(createCommand(address = Address("서울", "강남구", " ", "지번 주소"))),
-        )
-
-        @JvmStatic
         fun invalidAddressProvider() = listOf(
             Arguments.of(Address(" ", "강남구", "도로명 주소", "지번 주소")),
             Arguments.of(Address("서울", " ", "도로명 주소", "지번 주소")),
-            Arguments.of(Address("서울", "강남구", null, null)),
-            Arguments.of(Address("서울", "강남구", " ", null)),
-            Arguments.of(Address("서울", "강남구", null, " ")),
+            Arguments.of(Address("서울", "강남구", " ", "지번 주소")),
+            Arguments.of(Address("서울", "강남구", "도로명 주소", " ")),
         )
 
         @JvmStatic

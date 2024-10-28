@@ -11,10 +11,10 @@ data class AddressResponse(
     val sigungu: String,
 
     @Schema(description = "도로명 주소", example = "경기 성남시 분당구 판교역로 166")
-    val roadAddress: String?,
+    val roadAddress: String,
 
     @Schema(description = "지번 주소", example = "경기 성남시 분당구 백현동 532")
-    val jibunAddress: String?,
+    val jibunAddress: String,
 ) {
     companion object {
         fun from(address: Address) = AddressResponse(
