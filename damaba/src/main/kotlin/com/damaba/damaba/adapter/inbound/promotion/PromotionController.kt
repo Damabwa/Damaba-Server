@@ -2,6 +2,7 @@ package com.damaba.damaba.adapter.inbound.promotion
 
 import com.damaba.damaba.adapter.inbound.promotion.dto.PostPromotionRequest
 import com.damaba.damaba.adapter.inbound.promotion.dto.PromotionResponse
+import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.user.domain.user.User
 import io.swagger.v3.oas.annotations.Operation
@@ -10,14 +11,26 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 import java.net.URI
 
 @Tag(name = "프로모션 관련 API")
 @RestController
-class PromotionController(private val postPromotionUseCase: PostPromotionUseCase) {
+class PromotionController(
+    private val getPromotionDetailUseCase: GetPromotionDetailUseCase,
+    private val postPromotionUseCase: PostPromotionUseCase,
+) {
+    @Operation(summary = "프로모션 상세 조회")
+    @GetMapping("/api/v1/promotions/{promotionId}")
+    fun getPromotionDetailV1(@PathVariable promotionId: Long): PromotionResponse {
+        val promotion = getPromotionDetailUseCase.getPromotionDetail(promotionId)
+        return PromotionResponse.from(promotion)
+    }
+
     @Operation(
         summary = "프로모션 등록",
         description = "신규 프로모션을 등록합니다.",

@@ -3,6 +3,7 @@ package com.damaba.damaba.application.service.promotion
 import com.damaba.common_file.application.port.outbound.UploadFilesPort
 import com.damaba.common_file.domain.FileUploadRollbackEvent
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
+import com.damaba.damaba.application.port.outbound.GetPromotionPort
 import com.damaba.damaba.application.port.outbound.common.PublishEventPort
 import com.damaba.damaba.application.port.outbound.promotion.SavePromotionPort
 import com.damaba.damaba.domain.promotion.Promotion
@@ -23,6 +24,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
+import io.mockk.verify
 import io.mockk.verifyOrder
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatIterable
@@ -30,14 +32,36 @@ import org.assertj.core.api.Assertions.catchThrowable
 import kotlin.test.Test
 
 class PromotionServiceTest {
+    private val getPromotionPort: GetPromotionPort = mockk()
     private val savePromotionPort: SavePromotionPort = mockk()
     private val uploadFilesPort: UploadFilesPort = mockk()
     private val publishEventPort: PublishEventPort = mockk()
 
-    private val sut: PromotionService = PromotionService(savePromotionPort, uploadFilesPort, publishEventPort)
+    private val sut: PromotionService = PromotionService(
+        getPromotionPort,
+        savePromotionPort,
+        uploadFilesPort,
+        publishEventPort,
+    )
 
     private fun confirmVerifiedEveryMocks() {
-        confirmVerified(savePromotionPort, uploadFilesPort, publishEventPort)
+        confirmVerified(getPromotionPort, savePromotionPort, uploadFilesPort, publishEventPort)
+    }
+
+    @Test
+    fun `프로모션 id가 주어지고, 일치하는 프로모션을 상세조회한다`() {
+        // given
+        val promotionId = randomLong()
+        val expectedResult = createPromotion()
+        every { getPromotionPort.getById(promotionId) } returns expectedResult
+
+        // when
+        val actualResult = sut.getPromotionDetail(promotionId)
+
+        // then
+        verify { getPromotionPort.getById(promotionId) }
+        confirmVerifiedEveryMocks()
+        assertThat(actualResult).isEqualTo(expectedResult)
     }
 
     @Test
