@@ -1,6 +1,7 @@
 package com.damaba.damaba.adapter.inbound.promotion
 
 import com.damaba.damaba.adapter.inbound.promotion.dto.PostPromotionRequest
+import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.damaba.config.ControllerTestConfig
 import com.damaba.damaba.domain.promotion.constant.EventType
@@ -8,6 +9,7 @@ import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomSet
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLocalDate
+import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.TestFixture.createAuthenticationToken
 import com.damaba.damaba.util.TestFixture.createMockMultipartFile
@@ -24,6 +26,7 @@ import org.springframework.context.annotation.Import
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -34,12 +37,29 @@ import kotlin.test.Test
 @WebMvcTest(PromotionController::class)
 class PromotionControllerTest @Autowired constructor(
     private val mvc: MockMvc,
+    private val getPromotionDetailUseCase: GetPromotionDetailUseCase,
     private val postPromotionUseCase: PostPromotionUseCase,
 ) {
     @TestConfiguration
     class MockBeanSetUp {
-        @Bean
-        fun postPromotionUseCase(): PostPromotionUseCase = mockk()
+        @Bean fun getPromotionDetailUseCase(): GetPromotionDetailUseCase = mockk()
+
+        @Bean fun postPromotionUseCase(): PostPromotionUseCase = mockk()
+    }
+
+    @Test
+    fun `프로모션 id가 주어지고, 프로모션을 상세 조회한다`() {
+        // given
+        val promotionId = randomLong()
+        val expectedResult = createPromotion(id = promotionId)
+        every { getPromotionDetailUseCase.getPromotionDetail(promotionId) } returns expectedResult
+
+        // when & then
+        mvc.perform(
+            get("/api/v1/promotions/$promotionId"),
+        ).andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").value(expectedResult.id))
+        verify { getPromotionDetailUseCase.getPromotionDetail(promotionId) }
     }
 
     @Test

@@ -40,6 +40,7 @@ class SecurityConfig(private val env: Environment) {
             "/api/v*/auth/login" to HttpMethod.POST,
             "/api/v*/users/nicknames/existence" to HttpMethod.GET,
             "/api/v*/regions/groups" to HttpMethod.GET,
+            "/api/v*/promotions/{promotionId:\\d+}" to HttpMethod.GET,
         )
     }
 
