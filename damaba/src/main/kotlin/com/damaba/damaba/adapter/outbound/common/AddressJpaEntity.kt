@@ -8,8 +8,8 @@ import jakarta.persistence.Embeddable
 class AddressJpaEntity(
     sido: String,
     sigungu: String,
-    roadAddress: String?,
-    jibunAddress: String?,
+    roadAddress: String,
+    jibunAddress: String,
 ) {
     @Column(name = "sido", nullable = false)
     var sido: String = sido
@@ -20,11 +20,11 @@ class AddressJpaEntity(
         private set
 
     @Column(name = "road_address")
-    var roadAddress: String? = roadAddress
+    var roadAddress: String = roadAddress
         private set
 
     @Column(name = "jibun_address")
-    var jibunAddress: String? = jibunAddress
+    var jibunAddress: String = jibunAddress
         private set
 
     fun toDomain() = Address(

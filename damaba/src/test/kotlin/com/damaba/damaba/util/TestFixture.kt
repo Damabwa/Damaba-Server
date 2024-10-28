@@ -62,8 +62,8 @@ object TestFixture {
     fun createAddress(
         sido: String = randomString(),
         sigungu: String = randomString(),
-        roadAddress: String? = randomString(),
-        jibunAddress: String? = randomString(),
+        roadAddress: String = randomString(),
+        jibunAddress: String = randomString(),
     ) = Address(sido, sigungu, roadAddress, jibunAddress)
 
     fun createPromotion(
