@@ -10,6 +10,7 @@ import com.damaba.damaba.domain.promotion.PromotionActiveRegion
 import com.damaba.damaba.domain.promotion.PromotionImage
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class PromotionService(
@@ -17,6 +18,7 @@ class PromotionService(
     private val uploadFilesPort: UploadFilesPort,
     private val publishEventPort: PublishEventPort,
 ) : PostPromotionUseCase {
+    @Transactional
     override fun postPromotion(command: PostPromotionUseCase.Command): Promotion {
         val uploadedFiles = uploadFilesPort.upload(command.images, PROMOTION_IMAGE_UPLOAD_PATH)
         val uploadedPromotionImages =
