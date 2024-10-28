@@ -1,7 +1,7 @@
 package com.damaba.damaba.util
 
+import org.apache.commons.lang3.RandomStringUtils
 import java.time.LocalDate
-import java.util.UUID
 import kotlin.random.Random
 
 class RandomTestUtils {
@@ -22,9 +22,9 @@ class RandomTestUtils {
 
         fun randomBoolean(): Boolean = Random.nextBoolean()
 
-        fun randomString(): String = UUID.randomUUID().toString().substring(0, 16)
+        fun randomString(): String = randomString(10)
 
-        fun randomString(len: Int): String = UUID.randomUUID().toString().substring(0, len)
+        fun randomString(len: Int): String = RandomStringUtils.random(len, true, true)
 
         fun randomLocalDate(): LocalDate = LocalDate.of(
             randomInt(positive = true) % 3000 + 1,
