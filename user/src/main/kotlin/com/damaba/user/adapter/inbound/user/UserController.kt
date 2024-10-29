@@ -53,7 +53,7 @@ class UserController(
         ) @RequestParam nickname: String,
     ): CheckNicknameExistenceResponse {
         val doesNicknameExists =
-            checkNicknameExistenceUseCase.doesNicknameExist(CheckNicknameExistenceUseCase.Command(nickname))
+            checkNicknameExistenceUseCase.doesNicknameExist(CheckNicknameExistenceUseCase.Query(nickname))
         return CheckNicknameExistenceResponse(nickname, doesNicknameExists)
     }
 

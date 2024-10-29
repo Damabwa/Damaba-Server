@@ -3,9 +3,9 @@ package com.damaba.user.application.port.inbound.user
 import com.damaba.user.domain.user.UserValidator
 
 interface CheckNicknameExistenceUseCase {
-    fun doesNicknameExist(command: Command): Boolean
+    fun doesNicknameExist(query: Query): Boolean
 
-    data class Command(val nickname: String) {
+    data class Query(val nickname: String) {
         init {
             UserValidator.validateNickname(nickname)
         }

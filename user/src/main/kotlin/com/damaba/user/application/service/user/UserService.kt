@@ -30,8 +30,8 @@ class UserService(
         getUserPort.getById(userId)
 
     @Transactional(readOnly = true)
-    override fun doesNicknameExist(command: CheckNicknameExistenceUseCase.Command): Boolean =
-        checkNicknameExistencePort.doesNicknameExist(command.nickname)
+    override fun doesNicknameExist(query: CheckNicknameExistenceUseCase.Query): Boolean =
+        checkNicknameExistencePort.doesNicknameExist(query.nickname)
 
     @Transactional
     override fun updateMyInfo(command: UpdateMyInfoUseCase.Command): User {

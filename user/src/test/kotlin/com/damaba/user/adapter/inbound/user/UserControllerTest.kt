@@ -111,7 +111,7 @@ class UserControllerTest @Autowired constructor(
         val nickname = randomString(len = 7)
         val expectedResult = randomBoolean()
         every {
-            checkNicknameExistenceUseCase.doesNicknameExist(CheckNicknameExistenceUseCase.Command(nickname))
+            checkNicknameExistenceUseCase.doesNicknameExist(CheckNicknameExistenceUseCase.Query(nickname))
         } returns expectedResult
 
         // when & then
@@ -121,6 +121,6 @@ class UserControllerTest @Autowired constructor(
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.nickname").value(nickname))
             .andExpect(jsonPath("$.exists").value(expectedResult))
-        verify { checkNicknameExistenceUseCase.doesNicknameExist(CheckNicknameExistenceUseCase.Command(nickname)) }
+        verify { checkNicknameExistenceUseCase.doesNicknameExist(CheckNicknameExistenceUseCase.Query(nickname)) }
     }
 }

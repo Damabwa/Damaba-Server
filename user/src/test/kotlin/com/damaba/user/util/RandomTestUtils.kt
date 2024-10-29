@@ -6,9 +6,13 @@ import kotlin.random.Random
 
 class RandomTestUtils {
     companion object {
-        fun randomInt(positive: Boolean = false): Int {
-            if (positive) return Random.nextInt(from = 1, until = Integer.MAX_VALUE)
-            return Random.nextInt()
+        fun randomInt(
+            positive: Boolean = false,
+            min: Int = -2_000_000_000,
+            max: Int = 2_000_000_000,
+        ): Int {
+            if (positive) return Random.nextInt(from = 1, until = max + 1)
+            return Random.nextInt(from = min, until = max + 1)
         }
 
         fun randomLong(positive: Boolean = false): Long {

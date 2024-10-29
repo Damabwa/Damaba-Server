@@ -66,12 +66,12 @@ class UserServiceTest {
     fun `닉네임이 주어지고, 주어진 닉네임이 존재하는지 확인한다`() {
         // given
         val nickname = randomString(len = 7)
-        val command = CheckNicknameExistenceUseCase.Command(nickname)
+        val query = CheckNicknameExistenceUseCase.Query(nickname)
         val expectedResult = randomBoolean()
         every { checkNicknameExistencePort.doesNicknameExist(nickname) } returns expectedResult
 
         // when
-        val actualResult = sut.doesNicknameExist(command)
+        val actualResult = sut.doesNicknameExist(query)
 
         // then
         verify { checkNicknameExistencePort.doesNicknameExist(nickname) }
