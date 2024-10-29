@@ -44,8 +44,8 @@ data class PromotionResponse(
     @Schema(description = "사진작가 인스타 id", example = "dama.photo")
     val photographerInstagramId: String?,
 
-    @Schema(description = "이미지 리스트")
-    val images: List<PromotionImageResponse>,
+    @Schema(description = "이미지 url 리스트", example = "[\"https://promotion-image\"]")
+    val imageUrls: List<String>,
 
     @Schema(description = "활동 지역 리스트")
     val activeRegions: Set<PromotionActiveRegionResponse>,
@@ -67,7 +67,7 @@ data class PromotionResponse(
             endedAt = promotion.endedAt,
             photographerName = promotion.photographerName,
             photographerInstagramId = promotion.photographerInstagramId,
-            images = promotion.images.map { PromotionImageResponse.from(it) },
+            imageUrls = promotion.images.map { image -> image.url },
             activeRegions = promotion.activeRegions.map { PromotionActiveRegionResponse.from(it) }.toSet(),
             hashtags = promotion.hashtags,
         )
