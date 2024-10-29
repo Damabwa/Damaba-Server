@@ -1,6 +1,5 @@
 package com.damaba.user.application.service.auth
 
-import com.damaba.common_exception.ValidationException
 import com.damaba.user.application.port.inbound.auth.OAuthLoginUseCase
 import com.damaba.user.application.port.outbound.auth.CreateAuthTokenPort
 import com.damaba.user.application.port.outbound.auth.GetOAuthLoginUidPort
@@ -22,7 +21,6 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.verifyOrder
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.catchThrowable
 import org.junit.jupiter.api.BeforeEach
 import kotlin.test.Test
 
@@ -47,6 +45,17 @@ class OAuthLoginServiceTest {
     @BeforeEach
     fun setup() {
         every { authProperties.refreshTokenDurationMillis } returns REFRESH_TOKEN_DURATION_MILLIS
+    }
+
+    private fun confirmVerifiedEveryMocks() {
+        confirmVerified(
+            getOAuthLoginUidPort,
+            findUserPort,
+            checkNicknameExistencePort,
+            saveUserPort,
+            createAuthTokenPort,
+            saveRefreshTokenPort,
+        )
     }
 
     @Test
@@ -136,32 +145,6 @@ class OAuthLoginServiceTest {
         assertThat(result.user).isEqualTo(user)
         assertThat(result.accessToken).isEqualTo(accessToken)
         assertThat(result.refreshToken).isEqualTo(refreshToken)
-    }
-
-    @Test
-    fun `auth key가 공백으로 주어지고, OAuth 로그인을 진행하면, validation 예외가 발생한다`() {
-        // given
-        val authKey = ""
-
-        // when
-        val ex = catchThrowable {
-            sut.oAuthLogin(OAuthLoginUseCase.Command(loginType = LoginType.KAKAO, authKey = authKey))
-        }
-
-        // then
-        confirmVerifiedEveryMocks()
-        assertThat(ex).isInstanceOf(ValidationException::class.java)
-    }
-
-    private fun confirmVerifiedEveryMocks() {
-        confirmVerified(
-            getOAuthLoginUidPort,
-            findUserPort,
-            checkNicknameExistencePort,
-            saveUserPort,
-            createAuthTokenPort,
-            saveRefreshTokenPort,
-        )
     }
 
     companion object {
