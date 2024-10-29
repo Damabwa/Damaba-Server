@@ -120,6 +120,7 @@ tasks.jacocoTestReport {
                         "**/adapter/outbound/**/*Adapter*",
                         "**/application/listener/**/*EventListener*",
                         "**/application/service/**",
+                        "**/application/port/**",
                         "**/domain/**",
                     ),
                 )
@@ -153,6 +154,7 @@ tasks.jacocoTestCoverageVerification {
                 "*.adapter.outbound.*.*Adapter*",
                 "*.application.listener.*.*EventListener*",
                 "*.application.service.*.*",
+                "*.application.port.*",
                 "*.domain.*.*",
             )
         }
