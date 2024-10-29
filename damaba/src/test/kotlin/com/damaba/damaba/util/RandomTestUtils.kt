@@ -8,11 +8,11 @@ class RandomTestUtils {
     companion object {
         fun randomInt(
             positive: Boolean = false,
-            min: Int = Int.MIN_VALUE,
-            max: Int = Int.MAX_VALUE,
+            min: Int = -2_000_000_000,
+            max: Int = 2_000_000_000,
         ): Int {
-            if (positive) return Random.nextInt(from = 1, until = max)
-            return Random.nextInt(from = min, until = max)
+            if (positive) return Random.nextInt(from = 1, until = max + 1)
+            return Random.nextInt(from = min, until = max + 1)
         }
 
         fun randomLong(positive: Boolean = false): Long {

@@ -4,7 +4,6 @@ import com.damaba.common_exception.ValidationException
 import com.damaba.user.domain.auth.AuthToken
 import com.damaba.user.domain.user.User
 import com.damaba.user.domain.user.constant.LoginType
-import org.springframework.transaction.annotation.Transactional
 
 interface OAuthLoginUseCase {
     /**
@@ -19,7 +18,6 @@ interface OAuthLoginUseCase {
      * @param command
      * @return 신규 유저 데이터 생성 여부, 신규 유저인지에 대한 정보, access token 정보, refresh token 정보 반환
      */
-    @Transactional
     fun oAuthLogin(command: Command): Result
 
     data class Command(

@@ -12,54 +12,50 @@ import com.damaba.damaba.util.TestFixture.createAddress
 import com.damaba.damaba.util.TestFixture.createUploadFile
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
-import org.junit.jupiter.api.Nested
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.time.LocalDate
 import kotlin.test.Test
 
-class PostPromotionUseCaseTest {
-    @Nested
-    inner class CommandTest {
-        @ParameterizedTest
-        @MethodSource("com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCaseTest#invalidAddressProvider")
-        fun `유효하지 않은 주소가 입력되면 ValidationException이 발생한다`(address: Address) {
-            val exception = catchThrowable { createCommand(address = address) }
-            assertThat(exception).isInstanceOf(ValidationException::class.java)
-        }
+class PostPromotionUseCaseCommandTest {
+    @ParameterizedTest
+    @MethodSource("invalidAddressProvider")
+    fun `유효하지 않은 주소가 입력되면 ValidationException이 발생한다`(address: Address) {
+        val exception = catchThrowable { createCommand(address = address) }
+        assertThat(exception).isInstanceOf(ValidationException::class.java)
+    }
 
-        @ParameterizedTest
-        @MethodSource("com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCaseTest#invalidTitleProvider")
-        fun `유효하지 않은 제목이 입력되면 ValidationException이 발생한다`(title: String) {
-            val exception = catchThrowable { createCommand(title = title) }
-            assertThat(exception).isInstanceOf(ValidationException::class.java)
-        }
+    @ParameterizedTest
+    @MethodSource("invalidTitleProvider")
+    fun `유효하지 않은 제목이 입력되면 ValidationException이 발생한다`(title: String) {
+        val exception = catchThrowable { createCommand(title = title) }
+        assertThat(exception).isInstanceOf(ValidationException::class.java)
+    }
 
-        @Test
-        fun `500 글자를 초과한 내용이 입력되면 ValidationException이 발생한다`() {
-            val exception = catchThrowable { createCommand(content = randomString(len = 1000)) }
-            assertThat(exception).isInstanceOf(ValidationException::class.java)
-        }
+    @Test
+    fun `500 글자를 초과한 내용이 입력되면 ValidationException이 발생한다`() {
+        val exception = catchThrowable { createCommand(content = randomString(len = 1000)) }
+        assertThat(exception).isInstanceOf(ValidationException::class.java)
+    }
 
-        @Test
-        fun `프로모션 유형이 이벤트이나 이벤트 유형이 없으면 ValidationException이 발생한다`() {
-            val exception = catchThrowable { createCommand(promotionType = PromotionType.EVENT, eventType = null) }
-            assertThat(exception).isInstanceOf(ValidationException::class.java)
-        }
+    @Test
+    fun `프로모션 유형이 이벤트이나 이벤트 유형이 없으면 ValidationException이 발생한다`() {
+        val exception = catchThrowable { createCommand(promotionType = PromotionType.EVENT, eventType = null) }
+        assertThat(exception).isInstanceOf(ValidationException::class.java)
+    }
 
-        @ParameterizedTest
-        @MethodSource("com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCaseTest#invalidImageSizeProvider")
-        fun `이미지 개수가 유효하지 않으면 ValidationException이 발생한다`(images: List<UploadFile>) {
-            val exception = catchThrowable { createCommand(images = images) }
-            assertThat(exception).isInstanceOf(ValidationException::class.java)
-        }
+    @ParameterizedTest
+    @MethodSource("invalidImageSizeProvider")
+    fun `이미지 개수가 유효하지 않으면 ValidationException이 발생한다`(images: List<UploadFile>) {
+        val exception = catchThrowable { createCommand(images = images) }
+        assertThat(exception).isInstanceOf(ValidationException::class.java)
+    }
 
-        @Test
-        fun `활동 지역이 없으면 ValidationException이 발생한다`() {
-            val exception = catchThrowable { createCommand(activeRegions = emptySet()) }
-            assertThat(exception).isInstanceOf(ValidationException::class.java)
-        }
+    @Test
+    fun `활동 지역이 없으면 ValidationException이 발생한다`() {
+        val exception = catchThrowable { createCommand(activeRegions = emptySet()) }
+        assertThat(exception).isInstanceOf(ValidationException::class.java)
     }
 
     companion object {

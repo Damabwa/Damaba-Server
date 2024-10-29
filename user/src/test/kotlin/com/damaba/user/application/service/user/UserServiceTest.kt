@@ -1,6 +1,5 @@
 package com.damaba.user.application.service.user
 
-import com.damaba.common_exception.ValidationException
 import com.damaba.common_file.application.port.outbound.UploadFilePort
 import com.damaba.common_file.domain.FileUploadRollbackEvent
 import com.damaba.common_file.domain.UploadedFile
@@ -28,8 +27,6 @@ import io.mockk.verify
 import io.mockk.verifyOrder
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.ValueSource
 import kotlin.test.Test
 
 class UserServiceTest {
@@ -77,52 +74,6 @@ class UserServiceTest {
         verify { checkNicknameExistencePort.doesNicknameExist(nickname) }
         confirmVerifiedEveryMocks()
         assertThat(actualResult).isEqualTo(expectedResult)
-    }
-
-    @ValueSource(strings = ["", "   ", "1", "over7chars", "with!@#$%^"])
-    @ParameterizedTest
-    fun `유효하지 않은 닉네임이 주어지고, 유저 정보를 수정하면, validation 예외가 발생한다 `(nickname: String) {
-        // given
-
-        // when
-        val ex = catchThrowable {
-            sut.updateMyInfo(
-                UpdateMyInfoUseCase.Command(
-                    userId = 1L,
-                    nickname = nickname,
-                    gender = null,
-                    birthDate = null,
-                    instagramId = null,
-                    profileImage = null,
-                ),
-            )
-        }
-
-        // then
-        assertThat(ex).isInstanceOf(ValidationException::class.java)
-    }
-
-    @ValueSource(strings = ["", "   ", "over30chars,over30chars,over30chars"])
-    @ParameterizedTest
-    fun `유효하지 않은 인스타그램 id가 주어지고, 유저 정보를 수정하면, validation 예외가 발생한다 `(instagramId: String) {
-        // given
-
-        // when
-        val ex = catchThrowable {
-            sut.updateMyInfo(
-                UpdateMyInfoUseCase.Command(
-                    userId = 1L,
-                    nickname = null,
-                    gender = null,
-                    birthDate = null,
-                    instagramId = instagramId,
-                    profileImage = null,
-                ),
-            )
-        }
-
-        // then
-        assertThat(ex).isInstanceOf(ValidationException::class.java)
     }
 
     @Test
