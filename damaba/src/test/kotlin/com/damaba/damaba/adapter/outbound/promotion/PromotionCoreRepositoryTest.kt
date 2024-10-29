@@ -18,24 +18,6 @@ class PromotionCoreRepositoryTest @Autowired constructor(
     private val promotionCoreRepository: PromotionCoreRepository,
 ) {
     @Test
-    fun `신규 프로모션을 저장한다`() {
-        // given
-        val promotion = createPromotion()
-
-        // when
-        val savedPromotion = promotionCoreRepository.save(promotion)
-
-        // then
-        assertThat(savedPromotion.id).isGreaterThan(0)
-        assertThat(savedPromotion.type).isEqualTo(promotion.type)
-        assertThat(savedPromotion.title).isEqualTo(promotion.title)
-        assertThat(savedPromotion.content).isEqualTo(promotion.content)
-        assertThatIterable(savedPromotion.images).isEqualTo(promotion.images)
-        assertThatIterable(savedPromotion.activeRegions).isEqualTo(promotion.activeRegions)
-        assertThatIterable(savedPromotion.hashtags).isEqualTo(promotion.hashtags)
-    }
-
-    @Test
     fun `(Get) 프로모션 id가 주어지고, 주어진 id와 일치하는 프로모션을 단건 조회하면, 조회된 프로모션이 반환된다`() {
         // given
         val promotion = promotionCoreRepository.save(createPromotion())
@@ -56,5 +38,42 @@ class PromotionCoreRepositoryTest @Autowired constructor(
 
         // then
         assertThat(ex).isInstanceOf(PromotionNotFoundException::class.java)
+    }
+
+    @Test
+    fun `프로모션 리스트를 조회한다`() {
+        // given
+        promotionCoreRepository.save(createPromotion())
+        promotionCoreRepository.save(createPromotion())
+        promotionCoreRepository.save(createPromotion())
+        val page = 0
+        val pageSize = 10
+
+        // when
+        val promotions = promotionCoreRepository.findPromotions(page, pageSize)
+
+        // then
+        assertThat(promotions.items.size).isEqualTo(3)
+        assertThat(promotions.page).isEqualTo(page)
+        assertThat(promotions.pageSize).isEqualTo(pageSize)
+        assertThat(promotions.totalPage).isEqualTo(1)
+    }
+
+    @Test
+    fun `신규 프로모션을 저장한다`() {
+        // given
+        val promotion = createPromotion()
+
+        // when
+        val savedPromotion = promotionCoreRepository.save(promotion)
+
+        // then
+        assertThat(savedPromotion.id).isGreaterThan(0)
+        assertThat(savedPromotion.type).isEqualTo(promotion.type)
+        assertThat(savedPromotion.title).isEqualTo(promotion.title)
+        assertThat(savedPromotion.content).isEqualTo(promotion.content)
+        assertThatIterable(savedPromotion.images).isEqualTo(promotion.images)
+        assertThatIterable(savedPromotion.activeRegions).isEqualTo(promotion.activeRegions)
+        assertThatIterable(savedPromotion.hashtags).isEqualTo(promotion.hashtags)
     }
 }

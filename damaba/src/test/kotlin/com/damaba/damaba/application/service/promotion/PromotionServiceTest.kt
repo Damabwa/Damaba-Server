@@ -2,15 +2,19 @@ package com.damaba.damaba.application.service.promotion
 
 import com.damaba.common_file.application.port.outbound.UploadFilesPort
 import com.damaba.common_file.domain.FileUploadRollbackEvent
+import com.damaba.damaba.application.port.inbound.promotion.FindPromotionsUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
-import com.damaba.damaba.application.port.outbound.GetPromotionPort
 import com.damaba.damaba.application.port.outbound.common.PublishEventPort
+import com.damaba.damaba.application.port.outbound.promotion.FindPromotionsPort
+import com.damaba.damaba.application.port.outbound.promotion.GetPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.SavePromotionPort
+import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.constant.EventType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomSet
+import com.damaba.damaba.util.RandomTestUtils.Companion.randomInt
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLocalDate
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
@@ -29,23 +33,26 @@ import io.mockk.verifyOrder
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatIterable
 import org.assertj.core.api.Assertions.catchThrowable
+import kotlin.math.max
 import kotlin.test.Test
 
 class PromotionServiceTest {
     private val getPromotionPort: GetPromotionPort = mockk()
+    private val findPromotionsPort: FindPromotionsPort = mockk()
     private val savePromotionPort: SavePromotionPort = mockk()
     private val uploadFilesPort: UploadFilesPort = mockk()
     private val publishEventPort: PublishEventPort = mockk()
 
     private val sut: PromotionService = PromotionService(
         getPromotionPort,
+        findPromotionsPort,
         savePromotionPort,
         uploadFilesPort,
         publishEventPort,
     )
 
     private fun confirmVerifiedEveryMocks() {
-        confirmVerified(getPromotionPort, savePromotionPort, uploadFilesPort, publishEventPort)
+        confirmVerified(getPromotionPort, findPromotionsPort, savePromotionPort, uploadFilesPort, publishEventPort)
     }
 
     @Test
@@ -60,6 +67,32 @@ class PromotionServiceTest {
 
         // then
         verify { getPromotionPort.getById(promotionId) }
+        confirmVerifiedEveryMocks()
+        assertThat(actualResult).isEqualTo(expectedResult)
+    }
+
+    @Test
+    fun `프로모션 리스트를 조회한다`() {
+        // given
+        val query = FindPromotionsUseCase.Query(
+            page = randomInt(positive = true, max = 10),
+            pageSize = randomInt(positive = true, max = 10),
+        )
+        val expectedResult = Pagination(
+            items = generateRandomList(maxSize = query.pageSize) { createPromotion() },
+            page = query.page,
+            pageSize = query.pageSize,
+            totalPage = 1,
+        )
+        every {
+            findPromotionsPort.findPromotions(page = query.page, pageSize = query.pageSize)
+        } returns expectedResult
+
+        // when
+        val actualResult = sut.findPromotions(query)
+
+        // then
+        verify { findPromotionsPort.findPromotions(page = query.page, pageSize = query.pageSize) }
         confirmVerifiedEveryMocks()
         assertThat(actualResult).isEqualTo(expectedResult)
     }

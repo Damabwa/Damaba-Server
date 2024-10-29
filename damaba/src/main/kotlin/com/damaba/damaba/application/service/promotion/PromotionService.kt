@@ -2,11 +2,14 @@ package com.damaba.damaba.application.service.promotion
 
 import com.damaba.common_file.application.port.outbound.UploadFilesPort
 import com.damaba.common_file.domain.FileUploadRollbackEvent
+import com.damaba.damaba.application.port.inbound.promotion.FindPromotionsUseCase
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
-import com.damaba.damaba.application.port.outbound.GetPromotionPort
 import com.damaba.damaba.application.port.outbound.common.PublishEventPort
+import com.damaba.damaba.application.port.outbound.promotion.FindPromotionsPort
+import com.damaba.damaba.application.port.outbound.promotion.GetPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.SavePromotionPort
+import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.PromotionActiveRegion
 import com.damaba.damaba.domain.promotion.PromotionImage
@@ -17,15 +20,21 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class PromotionService(
     private val getPromotionPort: GetPromotionPort,
+    private val findPromotionsPort: FindPromotionsPort,
     private val savePromotionPort: SavePromotionPort,
     private val uploadFilesPort: UploadFilesPort,
     private val publishEventPort: PublishEventPort,
 ) : GetPromotionDetailUseCase,
+    FindPromotionsUseCase,
     PostPromotionUseCase {
 
     @Transactional(readOnly = true)
     override fun getPromotionDetail(promotionId: Long): Promotion =
         getPromotionPort.getById(promotionId)
+
+    @Transactional(readOnly = true)
+    override fun findPromotions(query: FindPromotionsUseCase.Query): Pagination<Promotion> =
+        findPromotionsPort.findPromotions(query.page, query.pageSize)
 
     @Transactional
     override fun postPromotion(command: PostPromotionUseCase.Command): Promotion {
