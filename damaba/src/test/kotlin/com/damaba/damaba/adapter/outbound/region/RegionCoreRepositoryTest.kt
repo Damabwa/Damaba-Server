@@ -16,13 +16,22 @@ class RegionCoreRepositoryTest @Autowired constructor(
     private val regionRepository: RegionCoreRepository,
 ) {
     @Test
-    fun `전체 지역 리스트를 조회한다`() {
-        // given
-
+    fun `전체 지역 카테고리 리스트를 조회한다`() {
         // when
-        val result = regionRepository.findRegionGroups()
+        val categories = regionRepository.findRegionCategories()
 
         // then
-        assertThat(result).isNotNull()
+        assertThat(categories).isNotNull()
+        assertThat(categories).isNotEmpty()
+    }
+
+    @Test
+    fun `전체 지역 리스트를 조회한다`() {
+        // when
+        val regionGroups = regionRepository.findRegionGroups()
+
+        // then
+        assertThat(regionGroups).isNotNull()
+        assertThat(regionGroups).isNotEmpty()
     }
 }
