@@ -24,7 +24,6 @@ class AuthFilter(
     private val validateAuthTokenPort: ValidateAuthTokenPort,
     private val parseUserIdFromAuthTokenPort: ParseUserIdFromAuthTokenPort,
     private val findUserPort: FindUserPort,
-
 ) : OncePerRequestFilter() {
     companion object {
         private const val BEARER_PREFIX = "Bearer "

@@ -39,6 +39,7 @@ class SecurityConfig(private val env: Environment) {
         val AUTH_WHITE_LIST = mapOf(
             "/api/v*/auth/login" to HttpMethod.POST,
             "/api/v*/users/nicknames/existence" to HttpMethod.GET,
+            "/api/v*/regions/categories" to HttpMethod.GET,
             "/api/v*/regions/groups" to HttpMethod.GET,
             "/api/v*/promotions/{promotionId:\\d+}" to HttpMethod.GET,
             "/api/v*/promotions" to HttpMethod.GET,
