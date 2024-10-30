@@ -15,8 +15,8 @@ data class PostPromotionRequest(
     @Schema(description = "프로모션 종류")
     val type: PromotionType,
 
-    @Schema(description = "(프로모션 종류가 이벤트인 경우에만 해당) 이벤트 종류")
-    val eventType: EventType?,
+    @Schema(description = "이벤트 종류")
+    val eventType: EventType,
 
     @Schema(description = "제목. 제목은 3~20 글자여야 합니다.", example = "이벤트 이름")
     val title: String,

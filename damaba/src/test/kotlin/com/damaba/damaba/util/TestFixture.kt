@@ -69,8 +69,8 @@ object TestFixture {
     fun createPromotion(
         id: Long = randomLong(),
         authorId: Long? = randomLong(),
-        type: PromotionType = PromotionType.MODEL,
-        eventType: EventType? = null,
+        type: PromotionType = PromotionType.EVENT,
+        eventType: EventType = EventType.FREE,
         title: String = randomString(10),
         content: String = randomString(30),
         address: Address = createAddress(),

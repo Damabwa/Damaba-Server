@@ -13,7 +13,6 @@ import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.PromotionActiveRegion
 import com.damaba.damaba.domain.promotion.PromotionImage
-import com.damaba.damaba.domain.promotion.constant.PromotionType
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -55,7 +54,7 @@ class PromotionService(
     ): Promotion = Promotion.create(
         authorId = command.authorId,
         type = command.type,
-        eventType = if (command.type == PromotionType.EVENT) command.eventType else null,
+        eventType = command.eventType,
         title = command.title,
         content = command.content,
         address = command.address,

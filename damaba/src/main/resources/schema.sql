@@ -42,7 +42,7 @@ CREATE TABLE promotion
     id                        BIGINT       NOT NULL AUTO_INCREMENT,
     author_id                 BIGINT COMMENT '(FK) id of user(author)',
     type                      VARCHAR(255) NOT NULL,
-    event_type                VARCHAR(255),
+    event_type                VARCHAR(255) NOT NULL,
     title                     VARCHAR(20)  NOT NULL,
     content                   VARCHAR(500) NOT NULL,
     sido                      VARCHAR(255) NOT NULL,

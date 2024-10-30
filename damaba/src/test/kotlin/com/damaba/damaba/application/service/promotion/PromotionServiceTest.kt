@@ -100,32 +100,7 @@ class PromotionServiceTest {
     @Test
     fun `등록할 이벤트 프로모션 정보들이 주어지고, 주어진 정보로 이벤트 프로모션을 생성 및 등록한다`() {
         // given
-        val command = createPostPromotionCommand(PromotionType.EVENT, EventType.FREE)
-        val expectedResult = createPromotion()
-        every {
-            uploadFilesPort.upload(command.images, any(String::class))
-        } returns List(3) { createUploadedFile() }
-        every { savePromotionPort.save(any(Promotion::class)) } returns expectedResult
-
-        // when
-        val actualResult = sut.postPromotion(command)
-
-        // then
-        verifyOrder {
-            uploadFilesPort.upload(command.images, any(String::class))
-            savePromotionPort.save(any(Promotion::class))
-        }
-        confirmVerifiedEveryMocks()
-        assertThat(actualResult).isEqualTo(expectedResult)
-        assertThatIterable(actualResult.images).isEqualTo(expectedResult.images)
-        assertThatIterable(actualResult.activeRegions).isEqualTo(expectedResult.activeRegions)
-        assertThatIterable(actualResult.hashtags).isEqualTo(expectedResult.hashtags)
-    }
-
-    @Test
-    fun `등록할 모델 프로모션 정보들이 주어지고, 주어진 정보로 모델 프로모션을 생성 및 등록한다`() {
-        // given
-        val command = createPostPromotionCommand(PromotionType.MODEL, null)
+        val command = createPostPromotionCommand()
         val expectedResult = createPromotion()
         every {
             uploadFilesPort.upload(command.images, any(String::class))
@@ -150,7 +125,7 @@ class PromotionServiceTest {
     @Test
     fun `프로모션을 생성 및 등록한다, 이미지는 성공적으로 업로드 되었지만 프로모션 저장에 실패할 경우, 파일 롤백 이벤트를 발행하고 예외가 발생한다`() {
         // given
-        val command = createPostPromotionCommand(PromotionType.EVENT, EventType.FREE)
+        val command = createPostPromotionCommand()
         val expectedThrownException = IllegalStateException()
         every {
             uploadFilesPort.upload(command.images, any(String::class))
@@ -171,13 +146,10 @@ class PromotionServiceTest {
         assertThat(actualThrownException).isInstanceOf(expectedThrownException::class.java)
     }
 
-    private fun createPostPromotionCommand(
-        promotionType: PromotionType,
-        eventType: EventType?,
-    ) = PostPromotionUseCase.Command(
+    private fun createPostPromotionCommand() = PostPromotionUseCase.Command(
         authorId = randomLong(),
-        type = promotionType,
-        eventType = eventType,
+        type = PromotionType.EVENT,
+        eventType = EventType.FREE,
         title = randomString(len = 10),
         content = randomString(),
         address = createAddress(),
