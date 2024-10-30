@@ -1,20 +1,28 @@
 package com.damaba.damaba.config
 
 import io.mockk.mockk
+import jakarta.servlet.FilterChain
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
-import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.web.SecurityFilterChain
+import org.springframework.context.annotation.Import
 
+@Import(
+    SecurityConfig::class,
+    SecurityConfig.CustomAccessDeniedHandler::class,
+    SecurityConfig.CustomAuthenticationEntryPoint::class,
+)
 @TestConfiguration
 class ControllerTestConfig {
     @Bean
-    fun authFilter(): AuthFilter = AuthFilter(mockk(), mockk(), mockk())
-
-    @Bean
-    fun securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain =
-        httpSecurity
-            .csrf { it.disable() }
-            .authorizeHttpRequests { auth -> auth.anyRequest().permitAll() }
-            .build()
+    fun authFilter(): AuthFilter = object : AuthFilter(mockk(), mockk(), mockk()) {
+        override fun doFilterInternal(
+            request: HttpServletRequest,
+            response: HttpServletResponse,
+            filterChain: FilterChain,
+        ) {
+            filterChain.doFilter(request, response)
+        }
+    }
 }
