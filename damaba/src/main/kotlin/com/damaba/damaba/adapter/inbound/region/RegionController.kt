@@ -1,6 +1,8 @@
 package com.damaba.damaba.adapter.inbound.region
 
+import com.damaba.damaba.adapter.inbound.region.dto.RegionCategoriesResponse
 import com.damaba.damaba.adapter.inbound.region.dto.RegionGroupsResponse
+import com.damaba.damaba.application.port.inbound.region.FindRegionCategoriesUseCase
 import com.damaba.damaba.application.port.inbound.region.FindRegionGroupsUseCase
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -9,7 +11,16 @@ import org.springframework.web.bind.annotation.RestController
 
 @Tag(name = "Region(지역) 관련 API", description = "담아봐 서비스 내에서 다루는 지역에 대한 API입니다.")
 @RestController
-class RegionController(private val findRegionGroupsUseCase: FindRegionGroupsUseCase) {
+class RegionController(
+    private val findRegionCategoriesUseCase: FindRegionCategoriesUseCase,
+    private val findRegionGroupsUseCase: FindRegionGroupsUseCase,
+) {
+    @GetMapping("/api/v1/regions/categories")
+    fun findRegionCategories(): RegionCategoriesResponse {
+        val categories = findRegionCategoriesUseCase.findRegionCategories()
+        return RegionCategoriesResponse(categories)
+    }
+
     @Operation(
         summary = "Region group 리스트 조회",
         description = "<p>Region group 리스트를 조회합니다." +
