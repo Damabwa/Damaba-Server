@@ -9,7 +9,7 @@ class Promotion(
     val id: Long,
     val authorId: Long?,
     val type: PromotionType,
-    val eventType: EventType?,
+    val eventType: EventType,
     val title: String,
     val content: String,
     val address: Address,
@@ -34,7 +34,7 @@ class Promotion(
         fun create(
             authorId: Long,
             type: PromotionType,
-            eventType: EventType?,
+            eventType: EventType,
             title: String,
             content: String,
             address: Address,

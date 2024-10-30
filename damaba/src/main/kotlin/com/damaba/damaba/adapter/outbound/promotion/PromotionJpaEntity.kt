@@ -24,7 +24,7 @@ import java.time.LocalDateTime
 class PromotionJpaEntity(
     authorId: Long?,
     type: PromotionType,
-    eventType: EventType?,
+    eventType: EventType,
     title: String,
     content: String,
     address: AddressJpaEntity,
@@ -49,8 +49,8 @@ class PromotionJpaEntity(
         private set
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "event_type")
-    var eventType: EventType? = eventType
+    @Column(name = "event_type", nullable = false)
+    var eventType: EventType = eventType
         private set
 
     @Column(name = "title", nullable = false)

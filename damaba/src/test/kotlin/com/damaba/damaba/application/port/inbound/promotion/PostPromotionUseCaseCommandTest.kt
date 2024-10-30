@@ -39,12 +39,6 @@ class PostPromotionUseCaseCommandTest {
         assertThat(exception).isInstanceOf(ValidationException::class.java)
     }
 
-    @Test
-    fun `프로모션 유형이 이벤트이나 이벤트 유형이 없으면 ValidationException이 발생한다`() {
-        val exception = catchThrowable { createCommand(promotionType = PromotionType.EVENT, eventType = null) }
-        assertThat(exception).isInstanceOf(ValidationException::class.java)
-    }
-
     @ParameterizedTest
     @MethodSource("invalidImageSizeProvider")
     fun `이미지 개수가 유효하지 않으면 ValidationException이 발생한다`(images: List<UploadFile>) {
@@ -85,7 +79,7 @@ class PostPromotionUseCaseCommandTest {
             title: String = "Valid title",
             content: String = "Valid content",
             promotionType: PromotionType = PromotionType.EVENT,
-            eventType: EventType? = EventType.FREE,
+            eventType: EventType = EventType.FREE,
             images: List<UploadFile> = List(3) { createUploadFile() },
             activeRegions: Set<Region> = setOf(Region("서울", "강남구")),
         ) = PostPromotionUseCase.Command(

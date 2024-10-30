@@ -23,7 +23,7 @@ interface PostPromotionUseCase {
     data class Command(
         val authorId: Long,
         val type: PromotionType,
-        val eventType: EventType?,
+        val eventType: EventType,
         val title: String,
         val content: String,
         val address: Address,
@@ -40,9 +40,6 @@ interface PostPromotionUseCase {
             AddressValidator.validate(address)
             PromotionValidator.validateTitle(title)
             PromotionValidator.validateContent(content)
-            if (type == PromotionType.EVENT && eventType == null) {
-                throw ValidationException("이벤트 종류를 선택해야 합니다.")
-            }
             if (images.isEmpty() || images.size > 10) {
                 throw ValidationException("프로모션의 이미지는 최소 1장부터 최대 10장까지 첨부할 수 있습니다.")
             }
