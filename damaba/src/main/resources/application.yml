@@ -12,6 +12,12 @@ thread-pool:
   max-pool-size: ${THREAD_POOL_MAX_POOL_SIZE}
   queue-capacity: ${THREAD_POOL_QUEUE_CAPACITY}
 
+server:
+  compression:
+    enabled: true
+    min-response-size: 1024
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+
 spring:
   application:
     name: damaba-damaba
