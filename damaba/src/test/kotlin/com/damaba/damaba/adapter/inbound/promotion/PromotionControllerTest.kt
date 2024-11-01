@@ -34,7 +34,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import kotlin.math.max
 import kotlin.test.Test
 
 @ActiveProfiles("test")
@@ -48,17 +47,20 @@ class PromotionControllerTest @Autowired constructor(
 ) {
     @TestConfiguration
     class MockBeanSetUp {
-        @Bean fun getPromotionDetailUseCase(): GetPromotionDetailUseCase = mockk()
+        @Bean
+        fun getPromotionDetailUseCase(): GetPromotionDetailUseCase = mockk()
 
-        @Bean fun findPromotionsUseCase(): FindPromotionsUseCase = mockk()
+        @Bean
+        fun findPromotionsUseCase(): FindPromotionsUseCase = mockk()
 
-        @Bean fun postPromotionUseCase(): PostPromotionUseCase = mockk()
+        @Bean
+        fun postPromotionUseCase(): PostPromotionUseCase = mockk()
     }
 
     @Test
     fun `프로모션 id가 주어지고, 프로모션을 상세 조회한다`() {
         // given
-        val promotionId = randomLong()
+        val promotionId = randomLong(positive = true)
         val expectedResult = createPromotion(id = promotionId)
         every { getPromotionDetailUseCase.getPromotionDetail(promotionId) } returns expectedResult
 
