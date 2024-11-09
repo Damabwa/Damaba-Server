@@ -7,7 +7,6 @@ import com.damaba.user.application.port.inbound.user.UpdateMyInfoUseCase
 import com.damaba.user.config.ControllerTestConfig
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.util.RandomTestUtils.Companion.randomBoolean
-import com.damaba.user.util.RandomTestUtils.Companion.randomLocalDate
 import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
 import com.damaba.user.util.TestFixture.createAuthenticationToken
@@ -74,7 +73,6 @@ class UserControllerTest @Autowired constructor(
         val request = UpdateMyInfoRequest(
             nickname = randomString(len = 7),
             gender = Gender.FEMALE,
-            birthDate = randomLocalDate(),
             instagramId = randomString(),
             profileImage = null,
         )
@@ -82,7 +80,6 @@ class UserControllerTest @Autowired constructor(
             id = requestUser.id,
             nickname = request.nickname!!,
             gender = request.gender!!,
-            birthDate = request.birthDate!!,
             instagramId = request.instagramId!!,
         )
         every { updateMyInfoUseCase.updateMyInfo(request.toCommand(requestUser.id)) } returns expectedResult
@@ -93,14 +90,12 @@ class UserControllerTest @Autowired constructor(
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .queryParam("nickname", request.nickname)
                 .queryParam("gender", request.gender.toString())
-                .queryParam("birthDate", request.birthDate.toString())
                 .queryParam("instagramId", request.instagramId)
                 .with(authentication(createAuthenticationToken(requestUser))),
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(requestUser.id))
             .andExpect(jsonPath("$.nickname").value(expectedResult.nickname))
             .andExpect(jsonPath("$.gender").value(expectedResult.gender.toString()))
-            .andExpect(jsonPath("$.birthDate").value(expectedResult.birthDate.toString()))
             .andExpect(jsonPath("$.instagramId").value(expectedResult.instagramId))
         verify { updateMyInfoUseCase.updateMyInfo(request.toCommand(requestUser.id)) }
     }

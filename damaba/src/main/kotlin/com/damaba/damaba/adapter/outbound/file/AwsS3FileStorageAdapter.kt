@@ -6,7 +6,7 @@ import com.damaba.common_file.application.port.outbound.UploadFilesPort
 import com.damaba.common_file.domain.UploadFile
 import com.damaba.common_file.domain.UploadedFile
 import com.damaba.damaba.property.AwsProperties
-import com.damaba.user.property.DamabaProperties
+import com.damaba.damaba.property.DamabaProperties
 import org.springframework.stereotype.Component
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client

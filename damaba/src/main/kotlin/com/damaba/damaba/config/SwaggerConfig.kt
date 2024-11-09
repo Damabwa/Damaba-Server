@@ -1,6 +1,6 @@
 package com.damaba.damaba.config
 
-import com.damaba.user.property.DamabaProperties
+import com.damaba.damaba.property.DamabaProperties
 import io.swagger.v3.oas.models.Components
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.info.Info

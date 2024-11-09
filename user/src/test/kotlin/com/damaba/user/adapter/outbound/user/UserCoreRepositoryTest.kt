@@ -145,7 +145,6 @@ class UserCoreRepositoryTest @Autowired constructor(
         // then
         assertThat(updatedUser.id).isEqualTo(originalUser.id)
         assertThat(updatedUser.nickname).isEqualTo(originalUser.nickname)
-        assertThat(updatedUser.birthDate).isEqualTo(originalUser.birthDate)
         assertThat(updatedUser.gender).isEqualTo(originalUser.gender)
         assertThat(updatedUser.instagramId).isEqualTo(originalUser.instagramId)
         assertThat(updatedUser.profileImageUrl).isEqualTo(originalUser.profileImageUrl)
@@ -170,7 +169,6 @@ class UserCoreRepositoryTest @Autowired constructor(
         val updatedUser = userCoreRepository.getById(originalUser.id)
         assertThat(result).isEqualTo(updatedUser)
         assertThat(result.nickname).isEqualTo(updatedUser.nickname)
-        assertThat(result.birthDate).isEqualTo(updatedUser.birthDate)
         assertThat(result.gender).isEqualTo(updatedUser.gender)
         assertThat(result.instagramId).isEqualTo(updatedUser.instagramId)
         assertThat(result.profileImageUrl).isEqualTo(updatedUser.profileImageUrl)
@@ -203,7 +201,6 @@ class UserCoreRepositoryTest @Autowired constructor(
         val updatedUser = userCoreRepository.getById(originalUser.id)
         assertThat(result).isEqualTo(updatedUser)
         assertThat(result.nickname).isEqualTo(updatedUser.nickname)
-        assertThat(result.birthDate).isEqualTo(updatedUser.birthDate)
         assertThat(result.gender).isEqualTo(updatedUser.gender)
         assertThat(result.instagramId).isEqualTo(updatedUser.instagramId)
         assertThat(result.profileImageUrl).isEqualTo(updatedUser.profileImageUrl)

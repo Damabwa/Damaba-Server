@@ -17,7 +17,6 @@ class UpdateMyInfoUseCaseCommandTest {
                 userId = 1,
                 nickname = invalidNickname,
                 gender = null,
-                birthDate = null,
                 instagramId = null,
                 profileImage = null,
             )
@@ -38,7 +37,6 @@ class UpdateMyInfoUseCaseCommandTest {
                 userId = 1,
                 nickname = null,
                 gender = null,
-                birthDate = null,
                 instagramId = invalidInstagramId,
                 profileImage = null,
             )

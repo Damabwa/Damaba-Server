@@ -6,13 +6,11 @@ import com.damaba.user.domain.user.User
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.constant.UserRoleType
-import com.damaba.user.util.RandomTestUtils.Companion.randomLocalDate
 import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 object TestFixture {
@@ -34,7 +32,6 @@ object TestFixture {
         nickname: String = randomString(len = 7),
         profileImageUrl: String = randomString(),
         gender: Gender = Gender.MALE,
-        birthDate: LocalDate = randomLocalDate(),
         instagramId: String = randomString(len = 30),
     ): User = User(
         id = id,
@@ -44,7 +41,6 @@ object TestFixture {
         nickname = nickname,
         profileImageUrl = profileImageUrl,
         gender = gender,
-        birthDate = birthDate,
         instagramId = instagramId,
     )
 

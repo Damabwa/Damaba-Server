@@ -35,7 +35,6 @@ object TestFixture {
         nickname: String = randomString(len = 7),
         profileImageUrl: String = randomString(),
         gender: Gender = Gender.MALE,
-        birthDate: LocalDate = randomLocalDate(),
         instagramId: String = randomString(len = 30),
     ): User = User(
         id = id,
@@ -45,7 +44,6 @@ object TestFixture {
         nickname = nickname,
         profileImageUrl = profileImageUrl,
         gender = gender,
-        birthDate = birthDate,
         instagramId = instagramId,
     )
 
