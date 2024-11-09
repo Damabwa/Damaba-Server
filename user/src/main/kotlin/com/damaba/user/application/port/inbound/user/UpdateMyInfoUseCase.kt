@@ -10,14 +10,14 @@ interface UpdateMyInfoUseCase {
 
     data class Command(
         val userId: Long,
-        val nickname: String?,
-        val gender: Gender?,
-        val instagramId: String?,
+        val nickname: String,
+        val gender: Gender,
+        val instagramId: String,
         val profileImage: UploadFile?,
     ) {
         init {
-            if (nickname != null) UserValidator.validateNickname(nickname)
-            if (instagramId != null) UserValidator.validateInstagramId(instagramId)
+            UserValidator.validateUserNickname(nickname)
+            UserValidator.validateInstagramId(instagramId)
         }
     }
 }

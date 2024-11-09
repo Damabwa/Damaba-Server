@@ -7,7 +7,7 @@ interface CheckNicknameExistenceUseCase {
 
     data class Query(val nickname: String) {
         init {
-            UserValidator.validateNickname(nickname)
+            UserValidator.validateUserNickname(nickname)
         }
     }
 }

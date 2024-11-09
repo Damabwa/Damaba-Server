@@ -13,7 +13,7 @@ class UserValidatorTest {
         invalidNickname: String,
     ) {
         // when
-        val ex = catchThrowable { UserValidator.validateNickname(invalidNickname) }
+        val ex = catchThrowable { UserValidator.validateUserNickname(invalidNickname) }
 
         // then
         assertThat(ex).isInstanceOf(ValidationException::class.java)

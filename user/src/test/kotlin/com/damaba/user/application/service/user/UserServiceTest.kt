@@ -85,17 +85,15 @@ class UserServiceTest {
         val newInstagramId = randomString()
         val newProfileImage = createUploadFile()
         val uploadedFile = UploadedFile(randomString(), randomString())
-        val command =
-            UpdateMyInfoUseCase.Command(userId, newNickname, newGender, newInstagramId, newProfileImage)
+        val command = UpdateMyInfoUseCase.Command(userId, newNickname, newGender, newInstagramId, newProfileImage)
         val expectedResult = createUser(
             nickname = newNickname,
             gender = newGender,
             instagramId = newInstagramId,
             profileImageUrl = uploadedFile.url,
         )
-
-        every { checkNicknameExistencePort.doesNicknameExist(newNickname) } returns false
         every { getUserPort.getById(userId) } returns user
+        every { checkNicknameExistencePort.doesNicknameExist(newNickname) } returns false
         every { uploadFilePort.upload(newProfileImage, any(String::class)) } returns uploadedFile
         every { updateUserPort.update(any(User::class)) } returns expectedResult
 
@@ -104,8 +102,8 @@ class UserServiceTest {
 
         // then
         verifyOrder {
-            checkNicknameExistencePort.doesNicknameExist(newNickname)
             getUserPort.getById(userId)
+            checkNicknameExistencePort.doesNicknameExist(newNickname)
             uploadFilePort.upload(newProfileImage, any(String::class))
             updateUserPort.update(any(User::class))
         }
@@ -118,38 +116,22 @@ class UserServiceTest {
     }
 
     @Test
-    fun `변경할 유저 정보가 전부 null로 주어지고, 유저 정보를 수정하면, 아무 일도 일어나지 않는다`() {
-        // given
-        val userId = randomLong()
-        val user = createUser(id = userId)
-        val command = UpdateMyInfoUseCase.Command(userId, null, null, null, null)
-        every { getUserPort.getById(userId) } returns user
-        every { updateUserPort.update(user) } returns user
-
-        // when
-        val result = sut.updateMyInfo(command)
-
-        // then
-        verifyOrder {
-            getUserPort.getById(userId)
-            updateUserPort.update(user)
-        }
-        confirmVerifiedEveryMocks()
-    }
-
-    @Test
-    fun `수정할 유저 닉네임이 주어지고, 유저 정보를 수정한다, 만약 수정할 닉네임이 이미 사용중일 경우 예외가 발생한다`() {
+    fun `수정할 유저 닉네임이 주어지고, 유저 정보를 수정한다, 만약 수정할 닉네임이 다른 유저가 이미 사용중일 경우 예외가 발생한다`() {
         // given
         val userId = randomLong()
         val existingNickname = randomString(len = 7)
-        val command = UpdateMyInfoUseCase.Command(userId, existingNickname, null, null, null)
+        val command = UpdateMyInfoUseCase.Command(userId, existingNickname, Gender.FEMALE, randomString(), null)
+        every { getUserPort.getById(userId) } returns createUser(id = userId)
         every { checkNicknameExistencePort.doesNicknameExist(existingNickname) } returns true
 
         // when
         val ex = catchThrowable { sut.updateMyInfo(command) }
 
         // then
-        verify { checkNicknameExistencePort.doesNicknameExist(existingNickname) }
+        verifyOrder {
+            getUserPort.getById(userId)
+            checkNicknameExistencePort.doesNicknameExist(existingNickname)
+        }
         confirmVerifiedEveryMocks()
         assertThat(ex).isInstanceOf(NicknameAlreadyExistsException::class.java)
     }
@@ -160,11 +142,11 @@ class UserServiceTest {
         val userId = randomLong()
         val originalUser = createUser(id = userId)
         val newNickname = randomString(len = 7)
-        val command = UpdateMyInfoUseCase.Command(userId, newNickname, null, null, null)
+        val command = UpdateMyInfoUseCase.Command(userId, newNickname, Gender.FEMALE, randomString(), null)
         val expectedThrownException = IllegalStateException()
 
-        every { checkNicknameExistencePort.doesNicknameExist(newNickname) } returns false
         every { getUserPort.getById(userId) } returns originalUser
+        every { checkNicknameExistencePort.doesNicknameExist(newNickname) } returns false
         every { updateUserPort.update(any(User::class)) } throws expectedThrownException // 알 수 없는 에러 발생
 
         // when
@@ -172,8 +154,8 @@ class UserServiceTest {
 
         // then
         verifyOrder {
-            checkNicknameExistencePort.doesNicknameExist(newNickname)
             getUserPort.getById(userId)
+            checkNicknameExistencePort.doesNicknameExist(newNickname)
             updateUserPort.update(any(User::class))
         }
         confirmVerifiedEveryMocks()
@@ -185,16 +167,13 @@ class UserServiceTest {
         // given
         val userId = randomLong()
         val user = createUser(id = userId)
-        val newNickname = randomString(len = 7)
         val newGender = Gender.FEMALE
         val newInstagramId = randomString()
         val newProfileImage = createUploadFile()
         val uploadedFile = UploadedFile(randomString(), randomString())
-        val command =
-            UpdateMyInfoUseCase.Command(userId, newNickname, newGender, newInstagramId, newProfileImage)
+        val command = UpdateMyInfoUseCase.Command(userId, user.nickname, newGender, newInstagramId, newProfileImage)
         val expectedThrownException = IllegalStateException()
 
-        every { checkNicknameExistencePort.doesNicknameExist(newNickname) } returns false
         every { getUserPort.getById(userId) } returns user
         every { uploadFilePort.upload(newProfileImage, any(String::class)) } returns uploadedFile
         every { updateUserPort.update(any(User::class)) } throws expectedThrownException // 알 수 없는 에러 발생
@@ -205,7 +184,6 @@ class UserServiceTest {
 
         // then
         verifyOrder {
-            checkNicknameExistencePort.doesNicknameExist((newNickname))
             getUserPort.getById(userId)
             uploadFilePort.upload(newProfileImage, any(String::class))
             updateUserPort.update(any(User::class))

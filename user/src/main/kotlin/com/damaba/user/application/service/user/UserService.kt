@@ -35,11 +35,12 @@ class UserService(
 
     @Transactional
     override fun updateMyInfo(command: UpdateMyInfoUseCase.Command): User {
-        if (command.nickname != null && checkNicknameExistencePort.doesNicknameExist(command.nickname)) {
+        val user = getUserPort.getById(command.userId)
+
+        val isNicknameNew = user.nickname != command.nickname
+        if (isNicknameNew && checkNicknameExistencePort.doesNicknameExist(command.nickname)) {
             throw NicknameAlreadyExistsException(command.nickname)
         }
-
-        val user = getUserPort.getById(command.userId)
 
         val uploadedProfileImage = command.profileImage?.let {
             uploadFilePort.upload(command.profileImage, USER_PROFILE_IMAGE_UPLOAD_PATH)

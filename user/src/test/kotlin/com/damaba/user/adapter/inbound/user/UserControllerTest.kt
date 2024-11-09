@@ -24,7 +24,7 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import kotlin.test.Test
@@ -78,15 +78,15 @@ class UserControllerTest @Autowired constructor(
         )
         val expectedResult = createUser(
             id = requestUser.id,
-            nickname = request.nickname!!,
-            gender = request.gender!!,
-            instagramId = request.instagramId!!,
+            nickname = request.nickname,
+            gender = request.gender,
+            instagramId = request.instagramId,
         )
         every { updateMyInfoUseCase.updateMyInfo(request.toCommand(requestUser.id)) } returns expectedResult
 
         // when & then
         mvc.perform(
-            patch("/api/v1/users/me")
+            put("/api/v1/users/me")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .queryParam("nickname", request.nickname)
                 .queryParam("gender", request.gender.toString())

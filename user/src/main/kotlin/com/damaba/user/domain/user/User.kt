@@ -3,6 +3,7 @@ package com.damaba.user.domain.user
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.constant.UserRoleType
+import io.jsonwebtoken.lang.Objects
 
 class User(
     val id: Long,
@@ -30,14 +31,14 @@ class User(
         get() = gender != DEFAULT_GENDER
 
     fun update(
-        nickname: String?,
-        gender: Gender?,
-        instagramId: String?,
+        nickname: String,
+        gender: Gender,
+        instagramId: String,
         profileImageUrl: String?,
     ) {
-        nickname?.let { this.nickname = it }
-        gender?.let { this.gender = it }
-        instagramId?.let { this.instagramId = it }
+        this.nickname = nickname
+        this.gender = gender
+        this.instagramId = instagramId
         profileImageUrl?.let { this.profileImageUrl = it }
     }
 
@@ -47,7 +48,7 @@ class User(
         return this.id == other.id
     }
 
-    override fun hashCode(): Int = id.hashCode()
+    override fun hashCode(): Int = Objects.hashCode(id)
 
     companion object {
         val DEFAULT_GENDER = Gender.UNDEFINED
