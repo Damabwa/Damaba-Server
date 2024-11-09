@@ -1,6 +1,8 @@
 package com.damaba.user.application.port.inbound.user
 
 import com.damaba.common_exception.ValidationException
+import com.damaba.user.domain.user.constant.Gender
+import com.damaba.user.util.RandomTestUtils.Companion.randomString
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
 import kotlin.test.Test
@@ -16,8 +18,8 @@ class UpdateMyInfoUseCaseCommandTest {
             UpdateMyInfoUseCase.Command(
                 userId = 1,
                 nickname = invalidNickname,
-                gender = null,
-                instagramId = null,
+                gender = Gender.MALE,
+                instagramId = randomString(),
                 profileImage = null,
             )
         }
@@ -35,8 +37,8 @@ class UpdateMyInfoUseCaseCommandTest {
         val ex = catchThrowable {
             UpdateMyInfoUseCase.Command(
                 userId = 1,
-                nickname = null,
-                gender = null,
+                nickname = randomString(len = 5),
+                gender = Gender.MALE,
                 instagramId = invalidInstagramId,
                 profileImage = null,
             )

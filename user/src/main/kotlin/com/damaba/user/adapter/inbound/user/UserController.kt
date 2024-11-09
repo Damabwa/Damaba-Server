@@ -14,12 +14,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
-import jakarta.validation.Valid
 import org.springframework.http.MediaType
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
-import org.springframework.web.bind.annotation.PatchMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
@@ -59,7 +58,9 @@ class UserController(
 
     @Operation(
         summary = "내 정보 수정",
-        description = "내 정보를 수정합니다. 요청 시, 수정하고자 하는 정보들만 전달하면 됩니다.",
+        description = "<p>내 정보를 수정합니다. 요청된 정보들로 기존 유저 정보를 변경(overwrite)합니다." +
+            "<p>정보가 변경되지 않은 항목이더라도 요청 데이터에 담아야 합니다. 그 때문에 변경되지 않은 항목은 기존 값을 담아 요청해야 합니다." +
+            "<p>예외적으로, 프로필 이미지(`profileImage`)는 변경하고자 할 때에만 담아 요청하면 됩니다.",
         security = [SecurityRequirement(name = "access-token")],
     )
     @ApiResponses(
@@ -67,10 +68,10 @@ class UserController(
         ApiResponse(responseCode = "404", description = "유저 정보를 찾을 수 없는 경우", content = [Content()]),
         ApiResponse(responseCode = "409", description = "수정하고자 하는 닉네임이 이미 사용중인 경우", content = [Content()]),
     )
-    @PatchMapping("/api/v1/users/me", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @PutMapping("/api/v1/users/me", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateMyInfoV1(
         @AuthenticationPrincipal requestUser: User,
-        @ModelAttribute @Valid request: UpdateMyInfoRequest,
+        @ModelAttribute request: UpdateMyInfoRequest,
     ): UserResponse {
         val updatedUser = updateMyInfoUseCase.updateMyInfo(request.toCommand(requestUserId = requestUser.id))
         return UserResponse.from(updatedUser)

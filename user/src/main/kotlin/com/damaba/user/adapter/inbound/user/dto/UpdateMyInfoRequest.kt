@@ -8,13 +8,13 @@ import org.springframework.web.multipart.MultipartFile
 
 data class UpdateMyInfoRequest(
     @Schema(description = "닉네임", example = "치와와")
-    val nickname: String?,
+    val nickname: String,
 
     @Schema(description = "성별")
-    val gender: Gender?,
+    val gender: Gender,
 
     @Schema(description = "인스타 아이디", example = "damaba.unofficial")
-    val instagramId: String?,
+    val instagramId: String,
 
     @Schema(description = "프로필 이미지")
     val profileImage: MultipartFile?,
