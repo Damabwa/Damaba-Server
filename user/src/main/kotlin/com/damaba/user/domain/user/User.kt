@@ -3,7 +3,7 @@ package com.damaba.user.domain.user
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.constant.UserRoleType
-import io.jsonwebtoken.lang.Objects
+import java.util.Objects
 
 class User(
     val id: Long,
