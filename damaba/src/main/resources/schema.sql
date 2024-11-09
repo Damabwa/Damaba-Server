@@ -14,7 +14,6 @@ CREATE TABLE `user`
     nickname          VARCHAR(7)   NOT NULL UNIQUE,
     profile_image_url VARCHAR(255) NOT NULL,
     gender            VARCHAR(255) NOT NULL,
-    birth_date        DATE         NOT NULL,
     instagram_id      VARCHAR(30),
     created_at        DATETIME     NOT NULL,
     updated_at        DATETIME     NOT NULL,

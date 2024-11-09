@@ -3,7 +3,6 @@ package com.damaba.user.domain.user
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.constant.UserRoleType
-import java.time.LocalDate
 
 class User(
     val id: Long,
@@ -13,7 +12,6 @@ class User(
     nickname: String,
     profileImageUrl: String,
     gender: Gender,
-    birthDate: LocalDate,
     instagramId: String?,
 ) {
     var nickname: String = nickname
@@ -25,25 +23,20 @@ class User(
     var gender: Gender = gender
         private set
 
-    var birthDate: LocalDate = birthDate
-        private set
-
     var instagramId: String? = instagramId
         private set
 
     val isRegistrationCompleted
-        get() = birthDate != DEFAULT_BIRTH_DATE
+        get() = gender != DEFAULT_GENDER
 
     fun update(
         nickname: String?,
         gender: Gender?,
-        birthDate: LocalDate?,
         instagramId: String?,
         profileImageUrl: String?,
     ) {
         nickname?.let { this.nickname = it }
         gender?.let { this.gender = it }
-        birthDate?.let { this.birthDate = it }
         instagramId?.let { this.instagramId = it }
         profileImageUrl?.let { this.profileImageUrl = it }
     }
@@ -57,7 +50,7 @@ class User(
     override fun hashCode(): Int = id.hashCode()
 
     companion object {
-        val DEFAULT_BIRTH_DATE: LocalDate = LocalDate.of(1, 1, 1)
+        val DEFAULT_GENDER = Gender.UNDEFINED
         const val DEFAULT_PROFILE_IMAGE_URL = "https://dummyimage.com/244x100.png/cc0000/ffffff"
 
         fun create(loginType: LoginType, oAuthLoginUid: String, nickname: String): User = User(
@@ -67,8 +60,7 @@ class User(
             oAuthLoginUid = oAuthLoginUid,
             nickname = nickname,
             profileImageUrl = DEFAULT_PROFILE_IMAGE_URL,
-            gender = Gender.PRIVATE,
-            birthDate = DEFAULT_BIRTH_DATE,
+            gender = DEFAULT_GENDER,
             instagramId = null,
         )
     }

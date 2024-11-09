@@ -13,7 +13,6 @@ import com.damaba.user.domain.user.User
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.exception.NicknameAlreadyExistsException
 import com.damaba.user.util.RandomTestUtils.Companion.randomBoolean
-import com.damaba.user.util.RandomTestUtils.Companion.randomLocalDate
 import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
 import com.damaba.user.util.TestFixture.createUploadFile
@@ -83,16 +82,14 @@ class UserServiceTest {
         val user = createUser(id = userId)
         val newNickname = randomString(len = 7)
         val newGender = Gender.FEMALE
-        val newBirthDate = randomLocalDate()
         val newInstagramId = randomString()
         val newProfileImage = createUploadFile()
         val uploadedFile = UploadedFile(randomString(), randomString())
         val command =
-            UpdateMyInfoUseCase.Command(userId, newNickname, newGender, newBirthDate, newInstagramId, newProfileImage)
+            UpdateMyInfoUseCase.Command(userId, newNickname, newGender, newInstagramId, newProfileImage)
         val expectedResult = createUser(
             nickname = newNickname,
             gender = newGender,
-            birthDate = newBirthDate,
             instagramId = newInstagramId,
             profileImageUrl = uploadedFile.url,
         )
@@ -116,9 +113,28 @@ class UserServiceTest {
         assertThat(actualResult.id).isEqualTo(expectedResult.id)
         assertThat(actualResult.nickname).isEqualTo(expectedResult.nickname)
         assertThat(actualResult.gender).isEqualTo(expectedResult.gender)
-        assertThat(actualResult.birthDate).isEqualTo(expectedResult.birthDate)
         assertThat(actualResult.instagramId).isEqualTo(expectedResult.instagramId)
         assertThat(actualResult.profileImageUrl).isEqualTo(expectedResult.profileImageUrl)
+    }
+
+    @Test
+    fun `변경할 유저 정보가 전부 null로 주어지고, 유저 정보를 수정하면, 아무 일도 일어나지 않는다`() {
+        // given
+        val userId = randomLong()
+        val user = createUser(id = userId)
+        val command = UpdateMyInfoUseCase.Command(userId, null, null, null, null)
+        every { getUserPort.getById(userId) } returns user
+        every { updateUserPort.update(user) } returns user
+
+        // when
+        val result = sut.updateMyInfo(command)
+
+        // then
+        verifyOrder {
+            getUserPort.getById(userId)
+            updateUserPort.update(user)
+        }
+        confirmVerifiedEveryMocks()
     }
 
     @Test
@@ -126,7 +142,7 @@ class UserServiceTest {
         // given
         val userId = randomLong()
         val existingNickname = randomString(len = 7)
-        val command = UpdateMyInfoUseCase.Command(userId, existingNickname, null, null, null, null)
+        val command = UpdateMyInfoUseCase.Command(userId, existingNickname, null, null, null)
         every { checkNicknameExistencePort.doesNicknameExist(existingNickname) } returns true
 
         // when
@@ -139,43 +155,12 @@ class UserServiceTest {
     }
 
     @Test
-    fun `수정할 유저의 생년월일이 주어지고, 유저 정보를 수정하면, 수정된 유저 정보가 반환된다`() {
-        // given
-        val userId = randomLong()
-        val user = createUser(id = userId)
-        val newBirthDate = randomLocalDate()
-        val command = UpdateMyInfoUseCase.Command(userId, null, null, newBirthDate, null, null)
-        val expectedResult = createUser(
-            nickname = user.nickname,
-            gender = user.gender,
-            birthDate = newBirthDate,
-            instagramId = user.instagramId ?: "",
-            profileImageUrl = user.profileImageUrl,
-        )
-
-        every { getUserPort.getById(userId) } returns user
-        every { updateUserPort.update(any(User::class)) } returns expectedResult
-
-        // when
-        val actualResult = sut.updateMyInfo(command)
-
-        // then
-        verifyOrder {
-            getUserPort.getById(userId)
-            updateUserPort.update(any(User::class))
-        }
-        confirmVerifiedEveryMocks()
-        assertThat(actualResult.id).isEqualTo(expectedResult.id)
-        assertThat(actualResult.birthDate).isEqualTo(expectedResult.birthDate)
-    }
-
-    @Test
     fun `수정할 유저 정보가 주어지고, 유저 정보를 수정한다, 만약 유저 수정에 실패했다면 예외가 발생한다`() {
         // given
         val userId = randomLong()
         val originalUser = createUser(id = userId)
         val newNickname = randomString(len = 7)
-        val command = UpdateMyInfoUseCase.Command(userId, newNickname, null, null, null, null)
+        val command = UpdateMyInfoUseCase.Command(userId, newNickname, null, null, null)
         val expectedThrownException = IllegalStateException()
 
         every { checkNicknameExistencePort.doesNicknameExist(newNickname) } returns false
@@ -202,12 +187,11 @@ class UserServiceTest {
         val user = createUser(id = userId)
         val newNickname = randomString(len = 7)
         val newGender = Gender.FEMALE
-        val newBirthDate = randomLocalDate()
         val newInstagramId = randomString()
         val newProfileImage = createUploadFile()
         val uploadedFile = UploadedFile(randomString(), randomString())
         val command =
-            UpdateMyInfoUseCase.Command(userId, newNickname, newGender, newBirthDate, newInstagramId, newProfileImage)
+            UpdateMyInfoUseCase.Command(userId, newNickname, newGender, newInstagramId, newProfileImage)
         val expectedThrownException = IllegalStateException()
 
         every { checkNicknameExistencePort.doesNicknameExist(newNickname) } returns false

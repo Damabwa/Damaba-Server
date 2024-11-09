@@ -2,10 +2,10 @@ package com.damaba.damaba.adapter.outbound.file
 
 import com.damaba.common_file.domain.UploadedFile
 import com.damaba.damaba.property.AwsProperties
+import com.damaba.damaba.property.DamabaProperties
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.TestFixture.createUploadFile
-import com.damaba.user.property.DamabaProperties
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk

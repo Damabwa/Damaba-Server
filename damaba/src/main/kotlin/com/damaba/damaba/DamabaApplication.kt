@@ -3,7 +3,6 @@ package com.damaba.damaba
 import com.damaba.damaba.property.AwsProperties
 import com.damaba.damaba.property.ThreadPoolProperties
 import com.damaba.user.property.AuthProperties
-import com.damaba.user.property.DamabaProperties
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -21,7 +20,8 @@ import org.springframework.context.annotation.PropertySource
 )
 @PropertySource("classpath:env.properties")
 @EnableConfigurationProperties(
-    DamabaProperties::class,
+    com.damaba.user.property.DamabaProperties::class,
+    com.damaba.damaba.property.DamabaProperties::class,
     AuthProperties::class,
     ThreadPoolProperties::class,
     AwsProperties::class,
