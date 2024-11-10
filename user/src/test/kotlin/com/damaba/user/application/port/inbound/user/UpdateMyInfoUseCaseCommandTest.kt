@@ -20,7 +20,7 @@ class UpdateMyInfoUseCaseCommandTest {
                 nickname = invalidNickname,
                 gender = Gender.MALE,
                 instagramId = randomString(),
-                profileImage = null,
+                profileImageUrl = randomString(),
             )
         }
 
@@ -40,7 +40,7 @@ class UpdateMyInfoUseCaseCommandTest {
                 nickname = randomString(len = 5),
                 gender = Gender.MALE,
                 instagramId = invalidInstagramId,
-                profileImage = null,
+                profileImageUrl = randomString(),
             )
         }
 

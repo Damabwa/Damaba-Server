@@ -9,8 +9,10 @@ import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.util.RandomTestUtils.Companion.randomBoolean
 import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
+import com.damaba.user.util.RandomTestUtils.Companion.randomUrl
 import com.damaba.user.util.TestFixture.createAuthenticationToken
 import com.damaba.user.util.TestFixture.createUser
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -34,6 +36,7 @@ import kotlin.test.Test
 @WebMvcTest(controllers = [UserController::class])
 class UserControllerTest @Autowired constructor(
     private val mvc: MockMvc,
+    private val mapper: ObjectMapper,
     private val getMyInfoUseCase: GetMyInfoUseCase,
     private val checkNicknameExistenceUseCase: CheckNicknameExistenceUseCase,
     private val updateMyInfoUseCase: UpdateMyInfoUseCase,
@@ -74,7 +77,7 @@ class UserControllerTest @Autowired constructor(
             nickname = randomString(len = 7),
             gender = Gender.FEMALE,
             instagramId = randomString(),
-            profileImage = null,
+            profileImageUrl = randomUrl(),
         )
         val expectedResult = createUser(
             id = requestUser.id,
@@ -87,16 +90,15 @@ class UserControllerTest @Autowired constructor(
         // when & then
         mvc.perform(
             put("/api/v1/users/me")
-                .contentType(MediaType.MULTIPART_FORM_DATA)
-                .queryParam("nickname", request.nickname)
-                .queryParam("gender", request.gender.toString())
-                .queryParam("instagramId", request.instagramId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(mapper.writeValueAsString(request))
                 .with(authentication(createAuthenticationToken(requestUser))),
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(requestUser.id))
             .andExpect(jsonPath("$.nickname").value(expectedResult.nickname))
             .andExpect(jsonPath("$.gender").value(expectedResult.gender.toString()))
             .andExpect(jsonPath("$.instagramId").value(expectedResult.instagramId))
+            .andExpect(jsonPath("$.profileImageUrl").value(expectedResult.profileImageUrl))
         verify { updateMyInfoUseCase.updateMyInfo(request.toCommand(requestUser.id)) }
     }
 

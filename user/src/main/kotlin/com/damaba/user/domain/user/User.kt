@@ -33,13 +33,13 @@ class User(
     fun update(
         nickname: String,
         gender: Gender,
-        instagramId: String,
-        profileImageUrl: String?,
+        instagramId: String?,
+        profileImageUrl: String,
     ) {
         this.nickname = nickname
         this.gender = gender
         this.instagramId = instagramId
-        profileImageUrl?.let { this.profileImageUrl = it }
+        this.profileImageUrl = profileImageUrl
     }
 
     override fun equals(other: Any?): Boolean {

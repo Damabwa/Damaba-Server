@@ -1,7 +1,6 @@
 package com.damaba.damaba.util
 
-import com.damaba.common_file.domain.UploadFile
-import com.damaba.common_file.domain.UploadedFile
+import com.damaba.common_file.domain.File
 import com.damaba.damaba.domain.common.Address
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.PromotionActiveRegion
@@ -19,11 +18,9 @@ import com.damaba.user.domain.user.User
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.constant.UserRoleType
-import org.springframework.mock.web.MockMultipartFile
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDate
 
 object TestFixture {
@@ -121,20 +118,8 @@ object TestFixture {
     fun createRegionGroups(): List<RegionGroup> =
         generateRandomList(maxSize = 10) { createRegionGroup() }
 
-    fun createUploadFile(
-        name: String? = randomString(),
-    ): UploadFile = UploadFile(
-        name = name,
-        size = randomLong(positive = true),
-        contentType = "jpg",
-        inputStream = randomString().byteInputStream(),
-    )
-
-    fun createUploadedFile(
+    fun createFile(
         name: String = randomString(),
         url: String = randomString(),
-    ) = UploadedFile(name, url)
-
-    fun createMockMultipartFile(): MultipartFile =
-        MockMultipartFile(randomString(), randomString().byteInputStream())
+    ) = File(name, url)
 }

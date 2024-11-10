@@ -1,7 +1,6 @@
 package com.damaba.user.application.service.user
 
-import com.damaba.common_file.application.port.outbound.UploadFilePort
-import com.damaba.common_file.domain.FileUploadRollbackEvent
+import com.damaba.common_file.domain.DeleteFileEvent
 import com.damaba.user.application.port.inbound.user.CheckNicknameExistenceUseCase
 import com.damaba.user.application.port.inbound.user.GetMyInfoUseCase
 import com.damaba.user.application.port.inbound.user.UpdateMyInfoUseCase
@@ -19,7 +18,6 @@ class UserService(
     private val getUserPort: GetUserPort,
     private val checkNicknameExistencePort: CheckNicknameExistencePort,
     private val updateUserPort: UpdateUserPort,
-    private val uploadFilePort: UploadFilePort,
     private val publishEventPort: PublishEventPort,
 ) : GetMyInfoUseCase,
     CheckNicknameExistenceUseCase,
@@ -42,27 +40,16 @@ class UserService(
             throw NicknameAlreadyExistsException(command.nickname)
         }
 
-        val uploadedProfileImage = command.profileImage?.let {
-            uploadFilePort.upload(command.profileImage, USER_PROFILE_IMAGE_UPLOAD_PATH)
+        if (user.profileImageUrl != command.profileImageUrl) {
+            publishEventPort.publish(DeleteFileEvent(url = user.profileImageUrl))
         }
 
         user.update(
             nickname = command.nickname,
             gender = command.gender,
             instagramId = command.instagramId,
-            profileImageUrl = uploadedProfileImage?.url,
+            profileImageUrl = command.profileImageUrl,
         )
-
-        return runCatching {
-            updateUserPort.update(user)
-        }.onFailure {
-            if (uploadedProfileImage != null) {
-                publishEventPort.publish(FileUploadRollbackEvent(uploadedFile = uploadedProfileImage))
-            }
-        }.getOrThrow()
-    }
-
-    companion object {
-        private const val USER_PROFILE_IMAGE_UPLOAD_PATH = "user/profile-image/"
+        return updateUserPort.update(user)
     }
 }

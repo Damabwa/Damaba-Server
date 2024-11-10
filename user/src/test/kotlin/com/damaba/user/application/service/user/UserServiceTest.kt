@@ -1,21 +1,19 @@
 package com.damaba.user.application.service.user
 
-import com.damaba.common_file.application.port.outbound.UploadFilePort
-import com.damaba.common_file.domain.FileUploadRollbackEvent
-import com.damaba.common_file.domain.UploadedFile
+import com.damaba.common_file.domain.DeleteFileEvent
+import com.damaba.common_file.domain.File
 import com.damaba.user.application.port.inbound.user.CheckNicknameExistenceUseCase
 import com.damaba.user.application.port.inbound.user.UpdateMyInfoUseCase
 import com.damaba.user.application.port.outbound.common.PublishEventPort
 import com.damaba.user.application.port.outbound.user.CheckNicknameExistencePort
 import com.damaba.user.application.port.outbound.user.GetUserPort
 import com.damaba.user.application.port.outbound.user.UpdateUserPort
-import com.damaba.user.domain.user.User
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.exception.NicknameAlreadyExistsException
 import com.damaba.user.util.RandomTestUtils.Companion.randomBoolean
 import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
-import com.damaba.user.util.TestFixture.createUploadFile
+import com.damaba.user.util.RandomTestUtils.Companion.randomUrl
 import com.damaba.user.util.TestFixture.createUser
 import io.mockk.Runs
 import io.mockk.confirmVerified
@@ -32,13 +30,11 @@ class UserServiceTest {
     private val getUserPort: GetUserPort = mockk()
     private val checkNicknameExistencePort: CheckNicknameExistencePort = mockk()
     private val updateUserPort: UpdateUserPort = mockk()
-    private val uploadFilePort: UploadFilePort = mockk()
     private val publishEventPort: PublishEventPort = mockk()
     private val sut = UserService(
         getUserPort,
         checkNicknameExistencePort,
         updateUserPort,
-        uploadFilePort,
         publishEventPort,
     )
 
@@ -82,10 +78,10 @@ class UserServiceTest {
         val user = createUser(id = userId)
         val newNickname = randomString(len = 7)
         val newGender = Gender.FEMALE
-        val newInstagramId = randomString()
-        val newProfileImage = createUploadFile()
-        val uploadedFile = UploadedFile(randomString(), randomString())
-        val command = UpdateMyInfoUseCase.Command(userId, newNickname, newGender, newInstagramId, newProfileImage)
+        val newInstagramId = null
+        val newProfileImageUrl = randomUrl()
+        val uploadedFile = File(randomString(), randomString())
+        val command = UpdateMyInfoUseCase.Command(userId, newNickname, newGender, newInstagramId, newProfileImageUrl)
         val expectedResult = createUser(
             nickname = newNickname,
             gender = newGender,
@@ -94,8 +90,8 @@ class UserServiceTest {
         )
         every { getUserPort.getById(userId) } returns user
         every { checkNicknameExistencePort.doesNicknameExist(newNickname) } returns false
-        every { uploadFilePort.upload(newProfileImage, any(String::class)) } returns uploadedFile
-        every { updateUserPort.update(any(User::class)) } returns expectedResult
+        every { publishEventPort.publish(any(DeleteFileEvent::class)) } just Runs
+        every { updateUserPort.update(user) } returns expectedResult
 
         // when
         val actualResult = sut.updateMyInfo(command)
@@ -104,8 +100,77 @@ class UserServiceTest {
         verifyOrder {
             getUserPort.getById(userId)
             checkNicknameExistencePort.doesNicknameExist(newNickname)
-            uploadFilePort.upload(newProfileImage, any(String::class))
-            updateUserPort.update(any(User::class))
+            publishEventPort.publish(any(DeleteFileEvent::class))
+            updateUserPort.update(user)
+        }
+        confirmVerifiedEveryMocks()
+        assertThat(actualResult).isEqualTo(expectedResult)
+        assertThat(actualResult.id).isEqualTo(expectedResult.id)
+        assertThat(actualResult.nickname).isEqualTo(expectedResult.nickname)
+        assertThat(actualResult.gender).isEqualTo(expectedResult.gender)
+        assertThat(actualResult.instagramId).isEqualTo(expectedResult.instagramId)
+        assertThat(actualResult.profileImageUrl).isEqualTo(expectedResult.profileImageUrl)
+    }
+
+    @Test
+    fun `변경할 닉네임이 주어지고, 유저 정보를 수정하면, 수정된 유저 정보가 반환된다`() {
+        // given
+        val userId = randomLong()
+        val user = createUser(id = userId)
+        val newNickname = randomString(len = 7)
+        val command = UpdateMyInfoUseCase.Command(userId, newNickname, user.gender, user.instagramId, user.profileImageUrl)
+        val expectedResult = createUser(
+            nickname = newNickname,
+            gender = user.gender,
+            instagramId = user.instagramId,
+            profileImageUrl = user.profileImageUrl,
+        )
+        every { getUserPort.getById(userId) } returns user
+        every { checkNicknameExistencePort.doesNicknameExist(newNickname) } returns false
+        every { updateUserPort.update(user) } returns expectedResult
+
+        // when
+        val actualResult = sut.updateMyInfo(command)
+
+        // then
+        verifyOrder {
+            getUserPort.getById(userId)
+            checkNicknameExistencePort.doesNicknameExist(newNickname)
+            updateUserPort.update(user)
+        }
+        confirmVerifiedEveryMocks()
+        assertThat(actualResult.id).isEqualTo(expectedResult.id)
+        assertThat(actualResult.nickname).isEqualTo(expectedResult.nickname)
+        assertThat(actualResult.gender).isEqualTo(expectedResult.gender)
+        assertThat(actualResult.instagramId).isEqualTo(expectedResult.instagramId)
+        assertThat(actualResult.profileImageUrl).isEqualTo(expectedResult.profileImageUrl)
+    }
+
+    @Test
+    fun `변경할 프로필 이미지가 주어지고, 유저 정보를 수정하면, 수정된 유저 정보가 반환된다`() {
+        // given
+        val userId = randomLong()
+        val user = createUser(id = userId)
+        val newProfileImageUrl = randomUrl()
+        val command = UpdateMyInfoUseCase.Command(userId, user.nickname, user.gender, user.instagramId, newProfileImageUrl)
+        val expectedResult = createUser(
+            nickname = user.nickname,
+            gender = user.gender,
+            instagramId = user.instagramId,
+            profileImageUrl = newProfileImageUrl,
+        )
+        every { getUserPort.getById(userId) } returns user
+        every { publishEventPort.publish(any(DeleteFileEvent::class)) } just Runs
+        every { updateUserPort.update(user) } returns expectedResult
+
+        // when
+        val actualResult = sut.updateMyInfo(command)
+
+        // then
+        verifyOrder {
+            getUserPort.getById(userId)
+            publishEventPort.publish(any(DeleteFileEvent::class))
+            updateUserPort.update(user)
         }
         confirmVerifiedEveryMocks()
         assertThat(actualResult.id).isEqualTo(expectedResult.id)
@@ -120,7 +185,7 @@ class UserServiceTest {
         // given
         val userId = randomLong()
         val existingNickname = randomString(len = 7)
-        val command = UpdateMyInfoUseCase.Command(userId, existingNickname, Gender.FEMALE, randomString(), null)
+        val command = UpdateMyInfoUseCase.Command(userId, existingNickname, Gender.FEMALE, randomString(), randomUrl())
         every { getUserPort.getById(userId) } returns createUser(id = userId)
         every { checkNicknameExistencePort.doesNicknameExist(existingNickname) } returns true
 
@@ -136,64 +201,7 @@ class UserServiceTest {
         assertThat(ex).isInstanceOf(NicknameAlreadyExistsException::class.java)
     }
 
-    @Test
-    fun `수정할 유저 정보가 주어지고, 유저 정보를 수정한다, 만약 유저 수정에 실패했다면 예외가 발생한다`() {
-        // given
-        val userId = randomLong()
-        val originalUser = createUser(id = userId)
-        val newNickname = randomString(len = 7)
-        val command = UpdateMyInfoUseCase.Command(userId, newNickname, Gender.FEMALE, randomString(), null)
-        val expectedThrownException = IllegalStateException()
-
-        every { getUserPort.getById(userId) } returns originalUser
-        every { checkNicknameExistencePort.doesNicknameExist(newNickname) } returns false
-        every { updateUserPort.update(any(User::class)) } throws expectedThrownException // 알 수 없는 에러 발생
-
-        // when
-        val ex = catchThrowable { sut.updateMyInfo(command) }
-
-        // then
-        verifyOrder {
-            getUserPort.getById(userId)
-            checkNicknameExistencePort.doesNicknameExist(newNickname)
-            updateUserPort.update(any(User::class))
-        }
-        confirmVerifiedEveryMocks()
-        assertThat(ex).isInstanceOf(expectedThrownException::class.java)
-    }
-
-    @Test
-    fun `수정할 유저 정보가 주어지고, 유저 정보를 수정한다, 만약 파일 업로드에는 성공했으나 유저 수정에는 실패했다면, 파일 업로드를 취소하는 이벤트를 발행한다`() {
-        // given
-        val userId = randomLong()
-        val user = createUser(id = userId)
-        val newGender = Gender.FEMALE
-        val newInstagramId = randomString()
-        val newProfileImage = createUploadFile()
-        val uploadedFile = UploadedFile(randomString(), randomString())
-        val command = UpdateMyInfoUseCase.Command(userId, user.nickname, newGender, newInstagramId, newProfileImage)
-        val expectedThrownException = IllegalStateException()
-
-        every { getUserPort.getById(userId) } returns user
-        every { uploadFilePort.upload(newProfileImage, any(String::class)) } returns uploadedFile
-        every { updateUserPort.update(any(User::class)) } throws expectedThrownException // 알 수 없는 에러 발생
-        every { publishEventPort.publish(FileUploadRollbackEvent(listOf(uploadedFile))) } just Runs
-
-        // when
-        val ex = catchThrowable { sut.updateMyInfo(command) }
-
-        // then
-        verifyOrder {
-            getUserPort.getById(userId)
-            uploadFilePort.upload(newProfileImage, any(String::class))
-            updateUserPort.update(any(User::class))
-            publishEventPort.publish(FileUploadRollbackEvent(listOf(uploadedFile)))
-        }
-        confirmVerifiedEveryMocks()
-        assertThat(ex).isInstanceOf(expectedThrownException::class.java)
-    }
-
     private fun confirmVerifiedEveryMocks() {
-        confirmVerified(getUserPort, checkNicknameExistencePort, updateUserPort, uploadFilePort, publishEventPort)
+        confirmVerified(getUserPort, checkNicknameExistencePort, updateUserPort, publishEventPort)
     }
 }

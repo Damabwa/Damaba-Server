@@ -1,6 +1,5 @@
 package com.damaba.user.util
 
-import com.damaba.common_file.domain.UploadFile
 import com.damaba.user.domain.auth.AuthToken
 import com.damaba.user.domain.user.User
 import com.damaba.user.domain.user.constant.Gender
@@ -32,7 +31,7 @@ object TestFixture {
         nickname: String = randomString(len = 7),
         profileImageUrl: String = randomString(),
         gender: Gender = Gender.MALE,
-        instagramId: String = randomString(len = 30),
+        instagramId: String? = randomString(len = 30),
     ): User = User(
         id = id,
         roles = roles,
@@ -50,14 +49,5 @@ object TestFixture {
     ): AuthToken = AuthToken(
         value = value,
         expiresAt = expiresAt,
-    )
-
-    fun createUploadFile(
-        name: String? = randomString(),
-    ): UploadFile = UploadFile(
-        name = name,
-        size = randomLong(positive = true),
-        contentType = "jpg",
-        inputStream = randomString().byteInputStream(),
     )
 }

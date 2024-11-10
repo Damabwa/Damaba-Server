@@ -14,11 +14,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.springframework.http.MediaType
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
@@ -68,10 +67,10 @@ class UserController(
         ApiResponse(responseCode = "404", description = "유저 정보를 찾을 수 없는 경우", content = [Content()]),
         ApiResponse(responseCode = "409", description = "수정하고자 하는 닉네임이 이미 사용중인 경우", content = [Content()]),
     )
-    @PutMapping("/api/v1/users/me", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @PutMapping("/api/v1/users/me")
     fun updateMyInfoV1(
         @AuthenticationPrincipal requestUser: User,
-        @ModelAttribute request: UpdateMyInfoRequest,
+        @RequestBody request: UpdateMyInfoRequest,
     ): UserResponse {
         val updatedUser = updateMyInfoUseCase.updateMyInfo(request.toCommand(requestUserId = requestUser.id))
         return UserResponse.from(updatedUser)

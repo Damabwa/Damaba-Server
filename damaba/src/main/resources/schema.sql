@@ -25,7 +25,7 @@ CREATE TABLE user_profile_image
 (
     id         BIGINT       NOT NULL AUTO_INCREMENT,
     user_id    BIGINT       NOT NULL COMMENT '(FK) id of user',
-    name       VARCHAR(255) NOT NULL UNIQUE,
+    name       VARCHAR(255) NOT NULL,
     url        VARCHAR(255) NOT NULL UNIQUE,
     created_at DATETIME     NOT NULL,
     updated_at DATETIME     NOT NULL,
@@ -65,7 +65,7 @@ CREATE TABLE promotion_image
 (
     id           BIGINT       NOT NULL AUTO_INCREMENT,
     promotion_id BIGINT       NOT NULL COMMENT '(FK) id of promotion',
-    name         VARCHAR(255) NOT NULL UNIQUE,
+    name         VARCHAR(255) NOT NULL,
     url          VARCHAR(255) NOT NULL UNIQUE,
     created_at   DATETIME     NOT NULL,
     updated_at   DATETIME     NOT NULL,

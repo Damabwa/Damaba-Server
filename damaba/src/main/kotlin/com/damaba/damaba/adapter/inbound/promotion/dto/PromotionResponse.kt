@@ -1,6 +1,7 @@
 package com.damaba.damaba.adapter.inbound.promotion.dto
 
 import com.damaba.damaba.adapter.inbound.common.dto.AddressResponse
+import com.damaba.damaba.adapter.inbound.common.dto.FileResponse
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.constant.EventType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
@@ -45,7 +46,7 @@ data class PromotionResponse(
     val photographerInstagramId: String?,
 
     @Schema(description = "이미지 url 리스트", example = "[\"https://promotion-image\"]")
-    val imageUrls: List<String>,
+    val images: List<FileResponse>,
 
     @Schema(description = "활동 지역 리스트")
     val activeRegions: Set<PromotionActiveRegionResponse>,
@@ -67,7 +68,7 @@ data class PromotionResponse(
             endedAt = promotion.endedAt,
             photographerName = promotion.photographerName,
             photographerInstagramId = promotion.photographerInstagramId,
-            imageUrls = promotion.images.map { image -> image.url },
+            images = promotion.images.map { image -> FileResponse(image.name, image.url) },
             activeRegions = promotion.activeRegions.map { PromotionActiveRegionResponse.from(it) }.toSet(),
             hashtags = promotion.hashtags,
         )

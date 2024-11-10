@@ -31,5 +31,7 @@ class RandomTestUtils {
             randomInt(positive = true) % 12 + 1,
             randomInt(positive = true) % 25 + 1,
         )
+
+        fun randomUrl(): String = "https://${randomString()}"
     }
 }

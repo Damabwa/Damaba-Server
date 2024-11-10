@@ -56,4 +56,17 @@ class UserTest {
         assertThat(user.instagramId).isEqualTo(newInstagramId)
         assertThat(user.profileImageUrl).isEqualTo(newProfileImageUrl)
     }
+
+    @Test
+    fun `id가 다른 user 객체는 다른 객체이다`() {
+        // given
+        val user1 = createUser(id = 1L)
+        val user2 = createUser(id = 2L)
+
+        // when
+        val result = user1 == user2
+
+        // then
+        assertThat(result).isFalse()
+    }
 }
