@@ -5,6 +5,7 @@ import com.damaba.user.application.port.inbound.user.CheckNicknameExistenceUseCa
 import com.damaba.user.application.port.inbound.user.GetMyInfoUseCase
 import com.damaba.user.application.port.inbound.user.UpdateMyInfoUseCase
 import com.damaba.user.config.ControllerTestConfig
+import com.damaba.user.domain.user.UserProfileImage
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.util.RandomTestUtils.Companion.randomBoolean
 import com.damaba.user.util.RandomTestUtils.Companion.randomLong
@@ -77,7 +78,7 @@ class UserControllerTest @Autowired constructor(
             nickname = randomString(len = 7),
             gender = Gender.FEMALE,
             instagramId = randomString(),
-            profileImageUrl = randomUrl(),
+            profileImage = UserProfileImage(randomString(), randomUrl()),
         )
         val expectedResult = createUser(
             id = requestUser.id,
@@ -98,7 +99,8 @@ class UserControllerTest @Autowired constructor(
             .andExpect(jsonPath("$.nickname").value(expectedResult.nickname))
             .andExpect(jsonPath("$.gender").value(expectedResult.gender.toString()))
             .andExpect(jsonPath("$.instagramId").value(expectedResult.instagramId))
-            .andExpect(jsonPath("$.profileImageUrl").value(expectedResult.profileImageUrl))
+            .andExpect(jsonPath("$.profileImage.name").value(expectedResult.profileImage.name))
+            .andExpect(jsonPath("$.profileImage.url").value(expectedResult.profileImage.url))
         verify { updateMyInfoUseCase.updateMyInfo(request.toCommand(requestUser.id)) }
     }
 

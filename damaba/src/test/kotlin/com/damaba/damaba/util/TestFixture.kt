@@ -14,7 +14,9 @@ import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomSet
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLocalDate
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
+import com.damaba.damaba.util.RandomTestUtils.Companion.randomUrl
 import com.damaba.user.domain.user.User
+import com.damaba.user.domain.user.UserProfileImage
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.constant.UserRoleType
@@ -30,7 +32,7 @@ object TestFixture {
         oAuthLoginUid: String = randomString(),
         loginType: LoginType = LoginType.KAKAO,
         nickname: String = randomString(len = 7),
-        profileImageUrl: String = randomString(),
+        profileImage: UserProfileImage = UserProfileImage(randomString(), randomUrl()),
         gender: Gender = Gender.MALE,
         instagramId: String = randomString(len = 30),
     ): User = User(
@@ -39,7 +41,7 @@ object TestFixture {
         oAuthLoginUid = oAuthLoginUid,
         loginType = loginType,
         nickname = nickname,
-        profileImageUrl = profileImageUrl,
+        profileImage = profileImage,
         gender = gender,
         instagramId = instagramId,
     )

@@ -22,22 +22,10 @@ class UserJpaEntity(
     loginType: LoginType,
     oAuthLoginUid: String,
     nickname: String,
-    profileImageUrl: String,
+    profileImage: UserProfileImageJpaEmbeddable,
     gender: Gender,
     instagramId: String?,
 ) : BaseJpaTimeEntity() {
-    companion object {
-        fun from(user: User): UserJpaEntity = UserJpaEntity(
-            roles = user.roles,
-            loginType = user.loginType,
-            oAuthLoginUid = user.oAuthLoginUid,
-            nickname = user.nickname,
-            profileImageUrl = user.profileImageUrl,
-            gender = user.gender,
-            instagramId = user.instagramId,
-        )
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -62,7 +50,7 @@ class UserJpaEntity(
         private set
 
     @Column(name = "profile_image_url", nullable = false)
-    var profileImageUrl: String = profileImageUrl
+    var profileImage: UserProfileImageJpaEmbeddable = profileImage
         private set
 
     @Enumerated(EnumType.STRING)
@@ -80,7 +68,7 @@ class UserJpaEntity(
         oAuthLoginUid = this.oAuthLoginUid,
         loginType = this.loginType,
         nickname = this.nickname,
-        profileImageUrl = this.profileImageUrl,
+        profileImage = this.profileImage.toDomain(),
         gender = this.gender,
         instagramId = this.instagramId,
     )
@@ -89,6 +77,18 @@ class UserJpaEntity(
         this.nickname = user.nickname
         this.gender = user.gender
         this.instagramId = user.instagramId
-        this.profileImageUrl = user.profileImageUrl
+        this.profileImage = UserProfileImageJpaEmbeddable.from(user.profileImage)
+    }
+
+    companion object {
+        fun from(user: User): UserJpaEntity = UserJpaEntity(
+            roles = user.roles,
+            loginType = user.loginType,
+            oAuthLoginUid = user.oAuthLoginUid,
+            nickname = user.nickname,
+            profileImage = UserProfileImageJpaEmbeddable.from(user.profileImage),
+            gender = user.gender,
+            instagramId = user.instagramId,
+        )
     }
 }

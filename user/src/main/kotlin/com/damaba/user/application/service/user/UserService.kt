@@ -40,15 +40,15 @@ class UserService(
             throw NicknameAlreadyExistsException(command.nickname)
         }
 
-        if (user.profileImageUrl != command.profileImageUrl) {
-            publishEventPort.publish(DeleteFileEvent(url = user.profileImageUrl))
+        if (user.profileImage != command.profileImage) {
+            publishEventPort.publish(DeleteFileEvent(url = user.profileImage.url))
         }
 
         user.update(
             nickname = command.nickname,
             gender = command.gender,
             instagramId = command.instagramId,
-            profileImageUrl = command.profileImageUrl,
+            profileImage = command.profileImage,
         )
         return updateUserPort.update(user)
     }

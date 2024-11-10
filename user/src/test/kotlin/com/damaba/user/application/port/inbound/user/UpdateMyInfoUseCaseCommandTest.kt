@@ -1,8 +1,10 @@
 package com.damaba.user.application.port.inbound.user
 
 import com.damaba.common_exception.ValidationException
+import com.damaba.user.domain.user.UserProfileImage
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
+import com.damaba.user.util.RandomTestUtils.Companion.randomUrl
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
 import kotlin.test.Test
@@ -20,7 +22,7 @@ class UpdateMyInfoUseCaseCommandTest {
                 nickname = invalidNickname,
                 gender = Gender.MALE,
                 instagramId = randomString(),
-                profileImageUrl = randomString(),
+                profileImage = UserProfileImage(randomString(), randomUrl()),
             )
         }
 
@@ -40,7 +42,7 @@ class UpdateMyInfoUseCaseCommandTest {
                 nickname = randomString(len = 5),
                 gender = Gender.MALE,
                 instagramId = invalidInstagramId,
-                profileImageUrl = randomString(),
+                profileImage = UserProfileImage(randomString(), randomUrl()),
             )
         }
 

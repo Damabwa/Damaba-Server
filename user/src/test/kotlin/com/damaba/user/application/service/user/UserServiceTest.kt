@@ -1,13 +1,13 @@
 package com.damaba.user.application.service.user
 
 import com.damaba.common_file.domain.DeleteFileEvent
-import com.damaba.common_file.domain.File
 import com.damaba.user.application.port.inbound.user.CheckNicknameExistenceUseCase
 import com.damaba.user.application.port.inbound.user.UpdateMyInfoUseCase
 import com.damaba.user.application.port.outbound.common.PublishEventPort
 import com.damaba.user.application.port.outbound.user.CheckNicknameExistencePort
 import com.damaba.user.application.port.outbound.user.GetUserPort
 import com.damaba.user.application.port.outbound.user.UpdateUserPort
+import com.damaba.user.domain.user.UserProfileImage
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.exception.NicknameAlreadyExistsException
 import com.damaba.user.util.RandomTestUtils.Companion.randomBoolean
@@ -79,14 +79,13 @@ class UserServiceTest {
         val newNickname = randomString(len = 7)
         val newGender = Gender.FEMALE
         val newInstagramId = null
-        val newProfileImageUrl = randomUrl()
-        val uploadedFile = File(randomString(), randomString())
+        val newProfileImageUrl = UserProfileImage(randomString(), randomUrl())
         val command = UpdateMyInfoUseCase.Command(userId, newNickname, newGender, newInstagramId, newProfileImageUrl)
         val expectedResult = createUser(
             nickname = newNickname,
             gender = newGender,
             instagramId = newInstagramId,
-            profileImageUrl = uploadedFile.url,
+            profileImage = newProfileImageUrl,
         )
         every { getUserPort.getById(userId) } returns user
         every { checkNicknameExistencePort.doesNicknameExist(newNickname) } returns false
@@ -109,7 +108,7 @@ class UserServiceTest {
         assertThat(actualResult.nickname).isEqualTo(expectedResult.nickname)
         assertThat(actualResult.gender).isEqualTo(expectedResult.gender)
         assertThat(actualResult.instagramId).isEqualTo(expectedResult.instagramId)
-        assertThat(actualResult.profileImageUrl).isEqualTo(expectedResult.profileImageUrl)
+        assertThat(actualResult.profileImage).isEqualTo(expectedResult.profileImage)
     }
 
     @Test
@@ -118,12 +117,12 @@ class UserServiceTest {
         val userId = randomLong()
         val user = createUser(id = userId)
         val newNickname = randomString(len = 7)
-        val command = UpdateMyInfoUseCase.Command(userId, newNickname, user.gender, user.instagramId, user.profileImageUrl)
+        val command = UpdateMyInfoUseCase.Command(userId, newNickname, user.gender, user.instagramId, user.profileImage)
         val expectedResult = createUser(
             nickname = newNickname,
             gender = user.gender,
             instagramId = user.instagramId,
-            profileImageUrl = user.profileImageUrl,
+            profileImage = user.profileImage,
         )
         every { getUserPort.getById(userId) } returns user
         every { checkNicknameExistencePort.doesNicknameExist(newNickname) } returns false
@@ -143,7 +142,7 @@ class UserServiceTest {
         assertThat(actualResult.nickname).isEqualTo(expectedResult.nickname)
         assertThat(actualResult.gender).isEqualTo(expectedResult.gender)
         assertThat(actualResult.instagramId).isEqualTo(expectedResult.instagramId)
-        assertThat(actualResult.profileImageUrl).isEqualTo(expectedResult.profileImageUrl)
+        assertThat(actualResult.profileImage).isEqualTo(expectedResult.profileImage)
     }
 
     @Test
@@ -151,13 +150,14 @@ class UserServiceTest {
         // given
         val userId = randomLong()
         val user = createUser(id = userId)
-        val newProfileImageUrl = randomUrl()
-        val command = UpdateMyInfoUseCase.Command(userId, user.nickname, user.gender, user.instagramId, newProfileImageUrl)
+        val newProfileImageUrl = UserProfileImage(randomString(), randomUrl())
+        val command =
+            UpdateMyInfoUseCase.Command(userId, user.nickname, user.gender, user.instagramId, newProfileImageUrl)
         val expectedResult = createUser(
             nickname = user.nickname,
             gender = user.gender,
             instagramId = user.instagramId,
-            profileImageUrl = newProfileImageUrl,
+            profileImage = newProfileImageUrl,
         )
         every { getUserPort.getById(userId) } returns user
         every { publishEventPort.publish(any(DeleteFileEvent::class)) } just Runs
@@ -177,7 +177,7 @@ class UserServiceTest {
         assertThat(actualResult.nickname).isEqualTo(expectedResult.nickname)
         assertThat(actualResult.gender).isEqualTo(expectedResult.gender)
         assertThat(actualResult.instagramId).isEqualTo(expectedResult.instagramId)
-        assertThat(actualResult.profileImageUrl).isEqualTo(expectedResult.profileImageUrl)
+        assertThat(actualResult.profileImage).isEqualTo(expectedResult.profileImage)
     }
 
     @Test
@@ -185,7 +185,13 @@ class UserServiceTest {
         // given
         val userId = randomLong()
         val existingNickname = randomString(len = 7)
-        val command = UpdateMyInfoUseCase.Command(userId, existingNickname, Gender.FEMALE, randomString(), randomUrl())
+        val command = UpdateMyInfoUseCase.Command(
+            userId,
+            existingNickname,
+            Gender.FEMALE,
+            randomString(),
+            UserProfileImage(randomString(), randomUrl()),
+        )
         every { getUserPort.getById(userId) } returns createUser(id = userId)
         every { checkNicknameExistencePort.doesNicknameExist(existingNickname) } returns true
 

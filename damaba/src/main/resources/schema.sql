@@ -7,16 +7,17 @@ DROP TABLE IF EXISTS promotion_hashtag;
 
 CREATE TABLE `user`
 (
-    id                BIGINT       NOT NULL AUTO_INCREMENT,
-    roles             VARCHAR(255) NOT NULL,
-    login_type        VARCHAR(255) NOT NULL,
-    o_auth_login_uid  VARCHAR(255) NOT NULL UNIQUE,
-    nickname          VARCHAR(7)   NOT NULL UNIQUE,
-    profile_image_url VARCHAR(255) NOT NULL,
-    gender            VARCHAR(255) NOT NULL,
-    instagram_id      VARCHAR(30),
-    created_at        DATETIME     NOT NULL,
-    updated_at        DATETIME     NOT NULL,
+    id                 BIGINT       NOT NULL AUTO_INCREMENT,
+    roles              VARCHAR(255) NOT NULL,
+    login_type         VARCHAR(255) NOT NULL,
+    o_auth_login_uid   VARCHAR(255) NOT NULL UNIQUE,
+    nickname           VARCHAR(7)   NOT NULL UNIQUE,
+    profile_image_name VARCHAR(255) NOT NULL,
+    profile_image_url  VARCHAR(255) NOT NULL,
+    gender             VARCHAR(255) NOT NULL,
+    instagram_id       VARCHAR(30),
+    created_at         DATETIME     NOT NULL,
+    updated_at         DATETIME     NOT NULL,
     PRIMARY KEY (id)
 );
 CREATE INDEX idx__user__o_auth_login_uid ON `user` (o_auth_login_uid);
