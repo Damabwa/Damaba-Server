@@ -36,22 +36,22 @@ class UserCoreRepository(
     }
 
     override fun update(user: User): User {
-        val originalUser = getUserJpaEntityById(user.id)
+        val originalUserJpaEntity = getUserJpaEntityById(user.id)
 
-        if (originalUser.profileImageUrl != user.profileImageUrl) {
-            val originalProfileImage = userProfileImageJpaRepository.findByUrl(originalUser.profileImageUrl)
+        if (originalUserJpaEntity.profileImage.url != user.profileImage.url) {
+            val originalProfileImage = userProfileImageJpaRepository.findByUrl(originalUserJpaEntity.profileImage.url)
             originalProfileImage?.delete()
             userProfileImageJpaRepository.save(
                 UserProfileImageJpaEntity(
                     userId = user.id,
-                    url = user.profileImageUrl,
-                    name = extractProfileImageFileName(user.profileImageUrl),
+                    name = user.profileImage.name,
+                    url = user.profileImage.url,
                 ),
             )
         }
 
-        originalUser.update(user)
-        return originalUser.toDomain()
+        originalUserJpaEntity.update(user)
+        return originalUserJpaEntity.toDomain()
     }
 
     private fun findUserJpaEntityById(id: Long): UserJpaEntity? =
@@ -59,9 +59,4 @@ class UserCoreRepository(
 
     private fun getUserJpaEntityById(id: Long): UserJpaEntity =
         userJpaRepository.findById(id).orElseThrow { UserNotFoundException() }
-
-    // https://image.damaba.me/profile-image-1.jpg => profile-image-1
-    private fun extractProfileImageFileName(profileImageUrl: String) =
-        profileImageUrl.substringBeforeLast(".")
-            .substringAfterLast("/")
 }

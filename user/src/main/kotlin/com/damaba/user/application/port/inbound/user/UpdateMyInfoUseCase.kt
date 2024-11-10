@@ -1,6 +1,7 @@
 package com.damaba.user.application.port.inbound.user
 
 import com.damaba.user.domain.user.User
+import com.damaba.user.domain.user.UserProfileImage
 import com.damaba.user.domain.user.UserValidator
 import com.damaba.user.domain.user.constant.Gender
 
@@ -12,7 +13,7 @@ interface UpdateMyInfoUseCase {
         val nickname: String,
         val gender: Gender,
         val instagramId: String?,
-        val profileImageUrl: String,
+        val profileImage: UserProfileImage,
     ) {
         init {
             UserValidator.validateUserNickname(nickname)

@@ -11,14 +11,14 @@ class User(
     val loginType: LoginType,
     val oAuthLoginUid: String,
     nickname: String,
-    profileImageUrl: String,
+    profileImage: UserProfileImage,
     gender: Gender,
     instagramId: String?,
 ) {
     var nickname: String = nickname
         private set
 
-    var profileImageUrl: String = profileImageUrl
+    var profileImage: UserProfileImage = profileImage
         private set
 
     var gender: Gender = gender
@@ -34,12 +34,12 @@ class User(
         nickname: String,
         gender: Gender,
         instagramId: String?,
-        profileImageUrl: String,
+        profileImage: UserProfileImage,
     ) {
         this.nickname = nickname
         this.gender = gender
         this.instagramId = instagramId
-        this.profileImageUrl = profileImageUrl
+        this.profileImage = profileImage
     }
 
     override fun equals(other: Any?): Boolean {
@@ -52,7 +52,10 @@ class User(
 
     companion object {
         val DEFAULT_GENDER = Gender.UNDEFINED
-        const val DEFAULT_PROFILE_IMAGE_URL = "https://dummyimage.com/244x100.png/cc0000/ffffff"
+        val DEFAULT_PROFILE_IMAGE = UserProfileImage(
+            name = "default-user-profile-image.jpg",
+            url = "https://dummyimage.com/244x100.png/cc0000/ffffff",
+        )
 
         fun create(loginType: LoginType, oAuthLoginUid: String, nickname: String): User = User(
             id = 0,
@@ -60,7 +63,7 @@ class User(
             loginType = loginType,
             oAuthLoginUid = oAuthLoginUid,
             nickname = nickname,
-            profileImageUrl = DEFAULT_PROFILE_IMAGE_URL,
+            profileImage = DEFAULT_PROFILE_IMAGE,
             gender = DEFAULT_GENDER,
             instagramId = null,
         )

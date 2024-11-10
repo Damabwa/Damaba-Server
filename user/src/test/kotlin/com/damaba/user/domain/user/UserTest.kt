@@ -4,6 +4,7 @@ import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.constant.UserRoleType
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
+import com.damaba.user.util.RandomTestUtils.Companion.randomUrl
 import com.damaba.user.util.TestFixture.createUser
 import org.assertj.core.api.Assertions.assertThat
 import kotlin.test.Test
@@ -25,7 +26,7 @@ class UserTest {
         assertThat(userCreated.loginType).isEqualTo(loginType)
         assertThat(userCreated.oAuthLoginUid).isEqualTo(oAuthLoginUid)
         assertThat(userCreated.nickname).isEqualTo(nickname)
-        assertThat(userCreated.profileImageUrl).isEqualTo(User.DEFAULT_PROFILE_IMAGE_URL)
+        assertThat(userCreated.profileImage).isEqualTo(User.DEFAULT_PROFILE_IMAGE)
         assertThat(userCreated.gender).isEqualTo(User.DEFAULT_GENDER)
         assertThat(userCreated.instagramId).isNull()
 
@@ -40,21 +41,21 @@ class UserTest {
         val newNickname = randomString()
         val newGender = Gender.FEMALE
         val newInstagramId = randomString()
-        val newProfileImageUrl = randomString()
+        val newProfileImage = UserProfileImage(randomString(), randomUrl())
 
         // when
         user.update(
             nickname = newNickname,
             gender = newGender,
             instagramId = newInstagramId,
-            profileImageUrl = newProfileImageUrl,
+            profileImage = newProfileImage,
         )
 
         // then
         assertThat(user.nickname).isEqualTo(newNickname)
         assertThat(user.gender).isEqualTo(newGender)
         assertThat(user.instagramId).isEqualTo(newInstagramId)
-        assertThat(user.profileImageUrl).isEqualTo(newProfileImageUrl)
+        assertThat(user.profileImage).isEqualTo(newProfileImage)
     }
 
     @Test

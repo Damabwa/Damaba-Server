@@ -32,6 +32,8 @@ class RandomTestUtils {
             randomInt(positive = true) % 25 + 1,
         )
 
+        fun randomUrl(): String = "https://${randomString()}"
+
         fun <T> generateRandomList(maxSize: Int, generator: () -> T): List<T> =
             generateSequence { generator() }
                 .take(randomInt(positive = true, max = maxSize))
