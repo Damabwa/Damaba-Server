@@ -28,6 +28,7 @@ dependencies {
      * Main Server Dependencies
      */
     implementation(project(":user"))
+    implementation(project(":file"))
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-aop")
 
@@ -54,10 +55,6 @@ dependencies {
     // RDB
     implementation("com.h2database:h2")
     implementation("com.mysql:mysql-connector-j")
-
-    // AWS S3
-    implementation(platform("software.amazon.awssdk:bom:2.27.21"))
-    implementation("software.amazon.awssdk:s3")
 
     /**
      * Common

@@ -1,10 +1,7 @@
 package com.damaba.damaba.application.service.promotion
 
-import com.damaba.common_file.application.port.outbound.UploadFilesPort
-import com.damaba.common_file.domain.FileUploadRollbackEvent
 import com.damaba.damaba.application.port.inbound.promotion.FindPromotionsUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
-import com.damaba.damaba.application.port.outbound.common.PublishEventPort
 import com.damaba.damaba.application.port.outbound.promotion.FindPromotionsPort
 import com.damaba.damaba.application.port.outbound.promotion.GetPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.SavePromotionPort
@@ -19,40 +16,30 @@ import com.damaba.damaba.util.RandomTestUtils.Companion.randomLocalDate
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.TestFixture.createAddress
+import com.damaba.damaba.util.TestFixture.createFile
 import com.damaba.damaba.util.TestFixture.createPromotion
 import com.damaba.damaba.util.TestFixture.createRegion
-import com.damaba.damaba.util.TestFixture.createUploadFile
-import com.damaba.damaba.util.TestFixture.createUploadedFile
-import io.mockk.Runs
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.just
 import io.mockk.mockk
 import io.mockk.verify
-import io.mockk.verifyOrder
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatIterable
-import org.assertj.core.api.Assertions.catchThrowable
-import kotlin.math.max
 import kotlin.test.Test
 
 class PromotionServiceTest {
     private val getPromotionPort: GetPromotionPort = mockk()
     private val findPromotionsPort: FindPromotionsPort = mockk()
     private val savePromotionPort: SavePromotionPort = mockk()
-    private val uploadFilesPort: UploadFilesPort = mockk()
-    private val publishEventPort: PublishEventPort = mockk()
 
     private val sut: PromotionService = PromotionService(
         getPromotionPort,
         findPromotionsPort,
         savePromotionPort,
-        uploadFilesPort,
-        publishEventPort,
     )
 
     private fun confirmVerifiedEveryMocks() {
-        confirmVerified(getPromotionPort, findPromotionsPort, savePromotionPort, uploadFilesPort, publishEventPort)
+        confirmVerified(getPromotionPort, findPromotionsPort, savePromotionPort)
     }
 
     @Test
@@ -102,48 +89,18 @@ class PromotionServiceTest {
         // given
         val command = createPostPromotionCommand()
         val expectedResult = createPromotion()
-        every {
-            uploadFilesPort.upload(command.images, any(String::class))
-        } returns List(3) { createUploadedFile() }
         every { savePromotionPort.save(any(Promotion::class)) } returns expectedResult
 
         // when
         val actualResult = sut.postPromotion(command)
 
         // then
-        verifyOrder {
-            uploadFilesPort.upload(command.images, any(String::class))
-            savePromotionPort.save(any(Promotion::class))
-        }
+        verify { savePromotionPort.save(any(Promotion::class)) }
         confirmVerifiedEveryMocks()
         assertThat(actualResult).isEqualTo(expectedResult)
         assertThatIterable(actualResult.images).isEqualTo(expectedResult.images)
         assertThatIterable(actualResult.activeRegions).isEqualTo(expectedResult.activeRegions)
         assertThatIterable(actualResult.hashtags).isEqualTo(expectedResult.hashtags)
-    }
-
-    @Test
-    fun `프로모션을 생성 및 등록한다, 이미지는 성공적으로 업로드 되었지만 프로모션 저장에 실패할 경우, 파일 롤백 이벤트를 발행하고 예외가 발생한다`() {
-        // given
-        val command = createPostPromotionCommand()
-        val expectedThrownException = IllegalStateException()
-        every {
-            uploadFilesPort.upload(command.images, any(String::class))
-        } returns List(3) { createUploadedFile() }
-        every { savePromotionPort.save(any(Promotion::class)) } throws expectedThrownException
-        every { publishEventPort.publish(any(FileUploadRollbackEvent::class)) } just Runs
-
-        // when
-        val actualThrownException = catchThrowable { sut.postPromotion(command) }
-
-        // then
-        verifyOrder {
-            uploadFilesPort.upload(command.images, any(String::class))
-            savePromotionPort.save(any(Promotion::class))
-            publishEventPort.publish(any(FileUploadRollbackEvent::class))
-        }
-        confirmVerifiedEveryMocks()
-        assertThat(actualThrownException).isInstanceOf(expectedThrownException::class.java)
     }
 
     private fun createPostPromotionCommand() = PostPromotionUseCase.Command(
@@ -158,7 +115,7 @@ class PromotionServiceTest {
         endedAt = randomLocalDate(),
         photographerName = randomString(),
         photographerInstagramId = randomString(),
-        images = generateRandomList(maxSize = 10) { createUploadFile() },
+        images = generateRandomList(maxSize = 10) { createFile() },
         activeRegions = generateRandomSet(maxSize = 5) { createRegion() },
         hashtags = generateRandomSet(maxSize = 5) { randomString() },
     )

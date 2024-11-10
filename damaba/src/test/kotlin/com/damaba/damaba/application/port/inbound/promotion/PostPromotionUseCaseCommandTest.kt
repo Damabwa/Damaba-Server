@@ -1,7 +1,7 @@
 package com.damaba.damaba.application.port.inbound.promotion
 
 import com.damaba.common_exception.ValidationException
-import com.damaba.common_file.domain.UploadFile
+import com.damaba.common_file.domain.File
 import com.damaba.damaba.domain.common.Address
 import com.damaba.damaba.domain.promotion.constant.EventType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
@@ -9,7 +9,7 @@ import com.damaba.damaba.domain.region.Region
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.TestFixture.createAddress
-import com.damaba.damaba.util.TestFixture.createUploadFile
+import com.damaba.damaba.util.TestFixture.createFile
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
 import org.junit.jupiter.params.ParameterizedTest
@@ -41,7 +41,7 @@ class PostPromotionUseCaseCommandTest {
 
     @ParameterizedTest
     @MethodSource("invalidImageSizeProvider")
-    fun `이미지 개수가 유효하지 않으면 ValidationException이 발생한다`(images: List<UploadFile>) {
+    fun `이미지 개수가 유효하지 않으면 ValidationException이 발생한다`(images: List<File>) {
         val exception = catchThrowable { createCommand(images = images) }
         assertThat(exception).isInstanceOf(ValidationException::class.java)
     }
@@ -70,8 +70,8 @@ class PostPromotionUseCaseCommandTest {
 
         @JvmStatic
         fun invalidImageSizeProvider() = listOf(
-            Arguments.of(emptyList<UploadFile>()),
-            Arguments.of(List(11) { createUploadFile() }),
+            Arguments.of(emptyList<File>()),
+            Arguments.of(List(11) { createFile() }),
         )
 
         private fun createCommand(
@@ -80,7 +80,7 @@ class PostPromotionUseCaseCommandTest {
             content: String = "Valid content",
             promotionType: PromotionType = PromotionType.EVENT,
             eventType: EventType = EventType.FREE,
-            images: List<UploadFile> = List(3) { createUploadFile() },
+            images: List<File> = List(3) { createFile() },
             activeRegions: Set<Region> = setOf(Region("서울", "강남구")),
         ) = PostPromotionUseCase.Command(
             authorId = randomLong(),

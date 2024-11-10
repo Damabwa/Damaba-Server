@@ -1,7 +1,7 @@
 package com.damaba.damaba.config
 
 import com.damaba.common_logging.Logger
-import com.damaba.user.property.DamabaProperties
+import com.damaba.damaba.property.DamabaProperties
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse

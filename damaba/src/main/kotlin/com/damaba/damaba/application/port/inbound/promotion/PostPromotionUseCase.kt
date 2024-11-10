@@ -1,7 +1,7 @@
 package com.damaba.damaba.application.port.inbound.promotion
 
 import com.damaba.common_exception.ValidationException
-import com.damaba.common_file.domain.UploadFile
+import com.damaba.common_file.domain.File
 import com.damaba.damaba.domain.common.Address
 import com.damaba.damaba.domain.common.AddressValidator
 import com.damaba.damaba.domain.promotion.Promotion
@@ -32,7 +32,7 @@ interface PostPromotionUseCase {
         val endedAt: LocalDate?,
         val photographerName: String?,
         val photographerInstagramId: String?,
-        val images: List<UploadFile>,
+        val images: List<File>,
         val activeRegions: Set<Region>,
         val hashtags: Set<String>,
     ) {
