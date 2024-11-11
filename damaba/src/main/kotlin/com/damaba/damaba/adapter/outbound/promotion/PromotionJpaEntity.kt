@@ -1,7 +1,7 @@
 package com.damaba.damaba.adapter.outbound.promotion
 
 import com.damaba.damaba.adapter.outbound.common.AddressJpaEmbeddable
-import com.damaba.damaba.adapter.outbound.common.BaseJpaEntity
+import com.damaba.damaba.adapter.outbound.common.BaseJpaTimeEntity
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.constant.EventType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
@@ -33,7 +33,7 @@ class PromotionJpaEntity(
     endedAt: LocalDate?,
     photographerName: String?,
     photographerInstagramId: String?,
-) : BaseJpaEntity() {
+) : BaseJpaTimeEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

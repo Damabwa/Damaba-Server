@@ -107,8 +107,6 @@ CREATE TABLE promotion
     created_at                DATETIME     NOT NULL,
     updated_at                DATETIME     NOT NULL,
     deleted_at                DATETIME,
-    created_by                BIGINT       NOT NULL,
-    updated_by                BIGINT       NOT NULL,
     PRIMARY KEY (id)
 );
 
