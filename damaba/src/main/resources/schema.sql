@@ -1,4 +1,7 @@
 DROP TABLE IF EXISTS `user`;
+DROP TABLE IF EXISTS photographer;
+DROP TABLE IF EXISTS photographer_active_region;
+DROP TABLE IF EXISTS photographer_portfolio_image;
 DROP TABLE IF EXISTS user_profile_image;
 DROP TABLE IF EXISTS promotion;
 DROP TABLE IF EXISTS promotion_image;
@@ -8,6 +11,7 @@ DROP TABLE IF EXISTS promotion_hashtag;
 CREATE TABLE `user`
 (
     id                 BIGINT       NOT NULL AUTO_INCREMENT,
+    type               VARCHAR(255) NOT NULL,
     roles              VARCHAR(255) NOT NULL,
     login_type         VARCHAR(255) NOT NULL,
     o_auth_login_uid   VARCHAR(255) NOT NULL UNIQUE,
@@ -21,6 +25,52 @@ CREATE TABLE `user`
     PRIMARY KEY (id)
 );
 CREATE INDEX idx__user__o_auth_login_uid ON `user` (o_auth_login_uid);
+
+CREATE TABLE photographer
+(
+    user_id               BIGINT       NOT NULL COMMENT '(FK) id of user',
+    main_photography_type VARCHAR(255) NOT NULL,
+    contact_link          VARCHAR(255),
+    description           VARCHAR(500),
+    sido                  VARCHAR(255),
+    sigungu               VARCHAR(255),
+    road_address          VARCHAR(255),
+    jibun_address         VARCHAR(255),
+    business_days         VARCHAR(255),
+    business_start_time   TIME,
+    business_end_time     TIME,
+    created_at            DATETIME     NOT NULL,
+    updated_at            DATETIME     NOT NULL,
+    PRIMARY KEY (user_id)
+);
+CREATE INDEX fk_idx__photographer__user_id ON photographer (user_id);
+
+CREATE TABLE photographer_active_region
+(
+    id                   BIGINT       NOT NULL AUTO_INCREMENT,
+    photographer_user_id BIGINT COMMENT '(FK) id of photographer',
+    category             VARCHAR(255) NOT NULL,
+    name                 VARCHAR(255) NOT NULL,
+    created_at           DATETIME     NOT NULL,
+    updated_at           DATETIME     NOT NULL,
+    PRIMARY KEY (id)
+);
+CREATE INDEX fk_idx__photographer_active_region__photographer_id ON photographer_active_region (photographer_user_id);
+
+CREATE TABLE photographer_portfolio_image
+(
+    id                   BIGINT       NOT NULL AUTO_INCREMENT,
+    photographer_user_id BIGINT COMMENT '(FK) id of photographer',
+    name                 VARCHAR(255) NOT NULL,
+    url                  VARCHAR(255) NOT NULL UNIQUE,
+    created_at           DATETIME     NOT NULL,
+    updated_at           DATETIME     NOT NULL,
+    deleted_at           DATETIME,
+    created_by           BIGINT       NOT NULL,
+    updated_by           BIGINT       NOT NULL,
+    PRIMARY KEY (id)
+);
+CREATE INDEX fk_idx__photographer_portfolio__photographer_id ON photographer_active_region (photographer_user_id);
 
 CREATE TABLE user_profile_image
 (

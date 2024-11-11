@@ -6,6 +6,7 @@ import com.damaba.user.domain.user.UserProfileImage
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.constant.UserRoleType
+import com.damaba.user.domain.user.constant.UserType
 import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
 import com.damaba.user.util.RandomTestUtils.Companion.randomUrl
@@ -27,6 +28,7 @@ object TestFixture {
 
     fun createUser(
         id: Long = randomLong(),
+        type: UserType = UserType.USER,
         roles: Set<UserRoleType> = setOf(UserRoleType.USER),
         oAuthLoginUid: String = randomString(),
         loginType: LoginType = LoginType.KAKAO,
@@ -36,6 +38,7 @@ object TestFixture {
         instagramId: String? = randomString(len = 30),
     ): User = User(
         id = id,
+        type = type,
         roles = roles,
         oAuthLoginUid = oAuthLoginUid,
         loginType = loginType,

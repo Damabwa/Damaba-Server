@@ -3,6 +3,7 @@ package com.damaba.user.domain.user
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.constant.UserRoleType
+import com.damaba.user.domain.user.constant.UserType
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
 import com.damaba.user.util.RandomTestUtils.Companion.randomUrl
 import com.damaba.user.util.TestFixture.createUser
@@ -22,12 +23,12 @@ class UserTest {
 
         // then
         assertThat(userCreated.id).isEqualTo(0L)
+        assertThat(userCreated.type).isEqualTo(UserType.UNDEFINED)
         assertThat(userCreated.roles).containsOnly(UserRoleType.USER)
         assertThat(userCreated.loginType).isEqualTo(loginType)
         assertThat(userCreated.oAuthLoginUid).isEqualTo(oAuthLoginUid)
         assertThat(userCreated.nickname).isEqualTo(nickname)
         assertThat(userCreated.profileImage).isEqualTo(User.DEFAULT_PROFILE_IMAGE)
-        assertThat(userCreated.gender).isEqualTo(User.DEFAULT_GENDER)
         assertThat(userCreated.instagramId).isNull()
 
         // 유저가 생성된 직후에는 isRegistrationCompleted가 false

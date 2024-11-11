@@ -1,7 +1,7 @@
 package com.damaba.user.domain.user.constant
 
-enum class UserRoleType {
+enum class UserType {
     USER,
     PHOTOGRAPHER,
-    ADMIN,
+    UNDEFINED,
 }

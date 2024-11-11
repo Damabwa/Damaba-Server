@@ -150,10 +150,13 @@ tasks.jacocoTestCoverageVerification {
                 "*.adapter.outbound.*.*Repository*",
                 "*.adapter.outbound.*.*Adapter*",
                 "*.application.listener.*.*EventListener*",
-                "*.application.service.*.*",
+                "*.application.service.*",
                 "*.application.port.*",
                 "*.domain.*.*",
             )
+
+            // TODO: 회원가입 기능 구현 후 제거
+            excludes = listOf("*.domain.photographer.*")
         }
     }
 }
