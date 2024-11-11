@@ -61,7 +61,7 @@ class UserController(
     @Operation(
         summary = "유저 등록(회원가입)",
         description = "<p>유저 회원가입 시에만 한 번 사용하며, 유저 등록 정보(서비스 이용에 필요한 기본 정보)를 받아 설정합니다." +
-            "<p>일반 유저의 회원가입에만 사용해야 하며, 사진작가라면 사진작가 등록 정보 수정 API(`PATCH /api/v*/photographers/me/registration`)를 사용해야 합니다.",
+            "<p>일반 유저의 회원가입에만 사용해야 하며, 사진작가라면 사진작가 등록 정보 수정 API(<code>PATCH /api/v*/photographers/me/registration</code>)를 사용해야 합니다.",
         security = [SecurityRequirement(name = "access-token")],
     )
     @ApiResponses(
