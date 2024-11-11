@@ -2,6 +2,7 @@ package com.damaba.user.application.service.user
 
 import com.damaba.common_file.domain.DeleteFileEvent
 import com.damaba.user.application.port.inbound.user.CheckNicknameExistenceUseCase
+import com.damaba.user.application.port.inbound.user.RegisterUserUseCase
 import com.damaba.user.application.port.inbound.user.UpdateUserUseCase
 import com.damaba.user.application.port.outbound.common.PublishEventPort
 import com.damaba.user.application.port.outbound.user.CheckNicknameExistencePort
@@ -9,7 +10,9 @@ import com.damaba.user.application.port.outbound.user.GetUserPort
 import com.damaba.user.application.port.outbound.user.UpdateUserPort
 import com.damaba.user.domain.user.UserProfileImage
 import com.damaba.user.domain.user.constant.Gender
+import com.damaba.user.domain.user.constant.UserType
 import com.damaba.user.domain.user.exception.NicknameAlreadyExistsException
+import com.damaba.user.domain.user.exception.UserAlreadyRegisteredException
 import com.damaba.user.util.RandomTestUtils.Companion.randomBoolean
 import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
@@ -72,6 +75,90 @@ class UserServiceTest {
     }
 
     @Test
+    fun `유저 등록 정보가 주어지고, 유저를 등록하면, 등록된 유저가 반환된다`() {
+        // given
+        val userId = randomLong()
+        val originalUser = createUser(id = userId, type = UserType.UNDEFINED)
+        val command = RegisterUserUseCase.Command(
+            userId = userId,
+            nickname = randomString(len = 7),
+            gender = Gender.FEMALE,
+            instagramId = randomString(len = 15),
+        )
+        val expectedResult = createUser(
+            nickname = command.nickname,
+            gender = command.gender,
+            instagramId = command.instagramId,
+        )
+        every { getUserPort.getById(userId) } returns originalUser
+        every { checkNicknameExistencePort.doesNicknameExist(command.nickname) } returns false
+        every { updateUserPort.update(originalUser) } returns expectedResult
+
+        // when
+        val actualResult = sut.register(command)
+
+        // then
+        verifyOrder {
+            getUserPort.getById(userId)
+            checkNicknameExistencePort.doesNicknameExist(command.nickname)
+            updateUserPort.update(originalUser)
+        }
+        confirmVerifiedEveryMocks()
+        assertThat(actualResult.id).isEqualTo(expectedResult.id)
+        assertThat(actualResult.nickname).isEqualTo(expectedResult.nickname)
+        assertThat(actualResult.gender).isEqualTo(expectedResult.gender)
+        assertThat(actualResult.instagramId).isEqualTo(expectedResult.instagramId)
+    }
+
+    @Test
+    fun `이미 등록된 유저가 다시 등록하면, 예외가 발생한다`() {
+        // given
+        val userId = randomLong()
+        val user = createUser(id = userId, type = UserType.USER)
+        val command = RegisterUserUseCase.Command(
+            userId = userId,
+            nickname = randomString(len = 7),
+            gender = Gender.FEMALE,
+            instagramId = randomString(len = 15),
+        )
+        every { getUserPort.getById(userId) } returns user
+
+        // when
+        val ex = catchThrowable { sut.register(command) }
+
+        // then
+        verify { getUserPort.getById(userId) }
+        confirmVerifiedEveryMocks()
+        assertThat(ex).isInstanceOf(UserAlreadyRegisteredException::class.java)
+    }
+
+    @Test
+    fun `다른 유저가 사용중인 닉네임이 유저 등록 정보로 주어지고, 유저를 등록하면, 예외가 발생한다`() {
+        // given
+        val userId = randomLong()
+        val originalUser = createUser(id = userId, type = UserType.UNDEFINED)
+        val command = RegisterUserUseCase.Command(
+            userId = userId,
+            nickname = randomString(len = 7),
+            gender = Gender.FEMALE,
+            instagramId = randomString(len = 15),
+        )
+        every { getUserPort.getById(userId) } returns originalUser
+        every { checkNicknameExistencePort.doesNicknameExist(command.nickname) } returns true
+
+        // when
+        val ex = catchThrowable { sut.register(command) }
+
+        // then
+        verifyOrder {
+            getUserPort.getById(userId)
+            checkNicknameExistencePort.doesNicknameExist(command.nickname)
+        }
+        confirmVerifiedEveryMocks()
+        assertThat(ex).isInstanceOf(NicknameAlreadyExistsException::class.java)
+    }
+
+    @Test
     fun `수정할 유저 정보가 주어지고, 유저 정보를 수정하면, 수정된 유저 정보가 반환된다`() {
         // given
         val userId = randomLong()
@@ -117,7 +204,7 @@ class UserServiceTest {
         val userId = randomLong()
         val user = createUser(id = userId)
         val newNickname = randomString(len = 7)
-        val command = UpdateMyInfoUseCase.Command(userId, newNickname, user.instagramId, user.profileImage)
+        val command = UpdateUserUseCase.Command(userId, newNickname, user.instagramId, user.profileImage)
         val expectedResult = createUser(
             nickname = newNickname,
             gender = user.gender,
@@ -151,8 +238,7 @@ class UserServiceTest {
         val userId = randomLong()
         val user = createUser(id = userId)
         val newProfileImageUrl = UserProfileImage(randomString(), randomUrl())
-        val command =
-            UpdateMyInfoUseCase.Command(userId, user.nickname, user.instagramId, newProfileImageUrl)
+        val command = UpdateUserUseCase.Command(userId, user.nickname, user.instagramId, newProfileImageUrl)
         val expectedResult = createUser(
             nickname = user.nickname,
             gender = user.gender,

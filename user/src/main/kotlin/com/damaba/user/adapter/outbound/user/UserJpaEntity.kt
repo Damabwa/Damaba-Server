@@ -82,6 +82,8 @@ class UserJpaEntity(
     )
 
     fun update(user: User) {
+        this.type = user.type
+        this.roles = user.roles
         this.nickname = user.nickname
         this.gender = user.gender
         this.instagramId = user.instagramId
