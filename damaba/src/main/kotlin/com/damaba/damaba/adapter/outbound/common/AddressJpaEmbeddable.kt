@@ -5,28 +5,19 @@ import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
 
 @Embeddable
-class AddressJpaEntity(
-    sido: String,
-    sigungu: String,
-    roadAddress: String,
-    jibunAddress: String,
-) {
+data class AddressJpaEmbeddable(
     @Column(name = "sido", nullable = false)
-    var sido: String = sido
-        private set
+    val sido: String,
 
     @Column(name = "sigungu", nullable = false)
-    var sigungu: String = sigungu
-        private set
+    val sigungu: String,
 
     @Column(name = "road_address")
-    var roadAddress: String = roadAddress
-        private set
+    val roadAddress: String,
 
     @Column(name = "jibun_address")
-    var jibunAddress: String = jibunAddress
-        private set
-
+    val jibunAddress: String,
+) {
     fun toDomain() = Address(
         sido = this.sido,
         sigungu = this.sigungu,
@@ -35,7 +26,7 @@ class AddressJpaEntity(
     )
 
     companion object {
-        fun from(address: Address) = AddressJpaEntity(
+        fun from(address: Address) = AddressJpaEmbeddable(
             sido = address.sido,
             sigungu = address.sigungu,
             roadAddress = address.roadAddress,
