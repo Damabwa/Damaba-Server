@@ -1,6 +1,6 @@
 package com.damaba.damaba.adapter.outbound.promotion
 
-import com.damaba.damaba.adapter.outbound.common.AddressJpaEntity
+import com.damaba.damaba.adapter.outbound.common.AddressJpaEmbeddable
 import com.damaba.damaba.adapter.outbound.common.BaseJpaEntity
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.constant.EventType
@@ -27,7 +27,7 @@ class PromotionJpaEntity(
     eventType: EventType,
     title: String,
     content: String,
-    address: AddressJpaEntity,
+    address: AddressJpaEmbeddable,
     externalLink: String?,
     startedAt: LocalDate?,
     endedAt: LocalDate?,
@@ -62,7 +62,7 @@ class PromotionJpaEntity(
         private set
 
     @Embedded
-    var address: AddressJpaEntity = address
+    var address: AddressJpaEmbeddable = address
         private set
 
     @Column(name = "external_link")
@@ -127,7 +127,7 @@ class PromotionJpaEntity(
                 eventType = promotion.eventType,
                 title = promotion.title,
                 content = promotion.content,
-                address = AddressJpaEntity.from(promotion.address),
+                address = AddressJpaEmbeddable.from(promotion.address),
                 externalLink = promotion.externalLink,
                 startedAt = promotion.startedAt,
                 endedAt = promotion.endedAt,
