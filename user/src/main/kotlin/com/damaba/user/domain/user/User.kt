@@ -40,12 +40,10 @@ class User(
 
     fun update(
         nickname: String,
-        gender: Gender,
         instagramId: String?,
         profileImage: UserProfileImage,
     ) {
         this.nickname = nickname
-        this.gender = gender
         this.instagramId = instagramId
         this.profileImage = profileImage
     }
