@@ -48,19 +48,19 @@ CREATE INDEX fk_idx__photographer__user_id ON photographer (user_id);
 CREATE TABLE photographer_active_region
 (
     id                   BIGINT       NOT NULL AUTO_INCREMENT,
-    photographer_user_id BIGINT COMMENT '(FK) id of photographer',
+    photographer_id BIGINT COMMENT '(FK) id of photographer',
     category             VARCHAR(255) NOT NULL,
     name                 VARCHAR(255) NOT NULL,
     created_at           DATETIME     NOT NULL,
     updated_at           DATETIME     NOT NULL,
     PRIMARY KEY (id)
 );
-CREATE INDEX fk_idx__photographer_active_region__photographer_id ON photographer_active_region (photographer_user_id);
+CREATE INDEX fk_idx__photographer_active_region__photographer_id ON photographer_active_region (photographer_id);
 
 CREATE TABLE photographer_portfolio_image
 (
     id                   BIGINT       NOT NULL AUTO_INCREMENT,
-    photographer_user_id BIGINT COMMENT '(FK) id of photographer',
+    photographer_id BIGINT COMMENT '(FK) id of photographer',
     name                 VARCHAR(255) NOT NULL,
     url                  VARCHAR(255) NOT NULL UNIQUE,
     created_at           DATETIME     NOT NULL,
@@ -70,7 +70,7 @@ CREATE TABLE photographer_portfolio_image
     updated_by           BIGINT       NOT NULL,
     PRIMARY KEY (id)
 );
-CREATE INDEX fk_idx__photographer_portfolio__photographer_id ON photographer_active_region (photographer_user_id);
+CREATE INDEX fk_idx__photographer_portfolio__photographer_id ON photographer_active_region (photographer_id);
 
 CREATE TABLE user_profile_image
 (
