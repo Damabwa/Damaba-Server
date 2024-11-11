@@ -8,7 +8,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
 import kotlin.test.Test
 
-class UpdateMyInfoUseCaseCommandTest {
+class UpdateUserUseCaseCommandTest {
     @Test
     fun `유효하지 않은 닉네임이 입력되면, validation exception이 발생한다`() {
         // given
@@ -16,7 +16,7 @@ class UpdateMyInfoUseCaseCommandTest {
 
         // when
         val ex = catchThrowable {
-            UpdateMyInfoUseCase.Command(
+            UpdateUserUseCase.Command(
                 userId = 1,
                 nickname = invalidNickname,
                 instagramId = randomString(),
@@ -35,7 +35,7 @@ class UpdateMyInfoUseCaseCommandTest {
 
         // when
         val ex = catchThrowable {
-            UpdateMyInfoUseCase.Command(
+            UpdateUserUseCase.Command(
                 userId = 1,
                 nickname = randomString(len = 5),
                 instagramId = invalidInstagramId,

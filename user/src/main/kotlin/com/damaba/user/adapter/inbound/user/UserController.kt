@@ -4,8 +4,8 @@ import com.damaba.user.adapter.inbound.user.dto.CheckNicknameExistenceResponse
 import com.damaba.user.adapter.inbound.user.dto.UpdateMyInfoRequest
 import com.damaba.user.adapter.inbound.user.dto.UserResponse
 import com.damaba.user.application.port.inbound.user.CheckNicknameExistenceUseCase
-import com.damaba.user.application.port.inbound.user.GetMyInfoUseCase
-import com.damaba.user.application.port.inbound.user.UpdateMyInfoUseCase
+import com.damaba.user.application.port.inbound.user.GetUserUseCase
+import com.damaba.user.application.port.inbound.user.UpdateUserUseCase
 import com.damaba.user.domain.user.User
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -24,9 +24,9 @@ import org.springframework.web.bind.annotation.RestController
 @Tag(name = "유저 관련 API")
 @RestController
 class UserController(
-    private val getMyInfoUseCase: GetMyInfoUseCase,
+    private val getUserUseCase: GetUserUseCase,
     private val checkNicknameExistenceUseCase: CheckNicknameExistenceUseCase,
-    private val updateMyInfoUseCase: UpdateMyInfoUseCase,
+    private val updateUserUseCase: UpdateUserUseCase,
 ) {
     @Operation(
         summary = "내 정보 조회",
@@ -35,7 +35,7 @@ class UserController(
     )
     @GetMapping("/api/v1/users/me")
     fun getMyInfoV1(@AuthenticationPrincipal requestUser: User): UserResponse {
-        val me = getMyInfoUseCase.getMyInfo(requestUser.id)
+        val me = getUserUseCase.getUser(requestUser.id)
         return UserResponse.from(me)
     }
 
@@ -72,7 +72,7 @@ class UserController(
         @AuthenticationPrincipal requestUser: User,
         @RequestBody request: UpdateMyInfoRequest,
     ): UserResponse {
-        val updatedUser = updateMyInfoUseCase.updateMyInfo(request.toCommand(requestUserId = requestUser.id))
+        val updatedUser = updateUserUseCase.updateUser(request.toCommand(requestUserId = requestUser.id))
         return UserResponse.from(updatedUser)
     }
 }

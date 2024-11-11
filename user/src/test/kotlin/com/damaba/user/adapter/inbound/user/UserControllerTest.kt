@@ -2,8 +2,8 @@ package com.damaba.user.adapter.inbound.user
 
 import com.damaba.user.adapter.inbound.user.dto.UpdateMyInfoRequest
 import com.damaba.user.application.port.inbound.user.CheckNicknameExistenceUseCase
-import com.damaba.user.application.port.inbound.user.GetMyInfoUseCase
-import com.damaba.user.application.port.inbound.user.UpdateMyInfoUseCase
+import com.damaba.user.application.port.inbound.user.GetUserUseCase
+import com.damaba.user.application.port.inbound.user.UpdateUserUseCase
 import com.damaba.user.config.ControllerTestConfig
 import com.damaba.user.domain.user.UserProfileImage
 import com.damaba.user.util.RandomTestUtils.Companion.randomBoolean
@@ -37,20 +37,20 @@ import kotlin.test.Test
 class UserControllerTest @Autowired constructor(
     private val mvc: MockMvc,
     private val mapper: ObjectMapper,
-    private val getMyInfoUseCase: GetMyInfoUseCase,
+    private val getUserUseCase: GetUserUseCase,
     private val checkNicknameExistenceUseCase: CheckNicknameExistenceUseCase,
-    private val updateMyInfoUseCase: UpdateMyInfoUseCase,
+    private val updateUserUseCase: UpdateUserUseCase,
 ) {
     @TestConfiguration
     class TestBeanSetUp {
         @Bean
-        fun getMyInfoUseCase(): GetMyInfoUseCase = mockk()
+        fun getMyInfoUseCase(): GetUserUseCase = mockk()
 
         @Bean
         fun checkNicknameExistenceUseCase(): CheckNicknameExistenceUseCase = mockk()
 
         @Bean
-        fun updateMyInfoUseCase(): UpdateMyInfoUseCase = mockk()
+        fun updateMyInfoUseCase(): UpdateUserUseCase = mockk()
     }
 
     @Test
@@ -58,7 +58,7 @@ class UserControllerTest @Autowired constructor(
         // given
         val userId = randomLong()
         val me = createUser(id = userId)
-        every { getMyInfoUseCase.getMyInfo(userId) } returns me
+        every { getUserUseCase.getUser(userId) } returns me
 
         // when & then
         mvc.perform(
@@ -83,7 +83,7 @@ class UserControllerTest @Autowired constructor(
             nickname = request.nickname,
             instagramId = request.instagramId,
         )
-        every { updateMyInfoUseCase.updateMyInfo(request.toCommand(requestUser.id)) } returns expectedResult
+        every { updateUserUseCase.updateUser(request.toCommand(requestUser.id)) } returns expectedResult
 
         // when & then
         mvc.perform(
@@ -98,7 +98,7 @@ class UserControllerTest @Autowired constructor(
             .andExpect(jsonPath("$.instagramId").value(expectedResult.instagramId))
             .andExpect(jsonPath("$.profileImage.name").value(expectedResult.profileImage.name))
             .andExpect(jsonPath("$.profileImage.url").value(expectedResult.profileImage.url))
-        verify { updateMyInfoUseCase.updateMyInfo(request.toCommand(requestUser.id)) }
+        verify { updateUserUseCase.updateUser(request.toCommand(requestUser.id)) }
     }
 
     @Test
