@@ -2,7 +2,7 @@ package com.damaba.user.application.service.user
 
 import com.damaba.common_file.domain.DeleteFileEvent
 import com.damaba.user.application.port.inbound.user.CheckNicknameExistenceUseCase
-import com.damaba.user.application.port.inbound.user.UpdateMyInfoUseCase
+import com.damaba.user.application.port.inbound.user.UpdateUserUseCase
 import com.damaba.user.application.port.outbound.common.PublishEventPort
 import com.damaba.user.application.port.outbound.user.CheckNicknameExistencePort
 import com.damaba.user.application.port.outbound.user.GetUserPort
@@ -46,7 +46,7 @@ class UserServiceTest {
         every { getUserPort.getById(userId) } returns expectedResult
 
         // when
-        val actualResult = sut.getMyInfo(userId)
+        val actualResult = sut.getUser(userId)
 
         // then
         verify { getUserPort.getById(userId) }
@@ -80,7 +80,7 @@ class UserServiceTest {
         val newGender = Gender.FEMALE
         val newInstagramId = null
         val newProfileImageUrl = UserProfileImage(randomString(), randomUrl())
-        val command = UpdateMyInfoUseCase.Command(userId, newNickname, newInstagramId, newProfileImageUrl)
+        val command = UpdateUserUseCase.Command(userId, newNickname, newInstagramId, newProfileImageUrl)
         val expectedResult = createUser(
             nickname = newNickname,
             gender = newGender,
@@ -93,7 +93,7 @@ class UserServiceTest {
         every { updateUserPort.update(user) } returns expectedResult
 
         // when
-        val actualResult = sut.updateMyInfo(command)
+        val actualResult = sut.updateUser(command)
 
         // then
         verifyOrder {
@@ -129,7 +129,7 @@ class UserServiceTest {
         every { updateUserPort.update(user) } returns expectedResult
 
         // when
-        val actualResult = sut.updateMyInfo(command)
+        val actualResult = sut.updateUser(command)
 
         // then
         verifyOrder {
@@ -164,7 +164,7 @@ class UserServiceTest {
         every { updateUserPort.update(user) } returns expectedResult
 
         // when
-        val actualResult = sut.updateMyInfo(command)
+        val actualResult = sut.updateUser(command)
 
         // then
         verifyOrder {
@@ -185,7 +185,7 @@ class UserServiceTest {
         // given
         val userId = randomLong()
         val existingNickname = randomString(len = 7)
-        val command = UpdateMyInfoUseCase.Command(
+        val command = UpdateUserUseCase.Command(
             userId,
             existingNickname,
             randomString(),
@@ -195,7 +195,7 @@ class UserServiceTest {
         every { checkNicknameExistencePort.doesNicknameExist(existingNickname) } returns true
 
         // when
-        val ex = catchThrowable { sut.updateMyInfo(command) }
+        val ex = catchThrowable { sut.updateUser(command) }
 
         // then
         verifyOrder {

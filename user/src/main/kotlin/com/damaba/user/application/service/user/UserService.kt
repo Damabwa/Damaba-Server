@@ -2,8 +2,8 @@ package com.damaba.user.application.service.user
 
 import com.damaba.common_file.domain.DeleteFileEvent
 import com.damaba.user.application.port.inbound.user.CheckNicknameExistenceUseCase
-import com.damaba.user.application.port.inbound.user.GetMyInfoUseCase
-import com.damaba.user.application.port.inbound.user.UpdateMyInfoUseCase
+import com.damaba.user.application.port.inbound.user.GetUserUseCase
+import com.damaba.user.application.port.inbound.user.UpdateUserUseCase
 import com.damaba.user.application.port.outbound.common.PublishEventPort
 import com.damaba.user.application.port.outbound.user.CheckNicknameExistencePort
 import com.damaba.user.application.port.outbound.user.GetUserPort
@@ -19,12 +19,12 @@ class UserService(
     private val checkNicknameExistencePort: CheckNicknameExistencePort,
     private val updateUserPort: UpdateUserPort,
     private val publishEventPort: PublishEventPort,
-) : GetMyInfoUseCase,
+) : GetUserUseCase,
     CheckNicknameExistenceUseCase,
-    UpdateMyInfoUseCase {
+    UpdateUserUseCase {
 
     @Transactional(readOnly = true)
-    override fun getMyInfo(userId: Long): User =
+    override fun getUser(userId: Long): User =
         getUserPort.getById(userId)
 
     @Transactional(readOnly = true)
@@ -32,7 +32,7 @@ class UserService(
         checkNicknameExistencePort.doesNicknameExist(query.nickname)
 
     @Transactional
-    override fun updateMyInfo(command: UpdateMyInfoUseCase.Command): User {
+    override fun updateUser(command: UpdateUserUseCase.Command): User {
         val user = getUserPort.getById(command.userId)
 
         val isNicknameNew = user.nickname != command.nickname
