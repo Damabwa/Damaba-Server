@@ -5,6 +5,7 @@ import com.damaba.user.domain.user.User
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.constant.UserRoleType
+import com.damaba.user.domain.user.constant.UserType
 import jakarta.persistence.Column
 import jakarta.persistence.Convert
 import jakarta.persistence.Entity
@@ -18,6 +19,7 @@ import jakarta.persistence.Table
 @Table(name = "`user`")
 @Entity
 class UserJpaEntity(
+    type: UserType,
     roles: Set<UserRoleType>,
     loginType: LoginType,
     oAuthLoginUid: String,
@@ -30,6 +32,11 @@ class UserJpaEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     val id: Long = 0
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", nullable = false)
+    var type: UserType = type
+        private set
 
     @Convert(converter = UserRoleTypesConverter::class)
     @Column(name = "roles", nullable = false)
@@ -64,6 +71,7 @@ class UserJpaEntity(
 
     fun toDomain(): User = User(
         id = this.id,
+        type = this.type,
         roles = this.roles,
         oAuthLoginUid = this.oAuthLoginUid,
         loginType = this.loginType,
@@ -83,6 +91,7 @@ class UserJpaEntity(
     companion object {
         fun from(user: User): UserJpaEntity = UserJpaEntity(
             roles = user.roles,
+            type = user.type,
             loginType = user.loginType,
             oAuthLoginUid = user.oAuthLoginUid,
             nickname = user.nickname,

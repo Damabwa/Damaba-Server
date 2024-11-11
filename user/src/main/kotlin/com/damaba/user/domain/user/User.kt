@@ -3,18 +3,26 @@ package com.damaba.user.domain.user
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.constant.UserRoleType
+import com.damaba.user.domain.user.constant.UserType
 import java.util.Objects
 
 class User(
     val id: Long,
-    val roles: Set<UserRoleType>,
     val loginType: LoginType,
     val oAuthLoginUid: String,
+    type: UserType,
+    roles: Set<UserRoleType>,
     nickname: String,
     profileImage: UserProfileImage,
     gender: Gender,
     instagramId: String?,
 ) {
+    var type: UserType = type
+        private set
+
+    var roles: Set<UserRoleType> = roles
+        private set
+
     var nickname: String = nickname
         private set
 
@@ -28,7 +36,7 @@ class User(
         private set
 
     val isRegistrationCompleted
-        get() = gender != DEFAULT_GENDER
+        get() = type != UserType.UNDEFINED
 
     fun update(
         nickname: String,
@@ -51,7 +59,6 @@ class User(
     override fun hashCode(): Int = Objects.hashCode(id)
 
     companion object {
-        val DEFAULT_GENDER = Gender.UNDEFINED
         val DEFAULT_PROFILE_IMAGE = UserProfileImage(
             name = "default-user-profile-image.jpg",
             url = "https://dummyimage.com/244x100.png/cc0000/ffffff",
@@ -59,12 +66,13 @@ class User(
 
         fun create(loginType: LoginType, oAuthLoginUid: String, nickname: String): User = User(
             id = 0,
+            type = UserType.UNDEFINED,
             roles = setOf(UserRoleType.USER),
             loginType = loginType,
             oAuthLoginUid = oAuthLoginUid,
             nickname = nickname,
             profileImage = DEFAULT_PROFILE_IMAGE,
-            gender = DEFAULT_GENDER,
+            gender = Gender.MALE,
             instagramId = null,
         )
     }

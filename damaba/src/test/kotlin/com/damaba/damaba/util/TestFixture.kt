@@ -20,6 +20,7 @@ import com.damaba.user.domain.user.UserProfileImage
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.constant.UserRoleType
+import com.damaba.user.domain.user.constant.UserType
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -28,6 +29,7 @@ import java.time.LocalDate
 object TestFixture {
     fun createUser(
         id: Long = randomLong(),
+        type: UserType = UserType.USER,
         roles: Set<UserRoleType> = setOf(UserRoleType.USER),
         oAuthLoginUid: String = randomString(),
         loginType: LoginType = LoginType.KAKAO,
@@ -37,6 +39,7 @@ object TestFixture {
         instagramId: String = randomString(len = 30),
     ): User = User(
         id = id,
+        type = type,
         roles = roles,
         oAuthLoginUid = oAuthLoginUid,
         loginType = loginType,
