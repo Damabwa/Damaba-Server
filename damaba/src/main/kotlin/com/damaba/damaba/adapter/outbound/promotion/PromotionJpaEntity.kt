@@ -89,9 +89,11 @@ class PromotionJpaEntity(
     var deletedAt: LocalDateTime? = null
         private set
 
-    @OneToMany(mappedBy = "promotion", cascade = [CascadeType.ALL], orphanRemoval = true)
-    var images: MutableList<PromotionImageJpaEntity> = mutableListOf()
-        private set
+    @OneToMany(mappedBy = "promotion", cascade = [CascadeType.PERSIST])
+    private var _images: MutableList<PromotionImageJpaEntity> = mutableListOf()
+
+    val images: List<PromotionImageJpaEntity>
+        get() = _images.filter { image -> image.deletedAt == null }.toList()
 
     @OneToMany(mappedBy = "promotion", cascade = [CascadeType.ALL], orphanRemoval = true)
     var activeRegions: MutableSet<PromotionActiveRegionJpaEntity> = mutableSetOf()
@@ -138,7 +140,7 @@ class PromotionJpaEntity(
             val promotionImageJpaEntities = promotion.images.map { promotionImage ->
                 PromotionImageJpaEntity.from(promotionImage, promotionJpaEntity)
             }
-            promotionJpaEntity.images.addAll(promotionImageJpaEntities)
+            promotionJpaEntity._images.addAll(promotionImageJpaEntities)
 
             val promotionActiveRegionJpaEntities = promotion.activeRegions.map { promotionActiveRegion ->
                 PromotionActiveRegionJpaEntity.from(promotionActiveRegion, promotionJpaEntity)
