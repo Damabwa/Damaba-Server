@@ -80,7 +80,7 @@ class UserServiceTest {
         val newGender = Gender.FEMALE
         val newInstagramId = null
         val newProfileImageUrl = UserProfileImage(randomString(), randomUrl())
-        val command = UpdateMyInfoUseCase.Command(userId, newNickname, newGender, newInstagramId, newProfileImageUrl)
+        val command = UpdateMyInfoUseCase.Command(userId, newNickname, newInstagramId, newProfileImageUrl)
         val expectedResult = createUser(
             nickname = newNickname,
             gender = newGender,
@@ -117,7 +117,7 @@ class UserServiceTest {
         val userId = randomLong()
         val user = createUser(id = userId)
         val newNickname = randomString(len = 7)
-        val command = UpdateMyInfoUseCase.Command(userId, newNickname, user.gender, user.instagramId, user.profileImage)
+        val command = UpdateMyInfoUseCase.Command(userId, newNickname, user.instagramId, user.profileImage)
         val expectedResult = createUser(
             nickname = newNickname,
             gender = user.gender,
@@ -152,7 +152,7 @@ class UserServiceTest {
         val user = createUser(id = userId)
         val newProfileImageUrl = UserProfileImage(randomString(), randomUrl())
         val command =
-            UpdateMyInfoUseCase.Command(userId, user.nickname, user.gender, user.instagramId, newProfileImageUrl)
+            UpdateMyInfoUseCase.Command(userId, user.nickname, user.instagramId, newProfileImageUrl)
         val expectedResult = createUser(
             nickname = user.nickname,
             gender = user.gender,
@@ -188,7 +188,6 @@ class UserServiceTest {
         val command = UpdateMyInfoUseCase.Command(
             userId,
             existingNickname,
-            Gender.FEMALE,
             randomString(),
             UserProfileImage(randomString(), randomUrl()),
         )

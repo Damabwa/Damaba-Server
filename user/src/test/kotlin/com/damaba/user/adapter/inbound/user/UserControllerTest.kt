@@ -6,7 +6,6 @@ import com.damaba.user.application.port.inbound.user.GetMyInfoUseCase
 import com.damaba.user.application.port.inbound.user.UpdateMyInfoUseCase
 import com.damaba.user.config.ControllerTestConfig
 import com.damaba.user.domain.user.UserProfileImage
-import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.util.RandomTestUtils.Companion.randomBoolean
 import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
@@ -76,14 +75,12 @@ class UserControllerTest @Autowired constructor(
         val requestUser = createUser()
         val request = UpdateMyInfoRequest(
             nickname = randomString(len = 7),
-            gender = Gender.FEMALE,
             instagramId = randomString(),
             profileImage = UserProfileImage(randomString(), randomUrl()),
         )
         val expectedResult = createUser(
             id = requestUser.id,
             nickname = request.nickname,
-            gender = request.gender,
             instagramId = request.instagramId,
         )
         every { updateMyInfoUseCase.updateMyInfo(request.toCommand(requestUser.id)) } returns expectedResult

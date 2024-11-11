@@ -46,7 +46,6 @@ class UserService(
 
         user.update(
             nickname = command.nickname,
-            gender = command.gender,
             instagramId = command.instagramId,
             profileImage = command.profileImage,
         )

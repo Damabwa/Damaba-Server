@@ -1,6 +1,5 @@
 package com.damaba.user.domain.user
 
-import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.constant.UserRoleType
 import com.damaba.user.domain.user.constant.UserType
@@ -40,21 +39,18 @@ class UserTest {
         // given
         val user = createUser()
         val newNickname = randomString()
-        val newGender = Gender.FEMALE
         val newInstagramId = randomString()
         val newProfileImage = UserProfileImage(randomString(), randomUrl())
 
         // when
         user.update(
             nickname = newNickname,
-            gender = newGender,
             instagramId = newInstagramId,
             profileImage = newProfileImage,
         )
 
         // then
         assertThat(user.nickname).isEqualTo(newNickname)
-        assertThat(user.gender).isEqualTo(newGender)
         assertThat(user.instagramId).isEqualTo(newInstagramId)
         assertThat(user.profileImage).isEqualTo(newProfileImage)
     }
