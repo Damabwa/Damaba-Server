@@ -1,7 +1,7 @@
 package com.damaba.user.adapter.inbound.user
 
+import com.damaba.user.adapter.inbound.user.dto.RegisterUserRequest
 import com.damaba.user.adapter.inbound.user.dto.UpdateMyInfoRequest
-import com.damaba.user.adapter.inbound.user.dto.UpdateMyRegistrationRequest
 import com.damaba.user.application.port.inbound.user.CheckNicknameExistenceUseCase
 import com.damaba.user.application.port.inbound.user.GetUserUseCase
 import com.damaba.user.application.port.inbound.user.RegisterUserUseCase
@@ -131,7 +131,7 @@ class UserControllerTest @Autowired constructor(
     fun `유저 등록 정보가 주어지고, 주어진 등록 정보로 유저를 갱신한다`() {
         // given
         val requester = createUser()
-        val request = UpdateMyRegistrationRequest(
+        val request = RegisterUserRequest(
             nickname = randomString(len = 7),
             gender = Gender.FEMALE,
             instagramId = null,

@@ -1,8 +1,8 @@
 package com.damaba.user.adapter.inbound.user
 
 import com.damaba.user.adapter.inbound.user.dto.CheckNicknameExistenceResponse
+import com.damaba.user.adapter.inbound.user.dto.RegisterUserRequest
 import com.damaba.user.adapter.inbound.user.dto.UpdateMyInfoRequest
-import com.damaba.user.adapter.inbound.user.dto.UpdateMyRegistrationRequest
 import com.damaba.user.adapter.inbound.user.dto.UserResponse
 import com.damaba.user.application.port.inbound.user.CheckNicknameExistenceUseCase
 import com.damaba.user.application.port.inbound.user.GetUserUseCase
@@ -61,7 +61,7 @@ class UserController(
     @Operation(
         summary = "유저 등록(회원가입)",
         description = "<p>유저 회원가입 시에만 한 번 사용하며, 유저 등록 정보(서비스 이용에 필요한 기본 정보)를 받아 설정합니다." +
-            "<p>일반 유저의 회원가입에만 사용해야 하며, 사진작가라면 사진작가 등록 정보 수정 API(<code>PATCH /api/v*/photographers/me/registration</code>)를 사용해야 합니다.",
+            "<p>일반 유저의 회원가입에만 사용해야 하며, 사진작가라면 사진작가 등록 API(<code>PATCH /api/v*/photographers/me/registration</code>)를 사용해야 합니다.",
         security = [SecurityRequirement(name = "access-token")],
     )
     @ApiResponses(
@@ -69,7 +69,7 @@ class UserController(
         ApiResponse(responseCode = "404", description = "유저 정보를 찾을 수 없는 경우", content = [Content()]),
         ApiResponse(
             responseCode = "409",
-            description = "<p>이미 등록(가입)된 회원인 경우, 즉 유저 등록 API를 이전헤 호출한 적이 있었던 경우" +
+            description = "<p>이미 등록(가입)된 유저인 경우, 즉 유저 등록 API를 이전헤 호출한 적이 있었던 경우" +
                 "<p>수정하고자 하는 닉네임이 이미 사용중인 경우",
             content = [Content()],
         ),
@@ -77,7 +77,7 @@ class UserController(
     @PutMapping("/api/v1/users/me/registration")
     fun registerUserV1(
         @AuthenticationPrincipal requester: User,
-        @RequestBody request: UpdateMyRegistrationRequest,
+        @RequestBody request: RegisterUserRequest,
     ): UserResponse {
         val user = registerUserUseCase.register(request.toCommand(requester.id))
         return UserResponse.from(user)
