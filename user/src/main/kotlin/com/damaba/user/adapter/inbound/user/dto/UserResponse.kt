@@ -4,11 +4,15 @@ import com.damaba.user.domain.user.User
 import com.damaba.user.domain.user.UserProfileImage
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
+import com.damaba.user.domain.user.constant.UserType
 import io.swagger.v3.oas.annotations.media.Schema
 
 data class UserResponse(
     @Schema(description = "Id of user", example = "1")
     val id: Long,
+
+    @Schema(description = "User type")
+    val type: UserType,
 
     @Schema(description = "사용하는 로그인 종류")
     val loginType: LoginType,
@@ -28,6 +32,7 @@ data class UserResponse(
     companion object {
         fun from(user: User): UserResponse = UserResponse(
             id = user.id,
+            type = user.type,
             loginType = user.loginType,
             nickname = user.nickname,
             profileImage = user.profileImage,

@@ -2,9 +2,11 @@ package com.damaba.user.adapter.inbound.user
 
 import com.damaba.user.adapter.inbound.user.dto.CheckNicknameExistenceResponse
 import com.damaba.user.adapter.inbound.user.dto.UpdateMyInfoRequest
+import com.damaba.user.adapter.inbound.user.dto.UpdateMyRegistrationRequest
 import com.damaba.user.adapter.inbound.user.dto.UserResponse
 import com.damaba.user.application.port.inbound.user.CheckNicknameExistenceUseCase
 import com.damaba.user.application.port.inbound.user.GetUserUseCase
+import com.damaba.user.application.port.inbound.user.RegisterUserUseCase
 import com.damaba.user.application.port.inbound.user.UpdateUserUseCase
 import com.damaba.user.domain.user.User
 import io.swagger.v3.oas.annotations.Operation
@@ -27,6 +29,7 @@ class UserController(
     private val getUserUseCase: GetUserUseCase,
     private val checkNicknameExistenceUseCase: CheckNicknameExistenceUseCase,
     private val updateUserUseCase: UpdateUserUseCase,
+    private val registerUserUseCase: RegisterUserUseCase,
 ) {
     @Operation(
         summary = "내 정보 조회",
@@ -53,6 +56,31 @@ class UserController(
         val doesNicknameExists =
             checkNicknameExistenceUseCase.doesNicknameExist(CheckNicknameExistenceUseCase.Query(nickname))
         return CheckNicknameExistenceResponse(nickname, doesNicknameExists)
+    }
+
+    @Operation(
+        summary = "유저 등록(회원가입)",
+        description = "<p>유저 회원가입 시에만 한 번 사용하며, 유저 등록 정보(서비스 이용에 필요한 기본 정보)를 받아 설정합니다." +
+            "<p>일반 유저의 회원가입에만 사용해야 하며, 사진작가라면 사진작가 등록 정보 수정 API(`PATCH /api/v*/photographers/me/registration`)를 사용해야 합니다.",
+        security = [SecurityRequirement(name = "access-token")],
+    )
+    @ApiResponses(
+        ApiResponse(responseCode = "200"),
+        ApiResponse(responseCode = "404", description = "유저 정보를 찾을 수 없는 경우", content = [Content()]),
+        ApiResponse(
+            responseCode = "409",
+            description = "<p>이미 등록(가입)된 회원인 경우, 즉 유저 등록 API를 이전헤 호출한 적이 있었던 경우" +
+                "<p>수정하고자 하는 닉네임이 이미 사용중인 경우",
+            content = [Content()],
+        ),
+    )
+    @PutMapping("/api/v1/users/me/registration")
+    fun registerUserV1(
+        @AuthenticationPrincipal requester: User,
+        @RequestBody request: UpdateMyRegistrationRequest,
+    ): UserResponse {
+        val user = registerUserUseCase.register(request.toCommand(requester.id))
+        return UserResponse.from(user)
     }
 
     @Operation(

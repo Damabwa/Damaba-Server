@@ -3,13 +3,16 @@ package com.damaba.user.application.service.user
 import com.damaba.common_file.domain.DeleteFileEvent
 import com.damaba.user.application.port.inbound.user.CheckNicknameExistenceUseCase
 import com.damaba.user.application.port.inbound.user.GetUserUseCase
+import com.damaba.user.application.port.inbound.user.RegisterUserUseCase
 import com.damaba.user.application.port.inbound.user.UpdateUserUseCase
 import com.damaba.user.application.port.outbound.common.PublishEventPort
 import com.damaba.user.application.port.outbound.user.CheckNicknameExistencePort
 import com.damaba.user.application.port.outbound.user.GetUserPort
 import com.damaba.user.application.port.outbound.user.UpdateUserPort
 import com.damaba.user.domain.user.User
+import com.damaba.user.domain.user.constant.UserType
 import com.damaba.user.domain.user.exception.NicknameAlreadyExistsException
+import com.damaba.user.domain.user.exception.UserAlreadyRegisteredException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -21,7 +24,8 @@ class UserService(
     private val publishEventPort: PublishEventPort,
 ) : GetUserUseCase,
     CheckNicknameExistenceUseCase,
-    UpdateUserUseCase {
+    UpdateUserUseCase,
+    RegisterUserUseCase {
 
     @Transactional(readOnly = true)
     override fun getUser(userId: Long): User =
@@ -30,6 +34,26 @@ class UserService(
     @Transactional(readOnly = true)
     override fun doesNicknameExist(query: CheckNicknameExistenceUseCase.Query): Boolean =
         checkNicknameExistencePort.doesNicknameExist(query.nickname)
+
+    @Transactional
+    override fun register(command: RegisterUserUseCase.Command): User {
+        val user = getUserPort.getById(command.userId)
+
+        if (user.isRegistrationCompleted) {
+            throw UserAlreadyRegisteredException()
+        }
+
+        if (checkNicknameExistencePort.doesNicknameExist(command.nickname)) {
+            throw NicknameAlreadyExistsException(command.nickname)
+        }
+        user.register(
+            type = UserType.USER,
+            nickname = command.nickname,
+            gender = command.gender,
+            instagramId = command.instagramId,
+        )
+        return updateUserPort.update(user)
+    }
 
     @Transactional
     override fun updateUser(command: UpdateUserUseCase.Command): User {

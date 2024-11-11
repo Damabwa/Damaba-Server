@@ -38,6 +38,19 @@ class User(
     val isRegistrationCompleted
         get() = type != UserType.UNDEFINED
 
+    fun register(
+        type: UserType,
+        nickname: String,
+        gender: Gender,
+        instagramId: String?,
+    ) {
+        this.type = type
+        // TODO: type이 사진작가인 경우 roles 수정
+        this.nickname = nickname
+        this.gender = gender
+        this.instagramId = instagramId
+    }
+
     fun update(
         nickname: String,
         instagramId: String?,

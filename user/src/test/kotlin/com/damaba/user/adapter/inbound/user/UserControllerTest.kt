@@ -1,11 +1,14 @@
 package com.damaba.user.adapter.inbound.user
 
 import com.damaba.user.adapter.inbound.user.dto.UpdateMyInfoRequest
+import com.damaba.user.adapter.inbound.user.dto.UpdateMyRegistrationRequest
 import com.damaba.user.application.port.inbound.user.CheckNicknameExistenceUseCase
 import com.damaba.user.application.port.inbound.user.GetUserUseCase
+import com.damaba.user.application.port.inbound.user.RegisterUserUseCase
 import com.damaba.user.application.port.inbound.user.UpdateUserUseCase
 import com.damaba.user.config.ControllerTestConfig
 import com.damaba.user.domain.user.UserProfileImage
+import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.util.RandomTestUtils.Companion.randomBoolean
 import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
@@ -40,6 +43,7 @@ class UserControllerTest @Autowired constructor(
     private val getUserUseCase: GetUserUseCase,
     private val checkNicknameExistenceUseCase: CheckNicknameExistenceUseCase,
     private val updateUserUseCase: UpdateUserUseCase,
+    private val registerUserUseCase: RegisterUserUseCase,
 ) {
     @TestConfiguration
     class TestBeanSetUp {
@@ -51,6 +55,9 @@ class UserControllerTest @Autowired constructor(
 
         @Bean
         fun updateMyInfoUseCase(): UpdateUserUseCase = mockk()
+
+        @Bean
+        fun updateUserRegistrationUseCase(): RegisterUserUseCase = mockk()
     }
 
     @Test
@@ -118,5 +125,35 @@ class UserControllerTest @Autowired constructor(
             .andExpect(jsonPath("$.nickname").value(nickname))
             .andExpect(jsonPath("$.exists").value(expectedResult))
         verify { checkNicknameExistenceUseCase.doesNicknameExist(CheckNicknameExistenceUseCase.Query(nickname)) }
+    }
+
+    @Test
+    fun `유저 등록 정보가 주어지고, 주어진 등록 정보로 유저를 갱신한다`() {
+        // given
+        val requester = createUser()
+        val request = UpdateMyRegistrationRequest(
+            nickname = randomString(len = 7),
+            gender = Gender.FEMALE,
+            instagramId = null,
+        )
+        val expectedResult = createUser(
+            id = requester.id,
+            nickname = request.nickname,
+            gender = request.gender,
+            instagramId = request.instagramId,
+        )
+        every { registerUserUseCase.register(request.toCommand(requester.id)) } returns expectedResult
+
+        // when & then
+        mvc.perform(
+            put("/api/v1/users/me/registration")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(mapper.writeValueAsString(request))
+                .with(authentication(createAuthenticationToken(requester))),
+        ).andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").value(requester.id))
+            .andExpect(jsonPath("$.nickname").value(expectedResult.nickname))
+            .andExpect(jsonPath("$.gender").value(expectedResult.gender.toString()))
+            .andExpect(jsonPath("$.instagramId").value(expectedResult.instagramId))
     }
 }
