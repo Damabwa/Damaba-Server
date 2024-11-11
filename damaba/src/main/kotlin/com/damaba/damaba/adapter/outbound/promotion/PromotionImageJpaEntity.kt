@@ -11,6 +11,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
+import java.time.LocalDateTime
 
 @Table(name = "promotion_image")
 @Entity
@@ -35,6 +36,10 @@ class PromotionImageJpaEntity(
 
     @Column(name = "url", unique = true, nullable = false)
     var url: String = url
+        private set
+
+    @Column(name = "deleted_at", nullable = true)
+    var deletedAt: LocalDateTime? = null
         private set
 
     fun toDomain(): PromotionImage = PromotionImage(

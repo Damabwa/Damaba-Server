@@ -70,6 +70,7 @@ CREATE TABLE promotion_image
     url          VARCHAR(255) NOT NULL UNIQUE,
     created_at   DATETIME     NOT NULL,
     updated_at   DATETIME     NOT NULL,
+    deleted_at   DATETIME,
     created_by   BIGINT       NOT NULL,
     updated_by   BIGINT       NOT NULL,
     PRIMARY KEY (id)
