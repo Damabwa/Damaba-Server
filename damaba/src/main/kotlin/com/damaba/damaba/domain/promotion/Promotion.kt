@@ -1,8 +1,10 @@
 package com.damaba.damaba.domain.promotion
 
+import com.damaba.common_file.domain.Image
 import com.damaba.damaba.domain.common.Address
 import com.damaba.damaba.domain.promotion.constant.EventType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
+import com.damaba.damaba.domain.region.Region
 import java.time.LocalDate
 
 class Promotion(
@@ -18,8 +20,8 @@ class Promotion(
     val endedAt: LocalDate?,
     val photographerName: String?,
     val photographerInstagramId: String?,
-    val images: List<PromotionImage>,
-    val activeRegions: Set<PromotionActiveRegion>,
+    val images: List<Image>,
+    val activeRegions: Set<Region>,
     val hashtags: Set<String>,
 ) {
     override fun equals(other: Any?): Boolean {
@@ -43,8 +45,8 @@ class Promotion(
             endedAt: LocalDate?,
             photographerName: String?,
             photographerInstagramId: String?,
-            images: List<PromotionImage>,
-            activeRegions: Set<PromotionActiveRegion>,
+            images: List<Image>,
+            activeRegions: Set<Region>,
             hashtags: Set<String>,
         ): Promotion = Promotion(
             id = 0,

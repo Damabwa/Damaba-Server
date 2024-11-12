@@ -1,5 +1,6 @@
 package com.damaba.damaba.application.service.promotion
 
+import com.damaba.common_file.domain.Image
 import com.damaba.damaba.application.port.inbound.promotion.FindPromotionsUseCase
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
@@ -8,8 +9,7 @@ import com.damaba.damaba.application.port.outbound.promotion.GetPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.SavePromotionPort
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.promotion.Promotion
-import com.damaba.damaba.domain.promotion.PromotionActiveRegion
-import com.damaba.damaba.domain.promotion.PromotionImage
+import com.damaba.damaba.domain.region.Region
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -45,10 +45,8 @@ class PromotionService(
                 endedAt = command.endedAt,
                 photographerName = command.photographerName,
                 photographerInstagramId = command.photographerInstagramId,
-                images = command.images.map { file -> PromotionImage(file.name, file.url) },
-                activeRegions = command.activeRegions.map { region ->
-                    PromotionActiveRegion(region.category, region.name)
-                }.toSet(),
+                images = command.images.map { file -> Image(file.name, file.url) },
+                activeRegions = command.activeRegions.map { region -> Region(region.category, region.name) }.toSet(),
                 hashtags = command.hashtags,
             ),
         )

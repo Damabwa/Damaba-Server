@@ -1,8 +1,8 @@
 package com.damaba.user.util
 
+import com.damaba.common_file.domain.Image
 import com.damaba.user.domain.auth.AuthToken
 import com.damaba.user.domain.user.User
-import com.damaba.user.domain.user.UserProfileImage
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.constant.UserRoleType
@@ -33,7 +33,7 @@ object TestFixture {
         oAuthLoginUid: String = randomString(),
         loginType: LoginType = LoginType.KAKAO,
         nickname: String = randomString(len = 7),
-        profileImage: UserProfileImage = UserProfileImage(randomString(), randomUrl()),
+        profileImage: Image = Image(randomString(), randomUrl()),
         gender: Gender = Gender.MALE,
         instagramId: String? = randomString(len = 30),
     ): User = User(
