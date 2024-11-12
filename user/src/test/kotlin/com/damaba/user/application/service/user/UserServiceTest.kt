@@ -1,6 +1,7 @@
 package com.damaba.user.application.service.user
 
 import com.damaba.common_file.domain.DeleteFileEvent
+import com.damaba.common_file.domain.Image
 import com.damaba.user.application.port.inbound.user.CheckNicknameExistenceUseCase
 import com.damaba.user.application.port.inbound.user.RegisterUserUseCase
 import com.damaba.user.application.port.inbound.user.UpdateUserUseCase
@@ -8,7 +9,6 @@ import com.damaba.user.application.port.outbound.common.PublishEventPort
 import com.damaba.user.application.port.outbound.user.CheckNicknameExistencePort
 import com.damaba.user.application.port.outbound.user.GetUserPort
 import com.damaba.user.application.port.outbound.user.UpdateUserPort
-import com.damaba.user.domain.user.UserProfileImage
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.UserType
 import com.damaba.user.domain.user.exception.NicknameAlreadyExistsException
@@ -166,7 +166,7 @@ class UserServiceTest {
         val newNickname = randomString(len = 7)
         val newGender = Gender.FEMALE
         val newInstagramId = null
-        val newProfileImageUrl = UserProfileImage(randomString(), randomUrl())
+        val newProfileImageUrl = Image(randomString(), randomUrl())
         val command = UpdateUserUseCase.Command(userId, newNickname, newInstagramId, newProfileImageUrl)
         val expectedResult = createUser(
             nickname = newNickname,
@@ -237,7 +237,7 @@ class UserServiceTest {
         // given
         val userId = randomLong()
         val user = createUser(id = userId)
-        val newProfileImageUrl = UserProfileImage(randomString(), randomUrl())
+        val newProfileImageUrl = Image(randomString(), randomUrl())
         val command = UpdateUserUseCase.Command(userId, user.nickname, user.instagramId, newProfileImageUrl)
         val expectedResult = createUser(
             nickname = user.nickname,
@@ -275,7 +275,7 @@ class UserServiceTest {
             userId,
             existingNickname,
             randomString(),
-            UserProfileImage(randomString(), randomUrl()),
+            Image(randomString(), randomUrl()),
         )
         every { getUserPort.getById(userId) } returns createUser(id = userId)
         every { checkNicknameExistencePort.doesNicknameExist(existingNickname) } returns true

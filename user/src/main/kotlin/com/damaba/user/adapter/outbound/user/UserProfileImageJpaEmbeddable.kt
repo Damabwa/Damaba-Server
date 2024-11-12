@@ -1,6 +1,6 @@
 package com.damaba.user.adapter.outbound.user
 
-import com.damaba.user.domain.user.UserProfileImage
+import com.damaba.common_file.domain.Image
 import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
 
@@ -12,10 +12,10 @@ data class UserProfileImageJpaEmbeddable(
     @Column(name = "profile_image_url", nullable = false)
     val url: String,
 ) {
-    fun toDomain() = UserProfileImage(name, url)
+    fun toDomain() = Image(name, url)
 
     companion object {
-        fun from(userProfileImage: UserProfileImage) = UserProfileImageJpaEmbeddable(
+        fun from(userProfileImage: Image) = UserProfileImageJpaEmbeddable(
             name = userProfileImage.name,
             url = userProfileImage.url,
         )

@@ -1,19 +1,20 @@
 package com.damaba.user.domain.user
 
+import com.damaba.common_file.domain.Image
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.constant.UserRoleType
 import com.damaba.user.domain.user.constant.UserType
 import java.util.Objects
 
-class User(
+open class User(
     val id: Long,
     val loginType: LoginType,
     val oAuthLoginUid: String,
     type: UserType,
     roles: Set<UserRoleType>,
     nickname: String,
-    profileImage: UserProfileImage,
+    profileImage: Image,
     gender: Gender,
     instagramId: String?,
 ) {
@@ -26,7 +27,7 @@ class User(
     var nickname: String = nickname
         private set
 
-    var profileImage: UserProfileImage = profileImage
+    var profileImage: Image = profileImage
         private set
 
     var gender: Gender = gender
@@ -54,7 +55,7 @@ class User(
     fun update(
         nickname: String,
         instagramId: String?,
-        profileImage: UserProfileImage,
+        profileImage: Image,
     ) {
         this.nickname = nickname
         this.instagramId = instagramId
@@ -70,7 +71,7 @@ class User(
     override fun hashCode(): Int = Objects.hashCode(id)
 
     companion object {
-        val DEFAULT_PROFILE_IMAGE = UserProfileImage(
+        val DEFAULT_PROFILE_IMAGE = Image(
             name = "default-user-profile-image.jpg",
             url = "https://dummyimage.com/244x100.png/cc0000/ffffff",
         )

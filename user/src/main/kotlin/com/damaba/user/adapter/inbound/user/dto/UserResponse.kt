@@ -1,7 +1,7 @@
 package com.damaba.user.adapter.inbound.user.dto
 
+import com.damaba.common_file.domain.Image
 import com.damaba.user.domain.user.User
-import com.damaba.user.domain.user.UserProfileImage
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.constant.UserType
@@ -21,7 +21,7 @@ data class UserResponse(
     val nickname: String,
 
     @Schema(description = "프로필 이미지")
-    val profileImage: UserProfileImage,
+    val profileImage: Image,
 
     @Schema(description = "성별")
     val gender: Gender,

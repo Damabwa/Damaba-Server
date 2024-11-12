@@ -1,6 +1,6 @@
 package com.damaba.damaba.adapter.inbound.promotion.dto
 
-import com.damaba.damaba.domain.promotion.PromotionActiveRegion
+import com.damaba.damaba.domain.region.Region
 import io.swagger.v3.oas.annotations.media.Schema
 
 data class PromotionActiveRegionResponse(
@@ -11,9 +11,9 @@ data class PromotionActiveRegionResponse(
     val name: String,
 ) {
     companion object {
-        fun from(promotionActiveRegion: PromotionActiveRegion) = PromotionActiveRegionResponse(
-            category = promotionActiveRegion.category,
-            name = promotionActiveRegion.name,
+        fun from(region: Region) = PromotionActiveRegionResponse(
+            category = region.category,
+            name = region.name,
         )
     }
 }

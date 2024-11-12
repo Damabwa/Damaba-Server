@@ -1,7 +1,7 @@
 package com.damaba.user.application.port.inbound.user
 
 import com.damaba.common_exception.ValidationException
-import com.damaba.user.domain.user.UserProfileImage
+import com.damaba.common_file.domain.Image
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
 import com.damaba.user.util.RandomTestUtils.Companion.randomUrl
 import org.assertj.core.api.Assertions.assertThat
@@ -20,7 +20,7 @@ class UpdateUserUseCaseCommandTest {
                 userId = 1,
                 nickname = invalidNickname,
                 instagramId = randomString(),
-                profileImage = UserProfileImage(randomString(), randomUrl()),
+                profileImage = Image(randomString(), randomUrl()),
             )
         }
 
@@ -39,7 +39,7 @@ class UpdateUserUseCaseCommandTest {
                 userId = 1,
                 nickname = randomString(len = 5),
                 instagramId = invalidInstagramId,
-                profileImage = UserProfileImage(randomString(), randomUrl()),
+                profileImage = Image(randomString(), randomUrl()),
             )
         }
 

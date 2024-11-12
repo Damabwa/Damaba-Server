@@ -1,5 +1,6 @@
 package com.damaba.user.domain.user
 
+import com.damaba.common_file.domain.Image
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.constant.UserRoleType
 import com.damaba.user.domain.user.constant.UserType
@@ -40,7 +41,7 @@ class UserTest {
         val user = createUser()
         val newNickname = randomString()
         val newInstagramId = randomString()
-        val newProfileImage = UserProfileImage(randomString(), randomUrl())
+        val newProfileImage = Image(randomString(), randomUrl())
 
         // when
         user.update(

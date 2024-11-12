@@ -1,10 +1,9 @@
 package com.damaba.damaba.util
 
 import com.damaba.common_file.domain.File
+import com.damaba.common_file.domain.Image
 import com.damaba.damaba.domain.common.Address
 import com.damaba.damaba.domain.promotion.Promotion
-import com.damaba.damaba.domain.promotion.PromotionActiveRegion
-import com.damaba.damaba.domain.promotion.PromotionImage
 import com.damaba.damaba.domain.promotion.constant.EventType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.domain.region.Region
@@ -16,7 +15,6 @@ import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomUrl
 import com.damaba.user.domain.user.User
-import com.damaba.user.domain.user.UserProfileImage
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.constant.UserRoleType
@@ -34,7 +32,7 @@ object TestFixture {
         oAuthLoginUid: String = randomString(),
         loginType: LoginType = LoginType.KAKAO,
         nickname: String = randomString(len = 7),
-        profileImage: UserProfileImage = UserProfileImage(randomString(), randomUrl()),
+        profileImage: Image = Image(randomString(), randomUrl()),
         gender: Gender = Gender.MALE,
         instagramId: String = randomString(len = 30),
     ): User = User(
@@ -79,8 +77,8 @@ object TestFixture {
         endedAt: LocalDate? = randomLocalDate(),
         photographerName: String? = randomString(),
         photographerInstagramId: String? = randomString(),
-        images: List<PromotionImage>? = null,
-        activeRegions: Set<PromotionActiveRegion>? = null,
+        images: List<Image>? = null,
+        activeRegions: Set<Region>? = null,
         hashtags: Set<String>? = null,
     ): Promotion = Promotion(
         id = id,
@@ -103,12 +101,12 @@ object TestFixture {
     private fun createPromotionImage(
         name: String = randomString(),
         url: String = randomString(),
-    ) = PromotionImage(name, url)
+    ) = Image(name, url)
 
     private fun createPromotionActiveRegion(
         category: String = randomString(),
         name: String = randomString(),
-    ) = PromotionActiveRegion(category, name)
+    ) = Region(category, name)
 
     fun createRegion() = Region(
         category = randomString(),
