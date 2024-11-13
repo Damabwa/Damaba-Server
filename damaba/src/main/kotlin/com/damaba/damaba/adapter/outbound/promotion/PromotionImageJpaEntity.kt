@@ -1,6 +1,5 @@
 package com.damaba.damaba.adapter.outbound.promotion
 
-import com.damaba.common_file.domain.Image
 import com.damaba.damaba.adapter.outbound.common.BaseJpaEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -41,20 +40,4 @@ class PromotionImageJpaEntity(
     @Column(name = "deleted_at", nullable = true)
     var deletedAt: LocalDateTime? = null
         private set
-
-    fun toDomain(): Image = Image(
-        name = this.name,
-        url = this.url,
-    )
-
-    companion object {
-        fun from(
-            promotionImage: Image,
-            promotionJpaEntity: PromotionJpaEntity,
-        ): PromotionImageJpaEntity = PromotionImageJpaEntity(
-            promotion = promotionJpaEntity,
-            name = promotionImage.name,
-            url = promotionImage.url,
-        )
-    }
 }

@@ -2,7 +2,7 @@ package com.damaba.damaba.adapter.inbound.region.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
 
-data class RegionRequest(
+data class RegionResponse(
     @Schema(description = "지역 카테고리", example = "서울")
     val category: String,
 

@@ -6,6 +6,7 @@ import com.damaba.damaba.application.port.inbound.promotion.FindPromotionsUseCas
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.damaba.domain.common.Pagination
+import com.damaba.damaba.mapper.PromotionMapper
 import com.damaba.user.domain.user.User
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -39,7 +40,7 @@ class PromotionController(
     @GetMapping("/api/v1/promotions/{promotionId}")
     fun getPromotionDetailV1(@PathVariable promotionId: Long): PromotionResponse {
         val promotion = getPromotionDetailUseCase.getPromotionDetail(promotionId)
-        return PromotionResponse.from(promotion)
+        return PromotionMapper.INSTANCE.toPromotionResponse(promotion)
     }
 
     @Operation(summary = "프로모션 리스트 조회")
@@ -49,7 +50,7 @@ class PromotionController(
         @RequestParam @Parameter(description = "페이지 크기") pageSize: Int,
     ): Pagination<PromotionResponse> {
         val promotions = findPromotionsUseCase.findPromotions(FindPromotionsUseCase.Query(page, pageSize))
-        return promotions.map { PromotionResponse.from(it) }
+        return promotions.map { PromotionMapper.INSTANCE.toPromotionResponse(it) }
     }
 
     @Operation(
@@ -65,6 +66,6 @@ class PromotionController(
         val promotion = postPromotionUseCase.postPromotion(request.toCommand(requestUser.id))
         return ResponseEntity
             .created(URI.create("/api/v*/promotions/${promotion.id}"))
-            .body(PromotionResponse.from(promotion))
+            .body(PromotionMapper.INSTANCE.toPromotionResponse(promotion))
     }
 }

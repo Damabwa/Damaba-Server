@@ -4,6 +4,7 @@ import com.damaba.damaba.adapter.inbound.region.dto.RegionCategoriesResponse
 import com.damaba.damaba.adapter.inbound.region.dto.RegionGroupsResponse
 import com.damaba.damaba.application.port.inbound.region.FindRegionCategoriesUseCase
 import com.damaba.damaba.application.port.inbound.region.FindRegionGroupsUseCase
+import com.damaba.damaba.mapper.RegionMapper
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.GetMapping
@@ -28,7 +29,8 @@ class RegionController(
     )
     @GetMapping("/api/v1/regions/groups")
     fun findRegionGroupsV1(): RegionGroupsResponse {
-        val regionGroups = findRegionGroupsUseCase.findRegionGroups()
-        return RegionGroupsResponse.from(regionGroups)
+        val regionGroupResponses = findRegionGroupsUseCase.findRegionGroups()
+            .map { RegionMapper.INSTANCE.toRegionGroupResponse(it) }
+        return RegionGroupsResponse(regionGroupResponses)
     }
 }

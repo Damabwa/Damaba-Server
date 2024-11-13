@@ -1,7 +1,7 @@
 package com.damaba.damaba.adapter.inbound.promotion
 
 import com.damaba.damaba.adapter.inbound.common.dto.AddressRequest
-import com.damaba.damaba.adapter.inbound.common.dto.FileRequest
+import com.damaba.damaba.adapter.inbound.common.dto.ImageRequest
 import com.damaba.damaba.adapter.inbound.promotion.dto.PostPromotionRequest
 import com.damaba.damaba.adapter.inbound.region.dto.RegionRequest
 import com.damaba.damaba.application.port.inbound.promotion.FindPromotionsUseCase
@@ -126,7 +126,7 @@ class PromotionControllerTest @Autowired constructor(
             endedAt = randomLocalDate(),
             photographerName = randomString(),
             photographerInstagramId = randomString(),
-            images = generateRandomList(maxSize = 3) { FileRequest(randomString(), randomString()) },
+            images = generateRandomList(maxSize = 3) { ImageRequest(randomString(), randomString()) },
             activeRegions = generateRandomSet(maxSize = 3) { RegionRequest(randomString(), randomString()) },
             hashtags = generateRandomSet(maxSize = 3) { randomString() },
         )

@@ -1,7 +1,6 @@
 package com.damaba.damaba.adapter.outbound.promotion
 
 import com.damaba.damaba.adapter.outbound.common.BaseJpaTimeEntity
-import com.damaba.damaba.domain.region.Region
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
@@ -36,20 +35,4 @@ class PromotionActiveRegionJpaEntity(
     @Column(name = "name", nullable = false)
     var name: String = name
         private set
-
-    fun toDomain(): Region = Region(
-        category = this.category,
-        name = this.name,
-    )
-
-    companion object {
-        fun from(
-            promotionActiveRegion: Region,
-            promotionJpaEntity: PromotionJpaEntity,
-        ): PromotionActiveRegionJpaEntity = PromotionActiveRegionJpaEntity(
-            promotion = promotionJpaEntity,
-            category = promotionActiveRegion.category,
-            name = promotionActiveRegion.name,
-        )
-    }
 }

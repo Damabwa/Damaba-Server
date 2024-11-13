@@ -30,14 +30,4 @@ class PromotionHashtagJpaEntity(
     @Column(name = "content", nullable = false)
     var content: String = content
         private set
-
-    companion object {
-        fun from(
-            hashtagContent: String,
-            promotionJpaEntity: PromotionJpaEntity,
-        ): PromotionHashtagJpaEntity = PromotionHashtagJpaEntity(
-            promotion = promotionJpaEntity,
-            content = hashtagContent,
-        )
-    }
 }
