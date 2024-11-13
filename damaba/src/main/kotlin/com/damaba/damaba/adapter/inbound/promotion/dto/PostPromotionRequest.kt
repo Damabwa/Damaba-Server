@@ -1,11 +1,14 @@
 package com.damaba.damaba.adapter.inbound.promotion.dto
 
 import com.damaba.damaba.adapter.inbound.common.dto.AddressRequest
-import com.damaba.damaba.adapter.inbound.common.dto.FileRequest
+import com.damaba.damaba.adapter.inbound.common.dto.ImageRequest
 import com.damaba.damaba.adapter.inbound.region.dto.RegionRequest
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.damaba.domain.promotion.constant.EventType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
+import com.damaba.damaba.mapper.AddressMapper
+import com.damaba.damaba.mapper.ImageMapper
+import com.damaba.damaba.mapper.RegionMapper
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 
@@ -41,7 +44,7 @@ data class PostPromotionRequest(
     val photographerInstagramId: String?,
 
     @Schema(description = "이미지 리스트. 이미지는 최소 1장부터 최대 10장까지 첨부할 수 있습니다.")
-    val images: List<FileRequest>,
+    val images: List<ImageRequest>,
 
     @Schema(description = "활동 지역 리스트. 활동 지역은 최소 1개 이상 선택해야 합니다.")
     val activeRegions: Set<RegionRequest>,
@@ -55,14 +58,14 @@ data class PostPromotionRequest(
         eventType = eventType,
         title = title,
         content = content,
-        address = address.toDomain(),
+        address = AddressMapper.INSTANCE.toAddress(address),
         externalLink = externalLink,
         startedAt = startedAt,
         endedAt = endedAt,
         photographerName = photographerName,
         photographerInstagramId = photographerInstagramId,
-        images = images.map { fileReq -> fileReq.toDomain() },
-        activeRegions = activeRegions.map { regionReq -> regionReq.toDomain() }.toSet(),
+        images = images.map { ImageMapper.INSTANCE.toImage(it) },
+        activeRegions = activeRegions.map { regionRequest -> RegionMapper.INSTANCE.toRegion(regionRequest) }.toSet(),
         hashtags = hashtags,
     )
 }

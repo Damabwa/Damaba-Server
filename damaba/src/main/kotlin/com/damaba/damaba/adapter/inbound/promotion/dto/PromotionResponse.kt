@@ -1,8 +1,8 @@
 package com.damaba.damaba.adapter.inbound.promotion.dto
 
 import com.damaba.damaba.adapter.inbound.common.dto.AddressResponse
-import com.damaba.damaba.adapter.inbound.common.dto.FileResponse
-import com.damaba.damaba.domain.promotion.Promotion
+import com.damaba.damaba.adapter.inbound.common.dto.ImageResponse
+import com.damaba.damaba.adapter.inbound.region.dto.RegionResponse
 import com.damaba.damaba.domain.promotion.constant.EventType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import io.swagger.v3.oas.annotations.media.Schema
@@ -46,31 +46,11 @@ data class PromotionResponse(
     val photographerInstagramId: String?,
 
     @Schema(description = "이미지 url 리스트", example = "[\"https://promotion-image\"]")
-    val images: List<FileResponse>,
+    val images: List<ImageResponse>,
 
     @Schema(description = "활동 지역 리스트")
-    val activeRegions: Set<PromotionActiveRegionResponse>,
+    val activeRegions: Set<RegionResponse>,
 
     @Schema(description = "해시태그 리스트", example = "[\"수원핫플\", \"스냅사진\"]")
     val hashtags: Set<String>,
-) {
-    companion object {
-        fun from(promotion: Promotion) = PromotionResponse(
-            id = promotion.id,
-            authorId = promotion.authorId,
-            type = promotion.type,
-            eventType = promotion.eventType,
-            title = promotion.title,
-            content = promotion.content,
-            address = AddressResponse.from(promotion.address),
-            externalLink = promotion.externalLink,
-            startedAt = promotion.startedAt,
-            endedAt = promotion.endedAt,
-            photographerName = promotion.photographerName,
-            photographerInstagramId = promotion.photographerInstagramId,
-            images = promotion.images.map { image -> FileResponse(image.name, image.url) },
-            activeRegions = promotion.activeRegions.map { PromotionActiveRegionResponse.from(it) }.toSet(),
-            hashtags = promotion.hashtags,
-        )
-    }
-}
+)

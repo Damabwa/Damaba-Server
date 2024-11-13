@@ -7,6 +7,7 @@ import com.damaba.damaba.application.port.outbound.promotion.SavePromotionPort
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.exception.PromotionNotFoundException
+import com.damaba.damaba.mapper.PromotionMapper
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Repository
 
@@ -17,15 +18,15 @@ class PromotionCoreRepository(
     FindPromotionsPort,
     SavePromotionPort {
     override fun getById(id: Long): Promotion =
-        getJpaEntityById(id).toDomain()
+        PromotionMapper.INSTANCE.toPromotion(getJpaEntityById(id))
 
     override fun findPromotions(page: Int, pageSize: Int): Pagination<Promotion> =
         promotionJpaRepository.findAll(PageRequest.of(page, pageSize))
-            .toPagination { promotionJpaEntity -> promotionJpaEntity.toDomain() }
+            .toPagination { PromotionMapper.INSTANCE.toPromotion(it) }
 
     override fun save(promotion: Promotion): Promotion {
-        val promotionJpaEntity = promotionJpaRepository.save(PromotionJpaEntity.from(promotion))
-        return promotionJpaEntity.toDomain()
+        val promotionJpaEntity = promotionJpaRepository.save(PromotionMapper.INSTANCE.toPromotionJpaEntity(promotion))
+        return PromotionMapper.INSTANCE.toPromotion(promotionJpaEntity)
     }
 
     private fun getJpaEntityById(id: Long): PromotionJpaEntity =

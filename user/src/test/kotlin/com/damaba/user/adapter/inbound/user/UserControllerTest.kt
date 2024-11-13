@@ -1,6 +1,6 @@
 package com.damaba.user.adapter.inbound.user
 
-import com.damaba.common_file.domain.Image
+import com.damaba.user.adapter.inbound.common.dto.ImageRequest
 import com.damaba.user.adapter.inbound.user.dto.RegisterUserRequest
 import com.damaba.user.adapter.inbound.user.dto.UpdateMyInfoRequest
 import com.damaba.user.application.port.inbound.user.CheckNicknameExistenceUseCase
@@ -83,7 +83,7 @@ class UserControllerTest @Autowired constructor(
         val request = UpdateMyInfoRequest(
             nickname = randomString(len = 7),
             instagramId = randomString(),
-            profileImage = Image(randomString(), randomUrl()),
+            profileImage = ImageRequest(randomString(), randomUrl()),
         )
         val expectedResult = createUser(
             id = requestUser.id,

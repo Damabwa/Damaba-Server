@@ -2,7 +2,6 @@ package com.damaba.damaba.adapter.outbound.promotion
 
 import com.damaba.damaba.adapter.outbound.common.AddressJpaEmbeddable
 import com.damaba.damaba.adapter.outbound.common.BaseJpaTimeEntity
-import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.constant.EventType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import jakarta.persistence.CascadeType
@@ -103,56 +102,7 @@ class PromotionJpaEntity(
     var hashtags: MutableSet<PromotionHashtagJpaEntity> = mutableSetOf()
         private set
 
-    fun toDomain(): Promotion = Promotion(
-        id = this.id,
-        authorId = this.authorId,
-        type = this.type,
-        eventType = this.eventType,
-        title = this.title,
-        content = this.content,
-        address = this.address.toDomain(),
-        externalLink = this.externalLink,
-        startedAt = this.startedAt,
-        endedAt = this.endedAt,
-        photographerName = this.photographerName,
-        photographerInstagramId = this.photographerInstagramId,
-        images = this.images.map(PromotionImageJpaEntity::toDomain),
-        activeRegions = this.activeRegions.map(PromotionActiveRegionJpaEntity::toDomain).toSet(),
-        hashtags = this.hashtags.map(PromotionHashtagJpaEntity::content).toSet(),
-    )
-
-    companion object {
-        fun from(promotion: Promotion): PromotionJpaEntity {
-            val promotionJpaEntity = PromotionJpaEntity(
-                authorId = promotion.authorId,
-                type = promotion.type,
-                eventType = promotion.eventType,
-                title = promotion.title,
-                content = promotion.content,
-                address = AddressJpaEmbeddable.from(promotion.address),
-                externalLink = promotion.externalLink,
-                startedAt = promotion.startedAt,
-                endedAt = promotion.endedAt,
-                photographerName = promotion.photographerName,
-                photographerInstagramId = promotion.photographerInstagramId,
-            )
-
-            val promotionImageJpaEntities = promotion.images.map { promotionImage ->
-                PromotionImageJpaEntity.from(promotionImage, promotionJpaEntity)
-            }
-            promotionJpaEntity._images.addAll(promotionImageJpaEntities)
-
-            val promotionActiveRegionJpaEntities = promotion.activeRegions.map { promotionActiveRegion ->
-                PromotionActiveRegionJpaEntity.from(promotionActiveRegion, promotionJpaEntity)
-            }
-            promotionJpaEntity.activeRegions.addAll(promotionActiveRegionJpaEntities)
-
-            val promotionHashtagJpaEntities = promotion.hashtags.map { promotionHashtag ->
-                PromotionHashtagJpaEntity.from(promotionHashtag, promotionJpaEntity)
-            }
-            promotionJpaEntity.hashtags.addAll(promotionHashtagJpaEntities)
-
-            return promotionJpaEntity
-        }
+    fun addImages(images: List<PromotionImageJpaEntity>) {
+        this._images.addAll(images)
     }
 }

@@ -1,6 +1,5 @@
 package com.damaba.damaba.adapter.outbound.photographer
 
-import com.damaba.damaba.domain.photographer.BusinessSchedule
 import jakarta.persistence.Column
 import jakarta.persistence.Convert
 import jakarta.persistence.Embeddable
@@ -18,14 +17,4 @@ data class BusinessScheduleEmbeddable(
 
     @Column(name = "business_end_time", nullable = true)
     val endTime: LocalTime,
-) {
-    fun toDomain() = BusinessSchedule(days, startTime, endTime)
-
-    companion object {
-        fun from(businessSchedule: BusinessSchedule) = BusinessScheduleEmbeddable(
-            days = businessSchedule.days,
-            startTime = businessSchedule.startTime,
-            endTime = businessSchedule.endTime,
-        )
-    }
-}
+)

@@ -1,6 +1,5 @@
 package com.damaba.damaba.adapter.inbound.common.dto
 
-import com.damaba.damaba.domain.common.Address
 import io.swagger.v3.oas.annotations.media.Schema
 
 data class AddressResponse(
@@ -15,13 +14,4 @@ data class AddressResponse(
 
     @Schema(description = "지번 주소", example = "경기 성남시 분당구 백현동 532")
     val jibunAddress: String,
-) {
-    companion object {
-        fun from(address: Address) = AddressResponse(
-            sido = address.sido,
-            sigungu = address.sigungu,
-            roadAddress = address.roadAddress,
-            jibunAddress = address.jibunAddress,
-        )
-    }
-}
+)
