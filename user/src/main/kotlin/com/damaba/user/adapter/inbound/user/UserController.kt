@@ -9,6 +9,7 @@ import com.damaba.user.application.port.inbound.user.GetUserUseCase
 import com.damaba.user.application.port.inbound.user.RegisterUserUseCase
 import com.damaba.user.application.port.inbound.user.UpdateUserUseCase
 import com.damaba.user.domain.user.User
+import com.damaba.user.mapper.UserMapper
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
@@ -39,7 +40,7 @@ class UserController(
     @GetMapping("/api/v1/users/me")
     fun getMyInfoV1(@AuthenticationPrincipal requestUser: User): UserResponse {
         val me = getUserUseCase.getUser(requestUser.id)
-        return UserResponse.from(me)
+        return UserMapper.INSTANCE.toUserResponse(me)
     }
 
     @Operation(
@@ -80,7 +81,7 @@ class UserController(
         @RequestBody request: RegisterUserRequest,
     ): UserResponse {
         val user = registerUserUseCase.register(request.toCommand(requester.id))
-        return UserResponse.from(user)
+        return UserMapper.INSTANCE.toUserResponse(user)
     }
 
     @Operation(
@@ -101,6 +102,6 @@ class UserController(
         @RequestBody request: UpdateMyInfoRequest,
     ): UserResponse {
         val updatedUser = updateUserUseCase.updateUser(request.toCommand(requestUserId = requestUser.id))
-        return UserResponse.from(updatedUser)
+        return UserMapper.INSTANCE.toUserResponse(updatedUser)
     }
 }

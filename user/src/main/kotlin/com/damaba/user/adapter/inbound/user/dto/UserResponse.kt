@@ -1,7 +1,6 @@
 package com.damaba.user.adapter.inbound.user.dto
 
-import com.damaba.common_file.domain.Image
-import com.damaba.user.domain.user.User
+import com.damaba.user.adapter.inbound.common.dto.ImageResponse
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.constant.UserType
@@ -21,23 +20,11 @@ data class UserResponse(
     val nickname: String,
 
     @Schema(description = "프로필 이미지")
-    val profileImage: Image,
+    val profileImage: ImageResponse,
 
     @Schema(description = "성별")
     val gender: Gender,
 
     @Schema(description = "(Nullable) 인스타 아이디", example = "damaba.official")
     val instagramId: String?,
-) {
-    companion object {
-        fun from(user: User): UserResponse = UserResponse(
-            id = user.id,
-            type = user.type,
-            loginType = user.loginType,
-            nickname = user.nickname,
-            profileImage = user.profileImage,
-            gender = user.gender,
-            instagramId = user.instagramId,
-        )
-    }
-}
+)

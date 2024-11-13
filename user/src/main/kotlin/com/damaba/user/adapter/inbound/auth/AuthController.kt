@@ -4,6 +4,8 @@ import com.damaba.user.adapter.inbound.auth.dto.OAuthLoginRequest
 import com.damaba.user.adapter.inbound.auth.dto.OAuthLoginResponse
 import com.damaba.user.application.port.inbound.auth.OAuthLoginUseCase
 import com.damaba.user.domain.user.constant.LoginType
+import com.damaba.user.mapper.AuthTokenMapper
+import com.damaba.user.mapper.UserMapper
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -34,14 +36,20 @@ class AuthController(private val oAuthLoginUseCase: OAuthLoginUseCase) {
             OAuthLoginUseCase.Command(loginType = LoginType.KAKAO, authKey = request.authKey),
         )
 
+        val response = OAuthLoginResponse(
+            isRegistrationCompleted = user.isRegistrationCompleted,
+            user = UserMapper.INSTANCE.toUserResponse(user),
+            accessToken = AuthTokenMapper.INSTANCE.toAuthTokenResponse(accessToken),
+            refreshToken = AuthTokenMapper.INSTANCE.toAuthTokenResponse(refreshToken),
+        )
         return if (isNewUser) {
             ResponseEntity
                 .created(URI.create("/api/v*/users/${user.id}"))
-                .body(OAuthLoginResponse.from(user, accessToken, refreshToken))
+                .body(response)
         } else {
             ResponseEntity
                 .ok()
-                .body(OAuthLoginResponse.from(user, accessToken, refreshToken))
+                .body(response)
         }
     }
 }

@@ -1,7 +1,8 @@
 package com.damaba.user.adapter.inbound.user.dto
 
-import com.damaba.common_file.domain.Image
+import com.damaba.user.adapter.inbound.common.dto.ImageRequest
 import com.damaba.user.application.port.inbound.user.UpdateUserUseCase
+import com.damaba.user.mapper.ImageMapper
 import io.swagger.v3.oas.annotations.media.Schema
 
 data class UpdateMyInfoRequest(
@@ -12,12 +13,12 @@ data class UpdateMyInfoRequest(
     val instagramId: String?,
 
     @Schema(description = "프로필 이미지")
-    val profileImage: Image,
+    val profileImage: ImageRequest,
 ) {
     fun toCommand(requestUserId: Long): UpdateUserUseCase.Command = UpdateUserUseCase.Command(
         userId = requestUserId,
         nickname = this.nickname,
         instagramId = this.instagramId,
-        profileImage = profileImage,
+        profileImage = ImageMapper.INSTANCE.toImage(profileImage),
     )
 }
