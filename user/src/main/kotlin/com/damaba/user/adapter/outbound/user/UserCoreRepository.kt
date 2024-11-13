@@ -7,6 +7,7 @@ import com.damaba.user.application.port.outbound.user.SaveUserPort
 import com.damaba.user.application.port.outbound.user.UpdateUserPort
 import com.damaba.user.domain.user.User
 import com.damaba.user.domain.user.exception.UserNotFoundException
+import com.damaba.user.mapper.UserMapper
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -19,27 +20,27 @@ class UserCoreRepository(
     SaveUserPort,
     UpdateUserPort {
     override fun findById(id: Long): User? =
-        findUserJpaEntityById(id)?.toDomain()
+        findUserJpaEntityById(id)?.let { UserMapper.INSTANCE.toUser(it) }
 
     override fun findByOAuthLoginUid(oAuthLoginUid: String): User? =
-        userJpaRepository.findByOAuthLoginUid(oAuthLoginUid)?.toDomain()
+        userJpaRepository.findByOAuthLoginUid(oAuthLoginUid)?.let { UserMapper.INSTANCE.toUser(it) }
 
     override fun getById(id: Long): User =
-        getUserJpaEntityById(id).toDomain()
+        UserMapper.INSTANCE.toUser(getUserJpaEntityById(id))
 
     override fun doesNicknameExist(nickname: String): Boolean =
         userJpaRepository.existsByNickname(nickname)
 
     override fun save(user: User): User {
-        val userJpaEntity = userJpaRepository.save(UserJpaEntity.from(user))
-        return userJpaEntity.toDomain()
+        val userJpaEntity = userJpaRepository.save(UserMapper.INSTANCE.toUserJpaEntity(user))
+        return UserMapper.INSTANCE.toUser(userJpaEntity)
     }
 
     override fun update(user: User): User {
-        val originalUserJpaEntity = getUserJpaEntityById(user.id)
+        val userJpaEntity = getUserJpaEntityById(user.id)
 
-        if (originalUserJpaEntity.profileImage.url != user.profileImage.url) {
-            val originalProfileImage = userProfileImageJpaRepository.findByUrl(originalUserJpaEntity.profileImage.url)
+        if (userJpaEntity.profileImage.url != user.profileImage.url) {
+            val originalProfileImage = userProfileImageJpaRepository.findByUrl(userJpaEntity.profileImage.url)
             originalProfileImage?.delete()
             userProfileImageJpaRepository.save(
                 UserProfileImageJpaEntity(
@@ -50,8 +51,8 @@ class UserCoreRepository(
             )
         }
 
-        originalUserJpaEntity.update(user)
-        return originalUserJpaEntity.toDomain()
+        userJpaEntity.update(user)
+        return UserMapper.INSTANCE.toUser(userJpaEntity)
     }
 
     private fun findUserJpaEntityById(id: Long): UserJpaEntity? =

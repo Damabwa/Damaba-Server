@@ -2,6 +2,7 @@ plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
     kotlin("plugin.jpa") version "1.9.25"
+    kotlin("kapt")
     id("org.springframework.boot") version "3.3.4"
     id("io.spring.dependency-management") version "1.1.6"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
@@ -61,6 +62,11 @@ dependencies {
     implementation(project(":common:common-exception"))
     implementation(project(":common:common-file"))
 
+    // MapStruct
+    implementation("org.mapstruct:mapstruct:1.5.3.Final")
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.5.3.Final")
+    kapt("org.mapstruct:mapstruct-processor:1.5.3.Final")
+
     // Test container
     testImplementation("org.testcontainers:testcontainers:1.20.2")
     testImplementation("org.testcontainers:junit-jupiter:1.20.2")
@@ -109,15 +115,17 @@ tasks.jacocoTestReport {
         classDirectories.setFrom(
             sourceSets.main.get().output.asFileTree.matching {
                 include(
-                    listOf(
-                        "**/adapter/inbound/**/*Controller*",
-                        "**/adapter/outbound/**/*Repository*",
-                        "**/adapter/outbound/**/*Adapter*",
-                        "**/application/listener/**/*EventListener*",
-                        "**/application/port/**",
-                        "**/application/service/**",
-                        "**/domain/**",
-                    ),
+                    "**/adapter/inbound/**/*Controller*",
+                    "**/adapter/outbound/**/*Repository*",
+                    "**/adapter/outbound/**/*Adapter*",
+                    "**/application/listener/**/*EventListener*",
+                    "**/application/port/**",
+                    "**/application/service/**",
+                    "**/domain/**",
+                )
+                exclude(
+                    "**/*MapperImpl",
+                    "**/generated/**",
                 )
             },
         )
@@ -151,6 +159,11 @@ tasks.jacocoTestCoverageVerification {
                 "*.application.service.*",
                 "*.application.port.*",
                 "*.domain.*",
+            )
+
+            excludes = listOf(
+                "**.*MapperImpl",
+                "**.generated.**",
             )
         }
     }

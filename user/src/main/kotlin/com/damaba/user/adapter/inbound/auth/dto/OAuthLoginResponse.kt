@@ -1,8 +1,6 @@
 package com.damaba.user.adapter.inbound.auth.dto
 
 import com.damaba.user.adapter.inbound.user.dto.UserResponse
-import com.damaba.user.domain.auth.AuthToken
-import com.damaba.user.domain.user.User
 import io.swagger.v3.oas.annotations.media.Schema
 
 data class OAuthLoginResponse(
@@ -17,14 +15,4 @@ data class OAuthLoginResponse(
 
     @Schema(description = "Refresh token")
     val refreshToken: AuthTokenResponse,
-) {
-    companion object {
-        fun from(user: User, accessToken: AuthToken, refreshToken: AuthToken): OAuthLoginResponse =
-            OAuthLoginResponse(
-                isRegistrationCompleted = user.isRegistrationCompleted,
-                user = UserResponse.from(user),
-                accessToken = AuthTokenResponse.from(accessToken),
-                refreshToken = AuthTokenResponse.from(refreshToken),
-            )
-    }
-}
+)
