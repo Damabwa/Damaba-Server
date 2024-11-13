@@ -45,7 +45,7 @@ abstract class PromotionMapper {
     }
 
     @AfterMapping
-    protected fun addRegionsJpaEntitiesToPromotionJpaEntity(
+    protected fun addRegionsToPromotionJpaEntity(
         @MappingTarget promotionJpaEntity: PromotionJpaEntity,
         promotion: Promotion,
     ) {
@@ -57,7 +57,7 @@ abstract class PromotionMapper {
     }
 
     @AfterMapping
-    protected fun addHashtagsJpaEntitiesToPromotionJpaEntity(
+    protected fun addHashtagsToPromotionJpaEntity(
         @MappingTarget promotionJpaEntity: PromotionJpaEntity,
         promotion: Promotion,
     ) {
