@@ -41,6 +41,10 @@ class UserServiceTest {
         publishEventPort,
     )
 
+    private fun confirmVerifiedEveryMocks() {
+        confirmVerified(getUserPort, checkNicknameExistencePort, updateUserPort, publishEventPort)
+    }
+
     @Test
     fun `내 user id가 주어지고, 내 정보를 조회한다`() {
         // given
@@ -290,9 +294,5 @@ class UserServiceTest {
         }
         confirmVerifiedEveryMocks()
         assertThat(ex).isInstanceOf(NicknameAlreadyExistsException::class.java)
-    }
-
-    private fun confirmVerifiedEveryMocks() {
-        confirmVerified(getUserPort, checkNicknameExistencePort, updateUserPort, publishEventPort)
     }
 }

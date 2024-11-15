@@ -19,34 +19,32 @@ open class User(
     instagramId: String?,
 ) {
     var type: UserType = type
-        private set
+        protected set
 
     var roles: Set<UserRoleType> = roles
-        private set
+        protected set
 
     var nickname: String = nickname
-        private set
+        protected set
 
     var profileImage: Image = profileImage
-        private set
+        protected set
 
     var gender: Gender = gender
-        private set
+        protected set
 
     var instagramId: String? = instagramId
-        private set
+        protected set
 
     val isRegistrationCompleted
         get() = type != UserType.UNDEFINED
 
-    fun register(
-        type: UserType,
+    fun registerUser(
         nickname: String,
         gender: Gender,
         instagramId: String?,
     ) {
-        this.type = type
-        // TODO: type이 사진작가인 경우 roles 수정
+        this.type = UserType.USER
         this.nickname = nickname
         this.gender = gender
         this.instagramId = instagramId

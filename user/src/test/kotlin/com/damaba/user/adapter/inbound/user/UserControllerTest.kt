@@ -74,6 +74,7 @@ class UserControllerTest @Autowired constructor(
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(me.id))
             .andExpect(jsonPath("$.nickname").value(me.nickname))
+        verify { getUserUseCase.getUser(userId) }
     }
 
     @Test
@@ -155,5 +156,6 @@ class UserControllerTest @Autowired constructor(
             .andExpect(jsonPath("$.nickname").value(expectedResult.nickname))
             .andExpect(jsonPath("$.gender").value(expectedResult.gender.toString()))
             .andExpect(jsonPath("$.instagramId").value(expectedResult.instagramId))
+        verify { registerUserUseCase.register(request.toCommand(requester.id)) }
     }
 }

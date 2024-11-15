@@ -7,7 +7,7 @@ import java.time.DayOfWeek
 import java.time.LocalTime
 
 @Embeddable
-data class BusinessScheduleEmbeddable(
+data class BusinessScheduleJpaEmbeddable(
     @Convert(converter = BusinessDaysConverter::class)
     @Column(name = "business_days", nullable = true)
     val days: Set<DayOfWeek>,
