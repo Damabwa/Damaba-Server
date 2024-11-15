@@ -3,9 +3,9 @@ package com.damaba.file.adapter.inbound
 import com.damaba.file.adapter.inbound.dto.UploadFilesRequest
 import com.damaba.file.application.port.inbound.UploadFilesUseCase
 import com.damaba.file.domain.FileType
+import com.damaba.file.util.FileFixture
+import com.damaba.file.util.FileFixture.createFile
 import com.damaba.file.util.RandomTestUtils
-import com.damaba.file.util.TestFixture
-import com.damaba.file.util.TestFixture.createFile
 import io.mockk.every
 import io.mockk.mockk
 import org.hamcrest.Matchers.hasSize
@@ -38,7 +38,7 @@ class FileControllerTest @Autowired constructor(
         // given
         val request = UploadFilesRequest(
             fileType = FileType.USER_PROFILE_IMAGE,
-            files = RandomTestUtils.generateRandomList(maxSize = 5) { TestFixture.createMockMultipartFile() },
+            files = RandomTestUtils.generateRandomList(maxSize = 5) { FileFixture.createMockMultipartFile() },
         )
         val expectedResult = List(request.files.size) { createFile() }
         every {

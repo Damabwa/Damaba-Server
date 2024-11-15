@@ -7,7 +7,7 @@ import com.damaba.file.util.RandomTestUtils.Companion.randomString
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.web.multipart.MultipartFile
 
-object TestFixture {
+object FileFixture {
     fun createUploadFile(
         name: String? = randomString(),
     ): UploadFile = UploadFile(
