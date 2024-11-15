@@ -1,7 +1,6 @@
 package com.damaba.user.util
 
 import com.damaba.common_file.domain.Image
-import com.damaba.user.domain.auth.AuthToken
 import com.damaba.user.domain.user.User
 import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
@@ -10,24 +9,8 @@ import com.damaba.user.domain.user.constant.UserType
 import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
 import com.damaba.user.util.RandomTestUtils.Companion.randomUrl
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import java.time.LocalDateTime
 
-object TestFixture {
-    fun createImage(name: String = randomString(), url: String = randomString()) = Image(name, url)
-
-    fun createAuthenticationToken(user: User): Authentication =
-        UsernamePasswordAuthenticationToken(
-            user,
-            null,
-            user.roles
-                .map { roleType -> "ROLE_$roleType" }
-                .map { roleName -> SimpleGrantedAuthority(roleName) }
-                .toMutableList(),
-        )
-
+object UserFixture {
     fun createUser(
         id: Long = randomLong(),
         type: UserType = UserType.USER,
@@ -48,13 +31,5 @@ object TestFixture {
         profileImage = profileImage,
         gender = gender,
         instagramId = instagramId,
-    )
-
-    fun createAuthToken(
-        value: String = randomString(),
-        expiresAt: LocalDateTime = LocalDateTime.now(),
-    ): AuthToken = AuthToken(
-        value = value,
-        expiresAt = expiresAt,
     )
 }

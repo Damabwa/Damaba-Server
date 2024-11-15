@@ -13,8 +13,8 @@ import com.damaba.user.util.RandomTestUtils.Companion.randomBoolean
 import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
 import com.damaba.user.util.RandomTestUtils.Companion.randomUrl
-import com.damaba.user.util.TestFixture.createAuthenticationToken
-import com.damaba.user.util.TestFixture.createUser
+import com.damaba.user.util.SecurityFixture.createAuthenticationToken
+import com.damaba.user.util.UserFixture.createUser
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.every
 import io.mockk.mockk

@@ -2,7 +2,7 @@ package com.damaba.user.adapter.outbound.auth
 
 import com.damaba.user.domain.auth.exception.InvalidAuthTokenException
 import com.damaba.user.property.AuthProperties
-import com.damaba.user.util.TestFixture.createUser
+import com.damaba.user.util.UserFixture.createUser
 import io.mockk.every
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat

@@ -5,7 +5,7 @@ import com.damaba.user.domain.user.exception.UserNotFoundException
 import com.damaba.user.util.RandomTestUtils.Companion.randomLong
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
 import com.damaba.user.util.RandomTestUtils.Companion.randomUrl
-import com.damaba.user.util.TestFixture.createUser
+import com.damaba.user.util.UserFixture.createUser
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
 import org.springframework.beans.factory.annotation.Autowired

@@ -5,10 +5,10 @@ import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.constant.UserRoleType
 import com.damaba.user.domain.user.constant.UserType
+import com.damaba.user.util.FileFixture.createImage
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
 import com.damaba.user.util.RandomTestUtils.Companion.randomUrl
-import com.damaba.user.util.TestFixture.createImage
-import com.damaba.user.util.TestFixture.createUser
+import com.damaba.user.util.UserFixture.createUser
 import org.assertj.core.api.Assertions.assertThat
 import kotlin.test.Test
 
