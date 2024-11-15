@@ -3,9 +3,9 @@ package com.damaba.file.adapter.outbound
 import com.damaba.common_file.domain.File
 import com.damaba.file.property.AwsProperties
 import com.damaba.file.property.DamabaProperties
+import com.damaba.file.util.FileFixture.createUploadFile
 import com.damaba.file.util.RandomTestUtils.Companion.generateRandomList
 import com.damaba.file.util.RandomTestUtils.Companion.randomString
-import com.damaba.file.util.TestFixture.createUploadFile
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
