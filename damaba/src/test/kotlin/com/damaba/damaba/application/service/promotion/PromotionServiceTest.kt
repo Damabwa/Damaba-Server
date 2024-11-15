@@ -15,10 +15,10 @@ import com.damaba.damaba.util.RandomTestUtils.Companion.randomInt
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLocalDate
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
-import com.damaba.damaba.util.TestFixture.createAddress
-import com.damaba.damaba.util.TestFixture.createFile
-import com.damaba.damaba.util.TestFixture.createPromotion
-import com.damaba.damaba.util.TestFixture.createRegion
+import com.damaba.damaba.util.fixture.AddressFixture.createAddress
+import com.damaba.damaba.util.fixture.FileFixture.createImage
+import com.damaba.damaba.util.fixture.PromotionFixture.createPromotion
+import com.damaba.damaba.util.fixture.RegionFixture.createRegion
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
@@ -115,7 +115,7 @@ class PromotionServiceTest {
         endedAt = randomLocalDate(),
         photographerName = randomString(),
         photographerInstagramId = randomString(),
-        images = generateRandomList(maxSize = 10) { createFile() },
+        images = generateRandomList(maxSize = 10) { createImage() },
         activeRegions = generateRandomSet(maxSize = 5) { createRegion() },
         hashtags = generateRandomSet(maxSize = 5) { randomString() },
     )

@@ -17,9 +17,9 @@ import com.damaba.damaba.util.RandomTestUtils.Companion.randomInt
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLocalDate
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
-import com.damaba.damaba.util.TestFixture.createAuthenticationToken
-import com.damaba.damaba.util.TestFixture.createPromotion
-import com.damaba.damaba.util.TestFixture.createUser
+import com.damaba.damaba.util.fixture.PromotionFixture.createPromotion
+import com.damaba.damaba.util.fixture.SecurityFixture.createAuthenticationToken
+import com.damaba.damaba.util.fixture.UserFixture.createUser
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.every
 import io.mockk.mockk

@@ -1,6 +1,6 @@
 package com.damaba.damaba.domain.promotion
 
-import com.damaba.damaba.util.TestFixture.createPromotion
+import com.damaba.damaba.util.fixture.PromotionFixture.createPromotion
 import org.assertj.core.api.Assertions.assertThat
 import kotlin.test.Test
 

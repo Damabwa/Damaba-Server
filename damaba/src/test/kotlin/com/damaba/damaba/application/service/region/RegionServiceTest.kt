@@ -4,7 +4,7 @@ import com.damaba.damaba.application.port.outbound.region.FindRegionCategoriesPo
 import com.damaba.damaba.application.port.outbound.region.FindRegionGroupsPort
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
-import com.damaba.damaba.util.TestFixture.createRegionGroups
+import com.damaba.damaba.util.fixture.RegionFixture.createRegionGroups
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk

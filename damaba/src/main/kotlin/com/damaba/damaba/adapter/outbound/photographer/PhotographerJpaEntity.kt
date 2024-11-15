@@ -54,6 +54,6 @@ class PhotographerJpaEntity(
         private set
 
     fun addPortfolioImages(images: List<PhotographerPortfolioImageJpaEntity>) {
-        this._portfolio.addAll(images)
+        this._portfolio.addAll(images.map { PhotographerPortfolioImageJpaEntity(this, it.name, it.url) })
     }
 }

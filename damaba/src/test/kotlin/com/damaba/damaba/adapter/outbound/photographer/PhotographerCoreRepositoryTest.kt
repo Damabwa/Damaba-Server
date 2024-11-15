@@ -3,9 +3,9 @@ package com.damaba.damaba.adapter.outbound.photographer
 import com.damaba.damaba.config.JpaConfig
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.domain.photographer.exception.PhotographerNotFoundException
-import com.damaba.damaba.util.TestFixture.createPhotographer
-import com.damaba.damaba.util.TestFixture.createPhotographerJpaEntity
-import com.damaba.damaba.util.TestFixture.createUserJpaEntity
+import com.damaba.damaba.util.fixture.PhotographerFixture.createPhotographer
+import com.damaba.damaba.util.fixture.PhotographerFixture.createPhotographerJpaEntity
+import com.damaba.damaba.util.fixture.UserFixture.createUserJpaEntity
 import com.damaba.user.adapter.outbound.user.UserJpaEntity
 import com.damaba.user.adapter.outbound.user.UserJpaRepository
 import com.damaba.user.adapter.outbound.user.UserProfileImageJpaEntity

@@ -1,7 +1,7 @@
 package com.damaba.damaba.adapter.outbound.promotion
 
 import com.damaba.damaba.domain.promotion.exception.PromotionNotFoundException
-import com.damaba.damaba.util.TestFixture.createPromotion
+import com.damaba.damaba.util.fixture.PromotionFixture.createPromotion
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatIterable
 import org.assertj.core.api.Assertions.catchThrowable

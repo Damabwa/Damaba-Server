@@ -3,7 +3,7 @@ package com.damaba.damaba.domain.photographer
 import com.damaba.common_exception.ValidationException
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.region.Region
-import com.damaba.damaba.util.TestFixture.createRegion
+import com.damaba.damaba.util.fixture.RegionFixture.createRegion
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
