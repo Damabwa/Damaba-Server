@@ -16,6 +16,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import java.time.LocalDateTime
 
 object TestFixture {
+    fun createImage(name: String = randomString(), url: String = randomString()) = Image(name, url)
+
     fun createAuthenticationToken(user: User): Authentication =
         UsernamePasswordAuthenticationToken(
             user,

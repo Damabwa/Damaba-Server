@@ -14,7 +14,7 @@ import java.util.Optional
 @EnableJpaAuditing
 @EnableJpaRepositories(basePackages = ["com.damaba.user", "com.damaba.damaba"])
 @Configuration
-class JpaAuditingConfig {
+class JpaConfig {
     @Bean
     fun auditorAware(): AuditorAware<Long> = AuditorAware {
         val principal: Optional<Any> = Optional.ofNullable(SecurityContextHolder.getContext())

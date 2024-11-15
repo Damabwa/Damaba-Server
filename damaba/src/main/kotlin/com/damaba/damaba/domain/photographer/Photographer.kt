@@ -27,7 +27,7 @@ class Photographer(
     address: Address?,
     businessSchedule: BusinessSchedule?,
     portfolio: List<Image>,
-    activeRegions: List<Region>,
+    activeRegions: Set<Region>,
 ) : User(id, loginType, oAuthLoginUid, type, roles, nickname, profileImage, gender, instagramId) {
     var mainPhotographyTypes: Set<PhotographyType> = mainPhotographyTypes
         private set
@@ -47,7 +47,7 @@ class Photographer(
     var portfolio: List<Image> = portfolio
         private set
 
-    var activeRegions: List<Region> = activeRegions
+    var activeRegions: Set<Region> = activeRegions
         private set
 
     override fun equals(other: Any?): Boolean {
@@ -57,4 +57,43 @@ class Photographer(
     }
 
     override fun hashCode(): Int = Objects.hashCode(id)
+
+    fun registerPhotographer(
+        nickname: String,
+        gender: Gender,
+        instagramId: String?,
+        profileImage: Image,
+        mainPhotographyTypes: Set<PhotographyType>,
+        activeRegions: Set<Region>,
+    ) {
+        this.type = UserType.PHOTOGRAPHER
+        this.roles += UserRoleType.PHOTOGRAPHER
+        this.nickname = nickname
+        this.gender = gender
+        this.instagramId = instagramId
+        this.profileImage = profileImage
+        this.mainPhotographyTypes = mainPhotographyTypes
+        this.activeRegions = activeRegions
+    }
+
+    companion object {
+        fun create(user: User): Photographer = Photographer(
+            id = user.id,
+            type = user.type,
+            roles = user.roles,
+            loginType = user.loginType,
+            oAuthLoginUid = user.oAuthLoginUid,
+            nickname = user.nickname,
+            profileImage = user.profileImage,
+            gender = user.gender,
+            instagramId = user.instagramId,
+            mainPhotographyTypes = setOf(),
+            contactLink = null,
+            description = null,
+            address = null,
+            businessSchedule = null,
+            portfolio = listOf(),
+            activeRegions = setOf(),
+        )
+    }
 }

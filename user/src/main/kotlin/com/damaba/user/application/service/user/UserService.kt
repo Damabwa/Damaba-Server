@@ -10,7 +10,6 @@ import com.damaba.user.application.port.outbound.user.CheckNicknameExistencePort
 import com.damaba.user.application.port.outbound.user.GetUserPort
 import com.damaba.user.application.port.outbound.user.UpdateUserPort
 import com.damaba.user.domain.user.User
-import com.damaba.user.domain.user.constant.UserType
 import com.damaba.user.domain.user.exception.NicknameAlreadyExistsException
 import com.damaba.user.domain.user.exception.UserAlreadyRegisteredException
 import org.springframework.stereotype.Service
@@ -46,8 +45,7 @@ class UserService(
         if (checkNicknameExistencePort.doesNicknameExist(command.nickname)) {
             throw NicknameAlreadyExistsException(command.nickname)
         }
-        user.register(
-            type = UserType.USER,
+        user.registerUser(
             nickname = command.nickname,
             gender = command.gender,
             instagramId = command.instagramId,

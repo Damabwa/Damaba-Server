@@ -2,6 +2,7 @@ package com.damaba.damaba.util
 
 import org.apache.commons.lang3.RandomStringUtils
 import java.time.LocalDate
+import java.time.LocalTime
 import kotlin.random.Random
 
 class RandomTestUtils {
@@ -30,6 +31,11 @@ class RandomTestUtils {
             randomInt(positive = true) % 3000 + 1,
             randomInt(positive = true) % 12 + 1,
             randomInt(positive = true) % 25 + 1,
+        )
+
+        fun randomLocalTime(): LocalTime = LocalTime.of(
+            randomInt(positive = true) % 24,
+            randomInt(positive = true) % 60,
         )
 
         fun randomUrl(): String = "https://${randomString()}"
