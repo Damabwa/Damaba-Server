@@ -14,10 +14,9 @@ class LogTraceAspect(private val logTrace: LogTrace) {
     @Around(
         value = "com.damaba.damaba.config.Pointcuts.controllerPointcuts() || " +
             "com.damaba.damaba.config.Pointcuts.useCasePointcuts() || " +
-            "com.damaba.damaba.config.Pointcuts.domainServicePointcuts() || " +
-            "com.damaba.damaba.config.Pointcuts.repositoryPointcuts() || " +
-            "com.damaba.damaba.config.Pointcuts.infrastructureServicePointcuts() || " +
-            "com.damaba.damaba.config.Pointcuts.eventListenerPointcuts()",
+            "com.damaba.damaba.config.Pointcuts.servicePointcuts() || " +
+            "com.damaba.damaba.config.Pointcuts.portPointcuts() || " +
+            "com.damaba.damaba.config.Pointcuts.repositoryPointcuts()",
     )
     fun execute(joinPoint: ProceedingJoinPoint): Any? {
         var status: TraceStatus? = null
@@ -37,27 +36,23 @@ class LogTraceAspect(private val logTrace: LogTrace) {
 }
 
 class Pointcuts {
-    @Pointcut("execution(* com.damaba..controller..*Controller.*(..))")
+    @Pointcut("execution(* com.damaba..adapter..*Controller.*(..))")
     fun controllerPointcuts() {
     }
 
-    @Pointcut("execution(* com.damaba..application..*UseCase.*(..))")
+    @Pointcut("execution(* com.damaba..application.port..*UseCase.*(..))")
     fun useCasePointcuts() {
     }
 
-    @Pointcut("execution(* com.damaba..domain..*Service.*(..))")
-    fun domainServicePointcuts() {
+    @Pointcut("execution(* com.damaba..application.servcie..*Service.*(..))")
+    fun servicePointcuts() {
     }
 
-    @Pointcut("execution(* com.damaba..infrastructure..*Repository.*(..))")
+    @Pointcut("execution(* com.damaba..application.port..*Port.*(..))")
+    fun portPointcuts() {
+    }
+
+    @Pointcut("execution(* com.damaba..adapter..*Repository.*(..))")
     fun repositoryPointcuts() {
-    }
-
-    @Pointcut("execution(* com.damaba..infrastructure..*Service.*(..))")
-    fun infrastructureServicePointcuts() {
-    }
-
-    @Pointcut("execution(* com.damaba..infrastructure..*EventListener.*(..))")
-    fun eventListenerPointcuts() {
     }
 }
