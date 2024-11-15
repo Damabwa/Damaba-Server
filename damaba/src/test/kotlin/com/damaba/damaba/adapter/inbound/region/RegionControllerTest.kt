@@ -5,7 +5,7 @@ import com.damaba.damaba.application.port.inbound.region.FindRegionGroupsUseCase
 import com.damaba.damaba.config.ControllerTestConfig
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
-import com.damaba.damaba.util.TestFixture.createRegionGroups
+import com.damaba.damaba.util.fixture.RegionFixture.createRegionGroups
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

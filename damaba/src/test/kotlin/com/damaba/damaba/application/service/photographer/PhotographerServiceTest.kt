@@ -7,10 +7,10 @@ import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomSet
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
-import com.damaba.damaba.util.TestFixture.createImage
-import com.damaba.damaba.util.TestFixture.createPhotographer
-import com.damaba.damaba.util.TestFixture.createRegion
-import com.damaba.damaba.util.TestFixture.createUser
+import com.damaba.damaba.util.fixture.FileFixture.createImage
+import com.damaba.damaba.util.fixture.PhotographerFixture.createPhotographer
+import com.damaba.damaba.util.fixture.RegionFixture.createRegion
+import com.damaba.damaba.util.fixture.UserFixture.createUser
 import com.damaba.user.application.port.outbound.user.CheckNicknameExistencePort
 import com.damaba.user.application.port.outbound.user.GetUserPort
 import com.damaba.user.domain.user.constant.Gender

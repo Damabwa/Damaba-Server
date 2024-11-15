@@ -7,11 +7,11 @@ import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomSet
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
-import com.damaba.damaba.util.TestFixture.createAuthenticationToken
-import com.damaba.damaba.util.TestFixture.createImageRequest
-import com.damaba.damaba.util.TestFixture.createPhotographer
-import com.damaba.damaba.util.TestFixture.createRegionRequest
-import com.damaba.damaba.util.TestFixture.createUser
+import com.damaba.damaba.util.fixture.FileFixture.createImageRequest
+import com.damaba.damaba.util.fixture.PhotographerFixture.createPhotographer
+import com.damaba.damaba.util.fixture.RegionFixture.createRegionRequest
+import com.damaba.damaba.util.fixture.SecurityFixture.createAuthenticationToken
+import com.damaba.damaba.util.fixture.UserFixture.createUser
 import com.damaba.user.domain.user.constant.Gender
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.every
