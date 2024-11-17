@@ -160,9 +160,6 @@ tasks.jacocoTestCoverageVerification {
                 "*.application.port.*",
                 "*.domain.*.*",
             )
-
-            // TODO: 회원가입 기능 구현 후 제거
-            excludes = listOf("*.domain.photographer.*")
         }
     }
 }
