@@ -1,6 +1,7 @@
 package com.damaba.damaba.adapter.inbound.photographer
 
 import com.damaba.damaba.adapter.inbound.photographer.dto.RegisterPhotographerRequest
+import com.damaba.damaba.application.port.inbound.photographer.GetPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.config.ControllerTestConfig
 import com.damaba.damaba.domain.common.PhotographyType
@@ -26,7 +27,9 @@ import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import kotlin.test.Test
 
@@ -36,12 +39,30 @@ import kotlin.test.Test
 class PhotographerControllerTest @Autowired constructor(
     private val mvc: MockMvc,
     private val mapper: ObjectMapper,
+    private val getPhotographerUseCase: GetPhotographerUseCase,
     private val registerPhotographerUseCase: RegisterPhotographerUseCase,
 ) {
     @TestConfiguration
     class TestBeanSetUp {
         @Bean
+        fun getPhotographerUseCase(): GetPhotographerUseCase = mockk()
+
+        @Bean
         fun registerPhotographerUseCase(): RegisterPhotographerUseCase = mockk()
+    }
+
+    @Test
+    fun `id가 주어지고, 주어진 id와 일치하는 사진작가를 조회한다`() {
+        // given
+        val id = randomLong()
+        val expectedResult = createPhotographer(id = id)
+        every { getPhotographerUseCase.getById(id) } returns expectedResult
+
+        // when & then
+        mvc.perform(
+            get("/api/v1/photographers/{photographerId}", id),
+        ).andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").value(expectedResult.id))
     }
 
     @Test
