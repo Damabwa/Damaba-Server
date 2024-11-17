@@ -19,6 +19,8 @@ import com.damaba.user.domain.user.constant.Gender
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.domain.user.constant.UserRoleType
 import com.damaba.user.domain.user.constant.UserType
+import java.time.DayOfWeek
+import java.time.LocalTime
 
 object PhotographerFixture {
     fun createPhotographer(
@@ -35,7 +37,7 @@ object PhotographerFixture {
         contactLink: String? = randomString(),
         description: String? = randomString(),
         address: Address? = createAddress(),
-        businessSchedule: BusinessSchedule? = null,
+        businessSchedule: BusinessSchedule? = createBusinessSchedule(),
         portfolio: List<Image> = emptyList(),
         activeRegions: Set<Region> = emptySet(),
     ) = Photographer(
@@ -79,4 +81,10 @@ object PhotographerFixture {
         photographerJpaEntity.activeRegions.addAll(activeRegions)
         return photographerJpaEntity
     }
+
+    private fun createBusinessSchedule(
+        days: Set<DayOfWeek> = setOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY),
+        startTime: LocalTime = LocalTime.of(9, 0),
+        endTime: LocalTime = LocalTime.of(18, 0),
+    ) = BusinessSchedule(days, startTime, endTime)
 }

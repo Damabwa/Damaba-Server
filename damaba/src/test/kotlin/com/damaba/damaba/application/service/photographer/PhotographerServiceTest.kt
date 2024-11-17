@@ -1,6 +1,7 @@
 package com.damaba.damaba.application.service.photographer
 
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
+import com.damaba.damaba.application.port.outbound.photographer.GetPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.SavePhotographerPort
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.photographer.Photographer
@@ -28,10 +29,12 @@ import kotlin.test.Test
 
 class PhotographerServiceTest {
     private val getUserPort: GetUserPort = mockk()
+    private val getPhotographerPort: GetPhotographerPort = mockk()
     private val checkNicknameExistencePort: CheckNicknameExistencePort = mockk()
     private val savePhotographerPort: SavePhotographerPort = mockk()
     private val sut: PhotographerService = PhotographerService(
         getUserPort,
+        getPhotographerPort,
         checkNicknameExistencePort,
         savePhotographerPort,
     )
@@ -39,9 +42,26 @@ class PhotographerServiceTest {
     private fun confirmVerifiedEveryMocks() {
         confirmVerified(
             getUserPort,
+            getPhotographerPort,
             checkNicknameExistencePort,
             savePhotographerPort,
         )
+    }
+
+    @Test
+    fun `id가 주어지고, 주어진 id와 일치하는 사진작가를 단건 조회한다`() {
+        // given
+        val id = randomLong()
+        val expectedResult = createPhotographer(id = id)
+        every { getPhotographerPort.getById(id) } returns expectedResult
+
+        // when
+        val actualResult = sut.getById(id)
+
+        // then
+        verify { getPhotographerPort.getById(id) }
+        confirmVerifiedEveryMocks()
+        assertThat(actualResult).isEqualTo(expectedResult)
     }
 
     @Test

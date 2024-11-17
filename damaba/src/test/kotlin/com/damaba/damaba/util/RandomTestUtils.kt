@@ -38,12 +38,12 @@ class RandomTestUtils {
 
         fun <T> generateRandomList(maxSize: Int, generator: () -> T): List<T> =
             generateSequence { generator() }
-                .take(randomInt(positive = true, max = maxSize))
+                .take(randomInt(positive = true, min = 1, max = maxSize))
                 .toList()
 
         fun <T> generateRandomSet(maxSize: Int, generator: () -> T): Set<T> =
             generateSequence { generator() }
-                .take(randomInt(positive = true, max = maxSize))
+                .take(randomInt(positive = true, min = 1, max = maxSize))
                 .toSet()
     }
 }
