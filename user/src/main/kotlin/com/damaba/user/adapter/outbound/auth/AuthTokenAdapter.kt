@@ -4,11 +4,11 @@ import com.damaba.user.application.port.outbound.auth.CreateAuthTokenPort
 import com.damaba.user.application.port.outbound.auth.ParseUserIdFromAuthTokenPort
 import com.damaba.user.application.port.outbound.auth.ValidateAuthTokenPort
 import com.damaba.user.domain.auth.AuthToken
+import com.damaba.user.domain.auth.AuthTokenType
 import com.damaba.user.domain.auth.exception.InvalidAuthTokenException
 import com.damaba.user.domain.user.User
 import com.damaba.user.property.AuthProperties
 import io.jsonwebtoken.Claims
-import io.jsonwebtoken.Jws
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.io.Decoders
@@ -24,9 +24,6 @@ class AuthTokenAdapter(private val authProperties: AuthProperties) :
     CreateAuthTokenPort,
     ParseUserIdFromAuthTokenPort,
     ValidateAuthTokenPort {
-    companion object {
-        private const val USER_ROLE_CLAIM_KEY = "role"
-    }
 
     private lateinit var secretKey: Key
 
@@ -42,46 +39,52 @@ class AuthTokenAdapter(private val authProperties: AuthProperties) :
     override fun parseUserId(authToken: String): Long =
         getClaimsFromToken(authToken).subject.toLong()
 
-    override fun validate(authToken: String) {
+    override fun validateAccessToken(authToken: String) {
         if (authToken.isBlank()) {
             throw InvalidAuthTokenException("The token is empty")
         }
-        getJwsFromToken(authToken)
+
+        val tokenType = getClaimsFromToken(authToken)[TOKEN_TYPE_CLAIM_KEY] as? String
+            ?: throw InvalidAuthTokenException("The token does not contain a type claim")
+
+        if (tokenType != AuthTokenType.ACCESS.name) {
+            throw InvalidAuthTokenException("The token is not access token")
+        }
     }
 
-    private fun getClaimsFromToken(token: String): Claims =
-        getJwsFromToken(token).body
-
-    private fun getJwsFromToken(token: String): Jws<Claims> {
+    private fun getClaimsFromToken(token: String): Claims {
         try {
             return Jwts.parserBuilder()
                 .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token)
+                .body
         } catch (ex: Exception) {
             throw InvalidAuthTokenException(cause = ex)
         }
     }
 
     override fun createAccessToken(user: User): AuthToken =
-        createToken(user, authProperties.accessTokenDurationMillis)
+        createToken(AuthTokenType.ACCESS, user, authProperties.accessTokenDurationMillis)
 
     override fun createRefreshToken(user: User): AuthToken =
-        createToken(user, authProperties.refreshTokenDurationMillis)
+        createToken(AuthTokenType.REFRESH, user, authProperties.refreshTokenDurationMillis)
 
     /**
      * JWT 생성
      *
+     * @param tokenType 생성할 토큰 유형
      * @param user 토큰에 담을 유저 정보
      * @param tokenDurationMillis 토큰 만료 기한(ms)
      * @return 생성된 token 정보(토큰 값, 만료 시각)
      */
-    private fun createToken(user: User, tokenDurationMillis: Long): AuthToken {
+    private fun createToken(tokenType: AuthTokenType, user: User, tokenDurationMillis: Long): AuthToken {
         val now = Date()
         val expiresAt = Date(now.time + tokenDurationMillis)
         val token = Jwts.builder()
             .setHeaderParam("typ", "JWT")
             .setSubject(user.id.toString())
+            .claim(TOKEN_TYPE_CLAIM_KEY, tokenType.name)
             .claim(USER_ROLE_CLAIM_KEY, user.roles)
             .setIssuedAt(now)
             .setExpiration(expiresAt)
@@ -89,7 +92,13 @@ class AuthTokenAdapter(private val authProperties: AuthProperties) :
             .compact()
         return AuthToken(
             value = token,
+            type = tokenType,
             expiresAt = expiresAt.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
         )
+    }
+
+    companion object {
+        private const val USER_ROLE_CLAIM_KEY = "role"
+        private const val TOKEN_TYPE_CLAIM_KEY = "type"
     }
 }

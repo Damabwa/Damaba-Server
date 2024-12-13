@@ -4,7 +4,8 @@ import com.damaba.user.adapter.inbound.auth.dto.OAuthLoginRequest
 import com.damaba.user.application.port.inbound.auth.OAuthLoginUseCase
 import com.damaba.user.config.ControllerTestConfig
 import com.damaba.user.domain.user.constant.LoginType
-import com.damaba.user.util.AuthFixture.createAuthToken
+import com.damaba.user.util.AuthFixture.createAccessToken
+import com.damaba.user.util.AuthFixture.createRefreshToken
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
 import com.damaba.user.util.UserFixture.createUser
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -46,8 +47,8 @@ class AuthControllerTest @Autowired constructor(
         val expectedResult = OAuthLoginUseCase.Result(
             isNewUser = false,
             user = createUser(),
-            accessToken = createAuthToken(),
-            refreshToken = createAuthToken(),
+            accessToken = createAccessToken(),
+            refreshToken = createRefreshToken(),
         )
         every {
             oAuthLoginUseCase.oAuthLogin(OAuthLoginUseCase.Command(requestBody.loginType, requestBody.authKey))
@@ -74,8 +75,8 @@ class AuthControllerTest @Autowired constructor(
         val expectedResult = OAuthLoginUseCase.Result(
             isNewUser = true,
             user = createUser(),
-            accessToken = createAuthToken(),
-            refreshToken = createAuthToken(),
+            accessToken = createAccessToken(),
+            refreshToken = createRefreshToken(),
         )
         every {
             oAuthLoginUseCase.oAuthLogin(OAuthLoginUseCase.Command(requestBody.loginType, requestBody.authKey))
