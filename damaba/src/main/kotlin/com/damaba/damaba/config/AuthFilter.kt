@@ -42,7 +42,7 @@ class AuthFilter(
                     throw AuthenticationCredentialsNotFoundException("Access token does not exist.")
                 }
 
-                validateAuthTokenPort.validate(accessToken)
+                validateAuthTokenPort.validateAccessToken(accessToken)
 
                 val userId = parseUserIdFromAuthTokenPort.parseUserId(accessToken)
                 val user = findUserPort.findById(userId) ?: throw UserNotFoundException()

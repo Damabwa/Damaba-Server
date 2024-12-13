@@ -11,7 +11,8 @@ import com.damaba.user.domain.auth.RefreshToken
 import com.damaba.user.domain.user.User
 import com.damaba.user.domain.user.constant.LoginType
 import com.damaba.user.property.AuthProperties
-import com.damaba.user.util.AuthFixture.createAuthToken
+import com.damaba.user.util.AuthFixture.createAccessToken
+import com.damaba.user.util.AuthFixture.createRefreshToken
 import com.damaba.user.util.RandomTestUtils.Companion.randomString
 import com.damaba.user.util.UserFixture.createUser
 import io.mockk.Runs
@@ -66,8 +67,8 @@ class OAuthLoginServiceTest {
         val kakaoUserId = randomString()
 
         val newUser = createUser()
-        val accessToken = createAuthToken()
-        val refreshToken = createAuthToken()
+        val accessToken = createAccessToken()
+        val refreshToken = createRefreshToken()
 
         every {
             getOAuthLoginUidPort.getOAuthLoginUid(loginType, kakaoAccessToken)
@@ -119,8 +120,8 @@ class OAuthLoginServiceTest {
         val kakaoUserId = randomString()
 
         val user = createUser()
-        val accessToken = createAuthToken()
-        val refreshToken = createAuthToken()
+        val accessToken = createAccessToken()
+        val refreshToken = createRefreshToken()
 
         every { getOAuthLoginUidPort.getOAuthLoginUid(loginType, kakaoAccessToken) } returns kakaoUserId
         every { findUserPort.findByOAuthLoginUid(kakaoUserId) } returns user
