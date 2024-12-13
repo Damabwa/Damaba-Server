@@ -124,3 +124,5 @@ tasks.jacocoTestCoverageVerification {
 tasks.bootJar { enabled = false }
 
 tasks.jar { enabled = true }
+
+tasks.register("prepareKotlinBuildScriptModel") {}
