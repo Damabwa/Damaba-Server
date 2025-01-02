@@ -6,7 +6,7 @@ on:
 
 env:
   ENV_FILE_NAME: env.properties
-  ENV_DIR: ./damaba/src/main/resources
+  ENV_DIR: ./src/main/resources
   DOCKER_FILE: Dockerfile-dev
   DOCKER_IMAGE_PLATFORM: linux/amd64
 
