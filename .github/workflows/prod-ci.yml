@@ -6,7 +6,7 @@ on:
 
 env:
   ENV_FILE_NAME: env.properties
-  DAMABA_ENV_DIR: ./damaba/src/main/resources
+  DAMABA_ENV_DIR: ./src/main/resources
 
 jobs:
   build:
