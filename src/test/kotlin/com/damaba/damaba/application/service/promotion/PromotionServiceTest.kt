@@ -62,8 +62,8 @@ class PromotionServiceTest {
     fun `프로모션 리스트를 조회한다`() {
         // given
         val query = FindPromotionsUseCase.Query(
-            page = randomInt(max = 10),
-            pageSize = randomInt(max = 10),
+            page = 1,
+            pageSize = randomInt(min = 5, max = 10),
         )
         val expectedResult = Pagination(
             items = generateRandomList(maxSize = query.pageSize) { createPromotion() },
