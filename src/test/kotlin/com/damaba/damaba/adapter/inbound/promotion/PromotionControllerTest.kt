@@ -81,7 +81,7 @@ class PromotionControllerTest @Autowired constructor(
     fun `프로모션 리스트를 조회한다`() {
         // given
         val page = 1
-        val pageSize = randomInt(positive = true, max = 15)
+        val pageSize = randomInt(min = 5, max = 15)
         val totalPage = 3
         val expectedResult = Pagination(
             items = generateRandomList(maxSize = pageSize) { createPromotion() },
