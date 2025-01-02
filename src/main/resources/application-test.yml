@@ -1,0 +1,50 @@
+damaba:
+  web-url: http://damaba.test
+  server-url: https://damaba-server.test
+  file-server-url: https://damaba-file-server.test
+  auth:
+    jwt-secret: jwtSecretForOnlyTestEnvironment12345678901234567890
+    access-token-duration-millis: 7200000  # 2 day
+    refresh-token-duration-millis: 2592000 # 1 month
+
+spring:
+  datasource:
+    # Test용 embedded DB 설정
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  sql:
+    init:
+      mode: embedded
+      schema-locations: classpath:schema.sql
+      data-locations:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+
+  cloud:
+    openfeign.client.config:
+      default:
+        logger-level: basic
+      KakaoKApiClient:
+        url: https://kapi.kakao.com
+
+aws:
+  s3:
+    bucket-name: aws-s3-bucket-name
+    access-key: aws-s3-access-key
+    secret-key: aws-s3-secret-key
+
+logging:
+  level:
+    com.damaba: debug
+    org:
+      hibernate:
+        type: trace
+        SQL: debug
