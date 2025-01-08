@@ -27,7 +27,7 @@ interface RegisterUserUseCase {
         val instagramId: String?,
     ) {
         init {
-            UserValidator.validateUserNickname(nickname)
+            UserValidator.validateNickname(nickname)
             if (instagramId != null) UserValidator.validateInstagramId(instagramId)
         }
     }

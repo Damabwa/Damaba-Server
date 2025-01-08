@@ -14,7 +14,7 @@ class UserValidatorTest {
         invalidNickname: String,
     ) {
         // when
-        val ex = catchThrowable { UserValidator.validateUserNickname(invalidNickname) }
+        val ex = catchThrowable { UserValidator.validateNickname(invalidNickname) }
 
         // then
         assertThat(ex).isInstanceOf(ValidationException::class.java)
