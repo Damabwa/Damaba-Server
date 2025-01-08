@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
+import org.springframework.test.context.ActiveProfiles
 
 @Import(
     SecurityConfig::class,
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.Import
     SecurityConfig.CustomAuthenticationEntryPoint::class,
 )
 @TestConfiguration
+@ActiveProfiles("test")
 class ControllerTestConfig {
     @Bean
     fun authFilter(): AuthFilter = object : AuthFilter(mockk(), mockk(), mockk()) {

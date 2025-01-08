@@ -13,7 +13,6 @@ import org.testcontainers.junit.jupiter.Testcontainers
 @Testcontainers
 @SpringBootTest
 class DamabaApplicationTests {
-
     // Testcontainers Redis Setting
     companion object {
         private const val DOCKER_REDIS_IMAGE = "redis:7.4.1-alpine"
