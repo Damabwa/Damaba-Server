@@ -1,9 +1,9 @@
 package com.damaba.damaba.application.service.user
 
+import com.damaba.damaba.application.port.inbound.user.CheckUserNicknameExistenceUseCase
 import com.damaba.damaba.application.port.inbound.user.UpdateUserUseCase
 import com.damaba.damaba.domain.file.DeleteFileEvent
 import com.damaba.damaba.domain.user.User
-import com.damaba.user.application.port.inbound.user.CheckNicknameExistenceUseCase
 import com.damaba.user.application.port.inbound.user.GetUserUseCase
 import com.damaba.user.application.port.inbound.user.RegisterUserUseCase
 import com.damaba.user.application.port.outbound.common.PublishEventPort
@@ -22,17 +22,15 @@ class UserService(
     private val updateUserPort: UpdateUserPort,
     private val publishEventPort: PublishEventPort,
 ) : GetUserUseCase,
-    CheckNicknameExistenceUseCase,
+    CheckUserNicknameExistenceUseCase,
     UpdateUserUseCase,
     RegisterUserUseCase {
 
     @Transactional(readOnly = true)
-    override fun getUser(userId: Long): User =
-        getUserPort.getById(userId)
+    override fun getUser(userId: Long): User = getUserPort.getById(userId)
 
     @Transactional(readOnly = true)
-    override fun doesNicknameExist(query: CheckNicknameExistenceUseCase.Query): Boolean =
-        checkNicknameExistencePort.doesNicknameExist(query.nickname)
+    override fun doesNicknameExist(query: CheckUserNicknameExistenceUseCase.Query): Boolean = checkNicknameExistencePort.doesNicknameExist(query.nickname)
 
     @Transactional
     override fun register(command: RegisterUserUseCase.Command): User {

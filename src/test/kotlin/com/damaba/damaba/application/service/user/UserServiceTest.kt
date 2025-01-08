@@ -1,5 +1,6 @@
 package com.damaba.damaba.application.service.user
 
+import com.damaba.damaba.application.port.inbound.user.CheckUserNicknameExistenceUseCase
 import com.damaba.damaba.application.port.inbound.user.UpdateUserUseCase
 import com.damaba.damaba.domain.file.DeleteFileEvent
 import com.damaba.damaba.domain.file.Image
@@ -8,7 +9,6 @@ import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomUrl
 import com.damaba.damaba.util.fixture.UserFixture.createUser
-import com.damaba.user.application.port.inbound.user.CheckNicknameExistenceUseCase
 import com.damaba.user.application.port.inbound.user.RegisterUserUseCase
 import com.damaba.user.application.port.outbound.common.PublishEventPort
 import com.damaba.user.application.port.outbound.user.CheckNicknameExistencePort
@@ -65,7 +65,7 @@ class UserServiceTest {
     fun `닉네임이 주어지고, 주어진 닉네임이 존재하는지 확인한다`() {
         // given
         val nickname = randomString(len = 7)
-        val query = CheckNicknameExistenceUseCase.Query(nickname)
+        val query = CheckUserNicknameExistenceUseCase.Query(nickname)
         val expectedResult = randomBoolean()
         every { checkNicknameExistencePort.doesNicknameExist(nickname) } returns expectedResult
 

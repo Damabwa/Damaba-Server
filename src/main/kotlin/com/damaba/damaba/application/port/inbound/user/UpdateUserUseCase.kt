@@ -14,7 +14,7 @@ interface UpdateUserUseCase {
         val profileImage: Image,
     ) {
         init {
-            UserValidator.validateUserNickname(nickname)
+            UserValidator.validateNickname(nickname)
             if (instagramId != null) UserValidator.validateInstagramId(instagramId)
         }
     }

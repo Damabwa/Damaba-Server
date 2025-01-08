@@ -3,6 +3,7 @@ package com.damaba.damaba.adapter.inbound.user
 import com.damaba.damaba.adapter.inbound.common.dto.ImageRequest
 import com.damaba.damaba.adapter.inbound.user.dto.RegisterUserRequest
 import com.damaba.damaba.adapter.inbound.user.dto.UpdateMyInfoRequest
+import com.damaba.damaba.application.port.inbound.user.CheckUserNicknameExistenceUseCase
 import com.damaba.damaba.application.port.inbound.user.UpdateUserUseCase
 import com.damaba.damaba.config.ControllerTestConfig
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomBoolean
@@ -11,7 +12,6 @@ import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomUrl
 import com.damaba.damaba.util.fixture.SecurityFixture.createAuthenticationToken
 import com.damaba.damaba.util.fixture.UserFixture.createUser
-import com.damaba.user.application.port.inbound.user.CheckNicknameExistenceUseCase
 import com.damaba.user.application.port.inbound.user.GetUserUseCase
 import com.damaba.user.application.port.inbound.user.RegisterUserUseCase
 import com.damaba.user.domain.user.constant.Gender
@@ -41,7 +41,7 @@ class UserControllerTest @Autowired constructor(
     private val mvc: MockMvc,
     private val mapper: ObjectMapper,
     private val getUserUseCase: GetUserUseCase,
-    private val checkNicknameExistenceUseCase: CheckNicknameExistenceUseCase,
+    private val checkUserNicknameExistenceUseCase: CheckUserNicknameExistenceUseCase,
     private val updateUserUseCase: UpdateUserUseCase,
     private val registerUserUseCase: RegisterUserUseCase,
 ) {
@@ -51,7 +51,7 @@ class UserControllerTest @Autowired constructor(
         fun getMyInfoUseCase(): GetUserUseCase = mockk()
 
         @Bean
-        fun checkNicknameExistenceUseCase(): CheckNicknameExistenceUseCase = mockk()
+        fun checkNicknameExistenceUseCase(): CheckUserNicknameExistenceUseCase = mockk()
 
         @Bean
         fun updateMyInfoUseCase(): UpdateUserUseCase = mockk()
@@ -115,7 +115,7 @@ class UserControllerTest @Autowired constructor(
         val nickname = randomString(len = 7)
         val expectedResult = randomBoolean()
         every {
-            checkNicknameExistenceUseCase.doesNicknameExist(CheckNicknameExistenceUseCase.Query(nickname))
+            checkUserNicknameExistenceUseCase.doesNicknameExist(CheckUserNicknameExistenceUseCase.Query(nickname))
         } returns expectedResult
 
         // when & then
@@ -125,7 +125,7 @@ class UserControllerTest @Autowired constructor(
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.nickname").value(nickname))
             .andExpect(jsonPath("$.exists").value(expectedResult))
-        verify { checkNicknameExistenceUseCase.doesNicknameExist(CheckNicknameExistenceUseCase.Query(nickname)) }
+        verify { checkUserNicknameExistenceUseCase.doesNicknameExist(CheckUserNicknameExistenceUseCase.Query(nickname)) }
     }
 
     @Test
