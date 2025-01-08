@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import kotlin.test.Test
 
+@Suppress("ktlint:standard:annotation")
 @ActiveProfiles("test")
 @Import(ControllerTestConfig::class)
 @WebMvcTest(RegionController::class)

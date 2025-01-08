@@ -25,14 +25,11 @@ abstract class PromotionMapper {
     @Mapping(target = "hashtags", ignore = true)
     abstract fun toPromotionJpaEntity(promotion: Promotion): PromotionJpaEntity
 
-    protected fun toImages(images: List<PromotionImageJpaEntity>): List<Image> =
-        images.map { image -> Image(image.name, image.url) }
+    protected fun toImages(images: List<PromotionImageJpaEntity>): List<Image> = images.map { image -> Image(image.name, image.url) }
 
-    protected fun toRegions(regions: Set<PromotionActiveRegionJpaEntity>): Set<Region> =
-        regions.map { region -> Region(region.category, region.name) }.toSet()
+    protected fun toRegions(regions: Set<PromotionActiveRegionJpaEntity>): Set<Region> = regions.map { region -> Region(region.category, region.name) }.toSet()
 
-    protected fun toStrings(hashtags: Set<PromotionHashtagJpaEntity>): Set<String> =
-        hashtags.map { hashtag -> hashtag.content }.toSet()
+    protected fun toStrings(hashtags: Set<PromotionHashtagJpaEntity>): Set<String> = hashtags.map { hashtag -> hashtag.content }.toSet()
 
     @AfterMapping
     protected fun addImagesToPromotionJpaEntity(
@@ -42,29 +39,37 @@ abstract class PromotionMapper {
         promotionJpaEntity.addImages(
             promotion.images.map { image -> PromotionImageJpaEntity(promotionJpaEntity, image.name, image.url) },
         )
-    }
-
-    @AfterMapping
-    protected fun addRegionsToPromotionJpaEntity(
-        @MappingTarget promotionJpaEntity: PromotionJpaEntity,
-        promotion: Promotion,
-    ) {
         promotionJpaEntity.activeRegions.addAll(
             promotion.activeRegions.map { region ->
                 PromotionActiveRegionJpaEntity(promotionJpaEntity, region.category, region.name)
             },
         )
-    }
-
-    @AfterMapping
-    protected fun addHashtagsToPromotionJpaEntity(
-        @MappingTarget promotionJpaEntity: PromotionJpaEntity,
-        promotion: Promotion,
-    ) {
         promotionJpaEntity.hashtags.addAll(
             promotion.hashtags.map { hashtag -> PromotionHashtagJpaEntity(promotionJpaEntity, hashtag) }.toSet(),
         )
     }
+
+//    @AfterMapping
+//    protected fun addRegionsToPromotionJpaEntity(
+//        @MappingTarget promotionJpaEntity: PromotionJpaEntity,
+//        promotion: Promotion,
+//    ) {
+//        promotionJpaEntity.activeRegions.addAll(
+//            promotion.activeRegions.map { region ->
+//                PromotionActiveRegionJpaEntity(promotionJpaEntity, region.category, region.name)
+//            },
+//        )
+//    }
+//
+//    @AfterMapping
+//    protected fun addHashtagsToPromotionJpaEntity(
+//        @MappingTarget promotionJpaEntity: PromotionJpaEntity,
+//        promotion: Promotion,
+//    ) {
+//        promotionJpaEntity.hashtags.addAll(
+//            promotion.hashtags.map { hashtag -> PromotionHashtagJpaEntity(promotionJpaEntity, hashtag) }.toSet(),
+//        )
+//    }
 
     companion object {
         val INSTANCE: PromotionMapper = Mappers.getMapper(PromotionMapper::class.java)

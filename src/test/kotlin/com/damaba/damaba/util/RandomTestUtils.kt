@@ -1,6 +1,5 @@
 package com.damaba.damaba.util
 
-import org.apache.commons.lang3.RandomStringUtils
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlin.random.Random
@@ -8,42 +7,46 @@ import kotlin.random.Random
 class RandomTestUtils {
     companion object {
         fun randomInt(positive: Boolean = true, min: Int = 0, max: Int = Int.MAX_VALUE): Int {
-            val positiveIntNumber = Random.nextInt(from = min, until = max)
-            return if (positive) positiveIntNumber else -positiveIntNumber
+            require(min < max) { "min should be less than max" }
+            val value = Random.nextInt(min, max)
+            return if (positive) value.coerceAtLeast(0) else value
         }
 
         fun randomLong(positive: Boolean = true, min: Long = 0, max: Long = Long.MAX_VALUE): Long {
-            val positiveLongNumber = Random.nextLong(from = min, until = max)
-            return if (positive) positiveLongNumber else -positiveLongNumber
+            require(min < max) { "min should be less than max" }
+            val value = Random.nextLong(min, max)
+            return if (positive) value.coerceAtLeast(0) else value
         }
 
         fun randomBoolean(): Boolean = Random.nextBoolean()
 
-        fun randomString(): String = randomString(10)
+        fun randomString(len: Int = 10): String = (1..len)
+            .map { ('a'..'z') + ('A'..'Z') + ('0'..'9') }
+            .flatten()
+            .let { chars -> (1..len).map { chars.random(Random) } }
+            .joinToString("")
 
-        fun randomString(len: Int): String = RandomStringUtils.random(len, true, true)
+        fun randomLocalDate(): LocalDate {
+            val year = randomInt(positive = true, min = 1, max = 3000)
+            val month = randomInt(positive = true, min = 1, max = 12)
+            val day = randomInt(positive = true, min = 1, max = LocalDate.of(year, month, 1).lengthOfMonth())
+            return LocalDate.of(year, month, day)
+        }
 
-        fun randomLocalDate(): LocalDate = LocalDate.of(
-            randomInt(positive = true) % 3000 + 1,
-            randomInt(positive = true) % 12 + 1,
-            randomInt(positive = true) % 25 + 1,
-        )
-
-        fun randomLocalTime(): LocalTime = LocalTime.of(
-            randomInt(positive = true) % 24,
-            randomInt(positive = true) % 60,
-        )
+        fun randomLocalTime(): LocalTime {
+            val hour = randomInt(positive = true, min = 0, max = 24)
+            val minute = randomInt(positive = true, min = 0, max = 60)
+            return LocalTime.of(hour, minute)
+        }
 
         fun randomUrl(): String = "https://${randomString()}"
 
-        fun <T> generateRandomList(maxSize: Int, generator: () -> T): List<T> =
-            generateSequence { generator() }
-                .take(randomInt(min = 1, max = maxSize))
-                .toList()
+        fun <T> generateRandomList(maxSize: Int, generator: () -> T): List<T> = generateSequence { generator() }
+            .take(randomInt(min = 1, max = maxSize))
+            .toList()
 
-        fun <T> generateRandomSet(maxSize: Int, generator: () -> T): Set<T> =
-            generateSequence { generator() }
-                .take(randomInt(min = 1, max = maxSize))
-                .toSet()
+        fun <T> generateRandomSet(maxSize: Int, generator: () -> T): Set<T> = generateSequence { generator() }
+            .take(randomInt(min = 1, max = maxSize))
+            .toSet()
     }
 }
