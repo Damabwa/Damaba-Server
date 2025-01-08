@@ -1,5 +1,6 @@
 package com.damaba.damaba.application.service.photographer
 
+import com.damaba.damaba.application.port.inbound.photographer.CheckPhotographerNicknameExistenceUseCase
 import com.damaba.damaba.application.port.inbound.photographer.GetPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.application.port.outbound.photographer.GetPhotographerPort
@@ -20,11 +21,14 @@ class PhotographerService(
     private val checkNicknameExistencePort: CheckNicknameExistencePort,
     private val savePhotographerPort: SavePhotographerPort,
 ) : GetPhotographerUseCase,
+    CheckPhotographerNicknameExistenceUseCase,
     RegisterPhotographerUseCase {
 
     @Transactional(readOnly = true)
-    override fun getById(id: Long): Photographer =
-        getPhotographerPort.getById(id)
+    override fun getById(id: Long): Photographer = getPhotographerPort.getById(id)
+
+    @Transactional(readOnly = true)
+    override fun doesNicknameExist(query: CheckPhotographerNicknameExistenceUseCase.Query): Boolean = checkNicknameExistencePort.doesNicknameExist(query.nickname)
 
     @Transactional
     override fun register(command: RegisterPhotographerUseCase.Command): Photographer {

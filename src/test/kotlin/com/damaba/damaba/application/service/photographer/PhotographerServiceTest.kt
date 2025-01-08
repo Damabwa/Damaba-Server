@@ -1,11 +1,13 @@
 package com.damaba.damaba.application.service.photographer
 
+import com.damaba.damaba.application.port.inbound.photographer.CheckPhotographerNicknameExistenceUseCase
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.application.port.outbound.photographer.GetPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.SavePhotographerPort
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomSet
+import com.damaba.damaba.util.RandomTestUtils.Companion.randomBoolean
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.fixture.FileFixture.createImage
@@ -60,6 +62,22 @@ class PhotographerServiceTest {
 
         // then
         verify { getPhotographerPort.getById(id) }
+        confirmVerifiedEveryMocks()
+        assertThat(actualResult).isEqualTo(expectedResult)
+    }
+
+    @Test
+    fun `닉네임이 주어지고, 닉네임의 사용 여부를 조회한다`() {
+        // given
+        val nickname = randomString()
+        val expectedResult = randomBoolean()
+        every { checkNicknameExistencePort.doesNicknameExist(nickname) } returns expectedResult
+
+        // when
+        val actualResult = sut.doesNicknameExist(CheckPhotographerNicknameExistenceUseCase.Query(nickname))
+
+        // then
+        verify { checkNicknameExistencePort.doesNicknameExist(nickname) }
         confirmVerifiedEveryMocks()
         assertThat(actualResult).isEqualTo(expectedResult)
     }
