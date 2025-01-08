@@ -1,11 +1,13 @@
 package com.damaba.damaba.adapter.inbound.photographer
 
 import com.damaba.damaba.adapter.inbound.photographer.dto.RegisterPhotographerRequest
+import com.damaba.damaba.application.port.inbound.photographer.CheckPhotographerNicknameExistenceUseCase
 import com.damaba.damaba.application.port.inbound.photographer.GetPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.config.ControllerTestConfig
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomSet
+import com.damaba.damaba.util.RandomTestUtils.Companion.randomBoolean
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.fixture.FileFixture.createImageRequest
@@ -40,12 +42,16 @@ class PhotographerControllerTest @Autowired constructor(
     private val mvc: MockMvc,
     private val mapper: ObjectMapper,
     private val getPhotographerUseCase: GetPhotographerUseCase,
+    private val checkPhotographerNicknameExistenceUseCase: CheckPhotographerNicknameExistenceUseCase,
     private val registerPhotographerUseCase: RegisterPhotographerUseCase,
 ) {
     @TestConfiguration
     class TestBeanSetUp {
         @Bean
         fun getPhotographerUseCase(): GetPhotographerUseCase = mockk()
+
+        @Bean
+        fun checkPhotographerNicknameExistenceUseCase(): CheckPhotographerNicknameExistenceUseCase = mockk()
 
         @Bean
         fun registerPhotographerUseCase(): RegisterPhotographerUseCase = mockk()
@@ -63,6 +69,31 @@ class PhotographerControllerTest @Autowired constructor(
             get("/api/v1/photographers/{photographerId}", id),
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(expectedResult.id))
+    }
+
+    @Test
+    fun `닉네임이 주어지고, 닉네임의 사용 여부를 조회한다`() {
+        // given
+        val nickname = randomString()
+        val expectedResult = randomBoolean()
+        every {
+            checkPhotographerNicknameExistenceUseCase.doesNicknameExist(
+                CheckPhotographerNicknameExistenceUseCase.Query(nickname),
+            )
+        } returns expectedResult
+
+        // when & then
+        mvc.perform(
+            get("/api/v1/photographers/nicknames/existence")
+                .param("nickname", nickname),
+        ).andExpect(status().isOk)
+            .andExpect(jsonPath("$.nickname").value(nickname))
+            .andExpect(jsonPath("$.exists").value(expectedResult))
+        verify {
+            checkPhotographerNicknameExistenceUseCase.doesNicknameExist(
+                CheckPhotographerNicknameExistenceUseCase.Query(nickname),
+            )
+        }
     }
 
     @Test
