@@ -1,17 +1,17 @@
 package com.damaba.damaba.application.service.user
 
 import com.damaba.damaba.application.port.inbound.user.CheckUserNicknameExistenceUseCase
+import com.damaba.damaba.application.port.inbound.user.GetUserUseCase
+import com.damaba.damaba.application.port.inbound.user.RegisterUserUseCase
 import com.damaba.damaba.application.port.inbound.user.UpdateUserUseCase
+import com.damaba.damaba.application.port.outbound.common.PublishEventPort
+import com.damaba.damaba.application.port.outbound.user.CheckNicknameExistencePort
+import com.damaba.damaba.application.port.outbound.user.GetUserPort
+import com.damaba.damaba.application.port.outbound.user.UpdateUserPort
 import com.damaba.damaba.domain.file.DeleteFileEvent
 import com.damaba.damaba.domain.user.User
-import com.damaba.user.application.port.inbound.user.GetUserUseCase
-import com.damaba.user.application.port.inbound.user.RegisterUserUseCase
-import com.damaba.user.application.port.outbound.common.PublishEventPort
-import com.damaba.user.application.port.outbound.user.CheckNicknameExistencePort
-import com.damaba.user.application.port.outbound.user.GetUserPort
-import com.damaba.user.application.port.outbound.user.UpdateUserPort
-import com.damaba.user.domain.user.exception.NicknameAlreadyExistsException
-import com.damaba.user.domain.user.exception.UserAlreadyRegisteredException
+import com.damaba.damaba.domain.user.exception.NicknameAlreadyExistsException
+import com.damaba.damaba.domain.user.exception.UserAlreadyRegisteredException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

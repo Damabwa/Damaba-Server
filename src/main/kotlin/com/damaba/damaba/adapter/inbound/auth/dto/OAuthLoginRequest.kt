@@ -1,6 +1,6 @@
 package com.damaba.damaba.adapter.inbound.auth.dto
 
-import com.damaba.user.domain.user.constant.LoginType
+import com.damaba.damaba.domain.user.constant.LoginType
 import io.swagger.v3.oas.annotations.media.Schema
 
 data class OAuthLoginRequest(

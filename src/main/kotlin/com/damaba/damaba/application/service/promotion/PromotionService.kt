@@ -23,31 +23,28 @@ class PromotionService(
     PostPromotionUseCase {
 
     @Transactional(readOnly = true)
-    override fun getPromotionDetail(promotionId: Long): Promotion =
-        getPromotionPort.getById(promotionId)
+    override fun getPromotionDetail(promotionId: Long): Promotion = getPromotionPort.getById(promotionId)
 
     @Transactional(readOnly = true)
-    override fun findPromotions(query: FindPromotionsUseCase.Query): Pagination<Promotion> =
-        findPromotionsPort.findPromotions(query.page, query.pageSize)
+    override fun findPromotions(query: FindPromotionsUseCase.Query): Pagination<Promotion> = findPromotionsPort.findPromotions(query.page, query.pageSize)
 
     @Transactional
-    override fun postPromotion(command: PostPromotionUseCase.Command): Promotion =
-        savePromotionPort.save(
-            Promotion.create(
-                authorId = command.authorId,
-                type = command.type,
-                eventType = command.eventType,
-                title = command.title,
-                content = command.content,
-                address = command.address,
-                externalLink = command.externalLink,
-                startedAt = command.startedAt,
-                endedAt = command.endedAt,
-                photographerName = command.photographerName,
-                photographerInstagramId = command.photographerInstagramId,
-                images = command.images.map { file -> Image(file.name, file.url) },
-                activeRegions = command.activeRegions.map { region -> Region(region.category, region.name) }.toSet(),
-                hashtags = command.hashtags,
-            ),
-        )
+    override fun postPromotion(command: PostPromotionUseCase.Command): Promotion = savePromotionPort.save(
+        Promotion.create(
+            authorId = command.authorId,
+            type = command.type,
+            eventType = command.eventType,
+            title = command.title,
+            content = command.content,
+            address = command.address,
+            externalLink = command.externalLink,
+            startedAt = command.startedAt,
+            endedAt = command.endedAt,
+            photographerName = command.photographerName,
+            photographerInstagramId = command.photographerInstagramId,
+            images = command.images.map { file -> Image(file.name, file.url) },
+            activeRegions = command.activeRegions.map { region -> Region(region.category, region.name) }.toSet(),
+            hashtags = command.hashtags,
+        ),
+    )
 }

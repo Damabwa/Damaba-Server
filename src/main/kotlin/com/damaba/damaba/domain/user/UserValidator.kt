@@ -1,4 +1,4 @@
-package com.damaba.user.domain.user
+package com.damaba.damaba.domain.user
 
 import com.damaba.damaba.domain.exception.ValidationException
 

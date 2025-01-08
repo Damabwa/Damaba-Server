@@ -1,6 +1,6 @@
 package com.damaba.damaba.adapter.outbound.user
 
-import com.damaba.user.domain.user.constant.UserRoleType
+import com.damaba.damaba.domain.user.constant.UserRoleType
 import jakarta.persistence.AttributeConverter
 import jakarta.persistence.Converter
 import java.util.stream.Collectors
@@ -12,14 +12,12 @@ class UserRoleTypesConverter : AttributeConverter<Set<UserRoleType>, String> {
         private const val DELIMITER = ","
     }
 
-    override fun convertToDatabaseColumn(attribute: Set<UserRoleType>): String =
-        attribute.stream()
-            .map { roleType -> roleType.name }
-            .sorted()
-            .collect(Collectors.joining(DELIMITER))
+    override fun convertToDatabaseColumn(attribute: Set<UserRoleType>): String = attribute.stream()
+        .map { roleType -> roleType.name }
+        .sorted()
+        .collect(Collectors.joining(DELIMITER))
 
-    override fun convertToEntityAttribute(dbData: String): Set<UserRoleType> =
-        dbData.split(DELIMITER)
-            .map { roleType -> UserRoleType.valueOf(roleType) }
-            .toSet()
+    override fun convertToEntityAttribute(dbData: String): Set<UserRoleType> = dbData.split(DELIMITER)
+        .map { roleType -> UserRoleType.valueOf(roleType) }
+        .toSet()
 }

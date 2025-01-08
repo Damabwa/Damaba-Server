@@ -5,11 +5,11 @@ import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.domain.photographer.PhotographerValidator
 import com.damaba.damaba.domain.region.Region
-import com.damaba.user.domain.user.UserValidator
-import com.damaba.user.domain.user.constant.Gender
-import com.damaba.user.domain.user.exception.NicknameAlreadyExistsException
-import com.damaba.user.domain.user.exception.UserAlreadyRegisteredException
-import com.damaba.user.domain.user.exception.UserNotFoundException
+import com.damaba.damaba.domain.user.UserValidator
+import com.damaba.damaba.domain.user.constant.Gender
+import com.damaba.damaba.domain.user.exception.NicknameAlreadyExistsException
+import com.damaba.damaba.domain.user.exception.UserAlreadyRegisteredException
+import com.damaba.damaba.domain.user.exception.UserNotFoundException
 
 interface RegisterPhotographerUseCase {
     /**

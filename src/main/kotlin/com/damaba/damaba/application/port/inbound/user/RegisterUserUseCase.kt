@@ -1,11 +1,11 @@
-package com.damaba.user.application.port.inbound.user
+package com.damaba.damaba.application.port.inbound.user
 
 import com.damaba.damaba.domain.user.User
-import com.damaba.user.domain.user.UserValidator
-import com.damaba.user.domain.user.constant.Gender
-import com.damaba.user.domain.user.exception.NicknameAlreadyExistsException
-import com.damaba.user.domain.user.exception.UserAlreadyRegisteredException
-import com.damaba.user.domain.user.exception.UserNotFoundException
+import com.damaba.damaba.domain.user.UserValidator
+import com.damaba.damaba.domain.user.constant.Gender
+import com.damaba.damaba.domain.user.exception.NicknameAlreadyExistsException
+import com.damaba.damaba.domain.user.exception.UserAlreadyRegisteredException
+import com.damaba.damaba.domain.user.exception.UserNotFoundException
 
 interface RegisterUserUseCase {
     /**

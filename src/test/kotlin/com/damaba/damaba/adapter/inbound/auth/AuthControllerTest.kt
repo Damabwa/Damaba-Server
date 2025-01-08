@@ -3,11 +3,11 @@ package com.damaba.damaba.adapter.inbound.auth
 import com.damaba.damaba.adapter.inbound.auth.dto.OAuthLoginRequest
 import com.damaba.damaba.application.port.inbound.auth.OAuthLoginUseCase
 import com.damaba.damaba.config.ControllerTestConfig
+import com.damaba.damaba.domain.user.constant.LoginType
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.fixture.AuthFixture.createAccessToken
 import com.damaba.damaba.util.fixture.AuthFixture.createRefreshToken
 import com.damaba.damaba.util.fixture.UserFixture.createUser
-import com.damaba.user.domain.user.constant.LoginType
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.every
 import io.mockk.mockk

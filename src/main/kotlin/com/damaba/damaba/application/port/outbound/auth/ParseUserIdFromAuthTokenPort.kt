@@ -1,4 +1,4 @@
-package com.damaba.user.application.port.outbound.auth
+package com.damaba.damaba.application.port.outbound.auth
 
 interface ParseUserIdFromAuthTokenPort {
     /**

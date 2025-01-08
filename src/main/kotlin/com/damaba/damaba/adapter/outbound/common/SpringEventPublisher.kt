@@ -1,6 +1,6 @@
 package com.damaba.damaba.adapter.outbound.common
 
-import com.damaba.user.application.port.outbound.common.PublishEventPort
+import com.damaba.damaba.application.port.outbound.common.PublishEventPort
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 

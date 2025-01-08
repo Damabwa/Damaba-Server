@@ -1,13 +1,13 @@
 package com.damaba.damaba.adapter.outbound.auth
 
 import com.damaba.damaba.application.port.outbound.auth.CreateAuthTokenPort
+import com.damaba.damaba.application.port.outbound.auth.ParseUserIdFromAuthTokenPort
+import com.damaba.damaba.application.port.outbound.auth.ValidateAuthTokenPort
+import com.damaba.damaba.domain.auth.AuthToken
+import com.damaba.damaba.domain.auth.AuthTokenType
 import com.damaba.damaba.domain.auth.exception.InvalidAuthTokenException
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.property.AuthProperties
-import com.damaba.user.application.port.outbound.auth.ParseUserIdFromAuthTokenPort
-import com.damaba.user.application.port.outbound.auth.ValidateAuthTokenPort
-import com.damaba.user.domain.auth.AuthToken
-import com.damaba.user.domain.auth.AuthTokenType
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
@@ -36,8 +36,7 @@ class AuthTokenAdapter(private val authProperties: AuthProperties) :
         secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret))
     }
 
-    override fun parseUserId(authToken: String): Long =
-        getClaimsFromToken(authToken).subject.toLong()
+    override fun parseUserId(authToken: String): Long = getClaimsFromToken(authToken).subject.toLong()
 
     override fun validateAccessToken(authToken: String) {
         if (authToken.isBlank()) {
@@ -64,11 +63,9 @@ class AuthTokenAdapter(private val authProperties: AuthProperties) :
         }
     }
 
-    override fun createAccessToken(user: User): AuthToken =
-        createToken(AuthTokenType.ACCESS, user, authProperties.accessTokenDurationMillis)
+    override fun createAccessToken(user: User): AuthToken = createToken(AuthTokenType.ACCESS, user, authProperties.accessTokenDurationMillis)
 
-    override fun createRefreshToken(user: User): AuthToken =
-        createToken(AuthTokenType.REFRESH, user, authProperties.refreshTokenDurationMillis)
+    override fun createRefreshToken(user: User): AuthToken = createToken(AuthTokenType.REFRESH, user, authProperties.refreshTokenDurationMillis)
 
     /**
      * JWT 생성

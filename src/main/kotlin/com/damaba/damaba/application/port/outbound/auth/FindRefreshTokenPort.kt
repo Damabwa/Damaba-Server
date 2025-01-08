@@ -1,6 +1,6 @@
-package com.damaba.user.application.port.outbound.auth
+package com.damaba.damaba.application.port.outbound.auth
 
-import com.damaba.user.domain.auth.RefreshToken
+import com.damaba.damaba.domain.auth.RefreshToken
 
 interface FindRefreshTokenPort {
     fun findByUserId(userId: Long): RefreshToken?

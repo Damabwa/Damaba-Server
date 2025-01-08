@@ -1,7 +1,7 @@
 package com.damaba.damaba.application.port.inbound.auth
 
 import com.damaba.damaba.domain.exception.ValidationException
-import com.damaba.user.domain.user.constant.LoginType
+import com.damaba.damaba.domain.user.constant.LoginType
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
 import org.junit.jupiter.params.ParameterizedTest

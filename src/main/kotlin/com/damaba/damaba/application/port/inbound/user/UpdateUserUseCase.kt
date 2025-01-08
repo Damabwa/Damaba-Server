@@ -2,7 +2,7 @@ package com.damaba.damaba.application.port.inbound.user
 
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.user.User
-import com.damaba.user.domain.user.UserValidator
+import com.damaba.damaba.domain.user.UserValidator
 
 interface UpdateUserUseCase {
     fun updateUser(command: Command): User

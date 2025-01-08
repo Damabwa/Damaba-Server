@@ -1,9 +1,8 @@
 package com.damaba.damaba.application.port.inbound.user
 
 import com.damaba.damaba.domain.exception.ValidationException
+import com.damaba.damaba.domain.user.constant.Gender
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
-import com.damaba.user.application.port.inbound.user.RegisterUserUseCase
-import com.damaba.user.domain.user.constant.Gender
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
 import kotlin.test.Test

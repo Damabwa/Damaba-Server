@@ -1,8 +1,8 @@
 package com.damaba.damaba.util.fixture
 
+import com.damaba.damaba.domain.auth.AuthToken
+import com.damaba.damaba.domain.auth.AuthTokenType
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
-import com.damaba.user.domain.auth.AuthToken
-import com.damaba.user.domain.auth.AuthTokenType
 import java.time.LocalDateTime
 
 object AuthFixture {

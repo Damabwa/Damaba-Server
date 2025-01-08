@@ -1,8 +1,8 @@
 package com.damaba.damaba.adapter.outbound.auth
 
-import com.damaba.user.application.port.outbound.auth.FindRefreshTokenPort
-import com.damaba.user.application.port.outbound.auth.SaveRefreshTokenPort
-import com.damaba.user.domain.auth.RefreshToken
+import com.damaba.damaba.application.port.outbound.auth.FindRefreshTokenPort
+import com.damaba.damaba.application.port.outbound.auth.SaveRefreshTokenPort
+import com.damaba.damaba.domain.auth.RefreshToken
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Repository
 import java.util.concurrent.TimeUnit

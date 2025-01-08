@@ -5,12 +5,12 @@ import com.damaba.damaba.application.port.inbound.photographer.GetPhotographerUs
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.application.port.outbound.photographer.GetPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.SavePhotographerPort
+import com.damaba.damaba.application.port.outbound.user.CheckNicknameExistencePort
+import com.damaba.damaba.application.port.outbound.user.GetUserPort
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.domain.user.User
-import com.damaba.user.application.port.outbound.user.CheckNicknameExistencePort
-import com.damaba.user.application.port.outbound.user.GetUserPort
-import com.damaba.user.domain.user.exception.NicknameAlreadyExistsException
-import com.damaba.user.domain.user.exception.UserAlreadyRegisteredException
+import com.damaba.damaba.domain.user.exception.NicknameAlreadyExistsException
+import com.damaba.damaba.domain.user.exception.UserAlreadyRegisteredException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

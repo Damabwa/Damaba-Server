@@ -7,8 +7,8 @@ import com.damaba.damaba.application.port.outbound.photographer.GetPhotographerP
 import com.damaba.damaba.application.port.outbound.photographer.SavePhotographerPort
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.domain.photographer.exception.PhotographerNotFoundException
+import com.damaba.damaba.domain.user.exception.UserNotFoundException
 import com.damaba.damaba.mapper.PhotographerMapper
-import com.damaba.user.domain.user.exception.UserNotFoundException
 import org.springframework.stereotype.Repository
 
 @Repository

@@ -4,9 +4,9 @@ import com.damaba.damaba.adapter.inbound.common.dto.ImageRequest
 import com.damaba.damaba.adapter.inbound.region.dto.RegionRequest
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.user.constant.Gender
 import com.damaba.damaba.mapper.ImageMapper
 import com.damaba.damaba.mapper.RegionMapper
-import com.damaba.user.domain.user.constant.Gender
 
 data class RegisterPhotographerRequest(
     val nickname: String,

@@ -1,4 +1,4 @@
-package com.damaba.user.domain.auth
+package com.damaba.damaba.domain.auth
 
 // RTR(Refresh token rotation) 전략 사용
 data class RefreshToken(

@@ -1,4 +1,4 @@
-package com.damaba.user.domain.user.exception
+package com.damaba.damaba.domain.user.exception
 
 import com.damaba.damaba.domain.exception.CustomException
 

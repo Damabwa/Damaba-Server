@@ -1,7 +1,7 @@
 package com.damaba.damaba.application.port.outbound.auth
 
+import com.damaba.damaba.domain.auth.AuthToken
 import com.damaba.damaba.domain.user.User
-import com.damaba.user.domain.auth.AuthToken
 
 interface CreateAuthTokenPort {
     /**

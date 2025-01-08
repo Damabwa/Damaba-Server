@@ -1,7 +1,7 @@
 package com.damaba.damaba.application.port.outbound.photographer
 
 import com.damaba.damaba.domain.photographer.Photographer
-import com.damaba.user.domain.user.exception.UserNotFoundException
+import com.damaba.damaba.domain.user.exception.UserNotFoundException
 
 interface SavePhotographerPort {
     /**

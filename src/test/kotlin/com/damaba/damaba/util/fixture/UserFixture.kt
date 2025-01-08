@@ -4,13 +4,13 @@ import com.damaba.damaba.adapter.outbound.user.UserJpaEntity
 import com.damaba.damaba.adapter.outbound.user.UserProfileImageJpaEmbeddable
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.user.User
+import com.damaba.damaba.domain.user.constant.Gender
+import com.damaba.damaba.domain.user.constant.LoginType
+import com.damaba.damaba.domain.user.constant.UserRoleType
+import com.damaba.damaba.domain.user.constant.UserType
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomUrl
-import com.damaba.user.domain.user.constant.Gender
-import com.damaba.user.domain.user.constant.LoginType
-import com.damaba.user.domain.user.constant.UserRoleType
-import com.damaba.user.domain.user.constant.UserType
 
 object UserFixture {
     fun createUser(

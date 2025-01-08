@@ -4,9 +4,9 @@ import com.damaba.damaba.adapter.inbound.common.dto.AddressResponse
 import com.damaba.damaba.adapter.inbound.common.dto.ImageResponse
 import com.damaba.damaba.adapter.inbound.region.dto.RegionResponse
 import com.damaba.damaba.domain.common.PhotographyType
-import com.damaba.user.domain.user.constant.Gender
-import com.damaba.user.domain.user.constant.LoginType
-import com.damaba.user.domain.user.constant.UserType
+import com.damaba.damaba.domain.user.constant.Gender
+import com.damaba.damaba.domain.user.constant.LoginType
+import com.damaba.damaba.domain.user.constant.UserType
 import io.swagger.v3.oas.annotations.media.Schema
 
 data class PhotographerResponse(

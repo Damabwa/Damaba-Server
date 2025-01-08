@@ -1,12 +1,12 @@
 package com.damaba.damaba.config
 
+import com.damaba.damaba.application.port.outbound.auth.ParseUserIdFromAuthTokenPort
+import com.damaba.damaba.application.port.outbound.auth.ValidateAuthTokenPort
+import com.damaba.damaba.application.port.outbound.user.FindUserPort
 import com.damaba.damaba.config.SecurityConfig.Companion.AUTH_WHITE_LIST
 import com.damaba.damaba.config.SecurityConfig.Companion.AUTH_WHITE_PATHS
+import com.damaba.damaba.domain.user.exception.UserNotFoundException
 import com.damaba.damaba.logger.MdcLogTraceManager
-import com.damaba.user.application.port.outbound.auth.ParseUserIdFromAuthTokenPort
-import com.damaba.user.application.port.outbound.auth.ValidateAuthTokenPort
-import com.damaba.user.application.port.outbound.user.FindUserPort
-import com.damaba.user.domain.user.exception.UserNotFoundException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse

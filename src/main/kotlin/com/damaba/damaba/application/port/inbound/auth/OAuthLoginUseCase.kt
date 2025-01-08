@@ -1,9 +1,9 @@
 package com.damaba.damaba.application.port.inbound.auth
 
+import com.damaba.damaba.domain.auth.AuthToken
 import com.damaba.damaba.domain.exception.ValidationException
 import com.damaba.damaba.domain.user.User
-import com.damaba.user.domain.auth.AuthToken
-import com.damaba.user.domain.user.constant.LoginType
+import com.damaba.damaba.domain.user.constant.LoginType
 
 interface OAuthLoginUseCase {
     /**

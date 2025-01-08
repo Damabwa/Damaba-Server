@@ -1,6 +1,6 @@
 package com.damaba.damaba.application.port.inbound.user
 
-import com.damaba.user.domain.user.UserValidator
+import com.damaba.damaba.domain.user.UserValidator
 
 interface CheckUserNicknameExistenceUseCase {
     fun doesNicknameExist(query: Query): Boolean

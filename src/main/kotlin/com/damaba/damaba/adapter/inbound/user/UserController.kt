@@ -5,11 +5,11 @@ import com.damaba.damaba.adapter.inbound.user.dto.RegisterUserRequest
 import com.damaba.damaba.adapter.inbound.user.dto.UpdateMyInfoRequest
 import com.damaba.damaba.adapter.inbound.user.dto.UserResponse
 import com.damaba.damaba.application.port.inbound.user.CheckUserNicknameExistenceUseCase
+import com.damaba.damaba.application.port.inbound.user.GetUserUseCase
+import com.damaba.damaba.application.port.inbound.user.RegisterUserUseCase
 import com.damaba.damaba.application.port.inbound.user.UpdateUserUseCase
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.mapper.UserMapper
-import com.damaba.user.application.port.inbound.user.GetUserUseCase
-import com.damaba.user.application.port.inbound.user.RegisterUserUseCase
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content

@@ -1,4 +1,4 @@
-package com.damaba.user.domain.user.constant
+package com.damaba.damaba.domain.user.constant
 
 enum class LoginType {
     KAKAO,

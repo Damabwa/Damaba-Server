@@ -1,4 +1,4 @@
-package com.damaba.user.application.port.outbound.user
+package com.damaba.damaba.application.port.outbound.user
 
 interface CheckNicknameExistencePort {
     /**

@@ -1,7 +1,7 @@
 package com.damaba.damaba.adapter.inbound.user.dto
 
-import com.damaba.user.application.port.inbound.user.RegisterUserUseCase
-import com.damaba.user.domain.user.constant.Gender
+import com.damaba.damaba.application.port.inbound.user.RegisterUserUseCase
+import com.damaba.damaba.domain.user.constant.Gender
 import io.swagger.v3.oas.annotations.media.Schema
 
 data class RegisterUserRequest(

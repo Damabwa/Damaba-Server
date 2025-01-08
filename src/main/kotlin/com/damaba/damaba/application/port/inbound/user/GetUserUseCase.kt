@@ -1,4 +1,4 @@
-package com.damaba.user.application.port.inbound.user
+package com.damaba.damaba.application.port.inbound.user
 
 import com.damaba.damaba.domain.user.User
 

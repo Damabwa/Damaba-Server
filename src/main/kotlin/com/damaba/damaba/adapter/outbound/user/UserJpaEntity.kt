@@ -2,11 +2,11 @@ package com.damaba.damaba.adapter.outbound.user
 
 import com.damaba.damaba.adapter.outbound.common.BaseJpaTimeEntity
 import com.damaba.damaba.domain.user.User
+import com.damaba.damaba.domain.user.constant.Gender
+import com.damaba.damaba.domain.user.constant.LoginType
+import com.damaba.damaba.domain.user.constant.UserRoleType
+import com.damaba.damaba.domain.user.constant.UserType
 import com.damaba.damaba.mapper.UserMapper
-import com.damaba.user.domain.user.constant.Gender
-import com.damaba.user.domain.user.constant.LoginType
-import com.damaba.user.domain.user.constant.UserRoleType
-import com.damaba.user.domain.user.constant.UserType
 import jakarta.persistence.Column
 import jakarta.persistence.Convert
 import jakarta.persistence.Entity

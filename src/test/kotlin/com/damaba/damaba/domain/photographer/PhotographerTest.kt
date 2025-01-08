@@ -1,13 +1,13 @@
 package com.damaba.damaba.domain.photographer
 
 import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.user.constant.Gender
+import com.damaba.damaba.domain.user.constant.UserType
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomSet
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.fixture.FileFixture.createImage
 import com.damaba.damaba.util.fixture.PhotographerFixture.createPhotographer
 import com.damaba.damaba.util.fixture.RegionFixture.createRegion
-import com.damaba.user.domain.user.constant.Gender
-import com.damaba.user.domain.user.constant.UserType
 import org.assertj.core.api.Assertions.assertThat
 import kotlin.test.Test
 

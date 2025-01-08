@@ -1,6 +1,6 @@
 package com.damaba.damaba.application.port.outbound.auth
 
-import com.damaba.user.domain.user.constant.LoginType
+import com.damaba.damaba.domain.user.constant.LoginType
 
 interface GetOAuthLoginUidPort {
     /**

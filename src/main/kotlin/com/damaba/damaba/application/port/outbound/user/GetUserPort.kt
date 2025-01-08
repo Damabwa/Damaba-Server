@@ -1,7 +1,7 @@
-package com.damaba.user.application.port.outbound.user
+package com.damaba.damaba.application.port.outbound.user
 
 import com.damaba.damaba.domain.user.User
-import com.damaba.user.domain.user.exception.UserNotFoundException
+import com.damaba.damaba.domain.user.exception.UserNotFoundException
 
 interface GetUserPort {
     /**

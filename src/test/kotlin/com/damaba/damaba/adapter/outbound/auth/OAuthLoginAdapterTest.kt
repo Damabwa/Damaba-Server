@@ -2,8 +2,8 @@ package com.damaba.damaba.adapter.outbound.auth
 
 import com.damaba.damaba.adapter.outbound.kakao.KakaoKApiFeignClient
 import com.damaba.damaba.adapter.outbound.kakao.KakaoUserInfoResponse
+import com.damaba.damaba.domain.user.constant.LoginType
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
-import com.damaba.user.domain.user.constant.LoginType
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

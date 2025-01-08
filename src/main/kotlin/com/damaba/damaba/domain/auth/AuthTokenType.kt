@@ -1,4 +1,4 @@
-package com.damaba.user.domain.auth
+package com.damaba.damaba.domain.auth
 
 enum class AuthTokenType {
     ACCESS,

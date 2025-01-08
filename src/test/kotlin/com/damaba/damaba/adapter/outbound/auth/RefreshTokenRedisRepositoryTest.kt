@@ -1,9 +1,9 @@
 package com.damaba.damaba.adapter.outbound.auth
 
 import com.damaba.damaba.config.RedisTest
+import com.damaba.damaba.domain.auth.RefreshToken
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
-import com.damaba.user.domain.auth.RefreshToken
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

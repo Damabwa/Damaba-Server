@@ -7,11 +7,11 @@ import com.damaba.damaba.adapter.outbound.user.UserProfileImageJpaRepository
 import com.damaba.damaba.config.JpaConfig
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.domain.photographer.exception.PhotographerNotFoundException
+import com.damaba.damaba.domain.user.constant.UserType
+import com.damaba.damaba.domain.user.exception.UserNotFoundException
 import com.damaba.damaba.util.fixture.PhotographerFixture.createPhotographer
 import com.damaba.damaba.util.fixture.PhotographerFixture.createPhotographerJpaEntity
 import com.damaba.damaba.util.fixture.UserFixture.createUserJpaEntity
-import com.damaba.user.domain.user.constant.UserType
-import com.damaba.user.domain.user.exception.UserNotFoundException
 import jakarta.persistence.EntityManager
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable

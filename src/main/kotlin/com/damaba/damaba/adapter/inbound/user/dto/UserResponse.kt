@@ -1,9 +1,9 @@
 package com.damaba.damaba.adapter.inbound.user.dto
 
 import com.damaba.damaba.adapter.inbound.common.dto.ImageResponse
-import com.damaba.user.domain.user.constant.Gender
-import com.damaba.user.domain.user.constant.LoginType
-import com.damaba.user.domain.user.constant.UserType
+import com.damaba.damaba.domain.user.constant.Gender
+import com.damaba.damaba.domain.user.constant.LoginType
+import com.damaba.damaba.domain.user.constant.UserType
 import io.swagger.v3.oas.annotations.media.Schema
 
 data class UserResponse(

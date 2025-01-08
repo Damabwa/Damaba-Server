@@ -1,7 +1,6 @@
 package com.damaba.damaba.domain.user
 
 import com.damaba.damaba.domain.exception.ValidationException
-import com.damaba.user.domain.user.UserValidator
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
 import org.junit.jupiter.params.ParameterizedTest

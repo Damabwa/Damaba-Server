@@ -3,9 +3,9 @@ package com.damaba.damaba.adapter.inbound.auth
 import com.damaba.damaba.adapter.inbound.auth.dto.OAuthLoginRequest
 import com.damaba.damaba.adapter.inbound.auth.dto.OAuthLoginResponse
 import com.damaba.damaba.application.port.inbound.auth.OAuthLoginUseCase
+import com.damaba.damaba.domain.user.constant.LoginType
 import com.damaba.damaba.mapper.AuthTokenMapper
 import com.damaba.damaba.mapper.UserMapper
-import com.damaba.user.domain.user.constant.LoginType
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.responses.ApiResponse

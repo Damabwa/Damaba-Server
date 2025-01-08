@@ -5,10 +5,10 @@ import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.region.Region
 import com.damaba.damaba.domain.user.User
-import com.damaba.user.domain.user.constant.Gender
-import com.damaba.user.domain.user.constant.LoginType
-import com.damaba.user.domain.user.constant.UserRoleType
-import com.damaba.user.domain.user.constant.UserType
+import com.damaba.damaba.domain.user.constant.Gender
+import com.damaba.damaba.domain.user.constant.LoginType
+import com.damaba.damaba.domain.user.constant.UserRoleType
+import com.damaba.damaba.domain.user.constant.UserType
 import java.util.Objects
 
 class Photographer(

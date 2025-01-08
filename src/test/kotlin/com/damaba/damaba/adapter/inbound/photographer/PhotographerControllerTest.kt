@@ -6,6 +6,7 @@ import com.damaba.damaba.application.port.inbound.photographer.GetPhotographerUs
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.config.ControllerTestConfig
 import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.user.constant.Gender
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomSet
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomBoolean
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
@@ -15,7 +16,6 @@ import com.damaba.damaba.util.fixture.PhotographerFixture.createPhotographer
 import com.damaba.damaba.util.fixture.RegionFixture.createRegionRequest
 import com.damaba.damaba.util.fixture.SecurityFixture.createAuthenticationToken
 import com.damaba.damaba.util.fixture.UserFixture.createUser
-import com.damaba.user.domain.user.constant.Gender
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.every
 import io.mockk.mockk

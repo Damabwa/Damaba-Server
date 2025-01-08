@@ -1,14 +1,14 @@
 package com.damaba.damaba.domain.user
 
 import com.damaba.damaba.domain.file.Image
+import com.damaba.damaba.domain.user.constant.Gender
+import com.damaba.damaba.domain.user.constant.LoginType
+import com.damaba.damaba.domain.user.constant.UserRoleType
+import com.damaba.damaba.domain.user.constant.UserType
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomUrl
 import com.damaba.damaba.util.fixture.FileFixture.createImage
 import com.damaba.damaba.util.fixture.UserFixture.createUser
-import com.damaba.user.domain.user.constant.Gender
-import com.damaba.user.domain.user.constant.LoginType
-import com.damaba.user.domain.user.constant.UserRoleType
-import com.damaba.user.domain.user.constant.UserType
 import org.assertj.core.api.Assertions.assertThat
 import kotlin.test.Test
 
