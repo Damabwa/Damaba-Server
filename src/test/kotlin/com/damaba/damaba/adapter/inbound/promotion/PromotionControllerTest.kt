@@ -9,6 +9,7 @@ import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUs
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.damaba.config.ControllerTestConfig
 import com.damaba.damaba.domain.common.Pagination
+import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomSet
@@ -124,6 +125,7 @@ class PromotionControllerTest @Autowired constructor(
             endedAt = randomLocalDate(),
             photographerName = randomString(),
             photographerInstagramId = randomString(),
+            photographyTypes = setOf(PhotographyType.SNAP),
             images = generateRandomList(maxSize = 3) { ImageRequest(randomString(), randomString()) },
             activeRegions = generateRandomSet(maxSize = 3) { RegionRequest(randomString(), randomString()) },
             hashtags = generateRandomSet(maxSize = 3) { randomString() },

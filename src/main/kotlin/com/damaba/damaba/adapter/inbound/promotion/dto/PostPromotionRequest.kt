@@ -4,6 +4,7 @@ import com.damaba.damaba.adapter.inbound.common.dto.AddressRequest
 import com.damaba.damaba.adapter.inbound.common.dto.ImageRequest
 import com.damaba.damaba.adapter.inbound.region.dto.RegionRequest
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
+import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.mapper.AddressMapper
 import com.damaba.damaba.mapper.ImageMapper
@@ -39,6 +40,9 @@ data class PostPromotionRequest(
     @Schema(description = "사진작가 인스타 id", example = "dama.photo")
     val photographerInstagramId: String?,
 
+    @Schema(description = "촬영 종류")
+    val photographyTypes: Set<PhotographyType>,
+
     @Schema(description = "이미지 리스트. 이미지는 최소 1장부터 최대 10장까지 첨부할 수 있습니다.")
     val images: List<ImageRequest>,
 
@@ -59,6 +63,7 @@ data class PostPromotionRequest(
         endedAt = endedAt,
         photographerName = photographerName,
         photographerInstagramId = photographerInstagramId,
+        photographyTypes = photographyTypes,
         images = images.map { ImageMapper.INSTANCE.toImage(it) },
         activeRegions = activeRegions.map { regionRequest -> RegionMapper.INSTANCE.toRegion(regionRequest) }.toSet(),
         hashtags = hashtags,

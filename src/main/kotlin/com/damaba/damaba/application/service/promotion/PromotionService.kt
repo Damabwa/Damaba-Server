@@ -41,6 +41,7 @@ class PromotionService(
             endedAt = command.endedAt,
             photographerName = command.photographerName,
             photographerInstagramId = command.photographerInstagramId,
+            photographyTypes = command.photographyTypes,
             images = command.images.map { file -> Image(file.name, file.url) },
             activeRegions = command.activeRegions.map { region -> Region(region.category, region.name) }.toSet(),
             hashtags = command.hashtags,

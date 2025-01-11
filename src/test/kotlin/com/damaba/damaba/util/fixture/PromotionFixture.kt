@@ -1,6 +1,7 @@
 package com.damaba.damaba.util.fixture
 
 import com.damaba.damaba.domain.common.Address
+import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.constant.PromotionType
@@ -43,6 +44,7 @@ object PromotionFixture {
         endedAt = endedAt,
         photographerName = photographerName,
         photographerInstagramId = photographerInstagramId,
+        photographyTypes = setOf(PhotographyType.SNAP),
         images = images ?: generateRandomList(maxSize = 10) { createImage() },
         activeRegions = activeRegions ?: generateRandomSet(maxSize = 5) { createRegion() },
         hashtags = hashtags ?: generateRandomSet(maxSize = 5) { randomString() },

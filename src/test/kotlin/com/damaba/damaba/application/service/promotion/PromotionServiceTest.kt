@@ -6,6 +6,7 @@ import com.damaba.damaba.application.port.outbound.promotion.FindPromotionsPort
 import com.damaba.damaba.application.port.outbound.promotion.GetPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.SavePromotionPort
 import com.damaba.damaba.domain.common.Pagination
+import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
@@ -113,6 +114,7 @@ class PromotionServiceTest {
         endedAt = randomLocalDate(),
         photographerName = randomString(),
         photographerInstagramId = randomString(),
+        photographyTypes = setOf(PhotographyType.SNAP),
         images = generateRandomList(maxSize = 10) { createImage() },
         activeRegions = generateRandomSet(maxSize = 5) { createRegion() },
         hashtags = generateRandomSet(maxSize = 5) { randomString() },

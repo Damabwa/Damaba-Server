@@ -2,6 +2,7 @@ package com.damaba.damaba.application.port.inbound.promotion
 
 import com.damaba.damaba.domain.common.Address
 import com.damaba.damaba.domain.common.AddressValidator
+import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.exception.ValidationException
 import com.damaba.damaba.domain.file.File
 import com.damaba.damaba.domain.promotion.Promotion
@@ -30,6 +31,7 @@ interface PostPromotionUseCase {
         val endedAt: LocalDate?,
         val photographerName: String?,
         val photographerInstagramId: String?,
+        val photographyTypes: Set<PhotographyType>,
         val images: List<File>,
         val activeRegions: Set<Region>,
         val hashtags: Set<String>,

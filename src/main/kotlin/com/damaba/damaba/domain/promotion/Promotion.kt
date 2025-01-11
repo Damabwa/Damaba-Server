@@ -1,6 +1,7 @@
 package com.damaba.damaba.domain.promotion
 
 import com.damaba.damaba.domain.common.Address
+import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.domain.region.Region
@@ -18,6 +19,7 @@ class Promotion(
     val endedAt: LocalDate?,
     val photographerName: String?,
     val photographerInstagramId: String?,
+    val photographyTypes: Set<PhotographyType>,
     val images: List<Image>,
     val activeRegions: Set<Region>,
     val hashtags: Set<String>,
@@ -42,6 +44,7 @@ class Promotion(
             endedAt: LocalDate?,
             photographerName: String?,
             photographerInstagramId: String?,
+            photographyTypes: Set<PhotographyType>,
             images: List<Image>,
             activeRegions: Set<Region>,
             hashtags: Set<String>,
@@ -57,6 +60,7 @@ class Promotion(
             endedAt = endedAt,
             photographerName = photographerName,
             photographerInstagramId = photographerInstagramId,
+            photographyTypes = photographyTypes,
             images = images,
             activeRegions = activeRegions,
             hashtags = hashtags,

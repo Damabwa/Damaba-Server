@@ -17,18 +17,15 @@ class PromotionCoreRepository(
 ) : GetPromotionPort,
     FindPromotionsPort,
     SavePromotionPort {
-    override fun getById(id: Long): Promotion =
-        PromotionMapper.INSTANCE.toPromotion(getJpaEntityById(id))
+    override fun getById(id: Long): Promotion = PromotionMapper.INSTANCE.toPromotion(getJpaEntityById(id))
 
-    override fun findPromotions(page: Int, pageSize: Int): Pagination<Promotion> =
-        promotionJpaRepository.findAll(PageRequest.of(page, pageSize))
-            .toPagination { PromotionMapper.INSTANCE.toPromotion(it) }
+    override fun findPromotions(page: Int, pageSize: Int): Pagination<Promotion> = promotionJpaRepository.findAll(PageRequest.of(page, pageSize))
+        .toPagination { PromotionMapper.INSTANCE.toPromotion(it) }
 
     override fun save(promotion: Promotion): Promotion {
         val promotionJpaEntity = promotionJpaRepository.save(PromotionMapper.INSTANCE.toPromotionJpaEntity(promotion))
         return PromotionMapper.INSTANCE.toPromotion(promotionJpaEntity)
     }
 
-    private fun getJpaEntityById(id: Long): PromotionJpaEntity =
-        promotionJpaRepository.findById(id).orElseThrow { PromotionNotFoundException() }
+    private fun getJpaEntityById(id: Long): PromotionJpaEntity = promotionJpaRepository.findById(id).orElseThrow { PromotionNotFoundException() }
 }
