@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS photographer_active_region;
 DROP TABLE IF EXISTS photographer_portfolio_image;
 DROP TABLE IF EXISTS user_profile_image;
 DROP TABLE IF EXISTS promotion;
+DROP TABLE IF EXISTS promotion_photography_type;
 DROP TABLE IF EXISTS promotion_image;
 DROP TABLE IF EXISTS promotion_active_region;
 DROP TABLE IF EXISTS promotion_hashtag;
@@ -109,6 +110,17 @@ CREATE TABLE promotion
     PRIMARY KEY (id)
 );
 
+CREATE TABLE promotion_photography_type
+(
+    id           BIGINT       NOT NULL AUTO_INCREMENT,
+    promotion_id BIGINT       NOT NULL COMMENT '(FK) id of promotion',
+    type         VARCHAR(255) NOT NULL,
+    created_at   DATETIME     NOT NULL,
+    updated_at   DATETIME     NOT NULL,
+    PRIMARY KEY (id)
+);
+CREATE INDEX fk_idx__promotion_photography_type__promotion_id ON promotion_photography_type (promotion_id);
+
 CREATE TABLE promotion_image
 (
     id           BIGINT       NOT NULL AUTO_INCREMENT,
@@ -122,6 +134,7 @@ CREATE TABLE promotion_image
     updated_by   BIGINT       NOT NULL,
     PRIMARY KEY (id)
 );
+CREATE INDEX fk_idx__promotion_image__promotion_id ON promotion_image (promotion_id);
 
 CREATE TABLE promotion_active_region
 (

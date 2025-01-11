@@ -1,6 +1,7 @@
 package com.damaba.damaba.application.port.inbound.promotion
 
 import com.damaba.damaba.domain.common.Address
+import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.exception.ValidationException
 import com.damaba.damaba.domain.file.File
 import com.damaba.damaba.domain.promotion.constant.PromotionType
@@ -78,8 +79,10 @@ class PostPromotionUseCaseCommandTest {
             title: String = "Valid title",
             content: String = "Valid content",
             promotionType: PromotionType = PromotionType.FREE,
+            photographyTypes: Set<PhotographyType> = setOf(PhotographyType.SNAP),
             images: List<File> = List(3) { createImage() },
             activeRegions: Set<Region> = setOf(Region("서울", "강남구")),
+            hashtags: Set<String> = setOf("tag1", "tag2"),
         ) = PostPromotionUseCase.Command(
             authorId = randomLong(),
             promotionType = promotionType,
@@ -91,9 +94,10 @@ class PostPromotionUseCaseCommandTest {
             endedAt = LocalDate.now().plusDays(1),
             photographerName = "Photographer",
             photographerInstagramId = "insta",
+            photographyTypes = photographyTypes,
             images = images,
             activeRegions = activeRegions,
-            hashtags = setOf("tag1", "tag2"),
+            hashtags = hashtags,
         )
     }
 }

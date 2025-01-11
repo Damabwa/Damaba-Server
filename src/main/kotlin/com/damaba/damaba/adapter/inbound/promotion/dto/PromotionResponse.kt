@@ -3,6 +3,7 @@ package com.damaba.damaba.adapter.inbound.promotion.dto
 import com.damaba.damaba.adapter.inbound.common.dto.AddressResponse
 import com.damaba.damaba.adapter.inbound.common.dto.ImageResponse
 import com.damaba.damaba.adapter.inbound.region.dto.RegionResponse
+import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
@@ -40,6 +41,9 @@ data class PromotionResponse(
 
     @Schema(description = "사진작가 인스타 id", example = "dama.photo")
     val photographerInstagramId: String?,
+
+    @Schema(description = "촬영 종류 리스트")
+    val photographyTypes: Set<PhotographyType>,
 
     @Schema(description = "이미지 url 리스트", example = "[\"https://promotion-image\"]")
     val images: List<ImageResponse>,

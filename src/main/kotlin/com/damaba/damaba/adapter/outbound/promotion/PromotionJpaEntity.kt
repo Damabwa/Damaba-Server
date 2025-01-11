@@ -80,6 +80,9 @@ class PromotionJpaEntity(
     var deletedAt: LocalDateTime? = null
         private set
 
+    @OneToMany(mappedBy = "promotion", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val photographyTypes: MutableSet<PromotionPhotographyTypeJpaEntity> = mutableSetOf()
+
     @OneToMany(mappedBy = "promotion", cascade = [CascadeType.PERSIST])
     private var _images: MutableList<PromotionImageJpaEntity> = mutableListOf()
 
