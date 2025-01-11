@@ -29,8 +29,6 @@ interface PostPromotionUseCase {
         val externalLink: String?,
         val startedAt: LocalDate?,
         val endedAt: LocalDate?,
-        val photographerName: String?,
-        val photographerInstagramId: String?,
         val photographyTypes: Set<PhotographyType>,
         val images: List<File>,
         val activeRegions: Set<Region>,

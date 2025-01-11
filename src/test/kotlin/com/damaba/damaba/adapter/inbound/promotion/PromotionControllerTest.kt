@@ -123,8 +123,6 @@ class PromotionControllerTest @Autowired constructor(
             externalLink = randomString(),
             startedAt = randomLocalDate(),
             endedAt = randomLocalDate(),
-            photographerName = randomString(),
-            photographerInstagramId = randomString(),
             photographyTypes = setOf(PhotographyType.SNAP),
             images = generateRandomList(maxSize = 3) { ImageRequest(randomString(), randomString()) },
             activeRegions = generateRandomSet(maxSize = 3) { RegionRequest(randomString(), randomString()) },

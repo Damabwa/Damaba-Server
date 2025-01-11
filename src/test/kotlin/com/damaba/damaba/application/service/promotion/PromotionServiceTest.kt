@@ -112,8 +112,6 @@ class PromotionServiceTest {
         externalLink = randomString(),
         startedAt = randomLocalDate(),
         endedAt = randomLocalDate(),
-        photographerName = randomString(),
-        photographerInstagramId = randomString(),
         photographyTypes = setOf(PhotographyType.SNAP),
         images = generateRandomList(maxSize = 10) { createImage() },
         activeRegions = generateRandomSet(maxSize = 5) { createRegion() },
