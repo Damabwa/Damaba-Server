@@ -25,14 +25,14 @@ class UserCoreRepositoryTest @Autowired constructor(
     @Test
     fun `특정 유저의 id가 주어지고, 주어진 id에 해당하는 유저를 조회하면, 유저 정보가 반환된다`() {
         // given
-        val savedUser = userCoreRepository.save(createUser())
+        val createdUser = userCoreRepository.create(createUser())
 
         // when
-        val result = userCoreRepository.findById(savedUser.id)
+        val result = userCoreRepository.findById(createdUser.id)
 
         // then
         assertThat(result).isNotNull()
-        assertThat(result).isEqualTo(savedUser)
+        assertThat(result).isEqualTo(createdUser)
     }
 
     @Test
@@ -50,7 +50,7 @@ class UserCoreRepositoryTest @Autowired constructor(
     fun `특정 유저의 OAuth login user id가 주어지고, 주어진 uid에 해당하는 유저를 조회하면, 유저 정보가 반환된다`() {
         // given
         val oAuthLoginUid = randomString()
-        userCoreRepository.save(createUser(oAuthLoginUid = oAuthLoginUid))
+        userCoreRepository.create(createUser(oAuthLoginUid = oAuthLoginUid))
 
         // when
         val result = userCoreRepository.findByOAuthLoginUid(oAuthLoginUid)
@@ -64,14 +64,14 @@ class UserCoreRepositoryTest @Autowired constructor(
     @Test
     fun `(Get) 특정 유저의 id가 주어지고, 주어진 id에 해당하는 유저를 조회하면, 유저 정보가 반환된다`() {
         // given
-        val savedUser = userCoreRepository.save(createUser())
+        val createdUser = userCoreRepository.create(createUser())
 
         // when
-        val result = userCoreRepository.getById(savedUser.id)
+        val result = userCoreRepository.getById(createdUser.id)
 
         // then
         assertThat(result).isNotNull()
-        assertThat(result.id).isEqualTo(savedUser.id)
+        assertThat(result.id).isEqualTo(createdUser.id)
     }
 
     @Test
@@ -89,7 +89,7 @@ class UserCoreRepositoryTest @Autowired constructor(
     fun `닉네임이 주어지고, 주어진 닉네임이 존재하는지 확인한다, 만약 사용중인 닉네임이라면 true가 반환된다`() {
         // given
         val nickname = randomString(len = 7)
-        userCoreRepository.save(createUser(nickname = nickname))
+        userCoreRepository.create(createUser(nickname = nickname))
 
         // when
         val exists = userCoreRepository.doesNicknameExist(nickname)
@@ -127,19 +127,19 @@ class UserCoreRepositoryTest @Autowired constructor(
         val user = createUser()
 
         // when
-        val savedUser = userCoreRepository.save(user)
+        val createdUser = userCoreRepository.create(user)
 
         // then
-        val foundUser = userCoreRepository.findById(savedUser.id)
-        assertThat(savedUser).isNotNull()
+        val foundUser = userCoreRepository.findById(createdUser.id)
+        assertThat(createdUser).isNotNull()
         assertThat(foundUser).isNotNull()
-        assertThat(savedUser).isEqualTo(foundUser)
+        assertThat(createdUser).isEqualTo(foundUser)
     }
 
     @Test
     fun `변경되지 않은 기존 유저 정보가 주어지고, 유저를 업데이트하면, 아무런 일도 일어나지 않는다`() {
         // given
-        val originalUser = userCoreRepository.save(createUser())
+        val originalUser = userCoreRepository.create(createUser())
 
         // when
         val updatedUser = userCoreRepository.update(originalUser)
@@ -157,7 +157,7 @@ class UserCoreRepositoryTest @Autowired constructor(
         // given
         val profileImage = Image(randomString(), randomUrl())
         val originalUser =
-            userCoreRepository.save(createUser(profileImage = profileImage))
+            userCoreRepository.create(createUser(profileImage = profileImage))
 
         // when
         val result =
@@ -182,7 +182,7 @@ class UserCoreRepositoryTest @Autowired constructor(
         // given
         val originalProfileImage = Image("original-image.jpg", "https://file.test/original-image.jpg")
         val newProfileImage = Image("new-image.jpg", "https://file.test/new-image.jpg")
-        val originalUser = userCoreRepository.save(createUser(profileImage = originalProfileImage))
+        val originalUser = userCoreRepository.create(createUser(profileImage = originalProfileImage))
 
         // when
         val result =
@@ -202,7 +202,7 @@ class UserCoreRepositoryTest @Autowired constructor(
         // given
         val originalProfileImage = Image("original-image.jpg", "https://file.test/original-image.jpg")
         val newProfileImage = Image("new-image.jpg", "https://file.test/new-image.jpg")
-        val originalUser = userCoreRepository.save(createUser(profileImage = originalProfileImage))
+        val originalUser = userCoreRepository.create(createUser(profileImage = originalProfileImage))
         userProfileImageJpaRepository.save(
             UserProfileImageJpaEntity(
                 userId = originalUser.id,

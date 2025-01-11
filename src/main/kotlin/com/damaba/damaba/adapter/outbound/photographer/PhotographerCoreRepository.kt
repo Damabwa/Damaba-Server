@@ -3,8 +3,8 @@ package com.damaba.damaba.adapter.outbound.photographer
 import com.damaba.damaba.adapter.outbound.user.UserJpaRepository
 import com.damaba.damaba.adapter.outbound.user.UserProfileImageJpaEntity
 import com.damaba.damaba.adapter.outbound.user.UserProfileImageJpaRepository
+import com.damaba.damaba.application.port.outbound.photographer.CreatePhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.GetPhotographerPort
-import com.damaba.damaba.application.port.outbound.photographer.SavePhotographerPort
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.domain.photographer.exception.PhotographerNotFoundException
 import com.damaba.damaba.domain.user.exception.UserNotFoundException
@@ -17,7 +17,7 @@ class PhotographerCoreRepository(
     private val userJpaRepository: UserJpaRepository,
     private val userProfileImageJpaRepository: UserProfileImageJpaRepository,
 ) : GetPhotographerPort,
-    SavePhotographerPort {
+    CreatePhotographerPort {
     override fun getById(id: Long): Photographer {
         val userJpaEntity = userJpaRepository.findById(id)
             .orElseThrow { PhotographerNotFoundException() }
@@ -26,7 +26,7 @@ class PhotographerCoreRepository(
         return PhotographerMapper.INSTANCE.toPhotographer(userJpaEntity, photographerJpaEntity)
     }
 
-    override fun saveIfUserExists(photographer: Photographer): Photographer {
+    override fun createIfUserExists(photographer: Photographer): Photographer {
         // Update user
         val userJpaEntity = userJpaRepository
             .findById(photographer.id)
@@ -37,7 +37,7 @@ class PhotographerCoreRepository(
 
         userJpaEntity.update(photographer)
 
-        // Save photographer
+        // Create photographer
         userProfileImageJpaRepository.save(
             UserProfileImageJpaEntity(
                 userId = photographer.id,

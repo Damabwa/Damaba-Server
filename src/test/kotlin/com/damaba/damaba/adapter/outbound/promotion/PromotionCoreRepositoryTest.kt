@@ -20,7 +20,7 @@ class PromotionCoreRepositoryTest @Autowired constructor(
     @Test
     fun `(Get) 프로모션 id가 주어지고, 주어진 id와 일치하는 프로모션을 단건 조회하면, 조회된 프로모션이 반환된다`() {
         // given
-        val promotion = promotionCoreRepository.save(createPromotion())
+        val promotion = promotionCoreRepository.create(createPromotion())
 
         // when
         val result = promotionCoreRepository.getById(promotion.id)
@@ -43,9 +43,9 @@ class PromotionCoreRepositoryTest @Autowired constructor(
     @Test
     fun `프로모션 리스트를 조회한다`() {
         // given
-        promotionCoreRepository.save(createPromotion())
-        promotionCoreRepository.save(createPromotion())
-        promotionCoreRepository.save(createPromotion())
+        promotionCoreRepository.create(createPromotion())
+        promotionCoreRepository.create(createPromotion())
+        promotionCoreRepository.create(createPromotion())
         val page = 0
         val pageSize = 10
 
@@ -65,15 +65,15 @@ class PromotionCoreRepositoryTest @Autowired constructor(
         val promotion = createPromotion()
 
         // when
-        val savedPromotion = promotionCoreRepository.save(promotion)
+        val createdPromotion = promotionCoreRepository.create(promotion)
 
         // then
-        assertThat(savedPromotion.id).isGreaterThan(0)
-        assertThat(savedPromotion.promotionType).isEqualTo(promotion.promotionType)
-        assertThat(savedPromotion.title).isEqualTo(promotion.title)
-        assertThat(savedPromotion.content).isEqualTo(promotion.content)
-        assertThatIterable(savedPromotion.images).isEqualTo(promotion.images)
-        assertThatIterable(savedPromotion.activeRegions).isEqualTo(promotion.activeRegions)
-        assertThatIterable(savedPromotion.hashtags).isEqualTo(promotion.hashtags)
+        assertThat(createdPromotion.id).isGreaterThan(0)
+        assertThat(createdPromotion.promotionType).isEqualTo(promotion.promotionType)
+        assertThat(createdPromotion.title).isEqualTo(promotion.title)
+        assertThat(createdPromotion.content).isEqualTo(promotion.content)
+        assertThatIterable(createdPromotion.images).isEqualTo(promotion.images)
+        assertThatIterable(createdPromotion.activeRegions).isEqualTo(promotion.activeRegions)
+        assertThatIterable(createdPromotion.hashtags).isEqualTo(promotion.hashtags)
     }
 }

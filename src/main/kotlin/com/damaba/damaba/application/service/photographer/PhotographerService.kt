@@ -3,8 +3,8 @@ package com.damaba.damaba.application.service.photographer
 import com.damaba.damaba.application.port.inbound.photographer.CheckPhotographerNicknameExistenceUseCase
 import com.damaba.damaba.application.port.inbound.photographer.GetPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
+import com.damaba.damaba.application.port.outbound.photographer.CreatePhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.GetPhotographerPort
-import com.damaba.damaba.application.port.outbound.photographer.SavePhotographerPort
 import com.damaba.damaba.application.port.outbound.user.CheckNicknameExistencePort
 import com.damaba.damaba.application.port.outbound.user.GetUserPort
 import com.damaba.damaba.domain.photographer.Photographer
@@ -19,7 +19,7 @@ class PhotographerService(
     private val getUserPort: GetUserPort,
     private val getPhotographerPort: GetPhotographerPort,
     private val checkNicknameExistencePort: CheckNicknameExistencePort,
-    private val savePhotographerPort: SavePhotographerPort,
+    private val createPhotographerPort: CreatePhotographerPort,
 ) : GetPhotographerUseCase,
     CheckPhotographerNicknameExistenceUseCase,
     RegisterPhotographerUseCase {
@@ -50,6 +50,6 @@ class PhotographerService(
             mainPhotographyTypes = command.mainPhotographyTypes,
             activeRegions = command.activeRegions,
         )
-        return savePhotographerPort.saveIfUserExists(photographer)
+        return createPhotographerPort.createIfUserExists(photographer)
     }
 }
