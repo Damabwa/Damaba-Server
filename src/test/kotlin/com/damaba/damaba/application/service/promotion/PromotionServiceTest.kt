@@ -50,7 +50,7 @@ class PromotionServiceTest {
         every { getPromotionPort.getById(promotionId) } returns expectedResult
 
         // when
-        val actualResult = sut.getPromotionDetail(promotionId)
+        val actualResult = sut.getPromotion(promotionId)
 
         // then
         verify { getPromotionPort.getById(promotionId) }
