@@ -1,7 +1,7 @@
 package com.damaba.damaba.application.service.promotion
 
 import com.damaba.damaba.application.port.inbound.promotion.FindPromotionsUseCase
-import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
+import com.damaba.damaba.application.port.inbound.promotion.GetPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.damaba.application.port.outbound.promotion.FindPromotionsPort
 import com.damaba.damaba.application.port.outbound.promotion.GetPromotionPort
@@ -18,12 +18,12 @@ class PromotionService(
     private val getPromotionPort: GetPromotionPort,
     private val findPromotionsPort: FindPromotionsPort,
     private val savePromotionPort: SavePromotionPort,
-) : GetPromotionDetailUseCase,
+) : GetPromotionUseCase,
     FindPromotionsUseCase,
     PostPromotionUseCase {
 
     @Transactional(readOnly = true)
-    override fun getPromotionDetail(promotionId: Long): Promotion = getPromotionPort.getById(promotionId)
+    override fun getPromotion(promotionId: Long): Promotion = getPromotionPort.getById(promotionId)
 
     @Transactional(readOnly = true)
     override fun findPromotions(query: FindPromotionsUseCase.Query): Pagination<Promotion> = findPromotionsPort.findPromotions(query.page, query.pageSize)

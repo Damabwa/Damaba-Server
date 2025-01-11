@@ -5,7 +5,7 @@ import com.damaba.damaba.adapter.inbound.common.dto.ImageRequest
 import com.damaba.damaba.adapter.inbound.promotion.dto.PostPromotionRequest
 import com.damaba.damaba.adapter.inbound.region.dto.RegionRequest
 import com.damaba.damaba.application.port.inbound.promotion.FindPromotionsUseCase
-import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
+import com.damaba.damaba.application.port.inbound.promotion.GetPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.damaba.config.ControllerTestConfig
 import com.damaba.damaba.domain.common.Pagination
@@ -46,14 +46,14 @@ import kotlin.test.Test
 class PromotionControllerTest @Autowired constructor(
     private val mvc: MockMvc,
     private val mapper: ObjectMapper,
-    private val getPromotionDetailUseCase: GetPromotionDetailUseCase,
+    private val getPromotionUseCase: GetPromotionUseCase,
     private val findPromotionsUseCase: FindPromotionsUseCase,
     private val postPromotionUseCase: PostPromotionUseCase,
 ) {
     @TestConfiguration
     class MockBeanSetUp {
         @Bean
-        fun getPromotionDetailUseCase(): GetPromotionDetailUseCase = mockk()
+        fun getPromotionUseCase(): GetPromotionUseCase = mockk()
 
         @Bean
         fun findPromotionsUseCase(): FindPromotionsUseCase = mockk()
@@ -67,14 +67,14 @@ class PromotionControllerTest @Autowired constructor(
         // given
         val promotionId = randomLong(positive = true)
         val expectedResult = createPromotion(id = promotionId)
-        every { getPromotionDetailUseCase.getPromotionDetail(promotionId) } returns expectedResult
+        every { getPromotionUseCase.getPromotion(promotionId) } returns expectedResult
 
         // when & then
         mvc.perform(
             get("/api/v1/promotions/$promotionId"),
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(expectedResult.id))
-        verify { getPromotionDetailUseCase.getPromotionDetail(promotionId) }
+        verify { getPromotionUseCase.getPromotion(promotionId) }
     }
 
     @Test

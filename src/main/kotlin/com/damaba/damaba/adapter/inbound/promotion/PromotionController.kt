@@ -3,7 +3,7 @@ package com.damaba.damaba.adapter.inbound.promotion
 import com.damaba.damaba.adapter.inbound.promotion.dto.PostPromotionRequest
 import com.damaba.damaba.adapter.inbound.promotion.dto.PromotionResponse
 import com.damaba.damaba.application.port.inbound.promotion.FindPromotionsUseCase
-import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
+import com.damaba.damaba.application.port.inbound.promotion.GetPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.user.User
@@ -28,7 +28,7 @@ import java.net.URI
 @Tag(name = "프로모션 관련 API")
 @RestController
 class PromotionController(
-    private val getPromotionDetailUseCase: GetPromotionDetailUseCase,
+    private val getPromotionUseCase: GetPromotionUseCase,
     private val findPromotionsUseCase: FindPromotionsUseCase,
     private val postPromotionUseCase: PostPromotionUseCase,
 ) {
@@ -38,8 +38,8 @@ class PromotionController(
         ApiResponse(responseCode = "404", description = "`promotionId`에 일치하는 프로모션이 없는 경우", content = [Content()]),
     )
     @GetMapping("/api/v1/promotions/{promotionId}")
-    fun getPromotionDetailV1(@PathVariable promotionId: Long): PromotionResponse {
-        val promotion = getPromotionDetailUseCase.getPromotionDetail(promotionId)
+    fun getPromotionV1(@PathVariable promotionId: Long): PromotionResponse {
+        val promotion = getPromotionUseCase.getPromotion(promotionId)
         return PromotionMapper.INSTANCE.toPromotionResponse(promotion)
     }
 
