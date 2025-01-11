@@ -3,7 +3,6 @@ package com.damaba.damaba.adapter.inbound.promotion.dto
 import com.damaba.damaba.adapter.inbound.common.dto.AddressResponse
 import com.damaba.damaba.adapter.inbound.common.dto.ImageResponse
 import com.damaba.damaba.adapter.inbound.region.dto.RegionResponse
-import com.damaba.damaba.domain.promotion.constant.EventType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
@@ -16,10 +15,7 @@ data class PromotionResponse(
     val authorId: Long?,
 
     @Schema(description = "프로모션 종류")
-    val type: PromotionType,
-
-    @Schema(description = "이벤트 종류. 프로모션 종류가 이벤트가 아닌 경우에는 null")
-    val eventType: EventType?,
+    val promotionType: PromotionType,
 
     @Schema(description = "제목", example = "이벤트 이름")
     val title: String,

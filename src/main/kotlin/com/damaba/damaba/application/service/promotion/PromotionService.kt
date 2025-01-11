@@ -32,8 +32,7 @@ class PromotionService(
     override fun postPromotion(command: PostPromotionUseCase.Command): Promotion = savePromotionPort.save(
         Promotion.create(
             authorId = command.authorId,
-            type = command.type,
-            eventType = command.eventType,
+            promotionType = command.promotionType,
             title = command.title,
             content = command.content,
             address = command.address,

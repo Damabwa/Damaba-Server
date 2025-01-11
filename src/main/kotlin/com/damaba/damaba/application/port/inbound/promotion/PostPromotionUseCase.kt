@@ -6,7 +6,6 @@ import com.damaba.damaba.domain.exception.ValidationException
 import com.damaba.damaba.domain.file.File
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.PromotionValidator
-import com.damaba.damaba.domain.promotion.constant.EventType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.domain.region.Region
 import java.time.LocalDate
@@ -22,8 +21,7 @@ interface PostPromotionUseCase {
 
     data class Command(
         val authorId: Long,
-        val type: PromotionType,
-        val eventType: EventType,
+        val promotionType: PromotionType,
         val title: String,
         val content: String,
         val address: Address,

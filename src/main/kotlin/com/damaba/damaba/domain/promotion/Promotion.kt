@@ -2,7 +2,6 @@ package com.damaba.damaba.domain.promotion
 
 import com.damaba.damaba.domain.common.Address
 import com.damaba.damaba.domain.file.Image
-import com.damaba.damaba.domain.promotion.constant.EventType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.domain.region.Region
 import java.time.LocalDate
@@ -10,8 +9,7 @@ import java.time.LocalDate
 class Promotion(
     val id: Long,
     val authorId: Long?,
-    val type: PromotionType,
-    val eventType: EventType,
+    val promotionType: PromotionType,
     val title: String,
     val content: String,
     val address: Address,
@@ -35,8 +33,7 @@ class Promotion(
     companion object {
         fun create(
             authorId: Long,
-            type: PromotionType,
-            eventType: EventType,
+            promotionType: PromotionType,
             title: String,
             content: String,
             address: Address,
@@ -51,8 +48,7 @@ class Promotion(
         ): Promotion = Promotion(
             id = 0,
             authorId = authorId,
-            type = type,
-            eventType = eventType,
+            promotionType = promotionType,
             title = title,
             content = content,
             address = address,

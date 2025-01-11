@@ -1,7 +1,6 @@
 package com.damaba.damaba.adapter.outbound.promotion
 
 import com.damaba.damaba.adapter.outbound.common.BaseJpaTimeEntity
-import com.damaba.damaba.domain.promotion.constant.EventType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
@@ -21,8 +20,7 @@ import java.time.LocalDateTime
 @Entity
 class PromotionJpaEntity(
     authorId: Long?,
-    type: PromotionType,
-    eventType: EventType,
+    promotionType: PromotionType,
     title: String,
     content: String,
     address: PromotionAddressJpaEmbeddable,
@@ -42,13 +40,8 @@ class PromotionJpaEntity(
         private set
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false)
-    var type: PromotionType = type
-        private set
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "event_type", nullable = false)
-    var eventType: EventType = eventType
+    @Column(name = "promotion_type", nullable = false)
+    var promotionType: PromotionType = promotionType
         private set
 
     @Column(name = "title", nullable = false)

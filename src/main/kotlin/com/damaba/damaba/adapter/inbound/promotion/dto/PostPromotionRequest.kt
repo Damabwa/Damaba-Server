@@ -4,7 +4,6 @@ import com.damaba.damaba.adapter.inbound.common.dto.AddressRequest
 import com.damaba.damaba.adapter.inbound.common.dto.ImageRequest
 import com.damaba.damaba.adapter.inbound.region.dto.RegionRequest
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
-import com.damaba.damaba.domain.promotion.constant.EventType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.mapper.AddressMapper
 import com.damaba.damaba.mapper.ImageMapper
@@ -13,11 +12,8 @@ import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 
 data class PostPromotionRequest(
-    @Schema(description = "프로모션 종류")
-    val type: PromotionType,
-
     @Schema(description = "이벤트 종류")
-    val eventType: EventType,
+    val promotionType: PromotionType,
 
     @Schema(description = "제목. 제목은 3~20 글자여야 합니다.", example = "이벤트 이름")
     val title: String,
@@ -54,8 +50,7 @@ data class PostPromotionRequest(
 ) {
     fun toCommand(requestUserId: Long) = PostPromotionUseCase.Command(
         authorId = requestUserId,
-        type = type,
-        eventType = eventType,
+        promotionType = promotionType,
         title = title,
         content = content,
         address = AddressMapper.INSTANCE.toAddress(address),

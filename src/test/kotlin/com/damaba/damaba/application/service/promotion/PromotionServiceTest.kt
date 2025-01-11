@@ -7,7 +7,6 @@ import com.damaba.damaba.application.port.outbound.promotion.GetPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.SavePromotionPort
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.promotion.Promotion
-import com.damaba.damaba.domain.promotion.constant.EventType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomSet
@@ -105,8 +104,7 @@ class PromotionServiceTest {
 
     private fun createPostPromotionCommand() = PostPromotionUseCase.Command(
         authorId = randomLong(),
-        type = PromotionType.EVENT,
-        eventType = EventType.FREE,
+        promotionType = PromotionType.FREE,
         title = randomString(len = 10),
         content = randomString(),
         address = createAddress(),
