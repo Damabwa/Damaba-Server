@@ -34,12 +34,6 @@ data class PostPromotionRequest(
     @Schema(description = "이벤트 종료일")
     val endedAt: LocalDate?,
 
-    @Schema(description = "사진작가 이름", example = "담아사진")
-    val photographerName: String?,
-
-    @Schema(description = "사진작가 인스타 id", example = "dama.photo")
-    val photographerInstagramId: String?,
-
     @Schema(description = "촬영 종류")
     val photographyTypes: Set<PhotographyType>,
 
@@ -61,8 +55,6 @@ data class PostPromotionRequest(
         externalLink = externalLink,
         startedAt = startedAt,
         endedAt = endedAt,
-        photographerName = photographerName,
-        photographerInstagramId = photographerInstagramId,
         photographyTypes = photographyTypes,
         images = images.map { ImageMapper.INSTANCE.toImage(it) },
         activeRegions = activeRegions.map { regionRequest -> RegionMapper.INSTANCE.toRegion(regionRequest) }.toSet(),

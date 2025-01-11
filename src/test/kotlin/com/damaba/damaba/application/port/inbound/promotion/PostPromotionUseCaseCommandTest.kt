@@ -92,8 +92,6 @@ class PostPromotionUseCaseCommandTest {
             externalLink = "http://example.com",
             startedAt = LocalDate.now(),
             endedAt = LocalDate.now().plusDays(1),
-            photographerName = "Photographer",
-            photographerInstagramId = "insta",
             photographyTypes = photographyTypes,
             images = images,
             activeRegions = activeRegions,

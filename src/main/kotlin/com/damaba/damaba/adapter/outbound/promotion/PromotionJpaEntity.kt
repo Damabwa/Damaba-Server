@@ -27,8 +27,7 @@ class PromotionJpaEntity(
     externalLink: String?,
     startedAt: LocalDate?,
     endedAt: LocalDate?,
-    photographerName: String?,
-    photographerInstagramId: String?,
+    viewCount: Long,
 ) : BaseJpaTimeEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -68,12 +67,8 @@ class PromotionJpaEntity(
     var endedAt: LocalDate? = endedAt
         private set
 
-    @Column(name = "photographer_name")
-    var photographerName: String? = photographerName
-        private set
-
-    @Column(name = "photographer_instagram_id")
-    var photographerInstagramId: String? = photographerInstagramId
+    @Column(name = "view_count")
+    var viewCount: Long = viewCount
         private set
 
     @Column(name = "deleted_at")

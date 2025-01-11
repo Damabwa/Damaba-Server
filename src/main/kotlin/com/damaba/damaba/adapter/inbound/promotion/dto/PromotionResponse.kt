@@ -36,11 +36,8 @@ data class PromotionResponse(
     @Schema(description = "이벤트 종료일")
     val endedAt: LocalDate?,
 
-    @Schema(description = "사진작가 이름", example = "담아사진")
-    val photographerName: String?,
-
-    @Schema(description = "사진작가 인스타 id", example = "dama.photo")
-    val photographerInstagramId: String?,
+    @Schema(description = "조회수", example = "15")
+    val viewCount: Long,
 
     @Schema(description = "촬영 종류 리스트")
     val photographyTypes: Set<PhotographyType>,
