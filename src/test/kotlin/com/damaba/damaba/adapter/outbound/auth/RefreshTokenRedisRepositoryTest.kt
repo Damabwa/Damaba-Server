@@ -33,12 +33,12 @@ class RefreshTokenRedisRepositoryTest @Autowired constructor(
         )
 
         // When
-        sut.save(refreshToken, REFRESH_TOKEN_TTL)
+        sut.create(refreshToken, REFRESH_TOKEN_TTL)
 
         // Then
-        val savedRefreshToken = sut.findByUserId(refreshToken.userId)
-        assertThat(savedRefreshToken).isNotNull()
-        assertThat(savedRefreshToken).isEqualTo(refreshToken)
+        val createdRefreshToken = sut.findByUserId(refreshToken.userId)
+        assertThat(createdRefreshToken).isNotNull()
+        assertThat(createdRefreshToken).isEqualTo(refreshToken)
     }
 
     @Test
@@ -46,7 +46,7 @@ class RefreshTokenRedisRepositoryTest @Autowired constructor(
         // Given
         val userId = randomLong()
         val expectedResult = RefreshToken(userId, randomString())
-        sut.save(expectedResult, REFRESH_TOKEN_TTL)
+        sut.create(expectedResult, REFRESH_TOKEN_TTL)
 
         // When
         val actualResult = sut.findByUserId(userId)

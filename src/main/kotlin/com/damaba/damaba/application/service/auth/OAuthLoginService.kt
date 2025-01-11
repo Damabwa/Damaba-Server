@@ -2,11 +2,11 @@ package com.damaba.damaba.application.service.auth
 
 import com.damaba.damaba.application.port.inbound.auth.OAuthLoginUseCase
 import com.damaba.damaba.application.port.outbound.auth.CreateAuthTokenPort
+import com.damaba.damaba.application.port.outbound.auth.CreateRefreshTokenPort
 import com.damaba.damaba.application.port.outbound.auth.GetOAuthLoginUidPort
-import com.damaba.damaba.application.port.outbound.auth.SaveRefreshTokenPort
 import com.damaba.damaba.application.port.outbound.user.CheckNicknameExistencePort
+import com.damaba.damaba.application.port.outbound.user.CreateUserPort
 import com.damaba.damaba.application.port.outbound.user.FindUserPort
-import com.damaba.damaba.application.port.outbound.user.SaveUserPort
 import com.damaba.damaba.domain.auth.RefreshToken
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.property.AuthProperties
@@ -19,9 +19,9 @@ class OAuthLoginService(
     private val getOAuthLoginUidPort: GetOAuthLoginUidPort,
     private val findUserPort: FindUserPort,
     private val checkNicknameExistencePort: CheckNicknameExistencePort,
-    private val saveUserPort: SaveUserPort,
+    private val createUserPort: CreateUserPort,
     private val createAuthTokenPort: CreateAuthTokenPort,
-    private val saveRefreshTokenPort: SaveRefreshTokenPort,
+    private val createRefreshTokenPort: CreateRefreshTokenPort,
     private val authProperties: AuthProperties,
 ) : OAuthLoginUseCase {
 
@@ -33,7 +33,7 @@ class OAuthLoginService(
         var user = findUserPort.findByOAuthLoginUid(oAuthLoginUid)
         if (user == null) {
             isNewUser = true
-            user = saveUserPort.save(
+            user = createUserPort.create(
                 User.create(
                     loginType = command.loginType,
                     oAuthLoginUid = oAuthLoginUid,
@@ -44,7 +44,7 @@ class OAuthLoginService(
 
         val accessToken = createAuthTokenPort.createAccessToken(user)
         val refreshToken = createAuthTokenPort.createRefreshToken(user)
-        saveRefreshTokenPort.save(
+        createRefreshTokenPort.create(
             refreshToken = RefreshToken(user.id, refreshToken.value),
             ttlMillis = authProperties.refreshTokenDurationMillis,
         )

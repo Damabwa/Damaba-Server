@@ -2,9 +2,9 @@ package com.damaba.damaba.application.service.promotion
 
 import com.damaba.damaba.application.port.inbound.promotion.FindPromotionsUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
+import com.damaba.damaba.application.port.outbound.promotion.CreatePromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.FindPromotionsPort
 import com.damaba.damaba.application.port.outbound.promotion.GetPromotionPort
-import com.damaba.damaba.application.port.outbound.promotion.SavePromotionPort
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.promotion.Promotion
@@ -30,16 +30,16 @@ import kotlin.test.Test
 class PromotionServiceTest {
     private val getPromotionPort: GetPromotionPort = mockk()
     private val findPromotionsPort: FindPromotionsPort = mockk()
-    private val savePromotionPort: SavePromotionPort = mockk()
+    private val createPromotionPort: CreatePromotionPort = mockk()
 
     private val sut: PromotionService = PromotionService(
         getPromotionPort,
         findPromotionsPort,
-        savePromotionPort,
+        createPromotionPort,
     )
 
     private fun confirmVerifiedEveryMocks() {
-        confirmVerified(getPromotionPort, findPromotionsPort, savePromotionPort)
+        confirmVerified(getPromotionPort, findPromotionsPort, createPromotionPort)
     }
 
     @Test
@@ -89,13 +89,13 @@ class PromotionServiceTest {
         // given
         val command = createPostPromotionCommand()
         val expectedResult = createPromotion()
-        every { savePromotionPort.save(any(Promotion::class)) } returns expectedResult
+        every { createPromotionPort.create(any(Promotion::class)) } returns expectedResult
 
         // when
         val actualResult = sut.postPromotion(command)
 
         // then
-        verify { savePromotionPort.save(any(Promotion::class)) }
+        verify { createPromotionPort.create(any(Promotion::class)) }
         confirmVerifiedEveryMocks()
         assertThat(actualResult).isEqualTo(expectedResult)
         assertThatIterable(actualResult.images).isEqualTo(expectedResult.images)

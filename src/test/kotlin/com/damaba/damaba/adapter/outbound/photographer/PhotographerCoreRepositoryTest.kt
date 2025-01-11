@@ -71,12 +71,12 @@ class PhotographerCoreRepositoryTest @Autowired constructor(
     @Test
     fun `기존 유저 데이터가 존재할 때, 사진작가를 저장한다`() {
         // given
-        val savedUserJpaEntity = userJpaRepository.save(createUserJpaEntity())
-        val userId = savedUserJpaEntity.id
+        val createdUserJpaEntity = userJpaRepository.save(createUserJpaEntity())
+        val userId = createdUserJpaEntity.id
         val photographer = createPhotographer(id = userId, nickname = "newNick")
 
         // when
-        val result = photographerCoreRepository.saveIfUserExists(photographer)
+        val result = photographerCoreRepository.createIfUserExists(photographer)
 
         // then
         assertEquals(result, photographer)
@@ -86,29 +86,29 @@ class PhotographerCoreRepositoryTest @Autowired constructor(
         val updatedUser = optionalUpdatedUser.get()
         assertEquals(photographer, updatedUser)
 
-        val savedPhotographer = photographerCoreRepository.getById(userId)
-        assertEquals(savedPhotographer, photographer)
+        val createdPhotographer = photographerCoreRepository.getById(userId)
+        assertEquals(createdPhotographer, photographer)
 
-        val savedProfileImage = userProfileImageJpaRepository.findByUrl(photographer.profileImage.url)
-        assertThat(savedProfileImage).isNotNull
+        val createdProfileImage = userProfileImageJpaRepository.findByUrl(photographer.profileImage.url)
+        assertThat(createdProfileImage).isNotNull
     }
 
     @Test
     fun `기존 유저와 프로필 이미지 데이터가 존재할 때, 사진작가를 저장하면, 기존 프로필 이미지가 삭제되고 사진작가로 저장된다`() {
         // given
-        val savedUserJpaEntity = userJpaRepository.save(createUserJpaEntity())
-        val userId = savedUserJpaEntity.id
+        val createdUserJpaEntity = userJpaRepository.save(createUserJpaEntity())
+        val userId = createdUserJpaEntity.id
         val originalProfileImage = userProfileImageJpaRepository.save(
             UserProfileImageJpaEntity(
                 userId = userId,
-                name = savedUserJpaEntity.profileImage.name,
-                url = savedUserJpaEntity.profileImage.url,
+                name = createdUserJpaEntity.profileImage.name,
+                url = createdUserJpaEntity.profileImage.url,
             ),
         )
         val photographer = createPhotographer(id = userId, nickname = "newNick")
 
         // when
-        val result = photographerCoreRepository.saveIfUserExists(photographer)
+        val result = photographerCoreRepository.createIfUserExists(photographer)
 
         // then
         assertEquals(result, photographer)
@@ -118,8 +118,8 @@ class PhotographerCoreRepositoryTest @Autowired constructor(
         val updatedUser = optionalUpdatedUser.get()
         assertEquals(photographer, updatedUser)
 
-        val savedPhotographer = photographerCoreRepository.getById(userId)
-        assertEquals(savedPhotographer, photographer)
+        val createdPhotographer = photographerCoreRepository.getById(userId)
+        assertEquals(createdPhotographer, photographer)
 
         assertThat(userProfileImageJpaRepository.findByUrl(originalProfileImage.url)).isNull()
         val newProfileImage = userProfileImageJpaRepository.findByUrl(photographer.profileImage.url)
@@ -132,7 +132,7 @@ class PhotographerCoreRepositoryTest @Autowired constructor(
         val photographer = createPhotographer(nickname = "newNick")
 
         // when
-        val ex = catchThrowable { photographerCoreRepository.saveIfUserExists(photographer) }
+        val ex = catchThrowable { photographerCoreRepository.createIfUserExists(photographer) }
 
         // then
         assertThat(ex).isInstanceOf(UserNotFoundException::class.java)

@@ -2,11 +2,11 @@ package com.damaba.damaba.application.service.auth
 
 import com.damaba.damaba.application.port.inbound.auth.OAuthLoginUseCase
 import com.damaba.damaba.application.port.outbound.auth.CreateAuthTokenPort
+import com.damaba.damaba.application.port.outbound.auth.CreateRefreshTokenPort
 import com.damaba.damaba.application.port.outbound.auth.GetOAuthLoginUidPort
-import com.damaba.damaba.application.port.outbound.auth.SaveRefreshTokenPort
 import com.damaba.damaba.application.port.outbound.user.CheckNicknameExistencePort
+import com.damaba.damaba.application.port.outbound.user.CreateUserPort
 import com.damaba.damaba.application.port.outbound.user.FindUserPort
-import com.damaba.damaba.application.port.outbound.user.SaveUserPort
 import com.damaba.damaba.domain.auth.RefreshToken
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.domain.user.constant.LoginType
@@ -29,17 +29,17 @@ class OAuthLoginServiceTest {
     private val getOAuthLoginUidPort: GetOAuthLoginUidPort = mockk()
     private val findUserPort: FindUserPort = mockk()
     private val checkNicknameExistencePort: CheckNicknameExistencePort = mockk()
-    private val saveUserPort: SaveUserPort = mockk()
+    private val createUserPort: CreateUserPort = mockk()
     private val createAuthTokenPort: CreateAuthTokenPort = mockk()
-    private val saveRefreshTokenPort: SaveRefreshTokenPort = mockk()
+    private val createRefreshTokenPort: CreateRefreshTokenPort = mockk()
     private val authProperties: AuthProperties = mockk()
     private val sut: OAuthLoginService = OAuthLoginService(
         getOAuthLoginUidPort,
         findUserPort,
         checkNicknameExistencePort,
-        saveUserPort,
+        createUserPort,
         createAuthTokenPort,
-        saveRefreshTokenPort,
+        createRefreshTokenPort,
         authProperties,
     )
 
@@ -53,9 +53,9 @@ class OAuthLoginServiceTest {
             getOAuthLoginUidPort,
             findUserPort,
             checkNicknameExistencePort,
-            saveUserPort,
+            createUserPort,
             createAuthTokenPort,
-            saveRefreshTokenPort,
+            createRefreshTokenPort,
         )
     }
 
@@ -80,7 +80,7 @@ class OAuthLoginServiceTest {
             checkNicknameExistencePort.doesNicknameExist(any(String::class))
         } returns true andThen false
         every {
-            saveUserPort.save(any(User::class))
+            createUserPort.create(any(User::class))
         } returns newUser
         every {
             createAuthTokenPort.createAccessToken(newUser)
@@ -89,7 +89,7 @@ class OAuthLoginServiceTest {
             createAuthTokenPort.createRefreshToken(newUser)
         } returns refreshToken
         every {
-            saveRefreshTokenPort.save(RefreshToken(newUser.id, refreshToken.value), REFRESH_TOKEN_DURATION_MILLIS)
+            createRefreshTokenPort.create(RefreshToken(newUser.id, refreshToken.value), REFRESH_TOKEN_DURATION_MILLIS)
         } just Runs
 
         // when
@@ -101,10 +101,10 @@ class OAuthLoginServiceTest {
             findUserPort.findByOAuthLoginUid(kakaoUserId)
             checkNicknameExistencePort.doesNicknameExist(any(String::class))
             checkNicknameExistencePort.doesNicknameExist(any(String::class))
-            saveUserPort.save(any(User::class))
+            createUserPort.create(any(User::class))
             createAuthTokenPort.createAccessToken(newUser)
             createAuthTokenPort.createRefreshToken(newUser)
-            saveRefreshTokenPort.save(RefreshToken(newUser.id, refreshToken.value), REFRESH_TOKEN_DURATION_MILLIS)
+            createRefreshTokenPort.create(RefreshToken(newUser.id, refreshToken.value), REFRESH_TOKEN_DURATION_MILLIS)
         }
         confirmVerifiedEveryMocks()
         assertThat(result.user).isEqualTo(newUser)
@@ -128,7 +128,7 @@ class OAuthLoginServiceTest {
         every { createAuthTokenPort.createAccessToken(user) } returns accessToken
         every { createAuthTokenPort.createRefreshToken(user) } returns refreshToken
         every {
-            saveRefreshTokenPort.save(RefreshToken(user.id, refreshToken.value), REFRESH_TOKEN_DURATION_MILLIS)
+            createRefreshTokenPort.create(RefreshToken(user.id, refreshToken.value), REFRESH_TOKEN_DURATION_MILLIS)
         } just Runs
 
         // when
@@ -140,7 +140,7 @@ class OAuthLoginServiceTest {
             findUserPort.findByOAuthLoginUid(kakaoUserId)
             createAuthTokenPort.createAccessToken(user)
             createAuthTokenPort.createRefreshToken(user)
-            saveRefreshTokenPort.save(RefreshToken(user.id, refreshToken.value), REFRESH_TOKEN_DURATION_MILLIS)
+            createRefreshTokenPort.create(RefreshToken(user.id, refreshToken.value), REFRESH_TOKEN_DURATION_MILLIS)
         }
         confirmVerifiedEveryMocks()
         assertThat(result.user).isEqualTo(user)
