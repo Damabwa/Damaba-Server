@@ -3,7 +3,6 @@ package com.damaba.damaba.util.fixture
 import com.damaba.damaba.domain.common.Address
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.promotion.Promotion
-import com.damaba.damaba.domain.promotion.constant.EventType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.domain.region.Region
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
@@ -20,8 +19,7 @@ object PromotionFixture {
     fun createPromotion(
         id: Long = randomLong(),
         authorId: Long? = randomLong(),
-        type: PromotionType = PromotionType.EVENT,
-        eventType: EventType = EventType.FREE,
+        promotionType: PromotionType = PromotionType.FREE,
         title: String = randomString(10),
         content: String = randomString(30),
         address: Address = createAddress(),
@@ -36,8 +34,7 @@ object PromotionFixture {
     ): Promotion = Promotion(
         id = id,
         authorId = authorId,
-        type = type,
-        eventType = eventType,
+        promotionType = promotionType,
         title = title,
         content = content,
         address = address,

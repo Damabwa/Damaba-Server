@@ -9,7 +9,6 @@ import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUs
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.damaba.config.ControllerTestConfig
 import com.damaba.damaba.domain.common.Pagination
-import com.damaba.damaba.domain.promotion.constant.EventType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomSet
@@ -111,8 +110,7 @@ class PromotionControllerTest @Autowired constructor(
         // given
         val requestUser = createUser()
         val request = PostPromotionRequest(
-            type = PromotionType.EVENT,
-            eventType = EventType.FREE,
+            promotionType = PromotionType.FREE,
             title = randomString(len = 10),
             content = randomString(),
             address = AddressRequest(

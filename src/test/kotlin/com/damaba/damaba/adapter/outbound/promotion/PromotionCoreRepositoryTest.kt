@@ -69,7 +69,7 @@ class PromotionCoreRepositoryTest @Autowired constructor(
 
         // then
         assertThat(savedPromotion.id).isGreaterThan(0)
-        assertThat(savedPromotion.type).isEqualTo(promotion.type)
+        assertThat(savedPromotion.promotionType).isEqualTo(promotion.promotionType)
         assertThat(savedPromotion.title).isEqualTo(promotion.title)
         assertThat(savedPromotion.content).isEqualTo(promotion.content)
         assertThatIterable(savedPromotion.images).isEqualTo(promotion.images)

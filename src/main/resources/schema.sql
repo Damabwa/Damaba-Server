@@ -47,27 +47,27 @@ CREATE INDEX fk_idx__photographer__user_id ON photographer (user_id);
 
 CREATE TABLE photographer_active_region
 (
-    id                   BIGINT       NOT NULL AUTO_INCREMENT,
+    id              BIGINT       NOT NULL AUTO_INCREMENT,
     photographer_id BIGINT COMMENT '(FK) id of photographer',
-    category             VARCHAR(255) NOT NULL,
-    name                 VARCHAR(255) NOT NULL,
-    created_at           DATETIME     NOT NULL,
-    updated_at           DATETIME     NOT NULL,
+    category        VARCHAR(255) NOT NULL,
+    name            VARCHAR(255) NOT NULL,
+    created_at      DATETIME     NOT NULL,
+    updated_at      DATETIME     NOT NULL,
     PRIMARY KEY (id)
 );
 CREATE INDEX fk_idx__photographer_active_region__photographer_id ON photographer_active_region (photographer_id);
 
 CREATE TABLE photographer_portfolio_image
 (
-    id                   BIGINT       NOT NULL AUTO_INCREMENT,
+    id              BIGINT       NOT NULL AUTO_INCREMENT,
     photographer_id BIGINT COMMENT '(FK) id of photographer',
-    name                 VARCHAR(255) NOT NULL,
-    url                  VARCHAR(255) NOT NULL UNIQUE,
-    created_at           DATETIME     NOT NULL,
-    updated_at           DATETIME     NOT NULL,
-    deleted_at           DATETIME,
-    created_by           BIGINT       NOT NULL,
-    updated_by           BIGINT       NOT NULL,
+    name            VARCHAR(255) NOT NULL,
+    url             VARCHAR(255) NOT NULL UNIQUE,
+    created_at      DATETIME     NOT NULL,
+    updated_at      DATETIME     NOT NULL,
+    deleted_at      DATETIME,
+    created_by      BIGINT       NOT NULL,
+    updated_by      BIGINT       NOT NULL,
     PRIMARY KEY (id)
 );
 CREATE INDEX fk_idx__photographer_portfolio__photographer_id ON photographer_active_region (photographer_id);
@@ -91,8 +91,7 @@ CREATE TABLE promotion
 (
     id                        BIGINT       NOT NULL AUTO_INCREMENT,
     author_id                 BIGINT COMMENT '(FK) id of user(author)',
-    type                      VARCHAR(255) NOT NULL,
-    event_type                VARCHAR(255) NOT NULL,
+    promotion_type            VARCHAR(255) NOT NULL,
     title                     VARCHAR(20)  NOT NULL,
     content                   VARCHAR(500) NOT NULL,
     sido                      VARCHAR(255) NOT NULL,

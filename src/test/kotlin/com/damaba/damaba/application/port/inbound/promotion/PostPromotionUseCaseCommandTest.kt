@@ -3,7 +3,6 @@ package com.damaba.damaba.application.port.inbound.promotion
 import com.damaba.damaba.domain.common.Address
 import com.damaba.damaba.domain.exception.ValidationException
 import com.damaba.damaba.domain.file.File
-import com.damaba.damaba.domain.promotion.constant.EventType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.domain.region.Region
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
@@ -78,14 +77,12 @@ class PostPromotionUseCaseCommandTest {
             address: Address = createAddress(),
             title: String = "Valid title",
             content: String = "Valid content",
-            promotionType: PromotionType = PromotionType.EVENT,
-            eventType: EventType = EventType.FREE,
+            promotionType: PromotionType = PromotionType.FREE,
             images: List<File> = List(3) { createImage() },
             activeRegions: Set<Region> = setOf(Region("서울", "강남구")),
         ) = PostPromotionUseCase.Command(
             authorId = randomLong(),
-            type = promotionType,
-            eventType = eventType,
+            promotionType = promotionType,
             title = title,
             content = content,
             address = address,
