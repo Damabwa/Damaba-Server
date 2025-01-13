@@ -1,5 +1,6 @@
 package com.damaba.damaba.mapper
 
+import com.damaba.damaba.adapter.inbound.promotion.dto.PromotionDetailResponse
 import com.damaba.damaba.adapter.inbound.promotion.dto.PromotionResponse
 import com.damaba.damaba.adapter.outbound.promotion.PromotionActiveRegionJpaEntity
 import com.damaba.damaba.adapter.outbound.promotion.PromotionHashtagJpaEntity
@@ -9,18 +10,31 @@ import com.damaba.damaba.adapter.outbound.promotion.PromotionPhotographyTypeJpaE
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.promotion.Promotion
+import com.damaba.damaba.domain.promotion.PromotionDetail
 import com.damaba.damaba.domain.region.Region
+import com.damaba.damaba.domain.user.User
 import org.mapstruct.AfterMapping
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.MappingTarget
 import org.mapstruct.factory.Mappers
 
-@Mapper(uses = [AddressMapper::class, ImageMapper::class, RegionMapper::class])
+@Mapper(uses = [UserMapper::class, AddressMapper::class, ImageMapper::class, RegionMapper::class])
 abstract class PromotionMapper {
     abstract fun toPromotionResponse(promotion: Promotion): PromotionResponse
 
+    @Mapping(source = "saved", target = "isSaved")
+    abstract fun toPromotionDetailResponse(promotionDetail: PromotionDetail): PromotionDetailResponse
+
     abstract fun toPromotion(promotionJpaEntity: PromotionJpaEntity): Promotion
+
+    @Mapping(source = "promotion.id", target = "id")
+    abstract fun toPromotionDetail(
+        promotion: Promotion,
+        author: User?,
+        saveCount: Int,
+        isSaved: Boolean,
+    ): PromotionDetail
 
     @Mapping(target = "photographyTypes", ignore = true)
     @Mapping(target = "images", ignore = true)

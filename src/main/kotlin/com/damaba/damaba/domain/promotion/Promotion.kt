@@ -17,12 +17,15 @@ class Promotion(
     val externalLink: String?,
     val startedAt: LocalDate?,
     val endedAt: LocalDate?,
-    val viewCount: Long,
+    viewCount: Long,
     val photographyTypes: Set<PhotographyType>,
     val images: List<Image>,
     val activeRegions: Set<Region>,
     val hashtags: Set<String>,
 ) {
+    var viewCount: Long = viewCount
+        private set
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Promotion) return false
@@ -30,6 +33,10 @@ class Promotion(
     }
 
     override fun hashCode(): Int = id.hashCode()
+
+    fun incrementViewCount() {
+        this.viewCount++
+    }
 
     companion object {
         fun create(

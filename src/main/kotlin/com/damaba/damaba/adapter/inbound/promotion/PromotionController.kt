@@ -1,8 +1,10 @@
 package com.damaba.damaba.adapter.inbound.promotion
 
 import com.damaba.damaba.adapter.inbound.promotion.dto.PostPromotionRequest
+import com.damaba.damaba.adapter.inbound.promotion.dto.PromotionDetailResponse
 import com.damaba.damaba.adapter.inbound.promotion.dto.PromotionResponse
 import com.damaba.damaba.application.port.inbound.promotion.FindPromotionsUseCase
+import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.damaba.domain.common.Pagination
@@ -29,10 +31,15 @@ import java.net.URI
 @RestController
 class PromotionController(
     private val getPromotionUseCase: GetPromotionUseCase,
+    private val getPromotionDetailUseCase: GetPromotionDetailUseCase,
     private val findPromotionsUseCase: FindPromotionsUseCase,
     private val postPromotionUseCase: PostPromotionUseCase,
 ) {
-    @Operation(summary = "프로모션 상세 조회")
+    @Operation(
+        summary = "프로모션 단건 조회",
+        description = "<p><code>promotionId</code>에 해당하는 프로모션을 단건 조회합니다." +
+            "<p>프로모션 상세 정보가 필요한 경우 '프로모션 상세 조회 API'를 사용해주세요.",
+    )
     @ApiResponses(
         ApiResponse(responseCode = "200"),
         ApiResponse(responseCode = "404", description = "`promotionId`에 일치하는 프로모션이 없는 경우", content = [Content()]),
@@ -41,6 +48,21 @@ class PromotionController(
     fun getPromotionV1(@PathVariable promotionId: Long): PromotionResponse {
         val promotion = getPromotionUseCase.getPromotion(promotionId)
         return PromotionMapper.INSTANCE.toPromotionResponse(promotion)
+    }
+
+    @Operation(
+        summary = "프로모션 상세 조회",
+        description = "<p><code>promotionId</code>에 해당하는 프로모션의 상세 정보를 조회합니다." +
+            "<p>프로모션 상세 조회 시 조회수가 1 증가합니다.",
+    )
+    @ApiResponses(
+        ApiResponse(responseCode = "200"),
+        ApiResponse(responseCode = "404", description = "`promotionId`에 일치하는 프로모션이 없는 경우", content = [Content()]),
+    )
+    @GetMapping("/api/v1/promotions/{promotionId}/details")
+    fun getPromotionDetailV1(@PathVariable promotionId: Long): PromotionDetailResponse {
+        val promotionDetail = getPromotionDetailUseCase.getPromotionDetail(promotionId)
+        return PromotionMapper.INSTANCE.toPromotionDetailResponse(promotionDetail)
     }
 
     @Operation(summary = "프로모션 리스트 조회")
