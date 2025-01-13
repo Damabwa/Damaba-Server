@@ -5,6 +5,8 @@ import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.damaba.application.port.outbound.promotion.CreatePromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.FindPromotionsPort
 import com.damaba.damaba.application.port.outbound.promotion.GetPromotionPort
+import com.damaba.damaba.application.port.outbound.promotion.UpdatePromotionPort
+import com.damaba.damaba.application.port.outbound.user.GetUserPort
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.promotion.Promotion
@@ -19,6 +21,7 @@ import com.damaba.damaba.util.fixture.AddressFixture.createAddress
 import com.damaba.damaba.util.fixture.FileFixture.createImage
 import com.damaba.damaba.util.fixture.PromotionFixture.createPromotion
 import com.damaba.damaba.util.fixture.RegionFixture.createRegion
+import com.damaba.damaba.util.fixture.UserFixture.createUser
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
@@ -29,21 +32,31 @@ import kotlin.test.Test
 
 class PromotionServiceTest {
     private val getPromotionPort: GetPromotionPort = mockk()
+    private val getUserPort: GetUserPort = mockk()
     private val findPromotionsPort: FindPromotionsPort = mockk()
     private val createPromotionPort: CreatePromotionPort = mockk()
+    private val updatePromotionPort: UpdatePromotionPort = mockk()
 
     private val sut: PromotionService = PromotionService(
         getPromotionPort,
+        getUserPort,
         findPromotionsPort,
         createPromotionPort,
+        updatePromotionPort,
     )
 
     private fun confirmVerifiedEveryMocks() {
-        confirmVerified(getPromotionPort, findPromotionsPort, createPromotionPort)
+        confirmVerified(
+            getPromotionPort,
+            getUserPort,
+            findPromotionsPort,
+            createPromotionPort,
+            updatePromotionPort,
+        )
     }
 
     @Test
-    fun `프로모션 id가 주어지고, 일치하는 프로모션을 상세조회한다`() {
+    fun `프로모션 id가 주어지고, 일치하는 프로모션을 단건 조회한다`() {
         // given
         val promotionId = randomLong()
         val expectedResult = createPromotion()
@@ -56,6 +69,50 @@ class PromotionServiceTest {
         verify { getPromotionPort.getById(promotionId) }
         confirmVerifiedEveryMocks()
         assertThat(actualResult).isEqualTo(expectedResult)
+    }
+
+    @Test
+    fun `id가 주어지고, 주어진 id에 해당하는 프로모션의 상세 정보를 조회하면, 조회수가 1 증가하고 프로모션 상세 정보가 반환된다`() {
+        // given
+        val promotionId = randomLong()
+        val originalViewCount = randomLong()
+        val promotion = createPromotion(id = promotionId, viewCount = originalViewCount)
+        val author = createUser(id = promotion.authorId!!)
+        every { getPromotionPort.getById(promotionId) } returns promotion
+        every { updatePromotionPort.update(any(Promotion::class)) } returns promotion
+        every { getUserPort.getById(promotion.authorId!!) } returns author
+
+        // when
+        val result = sut.getPromotionDetail(promotionId)
+
+        // then
+        verify { getPromotionPort.getById(promotionId) }
+        verify { updatePromotionPort.update(any(Promotion::class)) }
+        verify { getUserPort.getById(promotion.authorId!!) }
+        confirmVerifiedEveryMocks()
+        assertThat(result.id).isEqualTo(promotion.id)
+        assertThat(result.viewCount).isEqualTo(originalViewCount + 1)
+    }
+
+    @Test
+    fun `id가 주어지고, 일치하는 프로모션의 상세 정보를 조회하면, 조회수가 1 증가하고 프로모션 상세 정보가 반환된다, 작성자 정보가 존재하지 않는다면 null로 설정된다`() {
+        // given
+        val promotionId = randomLong()
+        val originalViewCount = randomLong()
+        val promotion = createPromotion(id = promotionId, authorId = null, viewCount = originalViewCount)
+        every { getPromotionPort.getById(promotionId) } returns promotion
+        every { updatePromotionPort.update(any(Promotion::class)) } returns promotion
+
+        // when
+        val result = sut.getPromotionDetail(promotionId)
+
+        // then
+        verify { getPromotionPort.getById(promotionId) }
+        verify { updatePromotionPort.update(any(Promotion::class)) }
+        confirmVerifiedEveryMocks()
+        assertThat(result.id).isEqualTo(promotion.id)
+        assertThat(result.author).isNull()
+        assertThat(result.viewCount).isEqualTo(originalViewCount + 1)
     }
 
     @Test

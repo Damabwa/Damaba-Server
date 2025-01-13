@@ -5,6 +5,7 @@ import com.damaba.damaba.adapter.inbound.common.dto.ImageRequest
 import com.damaba.damaba.adapter.inbound.promotion.dto.PostPromotionRequest
 import com.damaba.damaba.adapter.inbound.region.dto.RegionRequest
 import com.damaba.damaba.application.port.inbound.promotion.FindPromotionsUseCase
+import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.damaba.config.ControllerTestConfig
@@ -18,6 +19,7 @@ import com.damaba.damaba.util.RandomTestUtils.Companion.randomLocalDate
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.fixture.PromotionFixture.createPromotion
+import com.damaba.damaba.util.fixture.PromotionFixture.createPromotionDetail
 import com.damaba.damaba.util.fixture.SecurityFixture.createAuthenticationToken
 import com.damaba.damaba.util.fixture.UserFixture.createUser
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -47,6 +49,7 @@ class PromotionControllerTest @Autowired constructor(
     private val mvc: MockMvc,
     private val mapper: ObjectMapper,
     private val getPromotionUseCase: GetPromotionUseCase,
+    private val getPromotionDetailUseCase: GetPromotionDetailUseCase,
     private val findPromotionsUseCase: FindPromotionsUseCase,
     private val postPromotionUseCase: PostPromotionUseCase,
 ) {
@@ -56,6 +59,9 @@ class PromotionControllerTest @Autowired constructor(
         fun getPromotionUseCase(): GetPromotionUseCase = mockk()
 
         @Bean
+        fun getPromotionDetailUseCase(): GetPromotionDetailUseCase = mockk()
+
+        @Bean
         fun findPromotionsUseCase(): FindPromotionsUseCase = mockk()
 
         @Bean
@@ -63,7 +69,7 @@ class PromotionControllerTest @Autowired constructor(
     }
 
     @Test
-    fun `프로모션 id가 주어지고, 프로모션을 상세 조회한다`() {
+    fun `프로모션 id가 주어지고, 프로모션을 단건 조회한다`() {
         // given
         val promotionId = randomLong(positive = true)
         val expectedResult = createPromotion(id = promotionId)
@@ -75,6 +81,21 @@ class PromotionControllerTest @Autowired constructor(
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(expectedResult.id))
         verify { getPromotionUseCase.getPromotion(promotionId) }
+    }
+
+    @Test
+    fun `프로모션 id가 주어지고, 프로모션을 상세 조회한다`() {
+        // given
+        val promotionId = randomLong(positive = true)
+        val expectedResult = createPromotionDetail(id = promotionId, author = null)
+        every { getPromotionDetailUseCase.getPromotionDetail(promotionId) } returns expectedResult
+
+        // when & then
+        mvc.perform(
+            get("/api/v1/promotions/$promotionId/details"),
+        ).andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").value(expectedResult.id))
+        verify { getPromotionDetailUseCase.getPromotionDetail(promotionId) }
     }
 
     @Test

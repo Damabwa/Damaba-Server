@@ -76,4 +76,26 @@ class PromotionCoreRepositoryTest @Autowired constructor(
         assertThatIterable(createdPromotion.activeRegions).isEqualTo(promotion.activeRegions)
         assertThatIterable(createdPromotion.hashtags).isEqualTo(promotion.hashtags)
     }
+
+    @Test
+    fun `수정된 프로모션 정보가 주어지고, 프로모션을 수정한다`() {
+        // given
+        val promotion = promotionCoreRepository.create(createPromotion())
+        val newPromotion = createPromotion(id = promotion.id)
+
+        // when
+        val updatedPromotion = promotionCoreRepository.update(newPromotion)
+
+        // then
+        assertThat(updatedPromotion.id).isEqualTo(newPromotion.id)
+        assertThat(updatedPromotion.authorId).isEqualTo(newPromotion.authorId)
+        assertThat(updatedPromotion.promotionType).isEqualTo(newPromotion.promotionType)
+        assertThat(updatedPromotion.title).isEqualTo(newPromotion.title)
+        assertThat(updatedPromotion.content).isEqualTo(newPromotion.content)
+        assertThat(updatedPromotion.address).isEqualTo(newPromotion.address)
+        assertThat(updatedPromotion.externalLink).isEqualTo(newPromotion.externalLink)
+        assertThat(updatedPromotion.startedAt).isEqualTo(newPromotion.startedAt)
+        assertThat(updatedPromotion.endedAt).isEqualTo(newPromotion.endedAt)
+        assertThat(updatedPromotion.viewCount).isEqualTo(newPromotion.viewCount)
+    }
 }

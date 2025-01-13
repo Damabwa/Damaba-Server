@@ -45,6 +45,7 @@ class SecurityConfig(private val env: Environment) {
             "/api/v*/photographers/{photographerId:\\d+}" to HttpMethod.GET,
             "/api/v*/photographers/nicknames/existence" to HttpMethod.GET,
             "/api/v*/promotions/{promotionId:\\d+}" to HttpMethod.GET,
+            "/api/v*/promotions/{promotionId:\\d+}/details" to HttpMethod.GET,
             "/api/v*/promotions" to HttpMethod.GET,
         )
     }
