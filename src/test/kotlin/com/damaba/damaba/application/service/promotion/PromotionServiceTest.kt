@@ -12,7 +12,10 @@ import com.damaba.damaba.application.port.outbound.user.GetUserPort
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.promotion.Promotion
+import com.damaba.damaba.domain.promotion.constant.PromotionProgressStatus
+import com.damaba.damaba.domain.promotion.constant.PromotionSortType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
+import com.damaba.damaba.domain.region.RegionFilterCondition
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomSet
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomInt
@@ -129,6 +132,11 @@ class PromotionServiceTest {
         fun `프로모션 리스트를 조회한다`() {
             // given
             val query = FindPromotionsUseCase.Query(
+                type = PromotionType.FREE,
+                progressStatus = PromotionProgressStatus.ONGOING,
+                regions = setOf(RegionFilterCondition("서울", "강남구"), RegionFilterCondition("대전", "중구")),
+                photographyTypes = setOf(PhotographyType.PROFILE, PhotographyType.SELF),
+                sortType = PromotionSortType.LATEST,
                 page = 1,
                 pageSize = randomInt(min = 5, max = 10),
             )
@@ -139,14 +147,32 @@ class PromotionServiceTest {
                 totalPage = 1,
             )
             every {
-                findPromotionsPort.findPromotions(page = query.page, pageSize = query.pageSize)
+                findPromotionsPort.findPromotions(
+                    type = query.type,
+                    progressStatus = query.progressStatus,
+                    regions = query.regions,
+                    photographyTypes = query.photographyTypes,
+                    sortType = query.sortType,
+                    page = query.page,
+                    pageSize = query.pageSize,
+                )
             } returns expectedResult
 
             // when
             val actualResult = sut.findPromotions(query)
 
             // then
-            verify { findPromotionsPort.findPromotions(page = query.page, pageSize = query.pageSize) }
+            verify {
+                findPromotionsPort.findPromotions(
+                    type = query.type,
+                    progressStatus = query.progressStatus,
+                    regions = query.regions,
+                    photographyTypes = query.photographyTypes,
+                    sortType = query.sortType,
+                    page = query.page,
+                    pageSize = query.pageSize,
+                )
+            }
             confirmVerifiedEveryMocks()
             assertThat(actualResult).isEqualTo(expectedResult)
         }

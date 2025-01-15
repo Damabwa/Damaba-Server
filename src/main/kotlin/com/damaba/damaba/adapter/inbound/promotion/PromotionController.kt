@@ -8,6 +8,12 @@ import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUs
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.damaba.domain.common.Pagination
+import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.exception.ValidationException
+import com.damaba.damaba.domain.promotion.constant.PromotionProgressStatus
+import com.damaba.damaba.domain.promotion.constant.PromotionSortType
+import com.damaba.damaba.domain.promotion.constant.PromotionType
+import com.damaba.damaba.domain.region.RegionFilterCondition
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.mapper.PromotionMapper
 import io.swagger.v3.oas.annotations.Operation
@@ -68,10 +74,51 @@ class PromotionController(
     @Operation(summary = "프로모션 리스트 조회")
     @GetMapping("/api/v1/promotions")
     fun findPromotionsV1(
-        @RequestParam @Parameter(description = "페이지 번호. 0부터 시작합니다.") page: Int,
-        @RequestParam @Parameter(description = "페이지 크기") pageSize: Int,
+        @RequestParam(required = false)
+        @Parameter(description = "프로모션 유형")
+        type: PromotionType?,
+        @RequestParam(required = false)
+        @Parameter(description = "진행 상태")
+        progressStatus: PromotionProgressStatus?,
+        @RequestParam(required = false)
+        @Parameter(
+            description = "<p>지역 리스트." +
+                "<p>카테고리(시/도)와 지역 이름(시/군/구)는 공백(<code> </code>)으로 구분하여 전달해야 합니다." +
+                "<p>지역 이름이 없는 경우(ex. 서울 전체에 대한 필터링)에는 <code>\"서울\"</code>과 같이 카테고리만 전달합니다.",
+            example = """["서울 강남구", "서울 은평구", "대전"]""",
+        ) regions: List<String>?,
+        @RequestParam(required = false)
+        @Parameter(description = "촬영 종류")
+        photographyTypes: Set<PhotographyType>?,
+        @RequestParam(defaultValue = "LATEST")
+        @Parameter(description = "정렬 기준")
+        sortType: PromotionSortType,
+        @RequestParam(defaultValue = "0")
+        @Parameter(description = "페이지 번호. 0부터 시작합니다.")
+        page: Int,
+        @RequestParam(defaultValue = "10")
+        @Parameter(description = "페이지 크기")
+        pageSize: Int,
     ): Pagination<PromotionResponse> {
-        val promotions = findPromotionsUseCase.findPromotions(FindPromotionsUseCase.Query(page, pageSize))
+        val regionConditions = regions?.map { region ->
+            val parts = region.trim().split(" ")
+            when (parts.size) {
+                1 -> RegionFilterCondition(parts[0], null)
+                2 -> RegionFilterCondition(parts[0], parts[1])
+                else -> throw ValidationException("지역 정보에 불필요한 공백이 포함되어있습니다.")
+            }
+        }?.toSet()
+        val promotions = findPromotionsUseCase.findPromotions(
+            FindPromotionsUseCase.Query(
+                type = type,
+                progressStatus = progressStatus,
+                regions = regionConditions ?: emptySet(),
+                photographyTypes = photographyTypes ?: emptySet(),
+                sortType = sortType,
+                page = page,
+                pageSize = pageSize,
+            ),
+        )
         return promotions.map { PromotionMapper.INSTANCE.toPromotionResponse(it) }
     }
 

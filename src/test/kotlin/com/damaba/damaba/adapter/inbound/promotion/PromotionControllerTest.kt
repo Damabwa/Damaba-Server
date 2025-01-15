@@ -11,7 +11,10 @@ import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.damaba.config.ControllerTestConfig
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.promotion.constant.PromotionProgressStatus
+import com.damaba.damaba.domain.promotion.constant.PromotionSortType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
+import com.damaba.damaba.domain.region.RegionFilterCondition
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomSet
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomInt
@@ -99,24 +102,85 @@ class PromotionControllerTest @Autowired constructor(
     }
 
     @Test
-    fun `프로모션 리스트를 조회한다`() {
+    fun `필터 조건들이 주어지고, 프로모션 리스트를 조회한다`() {
         // given
+        val type = PromotionType.FREE
+        val progressStatus = PromotionProgressStatus.ONGOING
+        val regions = setOf(RegionFilterCondition("서울", "강남구"), RegionFilterCondition("대전", null))
+        val photographyTypes = setOf(PhotographyType.PROFILE, PhotographyType.SELF)
+        val sortType = PromotionSortType.LATEST
         val page = 1
         val pageSize = randomInt(min = 5, max = 15)
-        val totalPage = 3
         val expectedResult = Pagination(
             items = generateRandomList(maxSize = pageSize) { createPromotion() },
             page = page,
             pageSize = pageSize,
-            totalPage = totalPage,
+            totalPage = randomInt(min = 1, max = 10),
         )
         every {
-            findPromotionsUseCase.findPromotions(FindPromotionsUseCase.Query(page, pageSize))
+            findPromotionsUseCase.findPromotions(
+                FindPromotionsUseCase.Query(type, progressStatus, regions, photographyTypes, sortType, page, pageSize),
+            )
+        } returns expectedResult
+
+        // when & then
+        val requestBuilder = get("/api/v1/promotions")
+        regions.forEach { region ->
+            requestBuilder.param(
+                "regions",
+                if (region.name == null) region.category else "${region.category} ${region.name}",
+            )
+        }
+        photographyTypes.forEach { photographyType -> requestBuilder.param("photographyTypes", photographyType.name) }
+        requestBuilder
+            .param("type", type.name)
+            .param("progressStatus", progressStatus.name)
+            .param("sortType", sortType.name)
+            .param("page", page.toString())
+            .param("pageSize", pageSize.toString())
+        mvc.perform(requestBuilder)
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.items", hasSize<Int>(expectedResult.items.size)))
+            .andExpect(jsonPath("$.page").value(expectedResult.page))
+            .andExpect(jsonPath("$.pageSize").value(expectedResult.pageSize))
+            .andExpect(jsonPath("$.totalPage").value(expectedResult.totalPage))
+        verify {
+            findPromotionsUseCase.findPromotions(
+                FindPromotionsUseCase.Query(type, progressStatus, regions, photographyTypes, sortType, page, pageSize),
+            )
+        }
+    }
+
+    @Test
+    fun `주어진 필터 조건 없이, 프로모션 리스트를 조회한다`() {
+        // given
+        val sortType = PromotionSortType.LATEST
+        val page = 1
+        val pageSize = randomInt(min = 5, max = 15)
+        val expectedResult = Pagination(
+            items = generateRandomList(maxSize = pageSize) { createPromotion() },
+            page = page,
+            pageSize = pageSize,
+            totalPage = randomInt(min = 1, max = 10),
+        )
+        every {
+            findPromotionsUseCase.findPromotions(
+                FindPromotionsUseCase.Query(
+                    type = null,
+                    progressStatus = null,
+                    regions = emptySet(),
+                    photographyTypes = emptySet(),
+                    sortType = sortType,
+                    page = page,
+                    pageSize = pageSize,
+                ),
+            )
         } returns expectedResult
 
         // when & then
         mvc.perform(
             get("/api/v1/promotions")
+                .param("sortType", sortType.name)
                 .param("page", page.toString())
                 .param("pageSize", pageSize.toString()),
         ).andExpect(status().isOk)
@@ -124,7 +188,36 @@ class PromotionControllerTest @Autowired constructor(
             .andExpect(jsonPath("$.page").value(expectedResult.page))
             .andExpect(jsonPath("$.pageSize").value(expectedResult.pageSize))
             .andExpect(jsonPath("$.totalPage").value(expectedResult.totalPage))
-        verify { findPromotionsUseCase.findPromotions(FindPromotionsUseCase.Query(page, pageSize)) }
+        verify {
+            findPromotionsUseCase.findPromotions(
+                FindPromotionsUseCase.Query(
+                    type = null,
+                    progressStatus = null,
+                    regions = emptySet(),
+                    photographyTypes = emptySet(),
+                    sortType = sortType,
+                    page = page,
+                    pageSize = pageSize,
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun `잘못된 형식의 지역 필터링 데이터가 주어지고, 프로모션 리스트를 조회하면, validation exception이 발생한다`() {
+        // given
+        val sortType = PromotionSortType.LATEST
+        val page = 1
+        val pageSize = randomInt(min = 5, max = 15)
+
+        // when & then
+        mvc.perform(
+            get("/api/v1/promotions")
+                .param("regions", "경기 수원 원천")
+                .param("sortType", sortType.name)
+                .param("page", page.toString())
+                .param("pageSize", pageSize.toString()),
+        ).andExpect(status().isUnprocessableEntity)
     }
 
     @Test

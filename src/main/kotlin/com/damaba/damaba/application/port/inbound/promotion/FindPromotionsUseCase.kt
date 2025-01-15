@@ -1,13 +1,23 @@
 package com.damaba.damaba.application.port.inbound.promotion
 
 import com.damaba.damaba.domain.common.Pagination
+import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.exception.ValidationException
 import com.damaba.damaba.domain.promotion.Promotion
+import com.damaba.damaba.domain.promotion.constant.PromotionProgressStatus
+import com.damaba.damaba.domain.promotion.constant.PromotionSortType
+import com.damaba.damaba.domain.promotion.constant.PromotionType
+import com.damaba.damaba.domain.region.RegionFilterCondition
 
 interface FindPromotionsUseCase {
     fun findPromotions(query: Query): Pagination<Promotion>
 
     data class Query(
+        val type: PromotionType?,
+        val progressStatus: PromotionProgressStatus?,
+        val regions: Set<RegionFilterCondition>,
+        val photographyTypes: Set<PhotographyType>,
+        val sortType: PromotionSortType,
         val page: Int,
         val pageSize: Int,
     ) {

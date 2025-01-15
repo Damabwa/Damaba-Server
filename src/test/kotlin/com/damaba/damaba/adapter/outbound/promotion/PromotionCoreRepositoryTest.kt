@@ -1,7 +1,16 @@
 package com.damaba.damaba.adapter.outbound.promotion
 
+import com.damaba.damaba.config.JpaConfig
+import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.promotion.constant.PromotionProgressStatus
+import com.damaba.damaba.domain.promotion.constant.PromotionSortType
+import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.domain.promotion.exception.PromotionNotFoundException
+import com.damaba.damaba.domain.region.Region
+import com.damaba.damaba.domain.region.RegionFilterCondition
 import com.damaba.damaba.util.fixture.PromotionFixture.createPromotion
+import com.damaba.damaba.util.fixture.RegionFixture.createRegion
+import com.linecorp.kotlinjdsl.support.spring.data.jpa.autoconfigure.KotlinJdslAutoConfiguration
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatIterable
 import org.assertj.core.api.Assertions.catchThrowable
@@ -9,10 +18,16 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
+import java.time.LocalDate
 import kotlin.test.Test
 
 @ActiveProfiles("test")
-@Import(PromotionCoreRepository::class)
+@Import(
+    JpaConfig::class,
+    KotlinJdslAutoConfiguration::class,
+    PromotionCoreRepository::class,
+    PromotionJdslRepository::class,
+)
 @DataJpaTest
 class PromotionCoreRepositoryTest @Autowired constructor(
     private val promotionCoreRepository: PromotionCoreRepository,
@@ -41,22 +56,194 @@ class PromotionCoreRepositoryTest @Autowired constructor(
     }
 
     @Test
-    fun `프로모션 리스트를 조회한다`() {
+    fun `프로모션 리스트를 조회하면 필터 조건에 맞는 프로모션들이 반환된다`() {
         // given
-        promotionCoreRepository.create(createPromotion())
-        promotionCoreRepository.create(createPromotion())
-        promotionCoreRepository.create(createPromotion())
+        promotionCoreRepository.create(
+            createPromotion(
+                promotionType = PromotionType.FREE,
+                startedAt = LocalDate.now().minusDays(2),
+                endedAt = LocalDate.now().plusDays(2),
+                photographyTypes = setOf(PhotographyType.SNAP),
+                activeRegions = setOf(createRegion(category = "RegionA", name = "CityA")),
+            ),
+        )
+        promotionCoreRepository.create(
+            createPromotion(
+                promotionType = PromotionType.DISCOUNT,
+                startedAt = LocalDate.now().plusDays(1),
+                endedAt = LocalDate.now().plusDays(5),
+                photographyTypes = setOf(PhotographyType.SNAP),
+                activeRegions = setOf(Region(category = "RegionB", name = "CityB")),
+            ),
+        )
+
+        val type = PromotionType.FREE
+        val progressStatus = PromotionProgressStatus.ONGOING
+        val regions = setOf(
+            RegionFilterCondition(category = "RegionA", name = "CityA"),
+            RegionFilterCondition(category = "RegionB", name = null),
+        )
+        val photographyTypes = setOf(PhotographyType.SNAP)
+        val sortType = PromotionSortType.LATEST
         val page = 0
         val pageSize = 10
 
         // when
-        val promotions = promotionCoreRepository.findPromotions(page, pageSize)
+        val promotions = promotionCoreRepository.findPromotions(
+            type = type,
+            progressStatus = progressStatus,
+            regions = regions,
+            photographyTypes = photographyTypes,
+            sortType = sortType,
+            page = page,
+            pageSize = pageSize,
+        )
 
         // then
-        assertThat(promotions.items.size).isEqualTo(3)
+        assertThat(promotions.items).hasSize(1)
+        assertThat(promotions.items.first().promotionType).isEqualTo(type)
+        assertThat(promotions.items.first().photographyTypes).containsAll(photographyTypes)
         assertThat(promotions.page).isEqualTo(page)
         assertThat(promotions.pageSize).isEqualTo(pageSize)
-        assertThat(promotions.totalPage).isEqualTo(1)
+    }
+
+    @Test
+    fun `프로모션 리스트를 조회하면 필터 조건이 없는 경우 모든 프로모션이 반환된다`() {
+        // given
+        promotionCoreRepository.create(createPromotion())
+        promotionCoreRepository.create(createPromotion())
+        promotionCoreRepository.create(createPromotion())
+
+        val page = 0
+        val pageSize = 10
+
+        // when
+        val promotions = promotionCoreRepository.findPromotions(
+            type = null,
+            progressStatus = null,
+            regions = emptySet(),
+            photographyTypes = emptySet(),
+            sortType = PromotionSortType.POPULAR,
+            page = page,
+            pageSize = pageSize,
+        )
+
+        // then
+        assertThat(promotions.items).hasSize(3)
+        assertThat(promotions.page).isEqualTo(page)
+        assertThat(promotions.pageSize).isEqualTo(pageSize)
+    }
+
+    @Test
+    fun `진행 상태가 UPCOMING인 프로모션만 조회된다`() {
+        // given
+        promotionCoreRepository.create(
+            createPromotion(
+                promotionType = PromotionType.FREE,
+                startedAt = LocalDate.now().plusDays(1),
+                endedAt = LocalDate.now().plusDays(5),
+            ),
+        )
+        promotionCoreRepository.create(
+            createPromotion(
+                promotionType = PromotionType.DISCOUNT,
+                startedAt = LocalDate.now().minusDays(5),
+                endedAt = LocalDate.now().minusDays(1),
+            ),
+        )
+
+        val progressStatus = PromotionProgressStatus.UPCOMING
+        val page = 0
+        val pageSize = 10
+
+        // when
+        val promotions = promotionCoreRepository.findPromotions(
+            type = null,
+            progressStatus = progressStatus,
+            regions = emptySet(),
+            photographyTypes = emptySet(),
+            sortType = PromotionSortType.LATEST,
+            page = page,
+            pageSize = pageSize,
+        )
+
+        // then
+        assertThat(promotions.items).hasSize(1)
+        assertThat(promotions.items.first().startedAt).isAfter(LocalDate.now())
+    }
+
+    @Test
+    fun `진행 상태가 ENDED인 프로모션만 조회된다`() {
+        // given
+        promotionCoreRepository.create(
+            createPromotion(
+                promotionType = PromotionType.FREE,
+                startedAt = LocalDate.now().minusDays(10),
+                endedAt = LocalDate.now().minusDays(5),
+            ),
+        )
+        promotionCoreRepository.create(
+            createPromotion(
+                promotionType = PromotionType.DISCOUNT,
+                startedAt = LocalDate.now().minusDays(2),
+                endedAt = LocalDate.now().plusDays(2),
+            ),
+        )
+
+        val progressStatus = PromotionProgressStatus.ENDED
+        val page = 0
+        val pageSize = 10
+
+        // when
+        val promotions = promotionCoreRepository.findPromotions(
+            type = null,
+            progressStatus = progressStatus,
+            regions = emptySet(),
+            photographyTypes = emptySet(),
+            sortType = PromotionSortType.LATEST,
+            page = page,
+            pageSize = pageSize,
+        )
+
+        // then
+        assertThat(promotions.items).hasSize(1)
+        assertThat(promotions.items.first().endedAt).isBefore(LocalDate.now())
+    }
+
+    @Test
+    fun `특정 지역에 해당하는 프로모션만 조회된다`() {
+        // given
+        promotionCoreRepository.create(
+            createPromotion(
+                promotionType = PromotionType.FREE,
+                activeRegions = setOf(createRegion(category = "RegionA", name = "CityA")),
+            ),
+        )
+        promotionCoreRepository.create(
+            createPromotion(
+                promotionType = PromotionType.DISCOUNT,
+                activeRegions = setOf(createRegion(category = "RegionB", name = "CityB")),
+            ),
+        )
+
+        val regions = setOf(RegionFilterCondition(category = "RegionA", name = "CityA"))
+        val page = 0
+        val pageSize = 10
+
+        // when
+        val promotions = promotionCoreRepository.findPromotions(
+            type = null,
+            progressStatus = null,
+            regions = regions,
+            photographyTypes = emptySet(),
+            sortType = PromotionSortType.LATEST,
+            page = page,
+            pageSize = pageSize,
+        )
+
+        // then
+        assertThat(promotions.items).hasSize(1)
+        assertThat(promotions.items.first().activeRegions.map { it.category }).contains("RegionA")
     }
 
     @Test

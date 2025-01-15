@@ -12,6 +12,7 @@ import com.damaba.damaba.domain.user.exception.UserNotFoundException
 import com.damaba.damaba.util.fixture.PhotographerFixture.createPhotographer
 import com.damaba.damaba.util.fixture.PhotographerFixture.createPhotographerJpaEntity
 import com.damaba.damaba.util.fixture.UserFixture.createUserJpaEntity
+import com.linecorp.kotlinjdsl.support.spring.data.jpa.autoconfigure.KotlinJdslAutoConfiguration
 import jakarta.persistence.EntityManager
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
@@ -22,7 +23,11 @@ import org.springframework.test.context.ActiveProfiles
 import kotlin.test.Test
 
 @ActiveProfiles("test")
-@Import(JpaConfig::class, PhotographerCoreRepository::class)
+@Import(
+    JpaConfig::class,
+    KotlinJdslAutoConfiguration::class,
+    PhotographerCoreRepository::class,
+)
 @DataJpaTest
 class PhotographerCoreRepositoryTest @Autowired constructor(
     private val entityManager: EntityManager,
