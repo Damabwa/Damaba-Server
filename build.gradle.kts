@@ -23,6 +23,10 @@ java {
 }
 
 extra["springCloudVersion"] = "2023.0.3"
+val swaggerVersion = "2.6.0"
+val jdslVersion = "3.5.4"
+val jjwtVersion = "0.11.5"
+val mapStructVersion = "1.5.2.Final"
 
 dependencyManagement {
     imports {
@@ -48,14 +52,17 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
 
     // Swagger
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.6.0")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$swaggerVersion")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:$swaggerVersion")
 
     /**
      * Infrastructure
      */
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("com.linecorp.kotlin-jdsl:jpql-dsl:$jdslVersion")
+    implementation("com.linecorp.kotlin-jdsl:jpql-render:$jdslVersion")
+    implementation("com.linecorp.kotlin-jdsl:spring-data-jpa-support:$jdslVersion")
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
 
     // RDB
@@ -63,9 +70,9 @@ dependencies {
     implementation("com.mysql:mysql-connector-j")
 
     // JWT
-    implementation("io.jsonwebtoken:jjwt-api:0.11.5")
-    implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
-    implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
+    implementation("io.jsonwebtoken:jjwt-api:$jjwtVersion")
+    implementation("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
+    implementation("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")
 
     // AWS S3
     implementation(platform("software.amazon.awssdk:bom:2.27.21"))
@@ -75,10 +82,10 @@ dependencies {
      * Common
      */
     // MapStruct
-    implementation("org.mapstruct:mapstruct:1.5.2.Final")
-    annotationProcessor("org.mapstruct:mapstruct-processor:1.5.2.Final")
-    kapt("org.mapstruct:mapstruct-processor:1.5.2.Final")
-    kaptTest("org.mapstruct:mapstruct-processor:1.5.2.Final")
+    implementation("org.mapstruct:mapstruct:$mapStructVersion")
+    annotationProcessor("org.mapstruct:mapstruct-processor:$mapStructVersion")
+    kapt("org.mapstruct:mapstruct-processor:$mapStructVersion")
+    kaptTest("org.mapstruct:mapstruct-processor:$mapStructVersion")
 
     // Test container
     testImplementation("org.testcontainers:testcontainers:1.20.2")
