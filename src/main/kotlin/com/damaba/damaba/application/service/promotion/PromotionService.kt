@@ -9,7 +9,9 @@ import com.damaba.damaba.application.port.outbound.promotion.FindPromotionsPort
 import com.damaba.damaba.application.port.outbound.promotion.GetPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.UpdatePromotionPort
 import com.damaba.damaba.application.port.outbound.user.GetUserPort
+import com.damaba.damaba.domain.common.LockType
 import com.damaba.damaba.domain.common.Pagination
+import com.damaba.damaba.domain.common.TransactionalLock
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.PromotionDetail
@@ -33,8 +35,8 @@ class PromotionService(
     @Transactional(readOnly = true)
     override fun getPromotion(promotionId: Long): Promotion = getPromotionPort.getById(promotionId)
 
-    // TODO: 동시성 이슈 개선
     // TODO: `saveCount`, `isSaved`는 추후 저장 기능 구현 후 반영 로직 추가
+    @TransactionalLock(lockType = LockType.PESSIMISTIC, domainType = Promotion::class, idFieldName = "promotionId")
     override fun getPromotionDetail(promotionId: Long): PromotionDetail {
         val promotion = getPromotionPort.getById(promotionId)
 
