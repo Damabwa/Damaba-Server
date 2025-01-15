@@ -12,7 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import java.util.Optional
 
 @EnableJpaAuditing
-@EnableJpaRepositories(basePackages = ["com.damaba.user", "com.damaba.damaba"])
+@EnableJpaRepositories(basePackages = ["com.damaba.damaba"])
 @Configuration
 class JpaConfig {
     @Bean

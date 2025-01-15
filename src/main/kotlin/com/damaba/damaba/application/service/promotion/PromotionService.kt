@@ -50,7 +50,17 @@ class PromotionService(
     }
 
     @Transactional(readOnly = true)
-    override fun findPromotions(query: FindPromotionsUseCase.Query): Pagination<Promotion> = findPromotionsPort.findPromotions(query.page, query.pageSize)
+    override fun findPromotions(
+        query: FindPromotionsUseCase.Query,
+    ): Pagination<Promotion> = findPromotionsPort.findPromotions(
+        query.type,
+        query.progressStatus,
+        query.regions,
+        query.photographyTypes,
+        query.sortType,
+        query.page,
+        query.pageSize,
+    )
 
     @Transactional
     override fun postPromotion(command: PostPromotionUseCase.Command): Promotion = createPromotionPort.create(

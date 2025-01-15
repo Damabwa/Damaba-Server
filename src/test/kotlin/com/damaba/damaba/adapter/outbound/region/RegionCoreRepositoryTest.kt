@@ -1,5 +1,7 @@
 package com.damaba.damaba.adapter.outbound.region
 
+import com.damaba.damaba.config.JpaConfig
+import com.linecorp.kotlinjdsl.support.spring.data.jpa.autoconfigure.KotlinJdslAutoConfiguration
 import org.assertj.core.api.Assertions.assertThat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters
@@ -10,7 +12,11 @@ import kotlin.test.Test
 
 @ActiveProfiles("test")
 @AutoConfigureJsonTesters
-@Import(RegionCoreRepository::class)
+@Import(
+    JpaConfig::class,
+    KotlinJdslAutoConfiguration::class,
+    RegionCoreRepository::class,
+)
 @DataJpaTest
 class RegionCoreRepositoryTest @Autowired constructor(
     private val regionRepository: RegionCoreRepository,

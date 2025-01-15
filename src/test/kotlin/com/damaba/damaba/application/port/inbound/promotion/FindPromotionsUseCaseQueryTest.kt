@@ -1,6 +1,7 @@
 package com.damaba.damaba.application.port.inbound.promotion
 
 import com.damaba.damaba.domain.exception.ValidationException
+import com.damaba.damaba.domain.promotion.constant.PromotionSortType
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
 import kotlin.test.Test
@@ -12,7 +13,15 @@ class FindPromotionsUseCaseQueryTest {
 
         // when
         val ex = catchThrowable {
-            FindPromotionsUseCase.Query(page = -1, pageSize = 10)
+            FindPromotionsUseCase.Query(
+                type = null,
+                progressStatus = null,
+                regions = emptySet(),
+                photographyTypes = emptySet(),
+                sortType = PromotionSortType.LATEST,
+                page = -1,
+                pageSize = 10,
+            )
         }
 
         // then
@@ -26,7 +35,15 @@ class FindPromotionsUseCaseQueryTest {
 
         // when
         val ex = catchThrowable {
-            FindPromotionsUseCase.Query(page = 10, pageSize = -1)
+            FindPromotionsUseCase.Query(
+                type = null,
+                progressStatus = null,
+                regions = emptySet(),
+                photographyTypes = emptySet(),
+                sortType = PromotionSortType.LATEST,
+                page = 1,
+                pageSize = -1,
+            )
         }
 
         // then
