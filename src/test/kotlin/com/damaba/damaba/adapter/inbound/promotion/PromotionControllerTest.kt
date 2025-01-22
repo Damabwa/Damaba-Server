@@ -8,6 +8,7 @@ import com.damaba.damaba.application.port.inbound.promotion.FindPromotionsUseCas
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
+import com.damaba.damaba.application.port.inbound.promotion.SavePromotionUseCase
 import com.damaba.damaba.config.ControllerTestConfig
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.PhotographyType
@@ -27,7 +28,9 @@ import com.damaba.damaba.util.fixture.SecurityFixture.createAuthenticationToken
 import com.damaba.damaba.util.fixture.UserFixture.createUser
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.runs
 import io.mockk.verify
 import org.hamcrest.Matchers.hasSize
 import org.springframework.beans.factory.annotation.Autowired
@@ -55,6 +58,7 @@ class PromotionControllerTest @Autowired constructor(
     private val getPromotionDetailUseCase: GetPromotionDetailUseCase,
     private val findPromotionsUseCase: FindPromotionsUseCase,
     private val postPromotionUseCase: PostPromotionUseCase,
+    private val savePromotionUseCase: SavePromotionUseCase,
 ) {
     @TestConfiguration
     class MockBeanSetUp {
@@ -69,6 +73,9 @@ class PromotionControllerTest @Autowired constructor(
 
         @Bean
         fun postPromotionUseCase(): PostPromotionUseCase = mockk()
+
+        @Bean
+        fun savePromotionUseCase(): SavePromotionUseCase = mockk()
     }
 
     @Test
@@ -255,5 +262,21 @@ class PromotionControllerTest @Autowired constructor(
             .andExpect(jsonPath("$.id").value(expectedResult.id))
             .andExpect(jsonPath("$.authorId").value(requestUser.id))
         verify { postPromotionUseCase.postPromotion(any(PostPromotionUseCase.Command::class)) }
+    }
+
+    @Test
+    fun `프로모션을 저장한다`() {
+        // given
+        val requester = createUser()
+        val promotionId = randomLong()
+        val query = SavePromotionUseCase.Query(userId = requester.id, promotionId = promotionId)
+        every { savePromotionUseCase.savePromotion(query) } just runs
+
+        // when & then
+        mvc.perform(
+            post("/api/v1/promotions/$promotionId/save")
+                .with(authentication(createAuthenticationToken(requester))),
+        ).andExpect(status().isNoContent)
+        verify { savePromotionUseCase.savePromotion(query) }
     }
 }

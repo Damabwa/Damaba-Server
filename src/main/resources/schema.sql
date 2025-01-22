@@ -8,6 +8,7 @@ DROP TABLE IF EXISTS promotion_photography_type;
 DROP TABLE IF EXISTS promotion_image;
 DROP TABLE IF EXISTS promotion_active_region;
 DROP TABLE IF EXISTS promotion_hashtag;
+DROP TABLE IF EXISTS saved_promotion;
 
 CREATE TABLE `user`
 (
@@ -157,3 +158,15 @@ CREATE TABLE promotion_hashtag
     PRIMARY KEY (id)
 );
 CREATE INDEX fk_idx__promotion_hashtag__promotion_id ON promotion_hashtag (promotion_id);
+
+CREATE TABLE saved_promotion
+(
+    id           BIGINT   NOT NULL AUTO_INCREMENT,
+    user_id      BIGINT   NOT NULL COMMENT '(FK) id of user',
+    promotion_id BIGINT   NOT NULL COMMENT '(FK) id of promotion',
+    created_at   DATETIME NOT NULL,
+    updated_at   DATETIME NOT NULL,
+    PRIMARY KEY (id)
+);
+CREATE INDEX fk_idx__promotion_save__user_id ON saved_promotion (user_id);
+CREATE INDEX fk_idx__promotion_save__promotion_id ON saved_promotion (promotion_id);
