@@ -4,7 +4,10 @@ import com.damaba.damaba.adapter.outbound.promotion.PromotionCoreRepository
 import com.damaba.damaba.adapter.outbound.user.UserCoreRepository
 import com.damaba.damaba.application.port.inbound.promotion.FindPromotionsUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
+import com.damaba.damaba.application.port.inbound.promotion.SavePromotionUseCase
+import com.damaba.damaba.application.port.outbound.promotion.CheckSavedPromotionExistencePort
 import com.damaba.damaba.application.port.outbound.promotion.CreatePromotionPort
+import com.damaba.damaba.application.port.outbound.promotion.CreateSavedPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.FindPromotionsPort
 import com.damaba.damaba.application.port.outbound.promotion.GetPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.UpdatePromotionPort
@@ -12,9 +15,11 @@ import com.damaba.damaba.application.port.outbound.user.GetUserPort
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.promotion.Promotion
+import com.damaba.damaba.domain.promotion.SavedPromotion
 import com.damaba.damaba.domain.promotion.constant.PromotionProgressStatus
 import com.damaba.damaba.domain.promotion.constant.PromotionSortType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
+import com.damaba.damaba.domain.promotion.exception.AlreadySavedPromotionException
 import com.damaba.damaba.domain.region.RegionFilterCondition
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomSet
@@ -29,10 +34,13 @@ import com.damaba.damaba.util.fixture.RegionFixture.createRegion
 import com.damaba.damaba.util.fixture.UserFixture.createUser
 import io.mockk.confirmVerified
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.runs
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatIterable
+import org.assertj.core.api.Assertions.catchThrowable
 import org.junit.jupiter.api.Nested
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -41,21 +49,24 @@ import java.util.concurrent.CompletableFuture
 import kotlin.test.Test
 
 class PromotionServiceTest {
-
     @Nested
     inner class UnitTest {
-        private val getPromotionPort: GetPromotionPort = mockk()
         private val getUserPort: GetUserPort = mockk()
+        private val getPromotionPort: GetPromotionPort = mockk()
         private val findPromotionsPort: FindPromotionsPort = mockk()
         private val createPromotionPort: CreatePromotionPort = mockk()
         private val updatePromotionPort: UpdatePromotionPort = mockk()
+        private val createSavedPromotionPort: CreateSavedPromotionPort = mockk()
+        private val checkSavedPromotionExistencePort: CheckSavedPromotionExistencePort = mockk()
 
         private val sut: PromotionService = PromotionService(
-            getPromotionPort,
             getUserPort,
+            getPromotionPort,
             findPromotionsPort,
             createPromotionPort,
             updatePromotionPort,
+            createSavedPromotionPort,
+            checkSavedPromotionExistencePort,
         )
 
         private fun confirmVerifiedEveryMocks() {
@@ -65,6 +76,8 @@ class PromotionServiceTest {
                 findPromotionsPort,
                 createPromotionPort,
                 updatePromotionPort,
+                createSavedPromotionPort,
+                checkSavedPromotionExistencePort,
             )
         }
 
@@ -194,6 +207,39 @@ class PromotionServiceTest {
             assertThatIterable(actualResult.images).isEqualTo(expectedResult.images)
             assertThatIterable(actualResult.activeRegions).isEqualTo(expectedResult.activeRegions)
             assertThatIterable(actualResult.hashtags).isEqualTo(expectedResult.hashtags)
+        }
+
+        @Test
+        fun `프로모션을 저장한다`() {
+            // given
+            val userId = randomLong()
+            val promotionId = randomLong()
+            every { checkSavedPromotionExistencePort.existsByUserIdAndPostId(userId, promotionId) } returns false
+            every { createSavedPromotionPort.create(any(SavedPromotion::class)) } just runs
+
+            // when
+            sut.savePromotion(SavePromotionUseCase.Query(userId, promotionId))
+
+            // then
+            verify { checkSavedPromotionExistencePort.existsByUserIdAndPostId(userId, promotionId) }
+            verify { createSavedPromotionPort.create(any(SavedPromotion::class)) }
+            confirmVerifiedEveryMocks()
+        }
+
+        @Test
+        fun `프로모션을 저장한다, 이미 저장된 프로모션이라면 예외가 발생한다`() {
+            // given
+            val userId = randomLong()
+            val promotionId = randomLong()
+            every { checkSavedPromotionExistencePort.existsByUserIdAndPostId(userId, promotionId) } returns true
+
+            // when
+            val ex = catchThrowable { sut.savePromotion(SavePromotionUseCase.Query(userId, promotionId)) }
+
+            // then
+            verify { checkSavedPromotionExistencePort.existsByUserIdAndPostId(userId, promotionId) }
+            confirmVerifiedEveryMocks()
+            assertThat(ex).isInstanceOf(AlreadySavedPromotionException::class.java)
         }
 
         private fun createPostPromotionCommand() = PostPromotionUseCase.Command(

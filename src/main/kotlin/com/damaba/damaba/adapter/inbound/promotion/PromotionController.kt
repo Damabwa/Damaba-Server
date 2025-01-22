@@ -7,6 +7,7 @@ import com.damaba.damaba.application.port.inbound.promotion.FindPromotionsUseCas
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
+import com.damaba.damaba.application.port.inbound.promotion.SavePromotionUseCase
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.exception.ValidationException
@@ -40,6 +41,7 @@ class PromotionController(
     private val getPromotionDetailUseCase: GetPromotionDetailUseCase,
     private val findPromotionsUseCase: FindPromotionsUseCase,
     private val postPromotionUseCase: PostPromotionUseCase,
+    private val savePromotionUseCase: SavePromotionUseCase,
 ) {
     @Operation(
         summary = "프로모션 단건 조회",
@@ -136,5 +138,23 @@ class PromotionController(
         return ResponseEntity
             .created(URI.create("/api/v*/promotions/${promotion.id}"))
             .body(PromotionMapper.INSTANCE.toPromotionResponse(promotion))
+    }
+
+    @Operation(
+        summary = "프로모션 저장",
+        description = "프로모션을 저장합니다.",
+        security = [SecurityRequirement(name = "access-token")],
+    )
+    @ApiResponses(
+        ApiResponse(responseCode = "204"),
+        ApiResponse(responseCode = "409", description = "이미 저장된 프로모션인 경우", content = [Content()]),
+    )
+    @PostMapping("/api/v1/promotions/{promotionId}/save")
+    fun savePromotionV1(
+        @AuthenticationPrincipal requestUser: User,
+        @PathVariable promotionId: Long,
+    ): ResponseEntity<Unit> {
+        savePromotionUseCase.savePromotion(SavePromotionUseCase.Query(requestUser.id, promotionId))
+        return ResponseEntity.noContent().build()
     }
 }

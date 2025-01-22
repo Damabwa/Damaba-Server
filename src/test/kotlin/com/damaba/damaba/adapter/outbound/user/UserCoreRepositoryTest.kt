@@ -1,13 +1,12 @@
 package com.damaba.damaba.adapter.outbound.user
 
-import com.damaba.damaba.config.JpaConfig
+import com.damaba.damaba.config.RepositoryTestConfig
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.user.exception.UserNotFoundException
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomUrl
 import com.damaba.damaba.util.fixture.UserFixture.createUser
-import com.linecorp.kotlinjdsl.support.spring.data.jpa.autoconfigure.KotlinJdslAutoConfiguration
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,11 +16,7 @@ import org.springframework.test.context.ActiveProfiles
 import kotlin.test.Test
 
 @ActiveProfiles("test")
-@Import(
-    JpaConfig::class,
-    KotlinJdslAutoConfiguration::class,
-    UserCoreRepository::class,
-)
+@Import(RepositoryTestConfig::class, UserCoreRepository::class)
 @DataJpaTest
 class UserCoreRepositoryTest @Autowired constructor(
     private val userCoreRepository: UserCoreRepository,

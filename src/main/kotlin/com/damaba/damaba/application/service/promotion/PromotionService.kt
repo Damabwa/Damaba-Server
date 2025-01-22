@@ -4,7 +4,10 @@ import com.damaba.damaba.application.port.inbound.promotion.FindPromotionsUseCas
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
+import com.damaba.damaba.application.port.inbound.promotion.SavePromotionUseCase
+import com.damaba.damaba.application.port.outbound.promotion.CheckSavedPromotionExistencePort
 import com.damaba.damaba.application.port.outbound.promotion.CreatePromotionPort
+import com.damaba.damaba.application.port.outbound.promotion.CreateSavedPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.FindPromotionsPort
 import com.damaba.damaba.application.port.outbound.promotion.GetPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.UpdatePromotionPort
@@ -15,6 +18,8 @@ import com.damaba.damaba.domain.common.TransactionalLock
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.PromotionDetail
+import com.damaba.damaba.domain.promotion.SavedPromotion
+import com.damaba.damaba.domain.promotion.exception.AlreadySavedPromotionException
 import com.damaba.damaba.domain.region.Region
 import com.damaba.damaba.mapper.PromotionMapper
 import org.springframework.stereotype.Service
@@ -22,15 +27,18 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class PromotionService(
-    private val getPromotionPort: GetPromotionPort,
     private val getUserPort: GetUserPort,
+    private val getPromotionPort: GetPromotionPort,
     private val findPromotionsPort: FindPromotionsPort,
     private val createPromotionPort: CreatePromotionPort,
     private val updatePromotionPort: UpdatePromotionPort,
+    private val createSavedPromotionPort: CreateSavedPromotionPort,
+    private val checkSavedPromotionExistencePort: CheckSavedPromotionExistencePort,
 ) : GetPromotionUseCase,
     GetPromotionDetailUseCase,
     FindPromotionsUseCase,
-    PostPromotionUseCase {
+    PostPromotionUseCase,
+    SavePromotionUseCase {
 
     @Transactional(readOnly = true)
     override fun getPromotion(promotionId: Long): Promotion = getPromotionPort.getById(promotionId)
@@ -79,4 +87,11 @@ class PromotionService(
             hashtags = command.hashtags,
         ),
     )
+
+    override fun savePromotion(query: SavePromotionUseCase.Query) {
+        if (checkSavedPromotionExistencePort.existsByUserIdAndPostId(query.userId, query.promotionId)) {
+            throw AlreadySavedPromotionException()
+        }
+        createSavedPromotionPort.create(SavedPromotion.create(query.userId, query.promotionId))
+    }
 }
