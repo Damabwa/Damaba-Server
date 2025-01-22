@@ -269,14 +269,14 @@ class PromotionControllerTest @Autowired constructor(
         // given
         val requester = createUser()
         val promotionId = randomLong()
-        val query = SavePromotionUseCase.Query(userId = requester.id, promotionId = promotionId)
-        every { savePromotionUseCase.savePromotion(query) } just runs
+        val command = SavePromotionUseCase.Command(userId = requester.id, promotionId = promotionId)
+        every { savePromotionUseCase.savePromotion(command) } just runs
 
         // when & then
         mvc.perform(
             post("/api/v1/promotions/$promotionId/save")
                 .with(authentication(createAuthenticationToken(requester))),
         ).andExpect(status().isNoContent)
-        verify { savePromotionUseCase.savePromotion(query) }
+        verify { savePromotionUseCase.savePromotion(command) }
     }
 }

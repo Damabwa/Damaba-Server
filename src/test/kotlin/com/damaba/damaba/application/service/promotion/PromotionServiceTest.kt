@@ -218,7 +218,7 @@ class PromotionServiceTest {
             every { createSavedPromotionPort.create(any(SavedPromotion::class)) } just runs
 
             // when
-            sut.savePromotion(SavePromotionUseCase.Query(userId, promotionId))
+            sut.savePromotion(SavePromotionUseCase.Command(userId, promotionId))
 
             // then
             verify { checkSavedPromotionExistencePort.existsByUserIdAndPostId(userId, promotionId) }
@@ -234,7 +234,7 @@ class PromotionServiceTest {
             every { checkSavedPromotionExistencePort.existsByUserIdAndPostId(userId, promotionId) } returns true
 
             // when
-            val ex = catchThrowable { sut.savePromotion(SavePromotionUseCase.Query(userId, promotionId)) }
+            val ex = catchThrowable { sut.savePromotion(SavePromotionUseCase.Command(userId, promotionId)) }
 
             // then
             verify { checkSavedPromotionExistencePort.existsByUserIdAndPostId(userId, promotionId) }

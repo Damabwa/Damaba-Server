@@ -154,7 +154,7 @@ class PromotionController(
         @AuthenticationPrincipal requestUser: User,
         @PathVariable promotionId: Long,
     ): ResponseEntity<Unit> {
-        savePromotionUseCase.savePromotion(SavePromotionUseCase.Query(requestUser.id, promotionId))
+        savePromotionUseCase.savePromotion(SavePromotionUseCase.Command(requestUser.id, promotionId))
         return ResponseEntity.noContent().build()
     }
 }

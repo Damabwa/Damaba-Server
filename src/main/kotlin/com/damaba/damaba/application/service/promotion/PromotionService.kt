@@ -88,10 +88,10 @@ class PromotionService(
         ),
     )
 
-    override fun savePromotion(query: SavePromotionUseCase.Query) {
-        if (checkSavedPromotionExistencePort.existsByUserIdAndPostId(query.userId, query.promotionId)) {
+    override fun savePromotion(command: SavePromotionUseCase.Command) {
+        if (checkSavedPromotionExistencePort.existsByUserIdAndPostId(command.userId, command.promotionId)) {
             throw AlreadySavedPromotionException()
         }
-        createSavedPromotionPort.create(SavedPromotion.create(query.userId, query.promotionId))
+        createSavedPromotionPort.create(SavedPromotion.create(command.userId, command.promotionId))
     }
 }
