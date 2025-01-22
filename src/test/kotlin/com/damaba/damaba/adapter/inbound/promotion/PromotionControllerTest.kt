@@ -9,6 +9,7 @@ import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUs
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.SavePromotionUseCase
+import com.damaba.damaba.application.port.inbound.promotion.UnsavePromotionUseCase
 import com.damaba.damaba.config.ControllerTestConfig
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.PhotographyType
@@ -42,6 +43,7 @@ import org.springframework.http.MediaType
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
@@ -59,6 +61,7 @@ class PromotionControllerTest @Autowired constructor(
     private val findPromotionsUseCase: FindPromotionsUseCase,
     private val postPromotionUseCase: PostPromotionUseCase,
     private val savePromotionUseCase: SavePromotionUseCase,
+    private val unsavePromotionUseCase: UnsavePromotionUseCase,
 ) {
     @TestConfiguration
     class MockBeanSetUp {
@@ -76,6 +79,9 @@ class PromotionControllerTest @Autowired constructor(
 
         @Bean
         fun savePromotionUseCase(): SavePromotionUseCase = mockk()
+
+        @Bean
+        fun unsavePromotionUseCase(): UnsavePromotionUseCase = mockk()
     }
 
     @Test
@@ -278,5 +284,21 @@ class PromotionControllerTest @Autowired constructor(
                 .with(authentication(createAuthenticationToken(requester))),
         ).andExpect(status().isNoContent)
         verify { savePromotionUseCase.savePromotion(command) }
+    }
+
+    @Test
+    fun `프로모션 저장을 해제한다`() {
+        // given
+        val requester = createUser()
+        val promotionId = randomLong()
+        val command = UnsavePromotionUseCase.Command(userId = requester.id, promotionId = promotionId)
+        every { unsavePromotionUseCase.unsavePromotion(command) } just runs
+
+        // when & then
+        mvc.perform(
+            delete("/api/v1/promotions/$promotionId/unsave")
+                .with(authentication(createAuthenticationToken(requester))),
+        ).andExpect(status().isNoContent)
+        verify { unsavePromotionUseCase.unsavePromotion(command) }
     }
 }

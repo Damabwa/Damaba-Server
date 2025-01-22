@@ -5,6 +5,7 @@ import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.PromotionDetail
+import com.damaba.damaba.domain.promotion.SavedPromotion
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.domain.region.Region
 import com.damaba.damaba.domain.user.User
@@ -89,4 +90,10 @@ object PromotionFixture {
         activeRegions = activeRegions,
         hashtags = hashtags,
     )
+
+    fun createSavedPromotion(
+        id: Long = randomLong(),
+        userId: Long = randomLong(),
+        promotionId: Long = randomLong(),
+    ) = SavedPromotion(id, userId, promotionId)
 }

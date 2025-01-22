@@ -8,6 +8,7 @@ import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUs
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.SavePromotionUseCase
+import com.damaba.damaba.application.port.inbound.promotion.UnsavePromotionUseCase
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.exception.ValidationException
@@ -26,6 +27,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -42,6 +44,7 @@ class PromotionController(
     private val findPromotionsUseCase: FindPromotionsUseCase,
     private val postPromotionUseCase: PostPromotionUseCase,
     private val savePromotionUseCase: SavePromotionUseCase,
+    private val unsavePromotionUseCase: UnsavePromotionUseCase,
 ) {
     @Operation(
         summary = "프로모션 단건 조회",
@@ -155,6 +158,24 @@ class PromotionController(
         @PathVariable promotionId: Long,
     ): ResponseEntity<Unit> {
         savePromotionUseCase.savePromotion(SavePromotionUseCase.Command(requestUser.id, promotionId))
+        return ResponseEntity.noContent().build()
+    }
+
+    @Operation(
+        summary = "프로모션 저장 해제",
+        description = "저장된 프로모션을 저장 해제합니다..",
+        security = [SecurityRequirement(name = "access-token")],
+    )
+    @ApiResponses(
+        ApiResponse(responseCode = "204"),
+        ApiResponse(responseCode = "404", description = "프로모션 저장 이력이 존재하지 않는 경우", content = [Content()]),
+    )
+    @DeleteMapping("/api/v1/promotions/{promotionId}/unsave")
+    fun unsavePromotionV1(
+        @AuthenticationPrincipal requestUser: User,
+        @PathVariable promotionId: Long,
+    ): ResponseEntity<Unit> {
+        unsavePromotionUseCase.unsavePromotion(UnsavePromotionUseCase.Command(requestUser.id, promotionId))
         return ResponseEntity.noContent().build()
     }
 }
