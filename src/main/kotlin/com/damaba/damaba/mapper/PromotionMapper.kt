@@ -7,10 +7,12 @@ import com.damaba.damaba.adapter.outbound.promotion.PromotionHashtagJpaEntity
 import com.damaba.damaba.adapter.outbound.promotion.PromotionImageJpaEntity
 import com.damaba.damaba.adapter.outbound.promotion.PromotionJpaEntity
 import com.damaba.damaba.adapter.outbound.promotion.PromotionPhotographyTypeJpaEntity
+import com.damaba.damaba.adapter.outbound.promotion.SavedPromotionJpaEntity
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.PromotionDetail
+import com.damaba.damaba.domain.promotion.SavedPromotion
 import com.damaba.damaba.domain.region.Region
 import com.damaba.damaba.domain.user.User
 import org.mapstruct.AfterMapping
@@ -35,6 +37,8 @@ abstract class PromotionMapper {
         saveCount: Int,
         isSaved: Boolean,
     ): PromotionDetail
+
+    abstract fun toSavedPromotion(savedPromotionJpaEntity: SavedPromotionJpaEntity): SavedPromotion
 
     @Mapping(target = "photographyTypes", ignore = true)
     @Mapping(target = "images", ignore = true)
