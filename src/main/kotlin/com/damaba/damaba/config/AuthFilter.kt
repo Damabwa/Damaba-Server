@@ -3,8 +3,6 @@ package com.damaba.damaba.config
 import com.damaba.damaba.application.port.outbound.auth.ParseUserIdFromAuthTokenPort
 import com.damaba.damaba.application.port.outbound.auth.ValidateAuthTokenPort
 import com.damaba.damaba.application.port.outbound.user.FindUserPort
-import com.damaba.damaba.config.SecurityConfig.Companion.AUTH_WHITE_LIST
-import com.damaba.damaba.config.SecurityConfig.Companion.AUTH_WHITE_PATHS
 import com.damaba.damaba.domain.user.exception.UserNotFoundException
 import com.damaba.damaba.logger.MdcLogTraceManager
 import jakarta.servlet.FilterChain
@@ -56,23 +54,6 @@ class AuthFilter(
             SecurityContextHolder.getContext().authentication = authentication
         }
         filterChain.doFilter(request, response)
-    }
-
-    /**
-     * 인증/인가 권한이 필요한 요청인지 확인한다.
-     *
-     * @param uri request uri
-     * @param method request http method
-     * @return 인증이 필요한 요청이라면 true를, 필요하지 않은 요청이라면 false를 반환한다.
-     */
-    private fun isAuthRequired(uri: String, method: String): Boolean {
-        if (AUTH_WHITE_PATHS.any { authWhitePath -> pathMatcher.match(authWhitePath, uri) }) {
-            return false
-        }
-        if (AUTH_WHITE_LIST.any { (path, httpMethod) -> pathMatcher.match(path, uri) && httpMethod.name() == method }) {
-            return false
-        }
-        return true
     }
 
     /**
