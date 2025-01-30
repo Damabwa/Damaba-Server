@@ -34,7 +34,7 @@ abstract class PromotionMapper {
     abstract fun toPromotionDetail(
         promotion: Promotion,
         author: User?,
-        saveCount: Int,
+        saveCount: Long,
         isSaved: Boolean,
     ): PromotionDetail
 

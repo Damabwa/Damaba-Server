@@ -71,8 +71,16 @@ class PromotionController(
         ApiResponse(responseCode = "404", description = "`promotionId`에 일치하는 프로모션이 없는 경우", content = [Content()]),
     )
     @GetMapping("/api/v1/promotions/{promotionId}/details")
-    fun getPromotionDetailV1(@PathVariable promotionId: Long): PromotionDetailResponse {
-        val promotionDetail = getPromotionDetailUseCase.getPromotionDetail(promotionId)
+    fun getPromotionDetailV1(
+        @AuthenticationPrincipal requestUser: User?,
+        @PathVariable promotionId: Long,
+    ): PromotionDetailResponse {
+        val promotionDetail = getPromotionDetailUseCase.getPromotionDetail(
+            GetPromotionDetailUseCase.Query(
+                requestUserId = requestUser?.id,
+                promotionId = promotionId,
+            ),
+        )
         return PromotionMapper.INSTANCE.toPromotionDetailResponse(promotionDetail)
     }
 

@@ -7,6 +7,7 @@ import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.SavePromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.UnsavePromotionUseCase
 import com.damaba.damaba.application.port.outbound.promotion.CheckSavedPromotionExistencePort
+import com.damaba.damaba.application.port.outbound.promotion.CountSavedPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.CreatePromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.CreateSavedPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.DeleteSavedPromotionPort
@@ -15,7 +16,7 @@ import com.damaba.damaba.application.port.outbound.promotion.GetPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.GetSavedPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.UpdatePromotionPort
 import com.damaba.damaba.application.port.outbound.user.GetUserPort
-import com.damaba.damaba.domain.common.LockType
+import com.damaba.damaba.domain.common.LockType.PESSIMISTIC
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.TransactionalLock
 import com.damaba.damaba.domain.file.Image
@@ -39,6 +40,7 @@ class PromotionService(
 
     private val getSavedPromotionPort: GetSavedPromotionPort,
     private val checkSavedPromotionExistencePort: CheckSavedPromotionExistencePort,
+    private val countSavedPromotionPort: CountSavedPromotionPort,
     private val createSavedPromotionPort: CreateSavedPromotionPort,
     private val deleteSavedPromotionPort: DeleteSavedPromotionPort,
 ) : GetPromotionUseCase,
@@ -51,17 +53,20 @@ class PromotionService(
     @Transactional(readOnly = true)
     override fun getPromotion(promotionId: Long): Promotion = getPromotionPort.getById(promotionId)
 
-    // TODO: `saveCount`, `isSaved`는 추후 저장 기능 구현 후 반영 로직 추가
-    @TransactionalLock(lockType = LockType.PESSIMISTIC, domainType = Promotion::class, idFieldName = "promotionId")
-    override fun getPromotionDetail(promotionId: Long): PromotionDetail {
-        val promotion = getPromotionPort.getById(promotionId)
+    @TransactionalLock(lockType = PESSIMISTIC, domainType = Promotion::class, idFieldName = "query.promotionId")
+    override fun getPromotionDetail(query: GetPromotionDetailUseCase.Query): PromotionDetail {
+        val promotion = getPromotionPort.getById(query.promotionId)
 
         promotion.incrementViewCount()
         updatePromotionPort.update(promotion)
 
         val author = promotion.authorId?.let { getUserPort.getById(it) }
-        val saveCount = 0
-        val isSaved = false
+        val saveCount = countSavedPromotionPort.countByPromotionId(query.promotionId)
+        val isSaved = if (query.requestUserId != null) {
+            checkSavedPromotionExistencePort.existsByUserIdAndPromotionId(query.requestUserId, query.promotionId)
+        } else {
+            false
+        }
         return PromotionMapper.INSTANCE.toPromotionDetail(promotion, author, saveCount, isSaved)
     }
 
@@ -98,7 +103,7 @@ class PromotionService(
 
     @Transactional
     override fun savePromotion(command: SavePromotionUseCase.Command) {
-        if (checkSavedPromotionExistencePort.existsByUserIdAndPostId(command.userId, command.promotionId)) {
+        if (checkSavedPromotionExistencePort.existsByUserIdAndPromotionId(command.userId, command.promotionId)) {
             throw AlreadySavedPromotionException()
         }
         createSavedPromotionPort.create(SavedPromotion.create(command.userId, command.promotionId))

@@ -12,7 +12,6 @@ import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomSet
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomBoolean
-import com.damaba.damaba.util.RandomTestUtils.Companion.randomInt
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLocalDate
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
@@ -66,7 +65,7 @@ object PromotionFixture {
         startedAt: LocalDate? = randomLocalDate(),
         endedAt: LocalDate? = randomLocalDate(),
         viewCount: Long = randomLong(),
-        saveCount: Int = randomInt(),
+        saveCount: Long = randomLong(),
         isSaved: Boolean = randomBoolean(),
         photographyTypes: Set<PhotographyType> = setOf(PhotographyType.SNAP),
         images: List<Image> = generateRandomList(maxSize = 10) { createImage() },

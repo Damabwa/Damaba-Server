@@ -52,7 +52,7 @@ class SavedPromotionCoreRepositoryTest @Autowired constructor(
         sut.create(SavedPromotion.create(userId, promotionId))
 
         // when
-        val result = sut.existsByUserIdAndPostId(userId, promotionId)
+        val result = sut.existsByUserIdAndPromotionId(userId, promotionId)
 
         // then
         assertThat(result).isTrue()
@@ -61,7 +61,7 @@ class SavedPromotionCoreRepositoryTest @Autowired constructor(
     @Test
     fun `프로모션 저장 이력 존재 여부를 조회한다, 만약 존재하지 않는다면 false가 반환된다`() {
         // when
-        val result = sut.existsByUserIdAndPostId(randomLong(), randomLong())
+        val result = sut.existsByUserIdAndPromotionId(randomLong(), randomLong())
 
         // then
         assertThat(result).isFalse()

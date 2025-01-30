@@ -104,14 +104,16 @@ class PromotionControllerTest @Autowired constructor(
         // given
         val promotionId = randomLong(positive = true)
         val expectedResult = createPromotionDetail(id = promotionId, author = null)
-        every { getPromotionDetailUseCase.getPromotionDetail(promotionId) } returns expectedResult
+        every {
+            getPromotionDetailUseCase.getPromotionDetail(GetPromotionDetailUseCase.Query(null, promotionId))
+        } returns expectedResult
 
         // when & then
         mvc.perform(
             get("/api/v1/promotions/$promotionId/details"),
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(expectedResult.id))
-        verify { getPromotionDetailUseCase.getPromotionDetail(promotionId) }
+        verify { getPromotionDetailUseCase.getPromotionDetail(GetPromotionDetailUseCase.Query(null, promotionId)) }
     }
 
     @Test
