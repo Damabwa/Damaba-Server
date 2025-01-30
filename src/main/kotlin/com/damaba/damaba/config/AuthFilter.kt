@@ -36,25 +36,24 @@ class AuthFilter(
         filterChain: FilterChain,
     ) {
         runCatching {
-            if (isAuthRequired(request.requestURI, request.method)) {
-                val accessToken = findAccessTokenFromHeader(request)
-                if (accessToken.isNullOrBlank()) {
-                    throw AuthenticationCredentialsNotFoundException("Access token does not exist.")
-                }
-
-                validateAuthTokenPort.validateAccessToken(accessToken)
-
-                val userId = parseUserIdFromAuthTokenPort.parseUserId(accessToken)
-                val user = findUserPort.findById(userId) ?: throw UserNotFoundException()
-                MdcLogTraceManager.setRequestUserIdIfAbsent(user.id)
-
-                val authorities = user.roles
-                    .map { roleType -> "ROLE_${roleType.name}" }
-                    .map { roleName -> SimpleGrantedAuthority(roleName) }
-                    .toList()
-                val authentication = UsernamePasswordAuthenticationToken(user, "", authorities)
-                SecurityContextHolder.getContext().authentication = authentication
+            val accessToken = findAccessTokenFromHeader(request)
+            if (accessToken.isNullOrBlank()) {
+                // runCatching에 의해 무시되는 exception
+                throw AuthenticationCredentialsNotFoundException("Access token does not exist.")
             }
+
+            validateAuthTokenPort.validateAccessToken(accessToken)
+
+            val userId = parseUserIdFromAuthTokenPort.parseUserId(accessToken)
+            val user = findUserPort.findById(userId) ?: throw UserNotFoundException()
+            MdcLogTraceManager.setRequestUserIdIfAbsent(user.id)
+
+            val authorities = user.roles
+                .map { roleType -> "ROLE_${roleType.name}" }
+                .map { roleName -> SimpleGrantedAuthority(roleName) }
+                .toList()
+            val authentication = UsernamePasswordAuthenticationToken(user, "", authorities)
+            SecurityContextHolder.getContext().authentication = authentication
         }
         filterChain.doFilter(request, response)
     }
