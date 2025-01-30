@@ -19,7 +19,7 @@ data class PromotionDetail(
     val startedAt: LocalDate?,
     val endedAt: LocalDate?,
     val viewCount: Long,
-    val saveCount: Int,
+    val saveCount: Long,
     val isSaved: Boolean,
     val photographyTypes: Set<PhotographyType>,
     val images: List<Image>,

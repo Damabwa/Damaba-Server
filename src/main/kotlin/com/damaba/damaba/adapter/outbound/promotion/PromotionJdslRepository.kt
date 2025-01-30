@@ -22,8 +22,7 @@ class PromotionJdslRepository(private val promotionJpaRepository: PromotionJpaRe
         sortType: PromotionSortType,
         pageable: Pageable,
     ): Page<PromotionJpaEntity> {
-        val result = promotionJpaRepository.findPage(pageable) {
-            // Contions 생성
+        return promotionJpaRepository.findPage(pageable) {
             val conditions = mutableListOf<Predicate>()
 
             // 삭제된 프로모션 제외
@@ -81,8 +80,6 @@ class PromotionJdslRepository(private val promotionJpaRepository: PromotionJpaRe
                         PromotionSortType.POPULAR -> path(PromotionJpaEntity::viewCount).desc()
                     },
                 )
-        }
-        val resultNonNull = result.filterNotNull()
-        return resultNonNull
+        }.filterNotNull()
     }
 }
