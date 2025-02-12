@@ -13,5 +13,5 @@ fun <T, R> Page<T>.toPagination(mapper: (T) -> R): Pagination<R> = Pagination(
 
 fun <T : Any> Page<T?>.filterNotNull(): Page<T> {
     val nonNullContent = this.content.filterNotNull()
-    return PageImpl(nonNullContent, this.pageable, nonNullContent.size.toLong())
+    return PageImpl(nonNullContent, this.pageable, this.totalElements)
 }
