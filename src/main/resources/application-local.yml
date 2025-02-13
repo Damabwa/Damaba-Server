@@ -18,6 +18,7 @@ springdoc:
 logging:
   level:
     com.damaba: debug
+    com.linecorp.kotlinjdsl: debug
     org:
       hibernate:
         type: trace
