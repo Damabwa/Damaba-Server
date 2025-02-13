@@ -109,7 +109,7 @@ class PromotionJdslRepository(private val promotionJpaRepository: PromotionJpaRe
             ).orderBy(
                 when (sortType) {
                     PromotionSortType.LATEST -> path(PromotionJpaEntity::createdAt).desc()
-                    PromotionSortType.POPULAR -> path(PromotionJpaEntity::viewCount).desc()
+                    PromotionSortType.POPULAR -> saveCount.desc()
                 },
             )
         }
