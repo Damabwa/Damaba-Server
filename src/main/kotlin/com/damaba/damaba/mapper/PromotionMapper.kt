@@ -12,6 +12,7 @@ import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.PromotionDetail
+import com.damaba.damaba.domain.promotion.PromotionListItem
 import com.damaba.damaba.domain.promotion.SavedPromotion
 import com.damaba.damaba.domain.region.Region
 import com.damaba.damaba.domain.user.User
@@ -37,6 +38,14 @@ abstract class PromotionMapper {
         saveCount: Long,
         isSaved: Boolean,
     ): PromotionDetail
+
+    @Mapping(source = "promotion.id", target = "id")
+    abstract fun toPromotionListItem(
+        promotion: Promotion,
+        author: User?,
+        saveCount: Long,
+        isSaved: Boolean,
+    ): PromotionListItem
 
     abstract fun toSavedPromotion(savedPromotionJpaEntity: SavedPromotionJpaEntity): SavedPromotion
 

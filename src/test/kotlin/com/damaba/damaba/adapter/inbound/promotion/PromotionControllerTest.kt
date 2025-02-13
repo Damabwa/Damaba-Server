@@ -4,7 +4,7 @@ import com.damaba.damaba.adapter.inbound.common.dto.AddressRequest
 import com.damaba.damaba.adapter.inbound.common.dto.ImageRequest
 import com.damaba.damaba.adapter.inbound.promotion.dto.PostPromotionRequest
 import com.damaba.damaba.adapter.inbound.region.dto.RegionRequest
-import com.damaba.damaba.application.port.inbound.promotion.FindPromotionsUseCase
+import com.damaba.damaba.application.port.inbound.promotion.FindPromotionListUseCase
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
@@ -25,6 +25,7 @@ import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.fixture.PromotionFixture.createPromotion
 import com.damaba.damaba.util.fixture.PromotionFixture.createPromotionDetail
+import com.damaba.damaba.util.fixture.PromotionFixture.createPromotionListItem
 import com.damaba.damaba.util.fixture.SecurityFixture.createAuthenticationToken
 import com.damaba.damaba.util.fixture.UserFixture.createUser
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -58,7 +59,7 @@ class PromotionControllerTest @Autowired constructor(
     private val mapper: ObjectMapper,
     private val getPromotionUseCase: GetPromotionUseCase,
     private val getPromotionDetailUseCase: GetPromotionDetailUseCase,
-    private val findPromotionsUseCase: FindPromotionsUseCase,
+    private val findPromotionListUseCase: FindPromotionListUseCase,
     private val postPromotionUseCase: PostPromotionUseCase,
     private val savePromotionUseCase: SavePromotionUseCase,
     private val unsavePromotionUseCase: UnsavePromotionUseCase,
@@ -72,7 +73,7 @@ class PromotionControllerTest @Autowired constructor(
         fun getPromotionDetailUseCase(): GetPromotionDetailUseCase = mockk()
 
         @Bean
-        fun findPromotionsUseCase(): FindPromotionsUseCase = mockk()
+        fun findPromotionListUseCase(): FindPromotionListUseCase = mockk()
 
         @Bean
         fun postPromotionUseCase(): PostPromotionUseCase = mockk()
@@ -119,6 +120,7 @@ class PromotionControllerTest @Autowired constructor(
     @Test
     fun `필터 조건들이 주어지고, 프로모션 리스트를 조회한다`() {
         // given
+        val reqUser = createUser()
         val type = PromotionType.FREE
         val progressStatus = PromotionProgressStatus.ONGOING
         val regions = setOf(RegionFilterCondition("서울", "강남구"), RegionFilterCondition("대전", null))
@@ -127,19 +129,28 @@ class PromotionControllerTest @Autowired constructor(
         val page = 1
         val pageSize = randomInt(min = 5, max = 15)
         val expectedResult = Pagination(
-            items = generateRandomList(maxSize = pageSize) { createPromotion() },
+            items = generateRandomList(maxSize = pageSize) { createPromotionListItem() },
             page = page,
             pageSize = pageSize,
             totalPage = randomInt(min = 1, max = 10),
         )
         every {
-            findPromotionsUseCase.findPromotions(
-                FindPromotionsUseCase.Query(type, progressStatus, regions, photographyTypes, sortType, page, pageSize),
+            findPromotionListUseCase.findPromotionList(
+                FindPromotionListUseCase.Query(
+                    reqUserId = reqUser.id,
+                    type = type,
+                    progressStatus = progressStatus,
+                    regions = regions,
+                    photographyTypes = photographyTypes,
+                    sortType = sortType,
+                    page = page,
+                    pageSize = pageSize,
+                ),
             )
         } returns expectedResult
 
         // when & then
-        val requestBuilder = get("/api/v1/promotions")
+        val requestBuilder = get("/api/v1/promotions/list")
         regions.forEach { region ->
             requestBuilder.param(
                 "regions",
@@ -153,6 +164,7 @@ class PromotionControllerTest @Autowired constructor(
             .param("sortType", sortType.name)
             .param("page", page.toString())
             .param("pageSize", pageSize.toString())
+            .with(authentication(createAuthenticationToken(reqUser)))
         mvc.perform(requestBuilder)
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.items", hasSize<Int>(expectedResult.items.size)))
@@ -160,8 +172,17 @@ class PromotionControllerTest @Autowired constructor(
             .andExpect(jsonPath("$.pageSize").value(expectedResult.pageSize))
             .andExpect(jsonPath("$.totalPage").value(expectedResult.totalPage))
         verify {
-            findPromotionsUseCase.findPromotions(
-                FindPromotionsUseCase.Query(type, progressStatus, regions, photographyTypes, sortType, page, pageSize),
+            findPromotionListUseCase.findPromotionList(
+                FindPromotionListUseCase.Query(
+                    reqUserId = reqUser.id,
+                    type = type,
+                    progressStatus = progressStatus,
+                    regions = regions,
+                    photographyTypes = photographyTypes,
+                    sortType = sortType,
+                    page = page,
+                    pageSize = pageSize,
+                ),
             )
         }
     }
@@ -173,14 +194,15 @@ class PromotionControllerTest @Autowired constructor(
         val page = 1
         val pageSize = randomInt(min = 5, max = 15)
         val expectedResult = Pagination(
-            items = generateRandomList(maxSize = pageSize) { createPromotion() },
+            items = generateRandomList(maxSize = pageSize) { createPromotionListItem() },
             page = page,
             pageSize = pageSize,
             totalPage = randomInt(min = 1, max = 10),
         )
         every {
-            findPromotionsUseCase.findPromotions(
-                FindPromotionsUseCase.Query(
+            findPromotionListUseCase.findPromotionList(
+                FindPromotionListUseCase.Query(
+                    reqUserId = null,
                     type = null,
                     progressStatus = null,
                     regions = emptySet(),
@@ -194,7 +216,7 @@ class PromotionControllerTest @Autowired constructor(
 
         // when & then
         mvc.perform(
-            get("/api/v1/promotions")
+            get("/api/v1/promotions/list")
                 .param("sortType", sortType.name)
                 .param("page", page.toString())
                 .param("pageSize", pageSize.toString()),
@@ -204,8 +226,9 @@ class PromotionControllerTest @Autowired constructor(
             .andExpect(jsonPath("$.pageSize").value(expectedResult.pageSize))
             .andExpect(jsonPath("$.totalPage").value(expectedResult.totalPage))
         verify {
-            findPromotionsUseCase.findPromotions(
-                FindPromotionsUseCase.Query(
+            findPromotionListUseCase.findPromotionList(
+                FindPromotionListUseCase.Query(
+                    reqUserId = null,
                     type = null,
                     progressStatus = null,
                     regions = emptySet(),
@@ -227,7 +250,7 @@ class PromotionControllerTest @Autowired constructor(
 
         // when & then
         mvc.perform(
-            get("/api/v1/promotions")
+            get("/api/v1/promotions/list")
                 .param("regions", "경기 수원 원천")
                 .param("sortType", sortType.name)
                 .param("page", page.toString())

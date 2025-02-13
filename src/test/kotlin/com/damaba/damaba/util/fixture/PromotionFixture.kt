@@ -5,6 +5,7 @@ import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.PromotionDetail
+import com.damaba.damaba.domain.promotion.PromotionListItem
 import com.damaba.damaba.domain.promotion.SavedPromotion
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.domain.region.Region
@@ -85,6 +86,30 @@ object PromotionFixture {
         saveCount = saveCount,
         isSaved = isSaved,
         photographyTypes = photographyTypes,
+        images = images,
+        activeRegions = activeRegions,
+        hashtags = hashtags,
+    )
+
+    fun createPromotionListItem(
+        id: Long = randomLong(),
+        author: User? = createUser(),
+        title: String = randomString(10),
+        startedAt: LocalDate? = randomLocalDate(),
+        endedAt: LocalDate? = randomLocalDate(),
+        saveCount: Long = randomLong(),
+        isSaved: Boolean = randomBoolean(),
+        images: List<Image> = generateRandomList(maxSize = 10) { createImage() },
+        activeRegions: Set<Region> = generateRandomSet(maxSize = 5) { createRegion() },
+        hashtags: Set<String> = generateRandomSet(maxSize = 5) { randomString() },
+    ) = PromotionListItem(
+        id = id,
+        author = author,
+        title = title,
+        startedAt = startedAt,
+        endedAt = endedAt,
+        saveCount = saveCount,
+        isSaved = isSaved,
         images = images,
         activeRegions = activeRegions,
         hashtags = hashtags,

@@ -1,15 +1,19 @@
 package com.damaba.damaba.adapter.outbound.promotion
 
+import com.damaba.damaba.adapter.outbound.user.UserCoreRepository
 import com.damaba.damaba.config.JpaConfig
 import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.promotion.SavedPromotion
 import com.damaba.damaba.domain.promotion.constant.PromotionProgressStatus
 import com.damaba.damaba.domain.promotion.constant.PromotionSortType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.domain.promotion.exception.PromotionNotFoundException
 import com.damaba.damaba.domain.region.Region
 import com.damaba.damaba.domain.region.RegionFilterCondition
+import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.fixture.PromotionFixture.createPromotion
 import com.damaba.damaba.util.fixture.RegionFixture.createRegion
+import com.damaba.damaba.util.fixture.UserFixture.createUser
 import com.linecorp.kotlinjdsl.support.spring.data.jpa.autoconfigure.KotlinJdslAutoConfiguration
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatIterable
@@ -25,13 +29,19 @@ import kotlin.test.Test
 @Import(
     JpaConfig::class,
     KotlinJdslAutoConfiguration::class,
+    UserCoreRepository::class,
     PromotionCoreRepository::class,
     PromotionJdslRepository::class,
+    SavedPromotionCoreRepository::class,
 )
 @DataJpaTest
 class PromotionCoreRepositoryTest @Autowired constructor(
     private val promotionCoreRepository: PromotionCoreRepository,
+    private val savedPromotionCoreRepository: SavedPromotionCoreRepository,
 ) {
+    @Autowired
+    private lateinit var userCoreRepository: UserCoreRepository
+
     @Test
     fun `(Get) 프로모션 id가 주어지고, 주어진 id와 일치하는 프로모션을 단건 조회하면, 조회된 프로모션이 반환된다`() {
         // given
@@ -56,9 +66,11 @@ class PromotionCoreRepositoryTest @Autowired constructor(
     }
 
     @Test
-    fun `프로모션 리스트를 조회하면 필터 조건에 맞는 프로모션들이 반환된다`() {
+    fun `필터 조건이 주어지고, 프로모션 리스트를 조회하면, 주어진 조건에 맞는 프로모션 리스트가 반환된다`() {
         // given
-        promotionCoreRepository.create(
+        val reqUserId = randomLong()
+
+        val freePromotion = promotionCoreRepository.create(
             createPromotion(
                 promotionType = PromotionType.FREE,
                 startedAt = LocalDate.now().minusDays(2),
@@ -67,6 +79,8 @@ class PromotionCoreRepositoryTest @Autowired constructor(
                 activeRegions = setOf(createRegion(category = "RegionA", name = "CityA")),
             ),
         )
+        savedPromotionCoreRepository.create(SavedPromotion.create(userId = reqUserId, promotionId = freePromotion.id))
+
         promotionCoreRepository.create(
             createPromotion(
                 promotionType = PromotionType.DISCOUNT,
@@ -89,7 +103,8 @@ class PromotionCoreRepositoryTest @Autowired constructor(
         val pageSize = 10
 
         // when
-        val promotions = promotionCoreRepository.findPromotions(
+        val promotions = promotionCoreRepository.findPromotionList(
+            reqUserId = reqUserId,
             type = type,
             progressStatus = progressStatus,
             regions = regions,
@@ -101,24 +116,26 @@ class PromotionCoreRepositoryTest @Autowired constructor(
 
         // then
         assertThat(promotions.items).hasSize(1)
-        assertThat(promotions.items.first().promotionType).isEqualTo(type)
-        assertThat(promotions.items.first().photographyTypes).containsAll(photographyTypes)
+        assertThat(promotions.items.first().saveCount).isEqualTo(1)
+        assertThat(promotions.items.first().isSaved).isTrue()
         assertThat(promotions.page).isEqualTo(page)
         assertThat(promotions.pageSize).isEqualTo(pageSize)
     }
 
     @Test
-    fun `프로모션 리스트를 조회하면 필터 조건이 없는 경우 모든 프로모션이 반환된다`() {
+    fun `필터 조건 없이 프로모션 리스트를 조회하면, 모든 프로모션이 반환된다`() {
         // given
-        promotionCoreRepository.create(createPromotion())
-        promotionCoreRepository.create(createPromotion())
-        promotionCoreRepository.create(createPromotion())
+        val author = userCoreRepository.create(createUser())
+        promotionCoreRepository.create(createPromotion(authorId = author.id))
+        promotionCoreRepository.create(createPromotion(authorId = author.id))
+        promotionCoreRepository.create(createPromotion(authorId = null))
 
         val page = 0
         val pageSize = 10
 
         // when
-        val promotions = promotionCoreRepository.findPromotions(
+        val promotions = promotionCoreRepository.findPromotionList(
+            reqUserId = null,
             type = null,
             progressStatus = null,
             regions = emptySet(),
@@ -130,12 +147,14 @@ class PromotionCoreRepositoryTest @Autowired constructor(
 
         // then
         assertThat(promotions.items).hasSize(3)
+        assertThat(promotions.items.first().saveCount).isEqualTo(0)
+        assertThat(promotions.items.first().isSaved).isFalse()
         assertThat(promotions.page).isEqualTo(page)
         assertThat(promotions.pageSize).isEqualTo(pageSize)
     }
 
     @Test
-    fun `진행 상태가 UPCOMING인 프로모션만 조회된다`() {
+    fun `진행 상태에 대한 필터 조건이 주어지고, 프로모션 리스트를 조회하면, 진행 상태가 UPCOMING인 프로모션만 조회된다`() {
         // given
         promotionCoreRepository.create(
             createPromotion(
@@ -157,7 +176,8 @@ class PromotionCoreRepositoryTest @Autowired constructor(
         val pageSize = 10
 
         // when
-        val promotions = promotionCoreRepository.findPromotions(
+        val promotions = promotionCoreRepository.findPromotionList(
+            reqUserId = null,
             type = null,
             progressStatus = progressStatus,
             regions = emptySet(),
@@ -173,7 +193,7 @@ class PromotionCoreRepositoryTest @Autowired constructor(
     }
 
     @Test
-    fun `진행 상태가 ENDED인 프로모션만 조회된다`() {
+    fun `진행 상태에 대한 필터 조건이 주어지고, 프로모션 리스트를 조회하면, 진행 상태가 ENDED인 프로모션만 조회된다`() {
         // given
         promotionCoreRepository.create(
             createPromotion(
@@ -195,7 +215,8 @@ class PromotionCoreRepositoryTest @Autowired constructor(
         val pageSize = 10
 
         // when
-        val promotions = promotionCoreRepository.findPromotions(
+        val promotions = promotionCoreRepository.findPromotionList(
+            reqUserId = null,
             type = null,
             progressStatus = progressStatus,
             regions = emptySet(),
@@ -211,7 +232,7 @@ class PromotionCoreRepositoryTest @Autowired constructor(
     }
 
     @Test
-    fun `특정 지역에 해당하는 프로모션만 조회된다`() {
+    fun `지역에 대한 필터 조건이 주어지고, 프로모션 리스트를 조회하면, 특정 지역에 해당하는 프로모션만 조회된다`() {
         // given
         promotionCoreRepository.create(
             createPromotion(
@@ -231,7 +252,8 @@ class PromotionCoreRepositoryTest @Autowired constructor(
         val pageSize = 10
 
         // when
-        val promotions = promotionCoreRepository.findPromotions(
+        val promotions = promotionCoreRepository.findPromotionList(
+            reqUserId = null,
             type = null,
             progressStatus = null,
             regions = regions,
