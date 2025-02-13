@@ -3,7 +3,7 @@ package com.damaba.damaba.adapter.inbound.promotion
 import com.damaba.damaba.adapter.inbound.promotion.dto.PostPromotionRequest
 import com.damaba.damaba.adapter.inbound.promotion.dto.PromotionDetailResponse
 import com.damaba.damaba.adapter.inbound.promotion.dto.PromotionResponse
-import com.damaba.damaba.application.port.inbound.promotion.FindPromotionsUseCase
+import com.damaba.damaba.application.port.inbound.promotion.FindPromotionListUseCase
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
@@ -12,6 +12,7 @@ import com.damaba.damaba.application.port.inbound.promotion.UnsavePromotionUseCa
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.exception.ValidationException
+import com.damaba.damaba.domain.promotion.PromotionListItem
 import com.damaba.damaba.domain.promotion.constant.PromotionProgressStatus
 import com.damaba.damaba.domain.promotion.constant.PromotionSortType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
@@ -41,7 +42,7 @@ import java.net.URI
 class PromotionController(
     private val getPromotionUseCase: GetPromotionUseCase,
     private val getPromotionDetailUseCase: GetPromotionDetailUseCase,
-    private val findPromotionsUseCase: FindPromotionsUseCase,
+    private val findPromotionListUseCase: FindPromotionListUseCase,
     private val postPromotionUseCase: PostPromotionUseCase,
     private val savePromotionUseCase: SavePromotionUseCase,
     private val unsavePromotionUseCase: UnsavePromotionUseCase,
@@ -84,9 +85,14 @@ class PromotionController(
         return PromotionMapper.INSTANCE.toPromotionDetailResponse(promotionDetail)
     }
 
-    @Operation(summary = "프로모션 리스트 조회")
-    @GetMapping("/api/v1/promotions")
-    fun findPromotionsV1(
+    @Operation(
+        summary = "프로모션 리스트 조회",
+        description = "'Event로 담아봐 페이지' > '이벤트 리스트'에서 필요한 프로모션 리스트 정보를 조회합니다.",
+    )
+    @GetMapping("/api/v1/promotions/list")
+    fun findPromotionListV1(
+        @AuthenticationPrincipal
+        reqUser: User?,
         @RequestParam(required = false)
         @Parameter(description = "프로모션 유형")
         type: PromotionType?,
@@ -112,7 +118,7 @@ class PromotionController(
         @RequestParam(defaultValue = "10")
         @Parameter(description = "페이지 크기")
         pageSize: Int,
-    ): Pagination<PromotionResponse> {
+    ): Pagination<PromotionListItem> {
         val regionConditions = regions?.map { region ->
             val parts = region.trim().split(" ")
             when (parts.size) {
@@ -121,8 +127,10 @@ class PromotionController(
                 else -> throw ValidationException("지역 정보에 불필요한 공백이 포함되어있습니다.")
             }
         }?.toSet()
-        val promotions = findPromotionsUseCase.findPromotions(
-            FindPromotionsUseCase.Query(
+
+        return findPromotionListUseCase.findPromotionList(
+            FindPromotionListUseCase.Query(
+                reqUserId = reqUser?.id,
                 type = type,
                 progressStatus = progressStatus,
                 regions = regionConditions ?: emptySet(),
@@ -132,7 +140,6 @@ class PromotionController(
                 pageSize = pageSize,
             ),
         )
-        return promotions.map { PromotionMapper.INSTANCE.toPromotionResponse(it) }
     }
 
     @Operation(

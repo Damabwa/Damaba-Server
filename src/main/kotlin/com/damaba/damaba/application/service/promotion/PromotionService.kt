@@ -1,6 +1,6 @@
 package com.damaba.damaba.application.service.promotion
 
-import com.damaba.damaba.application.port.inbound.promotion.FindPromotionsUseCase
+import com.damaba.damaba.application.port.inbound.promotion.FindPromotionListUseCase
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
@@ -11,7 +11,7 @@ import com.damaba.damaba.application.port.outbound.promotion.CountSavedPromotion
 import com.damaba.damaba.application.port.outbound.promotion.CreatePromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.CreateSavedPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.DeleteSavedPromotionPort
-import com.damaba.damaba.application.port.outbound.promotion.FindPromotionsPort
+import com.damaba.damaba.application.port.outbound.promotion.FindPromotionListPort
 import com.damaba.damaba.application.port.outbound.promotion.GetPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.GetSavedPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.UpdatePromotionPort
@@ -22,6 +22,7 @@ import com.damaba.damaba.domain.common.TransactionalLock
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.PromotionDetail
+import com.damaba.damaba.domain.promotion.PromotionListItem
 import com.damaba.damaba.domain.promotion.SavedPromotion
 import com.damaba.damaba.domain.promotion.exception.AlreadySavedPromotionException
 import com.damaba.damaba.domain.region.Region
@@ -34,7 +35,7 @@ class PromotionService(
     private val getUserPort: GetUserPort,
 
     private val getPromotionPort: GetPromotionPort,
-    private val findPromotionsPort: FindPromotionsPort,
+    private val findPromotionListPort: FindPromotionListPort,
     private val createPromotionPort: CreatePromotionPort,
     private val updatePromotionPort: UpdatePromotionPort,
 
@@ -45,7 +46,7 @@ class PromotionService(
     private val deleteSavedPromotionPort: DeleteSavedPromotionPort,
 ) : GetPromotionUseCase,
     GetPromotionDetailUseCase,
-    FindPromotionsUseCase,
+    FindPromotionListUseCase,
     PostPromotionUseCase,
     SavePromotionUseCase,
     UnsavePromotionUseCase {
@@ -71,9 +72,10 @@ class PromotionService(
     }
 
     @Transactional(readOnly = true)
-    override fun findPromotions(
-        query: FindPromotionsUseCase.Query,
-    ): Pagination<Promotion> = findPromotionsPort.findPromotions(
+    override fun findPromotionList(
+        query: FindPromotionListUseCase.Query,
+    ): Pagination<PromotionListItem> = findPromotionListPort.findPromotionList(
+        query.reqUserId,
         query.type,
         query.progressStatus,
         query.regions,

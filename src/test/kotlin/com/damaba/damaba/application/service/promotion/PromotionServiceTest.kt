@@ -2,7 +2,7 @@ package com.damaba.damaba.application.service.promotion
 
 import com.damaba.damaba.adapter.outbound.promotion.PromotionCoreRepository
 import com.damaba.damaba.adapter.outbound.user.UserCoreRepository
-import com.damaba.damaba.application.port.inbound.promotion.FindPromotionsUseCase
+import com.damaba.damaba.application.port.inbound.promotion.FindPromotionListUseCase
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.SavePromotionUseCase
@@ -12,7 +12,7 @@ import com.damaba.damaba.application.port.outbound.promotion.CountSavedPromotion
 import com.damaba.damaba.application.port.outbound.promotion.CreatePromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.CreateSavedPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.DeleteSavedPromotionPort
-import com.damaba.damaba.application.port.outbound.promotion.FindPromotionsPort
+import com.damaba.damaba.application.port.outbound.promotion.FindPromotionListPort
 import com.damaba.damaba.application.port.outbound.promotion.GetPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.GetSavedPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.UpdatePromotionPort
@@ -36,6 +36,7 @@ import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.fixture.AddressFixture.createAddress
 import com.damaba.damaba.util.fixture.FileFixture.createImage
 import com.damaba.damaba.util.fixture.PromotionFixture.createPromotion
+import com.damaba.damaba.util.fixture.PromotionFixture.createPromotionListItem
 import com.damaba.damaba.util.fixture.PromotionFixture.createSavedPromotion
 import com.damaba.damaba.util.fixture.RegionFixture.createRegion
 import com.damaba.damaba.util.fixture.UserFixture.createUser
@@ -60,7 +61,7 @@ class PromotionServiceTest {
     inner class UnitTest {
         private val getUserPort: GetUserPort = mockk()
         private val getPromotionPort: GetPromotionPort = mockk()
-        private val findPromotionsPort: FindPromotionsPort = mockk()
+        private val findPromotionListPort: FindPromotionListPort = mockk()
         private val updatePromotionPort: UpdatePromotionPort = mockk()
         private val createSavedPromotionPort: CreateSavedPromotionPort = mockk()
         private val getSavedPromotionPort: GetSavedPromotionPort = mockk()
@@ -72,7 +73,7 @@ class PromotionServiceTest {
         private val sut: PromotionService = PromotionService(
             getUserPort,
             getPromotionPort,
-            findPromotionsPort,
+            findPromotionListPort,
             createPromotionPort,
             updatePromotionPort,
             getSavedPromotionPort,
@@ -86,7 +87,7 @@ class PromotionServiceTest {
             confirmVerified(
                 getUserPort,
                 getPromotionPort,
-                findPromotionsPort,
+                findPromotionListPort,
                 createPromotionPort,
                 updatePromotionPort,
                 getSavedPromotionPort,
@@ -211,7 +212,8 @@ class PromotionServiceTest {
         @Test
         fun `프로모션 리스트를 조회한다`() {
             // given
-            val query = FindPromotionsUseCase.Query(
+            val query = FindPromotionListUseCase.Query(
+                reqUserId = null,
                 type = PromotionType.FREE,
                 progressStatus = PromotionProgressStatus.ONGOING,
                 regions = setOf(RegionFilterCondition("서울", "강남구"), RegionFilterCondition("대전", "중구")),
@@ -221,13 +223,14 @@ class PromotionServiceTest {
                 pageSize = randomInt(min = 5, max = 10),
             )
             val expectedResult = Pagination(
-                items = generateRandomList(maxSize = query.pageSize) { createPromotion() },
+                items = generateRandomList(maxSize = query.pageSize) { createPromotionListItem() },
                 page = query.page,
                 pageSize = query.pageSize,
                 totalPage = 1,
             )
             every {
-                findPromotionsPort.findPromotions(
+                findPromotionListPort.findPromotionList(
+                    reqUserId = query.reqUserId,
                     type = query.type,
                     progressStatus = query.progressStatus,
                     regions = query.regions,
@@ -239,11 +242,12 @@ class PromotionServiceTest {
             } returns expectedResult
 
             // when
-            val actualResult = sut.findPromotions(query)
+            val actualResult = sut.findPromotionList(query)
 
             // then
             verify {
-                findPromotionsPort.findPromotions(
+                findPromotionListPort.findPromotionList(
+                    reqUserId = query.reqUserId,
                     type = query.type,
                     progressStatus = query.progressStatus,
                     regions = query.regions,
