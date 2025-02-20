@@ -38,9 +38,6 @@ CREATE TABLE photographer
     sigungu               VARCHAR(255),
     road_address          VARCHAR(255),
     jibun_address         VARCHAR(255),
-    business_days         VARCHAR(255),
-    business_start_time   TIME,
-    business_end_time     TIME,
     created_at            DATETIME     NOT NULL,
     updated_at            DATETIME     NOT NULL,
     PRIMARY KEY (user_id)
