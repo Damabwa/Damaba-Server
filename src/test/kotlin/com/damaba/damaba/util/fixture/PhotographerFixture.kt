@@ -19,6 +19,7 @@ import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomUrl
 import com.damaba.damaba.util.fixture.AddressFixture.createAddress
+import org.springframework.test.util.ReflectionTestUtils
 import java.time.DayOfWeek
 import java.time.LocalTime
 
@@ -77,7 +78,7 @@ object PhotographerFixture {
             address = address,
             businessSchedule = businessSchedule,
         )
-        photographerJpaEntity.addPortfolioImages(portfolio)
+        ReflectionTestUtils.setField(photographerJpaEntity, "_portfolio", portfolio)
         photographerJpaEntity.activeRegions.addAll(activeRegions)
         return photographerJpaEntity
     }

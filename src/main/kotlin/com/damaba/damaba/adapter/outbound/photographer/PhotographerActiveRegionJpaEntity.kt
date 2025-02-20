@@ -1,6 +1,7 @@
 package com.damaba.damaba.adapter.outbound.photographer
 
 import com.damaba.damaba.adapter.outbound.common.BaseJpaTimeEntity
+import com.damaba.damaba.domain.region.Region
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
@@ -35,4 +36,14 @@ class PhotographerActiveRegionJpaEntity(
     @Column(name = "name", nullable = false)
     var name: String = name
         private set
+
+    fun toRegion() = Region(category = this.category, name = this.name)
+
+    companion object {
+        fun from(photographerJpaEntity: PhotographerJpaEntity, region: Region) = PhotographerActiveRegionJpaEntity(
+            photographer = photographerJpaEntity,
+            category = region.category,
+            name = region.name,
+        )
+    }
 }
