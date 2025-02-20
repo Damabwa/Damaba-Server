@@ -6,7 +6,6 @@ import com.damaba.damaba.domain.user.constant.Gender
 import com.damaba.damaba.domain.user.constant.LoginType
 import com.damaba.damaba.domain.user.constant.UserRoleType
 import com.damaba.damaba.domain.user.constant.UserType
-import com.damaba.damaba.mapper.UserMapper
 import jakarta.persistence.Column
 import jakarta.persistence.Convert
 import jakarta.persistence.Entity
@@ -70,12 +69,37 @@ class UserJpaEntity(
     var instagramId: String? = instagramId
         private set
 
+    fun toUser() = User(
+        id = this.id,
+        loginType = this.loginType,
+        oAuthLoginUid = this.oAuthLoginUid,
+        type = this.type,
+        nickname = this.nickname,
+        roles = this.roles,
+        profileImage = this.profileImage.toImage(),
+        gender = this.gender,
+        instagramId = this.instagramId,
+    )
+
     fun update(user: User) {
         this.type = user.type
         this.roles = user.roles
         this.nickname = user.nickname
         this.gender = user.gender
         this.instagramId = user.instagramId
-        this.profileImage = UserMapper.INSTANCE.toUserProfileImageJpaEmbeddable(user.profileImage)
+        this.profileImage = UserProfileImageJpaEmbeddable.from(user.profileImage)
+    }
+
+    companion object {
+        fun from(user: User): UserJpaEntity = UserJpaEntity(
+            type = user.type,
+            roles = user.roles,
+            loginType = user.loginType,
+            oAuthLoginUid = user.oAuthLoginUid,
+            nickname = user.nickname,
+            profileImage = UserProfileImageJpaEmbeddable.from(user.profileImage),
+            gender = user.gender,
+            instagramId = user.instagramId,
+        )
     }
 }

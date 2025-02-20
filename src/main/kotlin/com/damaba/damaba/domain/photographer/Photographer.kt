@@ -21,17 +21,14 @@ class Photographer(
     profileImage: Image,
     gender: Gender,
     instagramId: String?,
-    mainPhotographyTypes: Set<PhotographyType>,
     contactLink: String?,
     description: String?,
     address: Address?,
     businessSchedule: BusinessSchedule?,
+    mainPhotographyTypes: Set<PhotographyType>,
     portfolio: List<Image>,
     activeRegions: Set<Region>,
 ) : User(id, loginType, oAuthLoginUid, type, roles, nickname, profileImage, gender, instagramId) {
-    var mainPhotographyTypes: Set<PhotographyType> = mainPhotographyTypes
-        private set
-
     var contactLink: String? = contactLink
         private set
 
@@ -42,6 +39,9 @@ class Photographer(
         private set
 
     var businessSchedule: BusinessSchedule? = businessSchedule
+        private set
+
+    var mainPhotographyTypes: Set<PhotographyType> = mainPhotographyTypes
         private set
 
     var portfolio: List<Image> = portfolio

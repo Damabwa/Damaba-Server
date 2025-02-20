@@ -9,7 +9,6 @@ import com.damaba.damaba.domain.promotion.constant.PromotionSortType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.domain.region.RegionFilterCondition
 import com.damaba.damaba.mapper.PromotionMapper
-import com.damaba.damaba.mapper.UserMapper
 import com.linecorp.kotlinjdsl.querymodel.jpql.predicate.Predicate
 import jakarta.persistence.Tuple
 import org.springframework.data.domain.Page
@@ -116,7 +115,7 @@ class PromotionJdslRepository(private val promotionJpaRepository: PromotionJpaRe
         return result.filterNotNull().map { tuple ->
             PromotionMapper.INSTANCE.toPromotionListItem(
                 promotion = PromotionMapper.INSTANCE.toPromotion(tuple.get(0) as PromotionJpaEntity),
-                author = tuple.get(1)?.let { UserMapper.INSTANCE.toUser(it as UserJpaEntity) },
+                author = tuple.get(1)?.let { (it as UserJpaEntity).toUser() },
                 saveCount = tuple.get(2) as Long,
                 isSaved = tuple.get(3) as Boolean,
             )

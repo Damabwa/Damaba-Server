@@ -7,7 +7,6 @@ import com.damaba.damaba.application.port.outbound.user.GetUserPort
 import com.damaba.damaba.application.port.outbound.user.UpdateUserPort
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.domain.user.exception.UserNotFoundException
-import com.damaba.damaba.mapper.UserMapper
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -19,17 +18,17 @@ class UserCoreRepository(
     CheckNicknameExistencePort,
     CreateUserPort,
     UpdateUserPort {
-    override fun findById(id: Long): User? = findUserJpaEntityById(id)?.let { UserMapper.INSTANCE.toUser(it) }
+    override fun findById(id: Long): User? = findUserJpaEntityById(id)?.toUser()
 
-    override fun findByOAuthLoginUid(oAuthLoginUid: String): User? = userJpaRepository.findByOAuthLoginUid(oAuthLoginUid)?.let { UserMapper.INSTANCE.toUser(it) }
+    override fun findByOAuthLoginUid(oAuthLoginUid: String): User? = userJpaRepository.findByOAuthLoginUid(oAuthLoginUid)?.toUser()
 
-    override fun getById(id: Long): User = UserMapper.INSTANCE.toUser(getUserJpaEntityById(id))
+    override fun getById(id: Long): User = getUserJpaEntityById(id).toUser()
 
     override fun doesNicknameExist(nickname: String): Boolean = userJpaRepository.existsByNickname(nickname)
 
     override fun create(user: User): User {
-        val userJpaEntity = userJpaRepository.save(UserMapper.INSTANCE.toUserJpaEntity(user))
-        return UserMapper.INSTANCE.toUser(userJpaEntity)
+        val userJpaEntity = userJpaRepository.save(UserJpaEntity.from(user))
+        return userJpaEntity.toUser()
     }
 
     override fun update(user: User): User {
@@ -48,7 +47,7 @@ class UserCoreRepository(
         }
 
         userJpaEntity.update(user)
-        return UserMapper.INSTANCE.toUser(userJpaEntity)
+        return userJpaEntity.toUser()
     }
 
     private fun findUserJpaEntityById(id: Long): UserJpaEntity? = userJpaRepository.findById(id).orElseGet { null }
