@@ -3,7 +3,6 @@ package com.damaba.damaba.adapter.outbound.promotion
 import com.damaba.damaba.adapter.outbound.common.BaseJpaTimeEntity
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.constant.PromotionType
-import com.damaba.damaba.mapper.AddressMapper
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Embedded
@@ -116,7 +115,7 @@ class PromotionJpaEntity(
         this.promotionType = promotion.promotionType
         this.title = promotion.title
         this.content = promotion.content
-        this.address = AddressMapper.INSTANCE.toPromotionAddressJpaEmbeddable(promotion.address)
+        this.address = PromotionAddressJpaEmbeddable.from(promotion.address)
         this.externalLink = promotion.externalLink
         this.startedAt = promotion.startedAt
         this.endedAt = promotion.endedAt
