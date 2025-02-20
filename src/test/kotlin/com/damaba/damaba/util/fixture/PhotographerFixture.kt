@@ -1,6 +1,5 @@
 package com.damaba.damaba.util.fixture
 
-import com.damaba.damaba.adapter.outbound.photographer.BusinessScheduleJpaEmbeddable
 import com.damaba.damaba.adapter.outbound.photographer.PhotographerActiveRegionJpaEntity
 import com.damaba.damaba.adapter.outbound.photographer.PhotographerAddressJpaEmbeddable
 import com.damaba.damaba.adapter.outbound.photographer.PhotographerJpaEntity
@@ -8,7 +7,6 @@ import com.damaba.damaba.adapter.outbound.photographer.PhotographerPortfolioImag
 import com.damaba.damaba.domain.common.Address
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.file.Image
-import com.damaba.damaba.domain.photographer.BusinessSchedule
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.domain.region.Region
 import com.damaba.damaba.domain.user.constant.Gender
@@ -20,8 +18,6 @@ import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomUrl
 import com.damaba.damaba.util.fixture.AddressFixture.createAddress
 import org.springframework.test.util.ReflectionTestUtils
-import java.time.DayOfWeek
-import java.time.LocalTime
 
 object PhotographerFixture {
     fun createPhotographer(
@@ -38,7 +34,6 @@ object PhotographerFixture {
         contactLink: String? = randomString(),
         description: String? = randomString(),
         address: Address? = createAddress(),
-        businessSchedule: BusinessSchedule? = createBusinessSchedule(),
         portfolio: List<Image> = emptyList(),
         activeRegions: Set<Region> = emptySet(),
     ) = Photographer(
@@ -55,7 +50,6 @@ object PhotographerFixture {
         contactLink = contactLink,
         description = description,
         address = address,
-        businessSchedule = businessSchedule,
         portfolio = portfolio,
         activeRegions = activeRegions,
     )
@@ -66,7 +60,6 @@ object PhotographerFixture {
         contactLink: String? = randomString(),
         description: String? = randomString(),
         address: PhotographerAddressJpaEmbeddable? = null,
-        businessSchedule: BusinessScheduleJpaEmbeddable? = null,
         portfolio: List<PhotographerPortfolioImageJpaEntity> = emptyList(),
         activeRegions: Set<PhotographerActiveRegionJpaEntity> = emptySet(),
     ): PhotographerJpaEntity {
@@ -76,16 +69,9 @@ object PhotographerFixture {
             contactLink = contactLink,
             description = description,
             address = address,
-            businessSchedule = businessSchedule,
         )
         ReflectionTestUtils.setField(photographerJpaEntity, "_portfolio", portfolio)
         photographerJpaEntity.activeRegions.addAll(activeRegions)
         return photographerJpaEntity
     }
-
-    private fun createBusinessSchedule(
-        days: Set<DayOfWeek> = setOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY),
-        startTime: LocalTime = LocalTime.of(9, 0),
-        endTime: LocalTime = LocalTime.of(18, 0),
-    ) = BusinessSchedule(days, startTime, endTime)
 }

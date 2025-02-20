@@ -162,7 +162,6 @@ class PhotographerCoreRepositoryTest @Autowired constructor(
         assertThat(p1.contactLink).isEqualTo(p2.contactLink)
         assertThat(p1.description).isEqualTo(p2.description)
         assertThat(p1.address).isEqualTo(p2.address)
-        assertThat(p1.businessSchedule).isEqualTo(p2.businessSchedule)
         assertThat(p1.portfolio).isEqualTo(p2.portfolio)
         assertThat(p1.activeRegions).isEqualTo(p2.activeRegions)
     }

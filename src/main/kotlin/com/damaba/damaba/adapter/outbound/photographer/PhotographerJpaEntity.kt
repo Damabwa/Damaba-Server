@@ -22,7 +22,6 @@ class PhotographerJpaEntity(
     contactLink: String?,
     description: String?,
     address: PhotographerAddressJpaEmbeddable?,
-    businessSchedule: BusinessScheduleJpaEmbeddable?,
 ) : BaseJpaTimeEntity() {
     @Convert(converter = MainPhotohraphyTypesConverter::class)
     @Column(name = "main_photography_type", nullable = false)
@@ -39,10 +38,6 @@ class PhotographerJpaEntity(
 
     @Embedded
     var address: PhotographerAddressJpaEmbeddable? = address
-        private set
-
-    @Embedded
-    var businessSchedule: BusinessScheduleJpaEmbeddable? = businessSchedule
         private set
 
     @OneToMany(mappedBy = "photographer", cascade = [CascadeType.ALL])
@@ -68,7 +63,6 @@ class PhotographerJpaEntity(
         contactLink = this.contactLink,
         description = this.description,
         address = this.address?.toAddress(),
-        businessSchedule = this.businessSchedule?.toBusinessSchedule(),
         mainPhotographyTypes = this.mainPhotographyTypes,
         portfolio = this.portfolio.map { it.toImage() },
         activeRegions = this.activeRegions.map { it.toRegion() }.toSet(),
@@ -82,7 +76,6 @@ class PhotographerJpaEntity(
                 contactLink = photographer.contactLink,
                 description = photographer.description,
                 address = photographer.address?.let { PhotographerAddressJpaEmbeddable.from(it) },
-                businessSchedule = photographer.businessSchedule?.let { BusinessScheduleJpaEmbeddable.from(it) },
             )
             photographerJpaEntity._portfolio.addAll(
                 photographer.portfolio.map { PhotographerPortfolioImageJpaEntity.from(photographerJpaEntity, it) },

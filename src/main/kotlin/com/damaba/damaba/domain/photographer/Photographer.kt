@@ -24,7 +24,6 @@ class Photographer(
     contactLink: String?,
     description: String?,
     address: Address?,
-    businessSchedule: BusinessSchedule?,
     mainPhotographyTypes: Set<PhotographyType>,
     portfolio: List<Image>,
     activeRegions: Set<Region>,
@@ -36,9 +35,6 @@ class Photographer(
         private set
 
     var address: Address? = address
-        private set
-
-    var businessSchedule: BusinessSchedule? = businessSchedule
         private set
 
     var mainPhotographyTypes: Set<PhotographyType> = mainPhotographyTypes
@@ -91,7 +87,6 @@ class Photographer(
             contactLink = null,
             description = null,
             address = null,
-            businessSchedule = null,
             portfolio = listOf(),
             activeRegions = setOf(),
         )

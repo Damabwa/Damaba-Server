@@ -43,9 +43,6 @@ data class PhotographerResponse(
     @Schema(description = "(Nullable) 상세주소")
     val address: AddressResponse?,
 
-    @Schema(description = "(Nullable) 영업시간")
-    val businessSchedule: BusinessScheduleResponse?,
-
     @Schema(description = "포트폴리오")
     val portfolio: List<ImageResponse>,
 
