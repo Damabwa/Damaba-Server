@@ -94,9 +94,22 @@ class PromotionJpaEntity(
     var hashtags: MutableSet<PromotionHashtagJpaEntity> = mutableSetOf()
         private set
 
-    fun addImages(images: List<PromotionImageJpaEntity>) {
-        this._images.addAll(images)
-    }
+    fun toPromotion() = Promotion(
+        id = this.id,
+        authorId = this.authorId,
+        promotionType = this.promotionType,
+        title = this.title,
+        content = this.content,
+        address = this.address.toAddress(),
+        externalLink = this.externalLink,
+        startedAt = this.startedAt,
+        endedAt = this.endedAt,
+        viewCount = this.viewCount,
+        photographyTypes = this.photographyTypes.map { it.type }.toSet(),
+        images = this.images.map { it.toImage() },
+        activeRegions = this.activeRegions.map { it.toRegion() }.toSet(),
+        hashtags = this.hashtags.map { it.content }.toSet(),
+    )
 
     fun update(promotion: Promotion) {
         this.authorId = promotion.authorId
@@ -108,5 +121,42 @@ class PromotionJpaEntity(
         this.startedAt = promotion.startedAt
         this.endedAt = promotion.endedAt
         this.viewCount = promotion.viewCount
+    }
+
+    companion object {
+        fun from(promotion: Promotion): PromotionJpaEntity {
+            val promotionJpaEntity = PromotionJpaEntity(
+                authorId = promotion.authorId,
+                promotionType = promotion.promotionType,
+                title = promotion.title,
+                content = promotion.content,
+                address = PromotionAddressJpaEmbeddable.from(promotion.address),
+                externalLink = promotion.externalLink,
+                startedAt = promotion.startedAt,
+                endedAt = promotion.endedAt,
+                viewCount = promotion.viewCount,
+            )
+            promotionJpaEntity.photographyTypes.addAll(
+                promotion.photographyTypes.map {
+                    PromotionPhotographyTypeJpaEntity(promotion = promotionJpaEntity, type = it)
+                },
+            )
+            promotionJpaEntity._images.addAll(
+                promotion.images.map {
+                    PromotionImageJpaEntity.from(promotion = promotionJpaEntity, image = it)
+                },
+            )
+            promotionJpaEntity.activeRegions.addAll(
+                promotion.activeRegions.map {
+                    PromotionActiveRegionJpaEntity.from(promotion = promotionJpaEntity, region = it)
+                },
+            )
+            promotionJpaEntity.hashtags.addAll(
+                promotion.hashtags.map {
+                    PromotionHashtagJpaEntity(promotion = promotionJpaEntity, content = it)
+                },
+            )
+            return promotionJpaEntity
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.damaba.damaba.adapter.outbound.promotion
 
+import com.damaba.damaba.domain.common.Address
 import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
 
@@ -16,4 +17,20 @@ data class PromotionAddressJpaEmbeddable(
 
     @Column(name = "jibun_address", nullable = false)
     val jibunAddress: String,
-)
+) {
+    fun toAddress() = Address(
+        sido = this.sido,
+        sigungu = this.sigungu,
+        roadAddress = this.roadAddress,
+        jibunAddress = this.jibunAddress,
+    )
+
+    companion object {
+        fun from(address: Address) = PromotionAddressJpaEmbeddable(
+            sido = address.sido,
+            sigungu = address.sigungu,
+            roadAddress = address.roadAddress,
+            jibunAddress = address.jibunAddress,
+        )
+    }
+}

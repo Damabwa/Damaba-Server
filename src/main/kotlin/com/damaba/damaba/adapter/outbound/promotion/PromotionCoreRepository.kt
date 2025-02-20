@@ -14,7 +14,6 @@ import com.damaba.damaba.domain.promotion.constant.PromotionSortType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.domain.promotion.exception.PromotionNotFoundException
 import com.damaba.damaba.domain.region.RegionFilterCondition
-import com.damaba.damaba.mapper.PromotionMapper
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Repository
 
@@ -26,7 +25,7 @@ class PromotionCoreRepository(
     FindPromotionListPort,
     CreatePromotionPort,
     UpdatePromotionPort {
-    override fun getById(id: Long): Promotion = PromotionMapper.INSTANCE.toPromotion(getJpaEntityById(id))
+    override fun getById(id: Long): Promotion = getJpaEntityById(id).toPromotion()
 
     override fun findPromotionList(
         reqUserId: Long?,
@@ -48,14 +47,14 @@ class PromotionCoreRepository(
     ).toPagination()
 
     override fun create(promotion: Promotion): Promotion {
-        val promotionJpaEntity = promotionJpaRepository.save(PromotionMapper.INSTANCE.toPromotionJpaEntity(promotion))
-        return PromotionMapper.INSTANCE.toPromotion(promotionJpaEntity)
+        val promotionJpaEntity = promotionJpaRepository.save(PromotionJpaEntity.from(promotion))
+        return promotionJpaEntity.toPromotion()
     }
 
     override fun update(promotion: Promotion): Promotion {
         val promotionJpaEntity = getJpaEntityById(promotion.id)
         promotionJpaEntity.update(promotion)
-        return PromotionMapper.INSTANCE.toPromotion(promotionJpaEntity)
+        return promotionJpaEntity.toPromotion()
     }
 
     private fun getJpaEntityById(id: Long): PromotionJpaEntity = promotionJpaRepository.findById(id).orElseThrow { PromotionNotFoundException() }

@@ -7,7 +7,6 @@ import com.damaba.damaba.application.port.outbound.promotion.DeleteSavedPromotio
 import com.damaba.damaba.application.port.outbound.promotion.GetSavedPromotionPort
 import com.damaba.damaba.domain.promotion.SavedPromotion
 import com.damaba.damaba.domain.promotion.exception.SavedPromotionNotFoundException
-import com.damaba.damaba.mapper.PromotionMapper
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -19,9 +18,10 @@ class SavedPromotionCoreRepository(
     CreateSavedPromotionPort,
     DeleteSavedPromotionPort {
     override fun getByUserIdAndPromotionId(userId: Long, promotionId: Long): SavedPromotion {
-        val savedPromotion = savedPromotionJpaRepository.findByUserIdAndPromotionId(userId, promotionId)
+        val savedPromotionJpaEntity = savedPromotionJpaRepository
+            .findByUserIdAndPromotionId(userId, promotionId)
             ?: throw SavedPromotionNotFoundException()
-        return PromotionMapper.INSTANCE.toSavedPromotion(savedPromotion)
+        return savedPromotionJpaEntity.toSavedPromotion()
     }
 
     override fun existsByUserIdAndPromotionId(
