@@ -114,7 +114,7 @@ class PromotionJdslRepository(private val promotionJpaRepository: PromotionJpaRe
         }
         return result.filterNotNull().map { tuple ->
             PromotionMapper.INSTANCE.toPromotionListItem(
-                promotion = PromotionMapper.INSTANCE.toPromotion(tuple.get(0) as PromotionJpaEntity),
+                promotion = (tuple.get(0) as PromotionJpaEntity).toPromotion(),
                 author = tuple.get(1)?.let { (it as UserJpaEntity).toUser() },
                 saveCount = tuple.get(2) as Long,
                 isSaved = tuple.get(3) as Boolean,
