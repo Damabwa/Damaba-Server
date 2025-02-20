@@ -1,5 +1,6 @@
 package com.damaba.damaba.adapter.outbound.user
 
+import com.damaba.damaba.domain.file.Image
 import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
 
@@ -10,4 +11,10 @@ data class UserProfileImageJpaEmbeddable(
 
     @Column(name = "profile_image_url", nullable = false)
     val url: String,
-)
+) {
+    fun toImage() = Image(name = this.name, url = this.url)
+
+    companion object {
+        fun from(image: Image) = UserProfileImageJpaEmbeddable(name = image.name, url = image.url)
+    }
+}
