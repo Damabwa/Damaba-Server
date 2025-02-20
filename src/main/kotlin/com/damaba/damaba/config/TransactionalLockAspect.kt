@@ -1,6 +1,6 @@
 package com.damaba.damaba.config
 
-import com.damaba.damaba.adapter.outbound.common.TransactionalDBLockManager
+import com.damaba.damaba.adapter.outbound.common.TransactionalLockManager
 import com.damaba.damaba.domain.common.TransactionalLock
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
  */
 @Aspect
 @Component
-class TransactionalLockAspect(private val transactionalLockManager: TransactionalDBLockManager) {
+class TransactionalLockAspect(private val transactionalLockManager: TransactionalLockManager) {
     /**
      * Transaction & Lock을 적용한 뒤 메서드를 실행한다.
      *

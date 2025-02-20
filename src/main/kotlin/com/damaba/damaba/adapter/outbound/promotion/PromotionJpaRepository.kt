@@ -15,5 +15,5 @@ interface PromotionJpaRepository :
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT 1 FROM PromotionJpaEntity p WHERE p.deletedAt IS NULL AND p.id = :id")
-    fun acquireLockById(id: Long)
+    fun acquirePessimisticLockById(id: Long)
 }

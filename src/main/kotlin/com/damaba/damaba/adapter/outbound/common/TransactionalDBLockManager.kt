@@ -10,13 +10,20 @@ import org.springframework.transaction.annotation.Transactional
 import kotlin.reflect.KClass
 
 @Component
-class TransactionalDBLockManager(private val promotionJpaRepository: PromotionJpaRepository) {
+class TransactionalDBLockManager(
+    private val promotionJpaRepository: PromotionJpaRepository,
+) : TransactionalLockManager {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    fun executeWithLock(joinPoint: ProceedingJoinPoint, lockType: LockType, domainType: KClass<*>, id: Any): Any {
+    override fun executeWithLock(
+        joinPoint: ProceedingJoinPoint,
+        lockType: LockType,
+        domainType: KClass<*>,
+        id: Any,
+    ): Any {
         when (lockType) {
             LockType.PESSIMISTIC -> {
                 when (domainType) {
-                    Promotion::class -> promotionJpaRepository.acquireLockById(id as Long)
+                    Promotion::class -> promotionJpaRepository.acquirePessimisticLockById(id as Long)
                 }
             }
 
