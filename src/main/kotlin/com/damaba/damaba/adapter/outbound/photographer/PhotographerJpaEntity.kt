@@ -2,11 +2,9 @@ package com.damaba.damaba.adapter.outbound.photographer
 
 import com.damaba.damaba.adapter.outbound.common.BaseJpaTimeEntity
 import com.damaba.damaba.adapter.outbound.user.UserJpaEntity
-import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.photographer.Photographer
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
-import jakarta.persistence.Convert
 import jakarta.persistence.Embedded
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
@@ -18,16 +16,10 @@ import jakarta.persistence.Table
 class PhotographerJpaEntity(
     @Id @Column(name = "user_id", nullable = false)
     val userId: Long,
-    mainPhotographyTypes: Set<PhotographyType>,
     contactLink: String?,
     description: String?,
     address: PhotographerAddressJpaEmbeddable?,
 ) : BaseJpaTimeEntity() {
-    @Convert(converter = MainPhotohraphyTypesConverter::class)
-    @Column(name = "main_photography_type", nullable = false)
-    var mainPhotographyTypes: Set<PhotographyType> = mainPhotographyTypes
-        private set
-
     @Column(name = "contact_link", nullable = true)
     var contactLink: String? = contactLink
         private set
@@ -38,6 +30,10 @@ class PhotographerJpaEntity(
 
     @Embedded
     var address: PhotographerAddressJpaEmbeddable? = address
+        private set
+
+    @OneToMany(mappedBy = "photographer", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var mainPhotographyTypes: MutableSet<PhotographerPhotographyTypeJpaEntity> = mutableSetOf()
         private set
 
     @OneToMany(mappedBy = "photographer", cascade = [CascadeType.ALL])
@@ -63,7 +59,7 @@ class PhotographerJpaEntity(
         contactLink = this.contactLink,
         description = this.description,
         address = this.address?.toAddress(),
-        mainPhotographyTypes = this.mainPhotographyTypes,
+        mainPhotographyTypes = this.mainPhotographyTypes.map { it.photographyType }.toSet(),
         portfolio = this.portfolio.map { it.toImage() },
         activeRegions = this.activeRegions.map { it.toRegion() }.toSet(),
     )
@@ -72,10 +68,14 @@ class PhotographerJpaEntity(
         fun from(photographer: Photographer): PhotographerJpaEntity {
             val photographerJpaEntity = PhotographerJpaEntity(
                 userId = photographer.id,
-                mainPhotographyTypes = photographer.mainPhotographyTypes,
                 contactLink = photographer.contactLink,
                 description = photographer.description,
                 address = photographer.address?.let { PhotographerAddressJpaEmbeddable.from(it) },
+            )
+            photographerJpaEntity.mainPhotographyTypes.addAll(
+                photographer.mainPhotographyTypes.map {
+                    PhotographerPhotographyTypeJpaEntity(photographerJpaEntity, it)
+                },
             )
             photographerJpaEntity._portfolio.addAll(
                 photographer.portfolio.map { PhotographerPortfolioImageJpaEntity.from(photographerJpaEntity, it) },

@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS `user`;
 DROP TABLE IF EXISTS photographer;
+DROP TABLE IF EXISTS photographer_photography_type;
 DROP TABLE IF EXISTS photographer_active_region;
 DROP TABLE IF EXISTS photographer_portfolio_image;
 DROP TABLE IF EXISTS user_profile_image;
@@ -30,19 +31,29 @@ CREATE INDEX idx__user__o_auth_login_uid ON `user` (o_auth_login_uid);
 
 CREATE TABLE photographer
 (
-    user_id               BIGINT       NOT NULL COMMENT '(FK) id of user',
-    main_photography_type VARCHAR(255) NOT NULL,
-    contact_link          VARCHAR(255),
-    description           VARCHAR(500),
-    sido                  VARCHAR(255),
-    sigungu               VARCHAR(255),
-    road_address          VARCHAR(255),
-    jibun_address         VARCHAR(255),
-    created_at            DATETIME     NOT NULL,
-    updated_at            DATETIME     NOT NULL,
+    user_id       BIGINT   NOT NULL COMMENT '(FK) id of user',
+    contact_link  VARCHAR(255),
+    description   VARCHAR(500),
+    sido          VARCHAR(255),
+    sigungu       VARCHAR(255),
+    road_address  VARCHAR(255),
+    jibun_address VARCHAR(255),
+    created_at    DATETIME NOT NULL,
+    updated_at    DATETIME NOT NULL,
     PRIMARY KEY (user_id)
 );
 CREATE INDEX fk_idx__photographer__user_id ON photographer (user_id);
+
+CREATE TABLE photographer_photography_type
+(
+    id               BIGINT       NOT NULL AUTO_INCREMENT,
+    photographer_id  BIGINT       NOT NULL COMMENT '(FK) id of photographer',
+    photography_type VARCHAR(255) NOT NULL,
+    created_at       DATETIME     NOT NULL,
+    updated_at       DATETIME     NOT NULL,
+    PRIMARY KEY (id)
+);
+CREATE INDEX fk_idx__photographer_photography_type__photographer_id ON photographer_photography_type (photographer_id);
 
 CREATE TABLE photographer_active_region
 (

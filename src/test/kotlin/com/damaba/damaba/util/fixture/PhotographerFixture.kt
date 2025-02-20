@@ -3,6 +3,7 @@ package com.damaba.damaba.util.fixture
 import com.damaba.damaba.adapter.outbound.photographer.PhotographerActiveRegionJpaEntity
 import com.damaba.damaba.adapter.outbound.photographer.PhotographerAddressJpaEmbeddable
 import com.damaba.damaba.adapter.outbound.photographer.PhotographerJpaEntity
+import com.damaba.damaba.adapter.outbound.photographer.PhotographerPhotographyTypeJpaEntity
 import com.damaba.damaba.adapter.outbound.photographer.PhotographerPortfolioImageJpaEntity
 import com.damaba.damaba.domain.common.Address
 import com.damaba.damaba.domain.common.PhotographyType
@@ -56,20 +57,20 @@ object PhotographerFixture {
 
     fun createPhotographerJpaEntity(
         id: Long = randomLong(),
-        mainPhotographyTypes: Set<PhotographyType> = setOf(PhotographyType.PROFILE),
         contactLink: String? = randomString(),
         description: String? = randomString(),
         address: PhotographerAddressJpaEmbeddable? = null,
+        mainPhotographyTypes: Set<PhotographerPhotographyTypeJpaEntity> = emptySet(),
         portfolio: List<PhotographerPortfolioImageJpaEntity> = emptyList(),
         activeRegions: Set<PhotographerActiveRegionJpaEntity> = emptySet(),
     ): PhotographerJpaEntity {
         val photographerJpaEntity = PhotographerJpaEntity(
             userId = id,
-            mainPhotographyTypes = mainPhotographyTypes,
             contactLink = contactLink,
             description = description,
             address = address,
         )
+        photographerJpaEntity.mainPhotographyTypes.addAll(mainPhotographyTypes)
         ReflectionTestUtils.setField(photographerJpaEntity, "_portfolio", portfolio)
         photographerJpaEntity.activeRegions.addAll(activeRegions)
         return photographerJpaEntity
