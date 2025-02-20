@@ -8,7 +8,6 @@ import com.damaba.damaba.application.port.outbound.photographer.GetPhotographerP
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.domain.photographer.exception.PhotographerNotFoundException
 import com.damaba.damaba.domain.user.exception.UserNotFoundException
-import com.damaba.damaba.mapper.PhotographerMapper
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -23,7 +22,7 @@ class PhotographerCoreRepository(
             .orElseThrow { PhotographerNotFoundException() }
         val photographerJpaEntity = photographerJpaRepository.findById(id)
             .orElseThrow { PhotographerNotFoundException() }
-        return PhotographerMapper.INSTANCE.toPhotographer(userJpaEntity, photographerJpaEntity)
+        return photographerJpaEntity.toPhotographer(userJpaEntity)
     }
 
     override fun createIfUserExists(photographer: Photographer): Photographer {
@@ -46,10 +45,9 @@ class PhotographerCoreRepository(
             ),
         )
 
-        val photographerJpaEntity = PhotographerMapper.INSTANCE.toPhotographerJpaEntity(photographer)
+        val photographerJpaEntity = PhotographerJpaEntity.from(photographer)
         photographerJpaRepository.save(photographerJpaEntity)
-
-        return photographer
+        return photographerJpaEntity.toPhotographer(userJpaEntity)
     }
 
     private fun deleteProfileImageIfExists(imageUrl: String) {

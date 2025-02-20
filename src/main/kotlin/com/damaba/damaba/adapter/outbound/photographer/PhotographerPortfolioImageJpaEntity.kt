@@ -1,6 +1,7 @@
 package com.damaba.damaba.adapter.outbound.photographer
 
 import com.damaba.damaba.adapter.outbound.common.BaseJpaEntity
+import com.damaba.damaba.domain.file.Image
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
@@ -40,4 +41,14 @@ class PhotographerPortfolioImageJpaEntity(
     @Column(name = "deleted_at", nullable = true)
     var deletedAt: LocalDateTime? = null
         private set
+
+    fun toImage() = Image(name = this.name, url = this.url)
+
+    companion object {
+        fun from(photographerJpaEntity: PhotographerJpaEntity, image: Image) = PhotographerPortfolioImageJpaEntity(
+            photographer = photographerJpaEntity,
+            name = image.name,
+            url = image.url,
+        )
+    }
 }

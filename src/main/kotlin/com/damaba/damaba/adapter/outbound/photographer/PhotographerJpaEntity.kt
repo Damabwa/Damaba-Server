@@ -1,7 +1,9 @@
 package com.damaba.damaba.adapter.outbound.photographer
 
 import com.damaba.damaba.adapter.outbound.common.BaseJpaTimeEntity
+import com.damaba.damaba.adapter.outbound.user.UserJpaEntity
 import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.photographer.Photographer
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Convert
@@ -53,7 +55,42 @@ class PhotographerJpaEntity(
     var activeRegions: MutableSet<PhotographerActiveRegionJpaEntity> = mutableSetOf()
         private set
 
-    fun addPortfolioImages(images: List<PhotographerPortfolioImageJpaEntity>) {
-        this._portfolio.addAll(images.map { PhotographerPortfolioImageJpaEntity(this, it.name, it.url) })
+    fun toPhotographer(userJpaEntity: UserJpaEntity) = Photographer(
+        id = this.userId,
+        type = userJpaEntity.type,
+        roles = userJpaEntity.roles,
+        loginType = userJpaEntity.loginType,
+        oAuthLoginUid = userJpaEntity.oAuthLoginUid,
+        nickname = userJpaEntity.nickname,
+        profileImage = userJpaEntity.profileImage.toImage(),
+        gender = userJpaEntity.gender,
+        instagramId = userJpaEntity.instagramId,
+        contactLink = this.contactLink,
+        description = this.description,
+        address = this.address?.toAddress(),
+        businessSchedule = this.businessSchedule?.toBusinessSchedule(),
+        mainPhotographyTypes = this.mainPhotographyTypes,
+        portfolio = this.portfolio.map { it.toImage() },
+        activeRegions = this.activeRegions.map { it.toRegion() }.toSet(),
+    )
+
+    companion object {
+        fun from(photographer: Photographer): PhotographerJpaEntity {
+            val photographerJpaEntity = PhotographerJpaEntity(
+                userId = photographer.id,
+                mainPhotographyTypes = photographer.mainPhotographyTypes,
+                contactLink = photographer.contactLink,
+                description = photographer.description,
+                address = photographer.address?.let { PhotographerAddressJpaEmbeddable.from(it) },
+                businessSchedule = photographer.businessSchedule?.let { BusinessScheduleJpaEmbeddable.from(it) },
+            )
+            photographerJpaEntity._portfolio.addAll(
+                photographer.portfolio.map { PhotographerPortfolioImageJpaEntity.from(photographerJpaEntity, it) },
+            )
+            photographerJpaEntity.activeRegions.addAll(
+                photographer.activeRegions.map { PhotographerActiveRegionJpaEntity.from(photographerJpaEntity, it) },
+            )
+            return photographerJpaEntity
+        }
     }
 }
