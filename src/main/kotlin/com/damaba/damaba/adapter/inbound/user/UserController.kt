@@ -1,10 +1,10 @@
 package com.damaba.damaba.adapter.inbound.user
 
-import com.damaba.damaba.adapter.inbound.user.dto.CheckUserNicknameExistenceResponse
+import com.damaba.damaba.adapter.inbound.user.dto.ExistsUserNicknameResponse
 import com.damaba.damaba.adapter.inbound.user.dto.RegisterUserRequest
 import com.damaba.damaba.adapter.inbound.user.dto.UpdateMyInfoRequest
 import com.damaba.damaba.adapter.inbound.user.dto.UserResponse
-import com.damaba.damaba.application.port.inbound.user.CheckUserNicknameExistenceUseCase
+import com.damaba.damaba.application.port.inbound.user.ExistsUserNicknameUseCase
 import com.damaba.damaba.application.port.inbound.user.GetUserUseCase
 import com.damaba.damaba.application.port.inbound.user.RegisterUserUseCase
 import com.damaba.damaba.application.port.inbound.user.UpdateUserUseCase
@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class UserController(
     private val getUserUseCase: GetUserUseCase,
-    private val checkUserNicknameExistenceUseCase: CheckUserNicknameExistenceUseCase,
+    private val existsUserNicknameUseCase: ExistsUserNicknameUseCase,
     private val updateUserUseCase: UpdateUserUseCase,
     private val registerUserUseCase: RegisterUserUseCase,
 ) {
@@ -48,15 +48,14 @@ class UserController(
         description = "사용중인 닉네임인지 확인합니다.",
     )
     @GetMapping("/api/v1/users/nicknames/existence")
-    fun checkUserNicknameExistenceV1(
+    fun existsUserNicknameV1(
         @Parameter(
             description = "사용중인지 확인할 닉네임",
             example = "치와와",
         ) @RequestParam nickname: String,
-    ): CheckUserNicknameExistenceResponse {
-        val doesNicknameExists =
-            checkUserNicknameExistenceUseCase.doesNicknameExist(CheckUserNicknameExistenceUseCase.Query(nickname))
-        return CheckUserNicknameExistenceResponse(nickname, doesNicknameExists)
+    ): ExistsUserNicknameResponse {
+        val doesNicknameExists = existsUserNicknameUseCase.existsNickname(ExistsUserNicknameUseCase.Query(nickname))
+        return ExistsUserNicknameResponse(nickname, doesNicknameExists)
     }
 
     @Operation(

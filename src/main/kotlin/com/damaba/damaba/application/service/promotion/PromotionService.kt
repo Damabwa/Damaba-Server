@@ -6,11 +6,11 @@ import com.damaba.damaba.application.port.inbound.promotion.GetPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.SavePromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.UnsavePromotionUseCase
-import com.damaba.damaba.application.port.outbound.promotion.CheckSavedPromotionExistencePort
 import com.damaba.damaba.application.port.outbound.promotion.CountSavedPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.CreatePromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.CreateSavedPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.DeleteSavedPromotionPort
+import com.damaba.damaba.application.port.outbound.promotion.ExistsSavedPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.FindPromotionListPort
 import com.damaba.damaba.application.port.outbound.promotion.GetPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.GetSavedPromotionPort
@@ -40,7 +40,7 @@ class PromotionService(
     private val updatePromotionPort: UpdatePromotionPort,
 
     private val getSavedPromotionPort: GetSavedPromotionPort,
-    private val checkSavedPromotionExistencePort: CheckSavedPromotionExistencePort,
+    private val existsSavedPromotionPort: ExistsSavedPromotionPort,
     private val countSavedPromotionPort: CountSavedPromotionPort,
     private val createSavedPromotionPort: CreateSavedPromotionPort,
     private val deleteSavedPromotionPort: DeleteSavedPromotionPort,
@@ -64,7 +64,7 @@ class PromotionService(
         val author = promotion.authorId?.let { getUserPort.getById(it) }
         val saveCount = countSavedPromotionPort.countByPromotionId(query.promotionId)
         val isSaved = if (query.requestUserId != null) {
-            checkSavedPromotionExistencePort.existsByUserIdAndPromotionId(query.requestUserId, query.promotionId)
+            existsSavedPromotionPort.existsByUserIdAndPromotionId(query.requestUserId, query.promotionId)
         } else {
             false
         }
@@ -105,7 +105,7 @@ class PromotionService(
 
     @Transactional
     override fun savePromotion(command: SavePromotionUseCase.Command) {
-        if (checkSavedPromotionExistencePort.existsByUserIdAndPromotionId(command.userId, command.promotionId)) {
+        if (existsSavedPromotionPort.existsByUserIdAndPromotionId(command.userId, command.promotionId)) {
             throw AlreadySavedPromotionException()
         }
         createSavedPromotionPort.create(SavedPromotion.create(command.userId, command.promotionId))

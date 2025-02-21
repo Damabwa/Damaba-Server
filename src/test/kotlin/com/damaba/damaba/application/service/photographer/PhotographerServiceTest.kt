@@ -1,13 +1,13 @@
 package com.damaba.damaba.application.service.photographer
 
-import com.damaba.damaba.application.port.inbound.photographer.CheckPhotographerNicknameExistenceUseCase
+import com.damaba.damaba.application.port.inbound.photographer.ExistsPhotographerNicknameUseCase
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
 import com.damaba.damaba.application.port.outbound.photographer.CreatePhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.CreateSavedPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.ExistsSavedPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.GetPhotographerPort
-import com.damaba.damaba.application.port.outbound.user.CheckNicknameExistencePort
+import com.damaba.damaba.application.port.outbound.user.ExistsNicknamePort
 import com.damaba.damaba.application.port.outbound.user.GetUserPort
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.photographer.Photographer
@@ -39,14 +39,14 @@ import kotlin.test.Test
 class PhotographerServiceTest {
     private val getUserPort: GetUserPort = mockk()
     private val getPhotographerPort: GetPhotographerPort = mockk()
-    private val checkNicknameExistencePort: CheckNicknameExistencePort = mockk()
+    private val existsNicknamePort: ExistsNicknamePort = mockk()
     private val createPhotographerPort: CreatePhotographerPort = mockk()
     private val existsSavedPhotographerPort: ExistsSavedPhotographerPort = mockk()
     private val createSavedPhotographerPort: CreateSavedPhotographerPort = mockk()
     private val sut: PhotographerService = PhotographerService(
         getUserPort,
         getPhotographerPort,
-        checkNicknameExistencePort,
+        existsNicknamePort,
         createPhotographerPort,
         existsSavedPhotographerPort,
         createSavedPhotographerPort,
@@ -56,7 +56,7 @@ class PhotographerServiceTest {
         confirmVerified(
             getUserPort,
             getPhotographerPort,
-            checkNicknameExistencePort,
+            existsNicknamePort,
             createPhotographerPort,
             existsSavedPhotographerPort,
             createSavedPhotographerPort,
@@ -84,13 +84,13 @@ class PhotographerServiceTest {
         // given
         val nickname = randomString()
         val expectedResult = randomBoolean()
-        every { checkNicknameExistencePort.doesNicknameExist(nickname) } returns expectedResult
+        every { existsNicknamePort.existsNickname(nickname) } returns expectedResult
 
         // when
-        val actualResult = sut.doesNicknameExist(CheckPhotographerNicknameExistenceUseCase.Query(nickname))
+        val actualResult = sut.existsNickname(ExistsPhotographerNicknameUseCase.Query(nickname))
 
         // then
-        verify { checkNicknameExistencePort.doesNicknameExist(nickname) }
+        verify { existsNicknamePort.existsNickname(nickname) }
         confirmVerifiedEveryMocks()
         assertThat(actualResult).isEqualTo(expectedResult)
     }
@@ -111,7 +111,7 @@ class PhotographerServiceTest {
         )
         val expectedResult = createPhotographer(id = userId)
         every { getUserPort.getById(userId) } returns unregisteredUser
-        every { checkNicknameExistencePort.doesNicknameExist(command.nickname) } returns false
+        every { existsNicknamePort.existsNickname(command.nickname) } returns false
         every { createPhotographerPort.createIfUserExists(any(Photographer::class)) } returns expectedResult
 
         // when
@@ -120,7 +120,7 @@ class PhotographerServiceTest {
         // then
         verifyOrder {
             getUserPort.getById(userId)
-            checkNicknameExistencePort.doesNicknameExist(command.nickname)
+            existsNicknamePort.existsNickname(command.nickname)
             createPhotographerPort.createIfUserExists(any(Photographer::class))
         }
         confirmVerifiedEveryMocks()
@@ -167,7 +167,7 @@ class PhotographerServiceTest {
             activeRegions = generateRandomSet(maxSize = 3) { createRegion() },
         )
         every { getUserPort.getById(userId) } returns unregisteredUser
-        every { checkNicknameExistencePort.doesNicknameExist(command.nickname) } returns true
+        every { existsNicknamePort.existsNickname(command.nickname) } returns true
 
         // when
         val ex = catchThrowable { sut.register(command) }
@@ -175,7 +175,7 @@ class PhotographerServiceTest {
         // then
         verifyOrder {
             getUserPort.getById(userId)
-            checkNicknameExistencePort.doesNicknameExist(command.nickname)
+            existsNicknamePort.existsNickname(command.nickname)
         }
         confirmVerifiedEveryMocks()
         assertThat(ex).isInstanceOf(NicknameAlreadyExistsException::class.java)

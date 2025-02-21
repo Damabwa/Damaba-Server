@@ -1,10 +1,10 @@
 package com.damaba.damaba.application.service.user
 
-import com.damaba.damaba.application.port.inbound.user.CheckUserNicknameExistenceUseCase
+import com.damaba.damaba.application.port.inbound.user.ExistsUserNicknameUseCase
 import com.damaba.damaba.application.port.inbound.user.RegisterUserUseCase
 import com.damaba.damaba.application.port.inbound.user.UpdateUserUseCase
 import com.damaba.damaba.application.port.outbound.common.PublishEventPort
-import com.damaba.damaba.application.port.outbound.user.CheckNicknameExistencePort
+import com.damaba.damaba.application.port.outbound.user.ExistsNicknamePort
 import com.damaba.damaba.application.port.outbound.user.GetUserPort
 import com.damaba.damaba.application.port.outbound.user.UpdateUserPort
 import com.damaba.damaba.domain.file.DeleteFileEvent
@@ -31,18 +31,18 @@ import kotlin.test.Test
 
 class UserServiceTest {
     private val getUserPort: GetUserPort = mockk()
-    private val checkNicknameExistencePort: CheckNicknameExistencePort = mockk()
+    private val existsNicknamePort: ExistsNicknamePort = mockk()
     private val updateUserPort: UpdateUserPort = mockk()
     private val publishEventPort: PublishEventPort = mockk()
     private val sut = UserService(
         getUserPort,
-        checkNicknameExistencePort,
+        existsNicknamePort,
         updateUserPort,
         publishEventPort,
     )
 
     private fun confirmVerifiedEveryMocks() {
-        confirmVerified(getUserPort, checkNicknameExistencePort, updateUserPort, publishEventPort)
+        confirmVerified(getUserPort, existsNicknamePort, updateUserPort, publishEventPort)
     }
 
     @Test
@@ -65,15 +65,15 @@ class UserServiceTest {
     fun `닉네임이 주어지고, 주어진 닉네임이 존재하는지 확인한다`() {
         // given
         val nickname = randomString(len = 7)
-        val query = CheckUserNicknameExistenceUseCase.Query(nickname)
+        val query = ExistsUserNicknameUseCase.Query(nickname)
         val expectedResult = randomBoolean()
-        every { checkNicknameExistencePort.doesNicknameExist(nickname) } returns expectedResult
+        every { existsNicknamePort.existsNickname(nickname) } returns expectedResult
 
         // when
-        val actualResult = sut.doesNicknameExist(query)
+        val actualResult = sut.existsNickname(query)
 
         // then
-        verify { checkNicknameExistencePort.doesNicknameExist(nickname) }
+        verify { existsNicknamePort.existsNickname(nickname) }
         confirmVerifiedEveryMocks()
         assertThat(actualResult).isEqualTo(expectedResult)
     }
@@ -95,7 +95,7 @@ class UserServiceTest {
             instagramId = command.instagramId,
         )
         every { getUserPort.getById(userId) } returns originalUser
-        every { checkNicknameExistencePort.doesNicknameExist(command.nickname) } returns false
+        every { existsNicknamePort.existsNickname(command.nickname) } returns false
         every { updateUserPort.update(originalUser) } returns expectedResult
 
         // when
@@ -104,7 +104,7 @@ class UserServiceTest {
         // then
         verifyOrder {
             getUserPort.getById(userId)
-            checkNicknameExistencePort.doesNicknameExist(command.nickname)
+            existsNicknamePort.existsNickname(command.nickname)
             updateUserPort.update(originalUser)
         }
         confirmVerifiedEveryMocks()
@@ -148,7 +148,7 @@ class UserServiceTest {
             instagramId = randomString(len = 15),
         )
         every { getUserPort.getById(userId) } returns originalUser
-        every { checkNicknameExistencePort.doesNicknameExist(command.nickname) } returns true
+        every { existsNicknamePort.existsNickname(command.nickname) } returns true
 
         // when
         val ex = catchThrowable { sut.register(command) }
@@ -156,7 +156,7 @@ class UserServiceTest {
         // then
         verifyOrder {
             getUserPort.getById(userId)
-            checkNicknameExistencePort.doesNicknameExist(command.nickname)
+            existsNicknamePort.existsNickname(command.nickname)
         }
         confirmVerifiedEveryMocks()
         assertThat(ex).isInstanceOf(NicknameAlreadyExistsException::class.java)
@@ -179,7 +179,7 @@ class UserServiceTest {
             profileImage = newProfileImageUrl,
         )
         every { getUserPort.getById(userId) } returns user
-        every { checkNicknameExistencePort.doesNicknameExist(newNickname) } returns false
+        every { existsNicknamePort.existsNickname(newNickname) } returns false
         every { publishEventPort.publish(any(DeleteFileEvent::class)) } just Runs
         every { updateUserPort.update(user) } returns expectedResult
 
@@ -189,7 +189,7 @@ class UserServiceTest {
         // then
         verifyOrder {
             getUserPort.getById(userId)
-            checkNicknameExistencePort.doesNicknameExist(newNickname)
+            existsNicknamePort.existsNickname(newNickname)
             publishEventPort.publish(any(DeleteFileEvent::class))
             updateUserPort.update(user)
         }
@@ -216,7 +216,7 @@ class UserServiceTest {
             profileImage = user.profileImage,
         )
         every { getUserPort.getById(userId) } returns user
-        every { checkNicknameExistencePort.doesNicknameExist(newNickname) } returns false
+        every { existsNicknamePort.existsNickname(newNickname) } returns false
         every { updateUserPort.update(user) } returns expectedResult
 
         // when
@@ -225,7 +225,7 @@ class UserServiceTest {
         // then
         verifyOrder {
             getUserPort.getById(userId)
-            checkNicknameExistencePort.doesNicknameExist(newNickname)
+            existsNicknamePort.existsNickname(newNickname)
             updateUserPort.update(user)
         }
         confirmVerifiedEveryMocks()
@@ -282,7 +282,7 @@ class UserServiceTest {
             Image(randomString(), randomUrl()),
         )
         every { getUserPort.getById(userId) } returns createUser(id = userId)
-        every { checkNicknameExistencePort.doesNicknameExist(existingNickname) } returns true
+        every { existsNicknamePort.existsNickname(existingNickname) } returns true
 
         // when
         val ex = catchThrowable { sut.updateUser(command) }
@@ -290,7 +290,7 @@ class UserServiceTest {
         // then
         verifyOrder {
             getUserPort.getById(userId)
-            checkNicknameExistencePort.doesNicknameExist(existingNickname)
+            existsNicknamePort.existsNickname(existingNickname)
         }
         confirmVerifiedEveryMocks()
         assertThat(ex).isInstanceOf(NicknameAlreadyExistsException::class.java)

@@ -1,9 +1,9 @@
 package com.damaba.damaba.adapter.outbound.promotion
 
-import com.damaba.damaba.application.port.outbound.promotion.CheckSavedPromotionExistencePort
 import com.damaba.damaba.application.port.outbound.promotion.CountSavedPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.CreateSavedPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.DeleteSavedPromotionPort
+import com.damaba.damaba.application.port.outbound.promotion.ExistsSavedPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.GetSavedPromotionPort
 import com.damaba.damaba.domain.promotion.SavedPromotion
 import com.damaba.damaba.domain.promotion.exception.SavedPromotionNotFoundException
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository
 class SavedPromotionCoreRepository(
     private val savedPromotionJpaRepository: SavedPromotionJpaRepository,
 ) : GetSavedPromotionPort,
-    CheckSavedPromotionExistencePort,
+    ExistsSavedPromotionPort,
     CountSavedPromotionPort,
     CreateSavedPromotionPort,
     DeleteSavedPromotionPort {

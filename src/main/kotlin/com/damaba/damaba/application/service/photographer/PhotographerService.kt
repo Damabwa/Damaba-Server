@@ -1,6 +1,6 @@
 package com.damaba.damaba.application.service.photographer
 
-import com.damaba.damaba.application.port.inbound.photographer.CheckPhotographerNicknameExistenceUseCase
+import com.damaba.damaba.application.port.inbound.photographer.ExistsPhotographerNicknameUseCase
 import com.damaba.damaba.application.port.inbound.photographer.GetPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
@@ -8,7 +8,7 @@ import com.damaba.damaba.application.port.outbound.photographer.CreatePhotograph
 import com.damaba.damaba.application.port.outbound.photographer.CreateSavedPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.ExistsSavedPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.GetPhotographerPort
-import com.damaba.damaba.application.port.outbound.user.CheckNicknameExistencePort
+import com.damaba.damaba.application.port.outbound.user.ExistsNicknamePort
 import com.damaba.damaba.application.port.outbound.user.GetUserPort
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.domain.photographer.SavedPhotographer
@@ -23,13 +23,13 @@ import org.springframework.transaction.annotation.Transactional
 class PhotographerService(
     private val getUserPort: GetUserPort,
     private val getPhotographerPort: GetPhotographerPort,
-    private val checkNicknameExistencePort: CheckNicknameExistencePort,
+    private val existsNicknamePort: ExistsNicknamePort,
     private val createPhotographerPort: CreatePhotographerPort,
 
     private val existsSavedPhotographerPort: ExistsSavedPhotographerPort,
     private val createSavedPhotographerPort: CreateSavedPhotographerPort,
 ) : GetPhotographerUseCase,
-    CheckPhotographerNicknameExistenceUseCase,
+    ExistsPhotographerNicknameUseCase,
     RegisterPhotographerUseCase,
     SavePhotographerUseCase {
 
@@ -37,7 +37,7 @@ class PhotographerService(
     override fun getPhotographer(id: Long): Photographer = getPhotographerPort.getById(id)
 
     @Transactional(readOnly = true)
-    override fun doesNicknameExist(query: CheckPhotographerNicknameExistenceUseCase.Query): Boolean = checkNicknameExistencePort.doesNicknameExist(query.nickname)
+    override fun existsNickname(query: ExistsPhotographerNicknameUseCase.Query): Boolean = existsNicknamePort.existsNickname(query.nickname)
 
     @Transactional
     override fun register(command: RegisterPhotographerUseCase.Command): Photographer {
@@ -46,7 +46,7 @@ class PhotographerService(
             throw UserAlreadyRegisteredException()
         }
 
-        if (checkNicknameExistencePort.doesNicknameExist(command.nickname)) {
+        if (existsNicknamePort.existsNickname(command.nickname)) {
             throw NicknameAlreadyExistsException(command.nickname)
         }
 

@@ -1,5 +1,5 @@
 package com.damaba.damaba.application.port.outbound.promotion
 
-interface CheckSavedPromotionExistencePort {
+interface ExistsSavedPromotionPort {
     fun existsByUserIdAndPromotionId(userId: Long, promotionId: Long): Boolean
 }

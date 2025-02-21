@@ -3,7 +3,7 @@ package com.damaba.damaba.adapter.inbound.user
 import com.damaba.damaba.adapter.inbound.common.dto.ImageRequest
 import com.damaba.damaba.adapter.inbound.user.dto.RegisterUserRequest
 import com.damaba.damaba.adapter.inbound.user.dto.UpdateMyInfoRequest
-import com.damaba.damaba.application.port.inbound.user.CheckUserNicknameExistenceUseCase
+import com.damaba.damaba.application.port.inbound.user.ExistsUserNicknameUseCase
 import com.damaba.damaba.application.port.inbound.user.GetUserUseCase
 import com.damaba.damaba.application.port.inbound.user.RegisterUserUseCase
 import com.damaba.damaba.application.port.inbound.user.UpdateUserUseCase
@@ -41,7 +41,7 @@ class UserControllerTest @Autowired constructor(
     private val mvc: MockMvc,
     private val mapper: ObjectMapper,
     private val getUserUseCase: GetUserUseCase,
-    private val checkUserNicknameExistenceUseCase: CheckUserNicknameExistenceUseCase,
+    private val existsUserNicknameUseCase: ExistsUserNicknameUseCase,
     private val updateUserUseCase: UpdateUserUseCase,
     private val registerUserUseCase: RegisterUserUseCase,
 ) {
@@ -51,7 +51,7 @@ class UserControllerTest @Autowired constructor(
         fun getMyInfoUseCase(): GetUserUseCase = mockk()
 
         @Bean
-        fun checkNicknameExistenceUseCase(): CheckUserNicknameExistenceUseCase = mockk()
+        fun checkNicknameExistenceUseCase(): ExistsUserNicknameUseCase = mockk()
 
         @Bean
         fun updateMyInfoUseCase(): UpdateUserUseCase = mockk()
@@ -115,7 +115,7 @@ class UserControllerTest @Autowired constructor(
         val nickname = randomString(len = 7)
         val expectedResult = randomBoolean()
         every {
-            checkUserNicknameExistenceUseCase.doesNicknameExist(CheckUserNicknameExistenceUseCase.Query(nickname))
+            existsUserNicknameUseCase.existsNickname(ExistsUserNicknameUseCase.Query(nickname))
         } returns expectedResult
 
         // when & then
@@ -125,7 +125,7 @@ class UserControllerTest @Autowired constructor(
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.nickname").value(nickname))
             .andExpect(jsonPath("$.exists").value(expectedResult))
-        verify { checkUserNicknameExistenceUseCase.doesNicknameExist(CheckUserNicknameExistenceUseCase.Query(nickname)) }
+        verify { existsUserNicknameUseCase.existsNickname(ExistsUserNicknameUseCase.Query(nickname)) }
     }
 
     @Test

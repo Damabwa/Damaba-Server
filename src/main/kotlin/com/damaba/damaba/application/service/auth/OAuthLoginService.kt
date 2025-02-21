@@ -4,8 +4,8 @@ import com.damaba.damaba.application.port.inbound.auth.OAuthLoginUseCase
 import com.damaba.damaba.application.port.outbound.auth.CreateAuthTokenPort
 import com.damaba.damaba.application.port.outbound.auth.CreateRefreshTokenPort
 import com.damaba.damaba.application.port.outbound.auth.GetOAuthLoginUidPort
-import com.damaba.damaba.application.port.outbound.user.CheckNicknameExistencePort
 import com.damaba.damaba.application.port.outbound.user.CreateUserPort
+import com.damaba.damaba.application.port.outbound.user.ExistsNicknamePort
 import com.damaba.damaba.application.port.outbound.user.FindUserPort
 import com.damaba.damaba.domain.auth.RefreshToken
 import com.damaba.damaba.domain.user.User
@@ -18,7 +18,7 @@ import java.util.UUID
 class OAuthLoginService(
     private val getOAuthLoginUidPort: GetOAuthLoginUidPort,
     private val findUserPort: FindUserPort,
-    private val checkNicknameExistencePort: CheckNicknameExistencePort,
+    private val existsNicknamePort: ExistsNicknamePort,
     private val createUserPort: CreateUserPort,
     private val createAuthTokenPort: CreateAuthTokenPort,
     private val createRefreshTokenPort: CreateRefreshTokenPort,
@@ -56,7 +56,7 @@ class OAuthLoginService(
         var nickname: String
         do {
             nickname = UUID.randomUUID().toString().substring(0, 7)
-        } while (checkNicknameExistencePort.doesNicknameExist(nickname))
+        } while (existsNicknamePort.existsNickname(nickname))
         return nickname
     }
 }

@@ -4,8 +4,8 @@ import com.damaba.damaba.application.port.inbound.auth.OAuthLoginUseCase
 import com.damaba.damaba.application.port.outbound.auth.CreateAuthTokenPort
 import com.damaba.damaba.application.port.outbound.auth.CreateRefreshTokenPort
 import com.damaba.damaba.application.port.outbound.auth.GetOAuthLoginUidPort
-import com.damaba.damaba.application.port.outbound.user.CheckNicknameExistencePort
 import com.damaba.damaba.application.port.outbound.user.CreateUserPort
+import com.damaba.damaba.application.port.outbound.user.ExistsNicknamePort
 import com.damaba.damaba.application.port.outbound.user.FindUserPort
 import com.damaba.damaba.domain.auth.RefreshToken
 import com.damaba.damaba.domain.user.User
@@ -28,7 +28,7 @@ import kotlin.test.Test
 class OAuthLoginServiceTest {
     private val getOAuthLoginUidPort: GetOAuthLoginUidPort = mockk()
     private val findUserPort: FindUserPort = mockk()
-    private val checkNicknameExistencePort: CheckNicknameExistencePort = mockk()
+    private val existsNicknamePort: ExistsNicknamePort = mockk()
     private val createUserPort: CreateUserPort = mockk()
     private val createAuthTokenPort: CreateAuthTokenPort = mockk()
     private val createRefreshTokenPort: CreateRefreshTokenPort = mockk()
@@ -36,7 +36,7 @@ class OAuthLoginServiceTest {
     private val sut: OAuthLoginService = OAuthLoginService(
         getOAuthLoginUidPort,
         findUserPort,
-        checkNicknameExistencePort,
+        existsNicknamePort,
         createUserPort,
         createAuthTokenPort,
         createRefreshTokenPort,
@@ -52,7 +52,7 @@ class OAuthLoginServiceTest {
         confirmVerified(
             getOAuthLoginUidPort,
             findUserPort,
-            checkNicknameExistencePort,
+            existsNicknamePort,
             createUserPort,
             createAuthTokenPort,
             createRefreshTokenPort,
@@ -77,7 +77,7 @@ class OAuthLoginServiceTest {
             findUserPort.findByOAuthLoginUid(kakaoUserId)
         } returns null
         every {
-            checkNicknameExistencePort.doesNicknameExist(any(String::class))
+            existsNicknamePort.existsNickname(any(String::class))
         } returns true andThen false
         every {
             createUserPort.create(any(User::class))
@@ -99,8 +99,8 @@ class OAuthLoginServiceTest {
         verifyOrder {
             getOAuthLoginUidPort.getOAuthLoginUid(loginType, kakaoAccessToken)
             findUserPort.findByOAuthLoginUid(kakaoUserId)
-            checkNicknameExistencePort.doesNicknameExist(any(String::class))
-            checkNicknameExistencePort.doesNicknameExist(any(String::class))
+            existsNicknamePort.existsNickname(any(String::class))
+            existsNicknamePort.existsNickname(any(String::class))
             createUserPort.create(any(User::class))
             createAuthTokenPort.createAccessToken(newUser)
             createAuthTokenPort.createRefreshToken(newUser)

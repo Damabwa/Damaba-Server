@@ -2,7 +2,7 @@ package com.damaba.damaba.adapter.inbound.photographer.dto
 
 import io.swagger.v3.oas.annotations.media.Schema
 
-data class CheckPhotographerNicknameExistenceResponse(
+data class ExistsPhotographerNicknameResponse(
     @Schema(description = "닉네임", example = "말티즈")
     val nickname: String,
 

@@ -1,9 +1,9 @@
 package com.damaba.damaba.adapter.inbound.photographer
 
-import com.damaba.damaba.adapter.inbound.photographer.dto.CheckPhotographerNicknameExistenceResponse
+import com.damaba.damaba.adapter.inbound.photographer.dto.ExistsPhotographerNicknameResponse
 import com.damaba.damaba.adapter.inbound.photographer.dto.PhotographerResponse
 import com.damaba.damaba.adapter.inbound.photographer.dto.RegisterPhotographerRequest
-import com.damaba.damaba.application.port.inbound.photographer.CheckPhotographerNicknameExistenceUseCase
+import com.damaba.damaba.application.port.inbound.photographer.ExistsPhotographerNicknameUseCase
 import com.damaba.damaba.application.port.inbound.photographer.GetPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class PhotographerController(
     private val getPhotographerUseCase: GetPhotographerUseCase,
-    private val checkPhotographerNicknameExistenceUseCase: CheckPhotographerNicknameExistenceUseCase,
+    private val existsPhotographerNicknameUseCase: ExistsPhotographerNicknameUseCase,
     private val registerPhotographerUseCase: RegisterPhotographerUseCase,
     private val savePhotographerUseCase: SavePhotographerUseCase,
 ) {
@@ -53,14 +53,14 @@ class PhotographerController(
         description = "사용중인 닉네임(상호명/활동명)인지 확인합니다.",
     )
     @GetMapping("/api/v1/photographers/nicknames/existence")
-    fun checkPhotographerNicknameExistenceV1(
+    fun existsPhotographerNicknameV1(
         @Parameter(description = "사용 여부를 확인할 닉네임", example = "홍길동")
         @RequestParam nickname: String,
-    ): CheckPhotographerNicknameExistenceResponse {
-        val doesNicknameExists = checkPhotographerNicknameExistenceUseCase.doesNicknameExist(
-            CheckPhotographerNicknameExistenceUseCase.Query(nickname),
+    ): ExistsPhotographerNicknameResponse {
+        val doesNicknameExists = existsPhotographerNicknameUseCase.existsNickname(
+            ExistsPhotographerNicknameUseCase.Query(nickname),
         )
-        return CheckPhotographerNicknameExistenceResponse(nickname, doesNicknameExists)
+        return ExistsPhotographerNicknameResponse(nickname, doesNicknameExists)
     }
 
     @Operation(

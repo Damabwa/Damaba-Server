@@ -1,7 +1,7 @@
 package com.damaba.damaba.adapter.inbound.photographer
 
 import com.damaba.damaba.adapter.inbound.photographer.dto.RegisterPhotographerRequest
-import com.damaba.damaba.application.port.inbound.photographer.CheckPhotographerNicknameExistenceUseCase
+import com.damaba.damaba.application.port.inbound.photographer.ExistsPhotographerNicknameUseCase
 import com.damaba.damaba.application.port.inbound.photographer.GetPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
@@ -46,7 +46,7 @@ class PhotographerControllerTest @Autowired constructor(
     private val mvc: MockMvc,
     private val mapper: ObjectMapper,
     private val getPhotographerUseCase: GetPhotographerUseCase,
-    private val checkPhotographerNicknameExistenceUseCase: CheckPhotographerNicknameExistenceUseCase,
+    private val existsPhotographerNicknameUseCase: ExistsPhotographerNicknameUseCase,
     private val registerPhotographerUseCase: RegisterPhotographerUseCase,
     private val savePhotographerUseCase: SavePhotographerUseCase,
 ) {
@@ -56,7 +56,7 @@ class PhotographerControllerTest @Autowired constructor(
         fun getPhotographerUseCase(): GetPhotographerUseCase = mockk()
 
         @Bean
-        fun checkPhotographerNicknameExistenceUseCase(): CheckPhotographerNicknameExistenceUseCase = mockk()
+        fun existsPhotographerNicknameUseCase(): ExistsPhotographerNicknameUseCase = mockk()
 
         @Bean
         fun registerPhotographerUseCase(): RegisterPhotographerUseCase = mockk()
@@ -85,8 +85,8 @@ class PhotographerControllerTest @Autowired constructor(
         val nickname = randomString()
         val expectedResult = randomBoolean()
         every {
-            checkPhotographerNicknameExistenceUseCase.doesNicknameExist(
-                CheckPhotographerNicknameExistenceUseCase.Query(nickname),
+            existsPhotographerNicknameUseCase.existsNickname(
+                ExistsPhotographerNicknameUseCase.Query(nickname),
             )
         } returns expectedResult
 
@@ -98,8 +98,8 @@ class PhotographerControllerTest @Autowired constructor(
             .andExpect(jsonPath("$.nickname").value(nickname))
             .andExpect(jsonPath("$.exists").value(expectedResult))
         verify {
-            checkPhotographerNicknameExistenceUseCase.doesNicknameExist(
-                CheckPhotographerNicknameExistenceUseCase.Query(nickname),
+            existsPhotographerNicknameUseCase.existsNickname(
+                ExistsPhotographerNicknameUseCase.Query(nickname),
             )
         }
     }

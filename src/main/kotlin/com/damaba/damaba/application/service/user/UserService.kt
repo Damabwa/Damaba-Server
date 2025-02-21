@@ -1,11 +1,11 @@
 package com.damaba.damaba.application.service.user
 
-import com.damaba.damaba.application.port.inbound.user.CheckUserNicknameExistenceUseCase
+import com.damaba.damaba.application.port.inbound.user.ExistsUserNicknameUseCase
 import com.damaba.damaba.application.port.inbound.user.GetUserUseCase
 import com.damaba.damaba.application.port.inbound.user.RegisterUserUseCase
 import com.damaba.damaba.application.port.inbound.user.UpdateUserUseCase
 import com.damaba.damaba.application.port.outbound.common.PublishEventPort
-import com.damaba.damaba.application.port.outbound.user.CheckNicknameExistencePort
+import com.damaba.damaba.application.port.outbound.user.ExistsNicknamePort
 import com.damaba.damaba.application.port.outbound.user.GetUserPort
 import com.damaba.damaba.application.port.outbound.user.UpdateUserPort
 import com.damaba.damaba.domain.file.DeleteFileEvent
@@ -18,11 +18,11 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class UserService(
     private val getUserPort: GetUserPort,
-    private val checkNicknameExistencePort: CheckNicknameExistencePort,
+    private val existsNicknamePort: ExistsNicknamePort,
     private val updateUserPort: UpdateUserPort,
     private val publishEventPort: PublishEventPort,
 ) : GetUserUseCase,
-    CheckUserNicknameExistenceUseCase,
+    ExistsUserNicknameUseCase,
     UpdateUserUseCase,
     RegisterUserUseCase {
 
@@ -30,7 +30,7 @@ class UserService(
     override fun getUser(userId: Long): User = getUserPort.getById(userId)
 
     @Transactional(readOnly = true)
-    override fun doesNicknameExist(query: CheckUserNicknameExistenceUseCase.Query): Boolean = checkNicknameExistencePort.doesNicknameExist(query.nickname)
+    override fun existsNickname(query: ExistsUserNicknameUseCase.Query): Boolean = existsNicknamePort.existsNickname(query.nickname)
 
     @Transactional
     override fun register(command: RegisterUserUseCase.Command): User {
@@ -40,7 +40,7 @@ class UserService(
             throw UserAlreadyRegisteredException()
         }
 
-        if (checkNicknameExistencePort.doesNicknameExist(command.nickname)) {
+        if (existsNicknamePort.existsNickname(command.nickname)) {
             throw NicknameAlreadyExistsException(command.nickname)
         }
         user.registerUser(
@@ -56,7 +56,7 @@ class UserService(
         val user = getUserPort.getById(command.userId)
 
         val isNicknameNew = user.nickname != command.nickname
-        if (isNicknameNew && checkNicknameExistencePort.doesNicknameExist(command.nickname)) {
+        if (isNicknameNew && existsNicknamePort.existsNickname(command.nickname)) {
             throw NicknameAlreadyExistsException(command.nickname)
         }
 

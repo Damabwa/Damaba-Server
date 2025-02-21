@@ -93,7 +93,7 @@ class UserCoreRepositoryTest @Autowired constructor(
         userCoreRepository.create(createUser(nickname = nickname))
 
         // when
-        val exists = userCoreRepository.doesNicknameExist(nickname)
+        val exists = userCoreRepository.existsNickname(nickname)
 
         // then
         assertThat(exists).isTrue()
@@ -105,7 +105,7 @@ class UserCoreRepositoryTest @Autowired constructor(
         val nickname = randomString(len = 7)
 
         // when
-        val exists = userCoreRepository.doesNicknameExist(nickname)
+        val exists = userCoreRepository.existsNickname(nickname)
 
         // then
         assertThat(exists).isFalse()

@@ -1,7 +1,7 @@
 package com.damaba.damaba.adapter.outbound.user
 
-import com.damaba.damaba.application.port.outbound.user.CheckNicknameExistencePort
 import com.damaba.damaba.application.port.outbound.user.CreateUserPort
+import com.damaba.damaba.application.port.outbound.user.ExistsNicknamePort
 import com.damaba.damaba.application.port.outbound.user.FindUserPort
 import com.damaba.damaba.application.port.outbound.user.GetUserPort
 import com.damaba.damaba.application.port.outbound.user.UpdateUserPort
@@ -15,7 +15,7 @@ class UserCoreRepository(
     private val userProfileImageJpaRepository: UserProfileImageJpaRepository,
 ) : FindUserPort,
     GetUserPort,
-    CheckNicknameExistencePort,
+    ExistsNicknamePort,
     CreateUserPort,
     UpdateUserPort {
     override fun findById(id: Long): User? = findUserJpaEntityById(id)?.toUser()
@@ -24,7 +24,7 @@ class UserCoreRepository(
 
     override fun getById(id: Long): User = getUserJpaEntityById(id).toUser()
 
-    override fun doesNicknameExist(nickname: String): Boolean = userJpaRepository.existsByNickname(nickname)
+    override fun existsNickname(nickname: String): Boolean = userJpaRepository.existsByNickname(nickname)
 
     override fun create(user: User): User {
         val userJpaEntity = userJpaRepository.save(UserJpaEntity.from(user))
