@@ -36,7 +36,7 @@ class PhotographerJpaEntity(
     var mainPhotographyTypes: MutableSet<PhotographerPhotographyTypeJpaEntity> = mutableSetOf()
         private set
 
-    @OneToMany(mappedBy = "photographer", cascade = [CascadeType.ALL])
+    @OneToMany(mappedBy = "photographer", cascade = [CascadeType.PERSIST])
     private var _portfolio: MutableList<PhotographerPortfolioImageJpaEntity> = mutableListOf()
 
     val portfolio: List<PhotographerPortfolioImageJpaEntity>
