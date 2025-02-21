@@ -14,7 +14,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
-import org.springframework.util.AntPathMatcher
 import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
@@ -25,7 +24,6 @@ class AuthFilter(
 ) : OncePerRequestFilter() {
     companion object {
         private const val BEARER_PREFIX = "Bearer "
-        private val pathMatcher = AntPathMatcher()
     }
 
     override fun doFilterInternal(
