@@ -2,12 +2,17 @@ package com.damaba.damaba.application.service.photographer
 
 import com.damaba.damaba.application.port.inbound.photographer.CheckPhotographerNicknameExistenceUseCase
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
+import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
 import com.damaba.damaba.application.port.outbound.photographer.CreatePhotographerPort
+import com.damaba.damaba.application.port.outbound.photographer.CreateSavedPhotographerPort
+import com.damaba.damaba.application.port.outbound.photographer.ExistsSavedPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.GetPhotographerPort
 import com.damaba.damaba.application.port.outbound.user.CheckNicknameExistencePort
 import com.damaba.damaba.application.port.outbound.user.GetUserPort
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.photographer.Photographer
+import com.damaba.damaba.domain.photographer.SavedPhotographer
+import com.damaba.damaba.domain.photographer.exception.AlreadySavedPhotographerException
 import com.damaba.damaba.domain.user.constant.Gender
 import com.damaba.damaba.domain.user.constant.UserType
 import com.damaba.damaba.domain.user.exception.NicknameAlreadyExistsException
@@ -22,7 +27,9 @@ import com.damaba.damaba.util.fixture.RegionFixture.createRegion
 import com.damaba.damaba.util.fixture.UserFixture.createUser
 import io.mockk.confirmVerified
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.runs
 import io.mockk.verify
 import io.mockk.verifyOrder
 import org.assertj.core.api.Assertions.assertThat
@@ -34,11 +41,15 @@ class PhotographerServiceTest {
     private val getPhotographerPort: GetPhotographerPort = mockk()
     private val checkNicknameExistencePort: CheckNicknameExistencePort = mockk()
     private val createPhotographerPort: CreatePhotographerPort = mockk()
+    private val existsSavedPhotographerPort: ExistsSavedPhotographerPort = mockk()
+    private val createSavedPhotographerPort: CreateSavedPhotographerPort = mockk()
     private val sut: PhotographerService = PhotographerService(
         getUserPort,
         getPhotographerPort,
         checkNicknameExistencePort,
         createPhotographerPort,
+        existsSavedPhotographerPort,
+        createSavedPhotographerPort,
     )
 
     private fun confirmVerifiedEveryMocks() {
@@ -47,6 +58,8 @@ class PhotographerServiceTest {
             getPhotographerPort,
             checkNicknameExistencePort,
             createPhotographerPort,
+            existsSavedPhotographerPort,
+            createSavedPhotographerPort,
         )
     }
 
@@ -166,5 +179,60 @@ class PhotographerServiceTest {
         }
         confirmVerifiedEveryMocks()
         assertThat(ex).isInstanceOf(NicknameAlreadyExistsException::class.java)
+    }
+
+    @Test
+    fun `사진작가를 저장한다`() {
+        // given
+        val command = SavePhotographerUseCase.Command(reqUserId = randomLong(), photographerId = randomLong())
+        every {
+            existsSavedPhotographerPort.existsByUserIdAndPhotographerId(command.reqUserId, command.photographerId)
+        } returns false
+        every {
+            createSavedPhotographerPort.create(SavedPhotographer.create(command.reqUserId, command.photographerId))
+        } just runs
+
+        // when
+        sut.savePhotographer(command)
+
+        // then
+        verify {
+            existsSavedPhotographerPort.existsByUserIdAndPhotographerId(
+                command.reqUserId,
+                command.photographerId,
+            )
+        }
+        verify {
+            createSavedPhotographerPort.create(
+                SavedPhotographer(
+                    id = 0L,
+                    userId = command.reqUserId,
+                    photographerId = command.photographerId,
+                ),
+            )
+        }
+        confirmVerifiedEveryMocks()
+    }
+
+    @Test
+    fun `사진작가를 저장한다, 만약 이미 저장한 사진작가라면 예외가 발생한다`() {
+        // given
+        val command = SavePhotographerUseCase.Command(reqUserId = randomLong(), photographerId = randomLong())
+        every {
+            existsSavedPhotographerPort.existsByUserIdAndPhotographerId(command.reqUserId, command.photographerId)
+        } returns true
+
+        // when
+        val ex = catchThrowable { sut.savePhotographer(command) }
+
+        // then
+        verify {
+            existsSavedPhotographerPort.existsByUserIdAndPhotographerId(
+                command.reqUserId,
+                command.photographerId,
+            )
+        }
+        confirmVerifiedEveryMocks()
+        assertThat(ex).isInstanceOf(AlreadySavedPhotographerException::class.java)
     }
 }

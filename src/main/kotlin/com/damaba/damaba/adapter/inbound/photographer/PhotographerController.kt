@@ -6,6 +6,7 @@ import com.damaba.damaba.adapter.inbound.photographer.dto.RegisterPhotographerRe
 import com.damaba.damaba.application.port.inbound.photographer.CheckPhotographerNicknameExistenceUseCase
 import com.damaba.damaba.application.port.inbound.photographer.GetPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
+import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.mapper.PhotographerMapper
 import io.swagger.v3.oas.annotations.Operation
@@ -15,9 +16,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
@@ -29,6 +32,7 @@ class PhotographerController(
     private val getPhotographerUseCase: GetPhotographerUseCase,
     private val checkPhotographerNicknameExistenceUseCase: CheckPhotographerNicknameExistenceUseCase,
     private val registerPhotographerUseCase: RegisterPhotographerUseCase,
+    private val savePhotographerUseCase: SavePhotographerUseCase,
 ) {
     @Operation(
         summary = "사진작가 조회",
@@ -82,5 +86,25 @@ class PhotographerController(
     ): PhotographerResponse {
         val photographer = registerPhotographerUseCase.register(request.toCommand(requester.id))
         return PhotographerMapper.INSTANCE.toPhotographerResponse(photographer)
+    }
+
+    @Operation(
+        summary = "사진작가 저장",
+        description = "사진작가를 저장합니다.",
+        security = [SecurityRequirement(name = "access-token")],
+    )
+    @ApiResponses(
+        ApiResponse(responseCode = "204"),
+        ApiResponse(responseCode = "409", description = "이미 저장한 사진작가인 경우", content = [Content()]),
+    )
+    @PostMapping("/api/v1/photographers/{photographerId}/save")
+    fun savePhotographerV1(
+        @AuthenticationPrincipal reqUser: User,
+        @PathVariable photographerId: Long,
+    ): ResponseEntity<Unit> {
+        savePhotographerUseCase.savePhotographer(
+            SavePhotographerUseCase.Command(reqUserId = reqUser.id, photographerId = photographerId),
+        )
+        return ResponseEntity.noContent().build()
     }
 }
