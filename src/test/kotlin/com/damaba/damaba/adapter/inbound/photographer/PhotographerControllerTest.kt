@@ -4,6 +4,7 @@ import com.damaba.damaba.adapter.inbound.photographer.dto.RegisterPhotographerRe
 import com.damaba.damaba.application.port.inbound.photographer.CheckPhotographerNicknameExistenceUseCase
 import com.damaba.damaba.application.port.inbound.photographer.GetPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
+import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
 import com.damaba.damaba.config.ControllerTestConfig
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.user.constant.Gender
@@ -18,7 +19,9 @@ import com.damaba.damaba.util.fixture.SecurityFixture.createAuthenticationToken
 import com.damaba.damaba.util.fixture.UserFixture.createUser
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.runs
 import io.mockk.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -30,6 +33,7 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -44,6 +48,7 @@ class PhotographerControllerTest @Autowired constructor(
     private val getPhotographerUseCase: GetPhotographerUseCase,
     private val checkPhotographerNicknameExistenceUseCase: CheckPhotographerNicknameExistenceUseCase,
     private val registerPhotographerUseCase: RegisterPhotographerUseCase,
+    private val savePhotographerUseCase: SavePhotographerUseCase,
 ) {
     @TestConfiguration
     class TestBeanSetUp {
@@ -55,6 +60,9 @@ class PhotographerControllerTest @Autowired constructor(
 
         @Bean
         fun registerPhotographerUseCase(): RegisterPhotographerUseCase = mockk()
+
+        @Bean
+        fun savePhotographerUseCase(): SavePhotographerUseCase = mockk()
     }
 
     @Test
@@ -119,5 +127,21 @@ class PhotographerControllerTest @Autowired constructor(
                 .with(authentication(createAuthenticationToken(createUser(id = userId)))),
         ).andExpect(status().isOk)
         verify { registerPhotographerUseCase.register(request.toCommand(userId)) }
+    }
+
+    @Test
+    fun `사진작가를 저장한다`() {
+        // given
+        val reqUser = createUser(id = randomLong())
+        val photographerId = randomLong()
+        val command = SavePhotographerUseCase.Command(reqUserId = reqUser.id, photographerId = photographerId)
+        every { savePhotographerUseCase.savePhotographer(command) } just runs
+
+        // when & then
+        mvc.perform(
+            post("/api/v1/photographers/$photographerId/save")
+                .with(authentication(createAuthenticationToken(reqUser))),
+        ).andExpect(status().isNoContent)
+        verify { savePhotographerUseCase.savePhotographer(command) }
     }
 }
