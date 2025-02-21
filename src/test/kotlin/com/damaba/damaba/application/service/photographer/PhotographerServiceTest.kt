@@ -58,7 +58,7 @@ class PhotographerServiceTest {
         every { getPhotographerPort.getById(id) } returns expectedResult
 
         // when
-        val actualResult = sut.getById(id)
+        val actualResult = sut.getPhotographer(id)
 
         // then
         verify { getPhotographerPort.getById(id) }

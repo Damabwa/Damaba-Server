@@ -25,7 +25,7 @@ class PhotographerService(
     RegisterPhotographerUseCase {
 
     @Transactional(readOnly = true)
-    override fun getById(id: Long): Photographer = getPhotographerPort.getById(id)
+    override fun getPhotographer(id: Long): Photographer = getPhotographerPort.getById(id)
 
     @Transactional(readOnly = true)
     override fun doesNicknameExist(query: CheckPhotographerNicknameExistenceUseCase.Query): Boolean = checkNicknameExistencePort.doesNicknameExist(query.nickname)

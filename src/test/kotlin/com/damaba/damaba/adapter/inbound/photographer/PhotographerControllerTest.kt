@@ -62,7 +62,7 @@ class PhotographerControllerTest @Autowired constructor(
         // given
         val id = randomLong()
         val expectedResult = createPhotographer(id = id)
-        every { getPhotographerUseCase.getById(id) } returns expectedResult
+        every { getPhotographerUseCase.getPhotographer(id) } returns expectedResult
 
         // when & then
         mvc.perform(

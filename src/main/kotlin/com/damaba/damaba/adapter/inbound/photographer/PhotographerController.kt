@@ -40,7 +40,7 @@ class PhotographerController(
     )
     @GetMapping("/api/v1/photographers/{photographerId}")
     fun getPhotographerProfileV1(@PathVariable photographerId: Long): PhotographerResponse {
-        val photographer = getPhotographerUseCase.getById(photographerId)
+        val photographer = getPhotographerUseCase.getPhotographer(photographerId)
         return PhotographerMapper.INSTANCE.toPhotographerResponse(photographer)
     }
 
