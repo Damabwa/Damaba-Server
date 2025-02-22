@@ -3,9 +3,12 @@ package com.damaba.damaba.application.service.photographer
 import com.damaba.damaba.application.port.inbound.photographer.ExistsPhotographerNicknameUseCase
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
+import com.damaba.damaba.application.port.inbound.photographer.UnsavePhotographerUseCase
 import com.damaba.damaba.application.port.outbound.photographer.CreatePhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.CreateSavedPhotographerPort
+import com.damaba.damaba.application.port.outbound.photographer.DeleteSavedPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.ExistsSavedPhotographerPort
+import com.damaba.damaba.application.port.outbound.photographer.FindSavedPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.GetPhotographerPort
 import com.damaba.damaba.application.port.outbound.user.ExistsNicknamePort
 import com.damaba.damaba.application.port.outbound.user.GetUserPort
@@ -13,6 +16,7 @@ import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.domain.photographer.SavedPhotographer
 import com.damaba.damaba.domain.photographer.exception.AlreadySavedPhotographerException
+import com.damaba.damaba.domain.photographer.exception.SavedPhotographerNotFoundException
 import com.damaba.damaba.domain.user.constant.Gender
 import com.damaba.damaba.domain.user.constant.UserType
 import com.damaba.damaba.domain.user.exception.NicknameAlreadyExistsException
@@ -23,6 +27,7 @@ import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.fixture.FileFixture.createImage
 import com.damaba.damaba.util.fixture.PhotographerFixture.createPhotographer
+import com.damaba.damaba.util.fixture.PhotographerFixture.createSavedPhotographer
 import com.damaba.damaba.util.fixture.RegionFixture.createRegion
 import com.damaba.damaba.util.fixture.UserFixture.createUser
 import io.mockk.confirmVerified
@@ -41,15 +46,19 @@ class PhotographerServiceTest {
     private val getPhotographerPort: GetPhotographerPort = mockk()
     private val existsNicknamePort: ExistsNicknamePort = mockk()
     private val createPhotographerPort: CreatePhotographerPort = mockk()
+    private val findSavedPhotographerPort: FindSavedPhotographerPort = mockk()
     private val existsSavedPhotographerPort: ExistsSavedPhotographerPort = mockk()
     private val createSavedPhotographerPort: CreateSavedPhotographerPort = mockk()
+    private val deleteSavedPhotographerPort: DeleteSavedPhotographerPort = mockk()
     private val sut: PhotographerService = PhotographerService(
         getUserPort,
         getPhotographerPort,
         existsNicknamePort,
         createPhotographerPort,
+        findSavedPhotographerPort,
         existsSavedPhotographerPort,
         createSavedPhotographerPort,
+        deleteSavedPhotographerPort,
     )
 
     private fun confirmVerifiedEveryMocks() {
@@ -58,8 +67,10 @@ class PhotographerServiceTest {
             getPhotographerPort,
             existsNicknamePort,
             createPhotographerPort,
+            findSavedPhotographerPort,
             existsSavedPhotographerPort,
             createSavedPhotographerPort,
+            deleteSavedPhotographerPort,
         )
     }
 
@@ -234,5 +245,41 @@ class PhotographerServiceTest {
         }
         confirmVerifiedEveryMocks()
         assertThat(ex).isInstanceOf(AlreadySavedPhotographerException::class.java)
+    }
+
+    @Test
+    fun `사진작가를 저장 해제한다`() {
+        // given
+        val command = UnsavePhotographerUseCase.Command(reqUserId = randomLong(), photographerId = randomLong())
+        val savedPhotographer = createSavedPhotographer()
+        every {
+            findSavedPhotographerPort.findByUserIdAndPhotographerId(command.reqUserId, command.photographerId)
+        } returns savedPhotographer
+        every { deleteSavedPhotographerPort.delete(savedPhotographer) } just runs
+
+        // when
+        sut.unsavePhotographer(command)
+
+        // then
+        verify { findSavedPhotographerPort.findByUserIdAndPhotographerId(command.reqUserId, command.photographerId) }
+        verify { deleteSavedPhotographerPort.delete(savedPhotographer) }
+        confirmVerifiedEveryMocks()
+    }
+
+    @Test
+    fun `사진작가를 저장 해제한다, 만약 저장한 적 없는 사진작가라면 예외가 발생한다`() {
+        // given
+        val command = UnsavePhotographerUseCase.Command(reqUserId = randomLong(), photographerId = randomLong())
+        every {
+            findSavedPhotographerPort.findByUserIdAndPhotographerId(command.reqUserId, command.photographerId)
+        } returns null
+
+        // when
+        val ex = catchThrowable { sut.unsavePhotographer(command) }
+
+        // then
+        verify { findSavedPhotographerPort.findByUserIdAndPhotographerId(command.reqUserId, command.photographerId) }
+        confirmVerifiedEveryMocks()
+        assertThat(ex).isInstanceOf(SavedPhotographerNotFoundException::class.java)
     }
 }
