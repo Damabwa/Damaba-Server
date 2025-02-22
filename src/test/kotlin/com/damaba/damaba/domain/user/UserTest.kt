@@ -6,9 +6,9 @@ import com.damaba.damaba.domain.user.constant.LoginType
 import com.damaba.damaba.domain.user.constant.UserRoleType
 import com.damaba.damaba.domain.user.constant.UserType
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
-import com.damaba.damaba.util.RandomTestUtils.Companion.randomUrl
 import com.damaba.damaba.util.fixture.FileFixture.createImage
 import com.damaba.damaba.util.fixture.UserFixture.createUser
+import com.damaba.damaba.util.fixture.UserFixture.createUserProfile
 import org.assertj.core.api.Assertions.assertThat
 import kotlin.test.Test
 
@@ -121,21 +121,15 @@ class UserTest {
     fun `유저 정보를 업데이트한다`() {
         // given
         val user = createUser()
-        val newNickname = randomString()
-        val newInstagramId = randomString()
-        val newProfileImage = Image(randomString(), randomUrl())
+        val newProfile = createUserProfile()
 
         // when
-        user.update(
-            nickname = newNickname,
-            instagramId = newInstagramId,
-            profileImage = newProfileImage,
-        )
+        user.updateProfile(newProfile)
 
         // then
-        assertThat(user.nickname).isEqualTo(newNickname)
-        assertThat(user.instagramId).isEqualTo(newInstagramId)
-        assertThat(user.profileImage).isEqualTo(newProfileImage)
+        assertThat(user.nickname).isEqualTo(newProfile.nickname)
+        assertThat(user.instagramId).isEqualTo(newProfile.instagramId)
+        assertThat(user.profileImage).isEqualTo(newProfile.profileImage)
     }
 
     @Test

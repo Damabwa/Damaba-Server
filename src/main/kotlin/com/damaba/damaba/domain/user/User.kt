@@ -50,14 +50,10 @@ open class User(
         this.instagramId = instagramId
     }
 
-    fun update(
-        nickname: String,
-        instagramId: String?,
-        profileImage: Image,
-    ) {
-        this.nickname = nickname
-        this.instagramId = instagramId
-        this.profileImage = profileImage
+    fun updateProfile(profile: UserProfile) {
+        this.nickname = profile.nickname
+        this.instagramId = profile.instagramId
+        this.profileImage = profile.profileImage
     }
 
     override fun equals(other: Any?): Boolean {

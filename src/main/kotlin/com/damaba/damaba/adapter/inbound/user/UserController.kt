@@ -2,12 +2,12 @@ package com.damaba.damaba.adapter.inbound.user
 
 import com.damaba.damaba.adapter.inbound.user.dto.ExistsUserNicknameResponse
 import com.damaba.damaba.adapter.inbound.user.dto.RegisterUserRequest
-import com.damaba.damaba.adapter.inbound.user.dto.UpdateMyInfoRequest
+import com.damaba.damaba.adapter.inbound.user.dto.UpdateMyProfileRequest
 import com.damaba.damaba.adapter.inbound.user.dto.UserResponse
 import com.damaba.damaba.application.port.inbound.user.ExistsUserNicknameUseCase
 import com.damaba.damaba.application.port.inbound.user.GetUserUseCase
 import com.damaba.damaba.application.port.inbound.user.RegisterUserUseCase
-import com.damaba.damaba.application.port.inbound.user.UpdateUserUseCase
+import com.damaba.damaba.application.port.inbound.user.UpdateUserProfileUseCase
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.mapper.UserMapper
 import io.swagger.v3.oas.annotations.Operation
@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController
 class UserController(
     private val getUserUseCase: GetUserUseCase,
     private val existsUserNicknameUseCase: ExistsUserNicknameUseCase,
-    private val updateUserUseCase: UpdateUserUseCase,
+    private val updateUserProfileUseCase: UpdateUserProfileUseCase,
     private val registerUserUseCase: RegisterUserUseCase,
 ) {
     @Operation(
@@ -95,12 +95,12 @@ class UserController(
         ApiResponse(responseCode = "404", description = "유저 정보를 찾을 수 없는 경우", content = [Content()]),
         ApiResponse(responseCode = "409", description = "수정하고자 하는 닉네임이 이미 사용중인 경우", content = [Content()]),
     )
-    @PutMapping("/api/v1/users/me")
-    fun updateMyInfoV1(
+    @PutMapping("/api/v1/users/me/profile")
+    fun updateMyProfileV1(
         @AuthenticationPrincipal requestUser: User,
-        @RequestBody request: UpdateMyInfoRequest,
+        @RequestBody request: UpdateMyProfileRequest,
     ): UserResponse {
-        val updatedUser = updateUserUseCase.updateUser(request.toCommand(requestUserId = requestUser.id))
+        val updatedUser = updateUserProfileUseCase.updateUserProfile(request.toCommand(requestUserId = requestUser.id))
         return UserMapper.INSTANCE.toUserResponse(updatedUser)
     }
 }

@@ -2,11 +2,11 @@ package com.damaba.damaba.adapter.inbound.user
 
 import com.damaba.damaba.adapter.inbound.common.dto.ImageRequest
 import com.damaba.damaba.adapter.inbound.user.dto.RegisterUserRequest
-import com.damaba.damaba.adapter.inbound.user.dto.UpdateMyInfoRequest
+import com.damaba.damaba.adapter.inbound.user.dto.UpdateMyProfileRequest
 import com.damaba.damaba.application.port.inbound.user.ExistsUserNicknameUseCase
 import com.damaba.damaba.application.port.inbound.user.GetUserUseCase
 import com.damaba.damaba.application.port.inbound.user.RegisterUserUseCase
-import com.damaba.damaba.application.port.inbound.user.UpdateUserUseCase
+import com.damaba.damaba.application.port.inbound.user.UpdateUserProfileUseCase
 import com.damaba.damaba.config.ControllerTestConfig
 import com.damaba.damaba.domain.user.constant.Gender
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomBoolean
@@ -42,7 +42,7 @@ class UserControllerTest @Autowired constructor(
     private val mapper: ObjectMapper,
     private val getUserUseCase: GetUserUseCase,
     private val existsUserNicknameUseCase: ExistsUserNicknameUseCase,
-    private val updateUserUseCase: UpdateUserUseCase,
+    private val updateUserProfileUseCase: UpdateUserProfileUseCase,
     private val registerUserUseCase: RegisterUserUseCase,
 ) {
     @TestConfiguration
@@ -54,7 +54,7 @@ class UserControllerTest @Autowired constructor(
         fun checkNicknameExistenceUseCase(): ExistsUserNicknameUseCase = mockk()
 
         @Bean
-        fun updateMyInfoUseCase(): UpdateUserUseCase = mockk()
+        fun updateMyInfoUseCase(): UpdateUserProfileUseCase = mockk()
 
         @Bean
         fun updateUserRegistrationUseCase(): RegisterUserUseCase = mockk()
@@ -81,7 +81,7 @@ class UserControllerTest @Autowired constructor(
     fun `수정할 유저 정보가 주어지고, 유저 정보를 수정하면, 수정된 유저 정보가 응답된다`() {
         // given
         val requestUser = createUser()
-        val request = UpdateMyInfoRequest(
+        val request = UpdateMyProfileRequest(
             nickname = randomString(len = 7),
             instagramId = randomString(),
             profileImage = ImageRequest(randomString(), randomUrl()),
@@ -91,11 +91,11 @@ class UserControllerTest @Autowired constructor(
             nickname = request.nickname,
             instagramId = request.instagramId,
         )
-        every { updateUserUseCase.updateUser(request.toCommand(requestUser.id)) } returns expectedResult
+        every { updateUserProfileUseCase.updateUserProfile(request.toCommand(requestUser.id)) } returns expectedResult
 
         // when & then
         mvc.perform(
-            put("/api/v1/users/me")
+            put("/api/v1/users/me/profile")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(mapper.writeValueAsString(request))
                 .with(authentication(createAuthenticationToken(requestUser))),
@@ -106,7 +106,7 @@ class UserControllerTest @Autowired constructor(
             .andExpect(jsonPath("$.instagramId").value(expectedResult.instagramId))
             .andExpect(jsonPath("$.profileImage.name").value(expectedResult.profileImage.name))
             .andExpect(jsonPath("$.profileImage.url").value(expectedResult.profileImage.url))
-        verify { updateUserUseCase.updateUser(request.toCommand(requestUser.id)) }
+        verify { updateUserProfileUseCase.updateUserProfile(request.toCommand(requestUser.id)) }
     }
 
     @Test

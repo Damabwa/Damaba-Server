@@ -2,7 +2,7 @@ package com.damaba.damaba.application.service.user
 
 import com.damaba.damaba.application.port.inbound.user.ExistsUserNicknameUseCase
 import com.damaba.damaba.application.port.inbound.user.RegisterUserUseCase
-import com.damaba.damaba.application.port.inbound.user.UpdateUserUseCase
+import com.damaba.damaba.application.port.inbound.user.UpdateUserProfileUseCase
 import com.damaba.damaba.application.port.outbound.common.PublishEventPort
 import com.damaba.damaba.application.port.outbound.user.ExistsNicknamePort
 import com.damaba.damaba.application.port.outbound.user.GetUserPort
@@ -171,7 +171,7 @@ class UserServiceTest {
         val newGender = Gender.FEMALE
         val newInstagramId = null
         val newProfileImageUrl = Image(randomString(), randomUrl())
-        val command = UpdateUserUseCase.Command(userId, newNickname, newInstagramId, newProfileImageUrl)
+        val command = UpdateUserProfileUseCase.Command(userId, newNickname, newInstagramId, newProfileImageUrl)
         val expectedResult = createUser(
             nickname = newNickname,
             gender = newGender,
@@ -184,7 +184,7 @@ class UserServiceTest {
         every { updateUserPort.update(user) } returns expectedResult
 
         // when
-        val actualResult = sut.updateUser(command)
+        val actualResult = sut.updateUserProfile(command)
 
         // then
         verifyOrder {
@@ -208,7 +208,7 @@ class UserServiceTest {
         val userId = randomLong()
         val user = createUser(id = userId)
         val newNickname = randomString(len = 7)
-        val command = UpdateUserUseCase.Command(userId, newNickname, user.instagramId, user.profileImage)
+        val command = UpdateUserProfileUseCase.Command(userId, newNickname, user.instagramId, user.profileImage)
         val expectedResult = createUser(
             nickname = newNickname,
             gender = user.gender,
@@ -220,7 +220,7 @@ class UserServiceTest {
         every { updateUserPort.update(user) } returns expectedResult
 
         // when
-        val actualResult = sut.updateUser(command)
+        val actualResult = sut.updateUserProfile(command)
 
         // then
         verifyOrder {
@@ -242,7 +242,7 @@ class UserServiceTest {
         val userId = randomLong()
         val user = createUser(id = userId)
         val newProfileImageUrl = Image(randomString(), randomUrl())
-        val command = UpdateUserUseCase.Command(userId, user.nickname, user.instagramId, newProfileImageUrl)
+        val command = UpdateUserProfileUseCase.Command(userId, user.nickname, user.instagramId, newProfileImageUrl)
         val expectedResult = createUser(
             nickname = user.nickname,
             gender = user.gender,
@@ -254,7 +254,7 @@ class UserServiceTest {
         every { updateUserPort.update(user) } returns expectedResult
 
         // when
-        val actualResult = sut.updateUser(command)
+        val actualResult = sut.updateUserProfile(command)
 
         // then
         verifyOrder {
@@ -275,7 +275,7 @@ class UserServiceTest {
         // given
         val userId = randomLong()
         val existingNickname = randomString(len = 7)
-        val command = UpdateUserUseCase.Command(
+        val command = UpdateUserProfileUseCase.Command(
             userId,
             existingNickname,
             randomString(),
@@ -285,7 +285,7 @@ class UserServiceTest {
         every { existsNicknamePort.existsNickname(existingNickname) } returns true
 
         // when
-        val ex = catchThrowable { sut.updateUser(command) }
+        val ex = catchThrowable { sut.updateUserProfile(command) }
 
         // then
         verifyOrder {

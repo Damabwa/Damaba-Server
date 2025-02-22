@@ -4,8 +4,8 @@ import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.domain.user.UserValidator
 
-interface UpdateUserUseCase {
-    fun updateUser(command: Command): User
+interface UpdateUserProfileUseCase {
+    fun updateUserProfile(command: Command): User
 
     data class Command(
         val userId: Long,
