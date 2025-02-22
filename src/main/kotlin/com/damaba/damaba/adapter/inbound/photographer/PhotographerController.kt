@@ -7,6 +7,7 @@ import com.damaba.damaba.application.port.inbound.photographer.ExistsPhotographe
 import com.damaba.damaba.application.port.inbound.photographer.GetPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
+import com.damaba.damaba.application.port.inbound.photographer.UnsavePhotographerUseCase
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.mapper.PhotographerMapper
 import io.swagger.v3.oas.annotations.Operation
@@ -18,6 +19,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -33,6 +35,7 @@ class PhotographerController(
     private val existsPhotographerNicknameUseCase: ExistsPhotographerNicknameUseCase,
     private val registerPhotographerUseCase: RegisterPhotographerUseCase,
     private val savePhotographerUseCase: SavePhotographerUseCase,
+    private val unsavePhotographerUseCase: UnsavePhotographerUseCase,
 ) {
     @Operation(
         summary = "사진작가 조회",
@@ -104,6 +107,26 @@ class PhotographerController(
     ): ResponseEntity<Unit> {
         savePhotographerUseCase.savePhotographer(
             SavePhotographerUseCase.Command(reqUserId = reqUser.id, photographerId = photographerId),
+        )
+        return ResponseEntity.noContent().build()
+    }
+
+    @Operation(
+        summary = "사진작가 저장 해제",
+        description = "사진작가 저장을 해제합니다.",
+        security = [SecurityRequirement(name = "access-token")],
+    )
+    @ApiResponses(
+        ApiResponse(responseCode = "204"),
+        ApiResponse(responseCode = "404", description = "사진작가 저장 이력을 찾을 수 없는 경우.", content = [Content()]),
+    )
+    @DeleteMapping("/api/v1/photographers/{photographerId}/unsave")
+    fun unsavePhotographerV1(
+        @AuthenticationPrincipal reqUser: User,
+        @PathVariable photographerId: Long,
+    ): ResponseEntity<Unit> {
+        unsavePhotographerUseCase.unsavePhotographer(
+            UnsavePhotographerUseCase.Command(reqUserId = reqUser.id, photographerId = photographerId),
         )
         return ResponseEntity.noContent().build()
     }

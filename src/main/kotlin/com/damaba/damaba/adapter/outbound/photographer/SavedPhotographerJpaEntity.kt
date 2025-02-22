@@ -1,6 +1,7 @@
 package com.damaba.damaba.adapter.outbound.photographer
 
 import com.damaba.damaba.adapter.outbound.common.BaseJpaTimeEntity
+import com.damaba.damaba.domain.photographer.SavedPhotographer
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -26,4 +27,10 @@ class SavedPhotographerJpaEntity(
     @Column(name = "photographer_id", nullable = false)
     var photographerId: Long = photographerId
         private set
+
+    fun toSavedPhotographer() = SavedPhotographer(
+        id = this.id,
+        userId = this.userId,
+        photographerId = this.photographerId,
+    )
 }

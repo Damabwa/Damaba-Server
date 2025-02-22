@@ -4,15 +4,19 @@ import com.damaba.damaba.application.port.inbound.photographer.ExistsPhotographe
 import com.damaba.damaba.application.port.inbound.photographer.GetPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
+import com.damaba.damaba.application.port.inbound.photographer.UnsavePhotographerUseCase
 import com.damaba.damaba.application.port.outbound.photographer.CreatePhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.CreateSavedPhotographerPort
+import com.damaba.damaba.application.port.outbound.photographer.DeleteSavedPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.ExistsSavedPhotographerPort
+import com.damaba.damaba.application.port.outbound.photographer.FindSavedPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.GetPhotographerPort
 import com.damaba.damaba.application.port.outbound.user.ExistsNicknamePort
 import com.damaba.damaba.application.port.outbound.user.GetUserPort
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.domain.photographer.SavedPhotographer
 import com.damaba.damaba.domain.photographer.exception.AlreadySavedPhotographerException
+import com.damaba.damaba.domain.photographer.exception.SavedPhotographerNotFoundException
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.domain.user.exception.NicknameAlreadyExistsException
 import com.damaba.damaba.domain.user.exception.UserAlreadyRegisteredException
@@ -26,12 +30,15 @@ class PhotographerService(
     private val existsNicknamePort: ExistsNicknamePort,
     private val createPhotographerPort: CreatePhotographerPort,
 
+    private val findSavedPhotographerPort: FindSavedPhotographerPort,
     private val existsSavedPhotographerPort: ExistsSavedPhotographerPort,
     private val createSavedPhotographerPort: CreateSavedPhotographerPort,
+    private val deleteSavedPhotographerPort: DeleteSavedPhotographerPort,
 ) : GetPhotographerUseCase,
     ExistsPhotographerNicknameUseCase,
     RegisterPhotographerUseCase,
-    SavePhotographerUseCase {
+    SavePhotographerUseCase,
+    UnsavePhotographerUseCase {
 
     @Transactional(readOnly = true)
     override fun getPhotographer(id: Long): Photographer = getPhotographerPort.getById(id)
@@ -70,5 +77,13 @@ class PhotographerService(
         createSavedPhotographerPort.create(
             SavedPhotographer.create(userId = command.reqUserId, photographerId = command.photographerId),
         )
+    }
+
+    @Transactional
+    override fun unsavePhotographer(command: UnsavePhotographerUseCase.Command) {
+        val savedPhotographer =
+            findSavedPhotographerPort.findByUserIdAndPhotographerId(command.reqUserId, command.photographerId)
+                ?: throw SavedPhotographerNotFoundException()
+        deleteSavedPhotographerPort.delete(savedPhotographer)
     }
 }

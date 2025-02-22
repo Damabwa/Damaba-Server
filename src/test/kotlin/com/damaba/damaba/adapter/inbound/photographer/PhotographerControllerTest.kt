@@ -5,6 +5,7 @@ import com.damaba.damaba.application.port.inbound.photographer.ExistsPhotographe
 import com.damaba.damaba.application.port.inbound.photographer.GetPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
+import com.damaba.damaba.application.port.inbound.photographer.UnsavePhotographerUseCase
 import com.damaba.damaba.config.ControllerTestConfig
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.user.constant.Gender
@@ -15,8 +16,8 @@ import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.fixture.FileFixture.createImageRequest
 import com.damaba.damaba.util.fixture.PhotographerFixture.createPhotographer
 import com.damaba.damaba.util.fixture.RegionFixture.createRegionRequest
-import com.damaba.damaba.util.fixture.SecurityFixture.createAuthenticationToken
 import com.damaba.damaba.util.fixture.UserFixture.createUser
+import com.damaba.damaba.util.withAuthUser
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.every
 import io.mockk.just
@@ -29,9 +30,9 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
@@ -49,6 +50,7 @@ class PhotographerControllerTest @Autowired constructor(
     private val existsPhotographerNicknameUseCase: ExistsPhotographerNicknameUseCase,
     private val registerPhotographerUseCase: RegisterPhotographerUseCase,
     private val savePhotographerUseCase: SavePhotographerUseCase,
+    private val unsavePhotographer: UnsavePhotographerUseCase,
 ) {
     @TestConfiguration
     class TestBeanSetUp {
@@ -63,6 +65,9 @@ class PhotographerControllerTest @Autowired constructor(
 
         @Bean
         fun savePhotographerUseCase(): SavePhotographerUseCase = mockk()
+
+        @Bean
+        fun unsavePhotographerUseCase(): UnsavePhotographerUseCase = mockk()
     }
 
     @Test
@@ -124,7 +129,7 @@ class PhotographerControllerTest @Autowired constructor(
             put("/api/v1/photographers/me/registration")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(request))
-                .with(authentication(createAuthenticationToken(createUser(id = userId)))),
+                .withAuthUser(createUser(id = userId)),
         ).andExpect(status().isOk)
         verify { registerPhotographerUseCase.register(request.toCommand(userId)) }
     }
@@ -140,8 +145,24 @@ class PhotographerControllerTest @Autowired constructor(
         // when & then
         mvc.perform(
             post("/api/v1/photographers/$photographerId/save")
-                .with(authentication(createAuthenticationToken(reqUser))),
+                .withAuthUser(reqUser),
         ).andExpect(status().isNoContent)
         verify { savePhotographerUseCase.savePhotographer(command) }
+    }
+
+    @Test
+    fun `사진작가 저장을 해제한다`() {
+        // given
+        val reqUser = createUser(id = randomLong())
+        val photographerId = randomLong()
+        val command = UnsavePhotographerUseCase.Command(reqUserId = reqUser.id, photographerId = photographerId)
+        every { unsavePhotographer.unsavePhotographer(command) } just runs
+
+        // when & then
+        mvc.perform(
+            delete("/api/v1/photographers/$photographerId/unsave")
+                .withAuthUser(reqUser),
+        ).andExpect(status().isNoContent)
+        verify { unsavePhotographer.unsavePhotographer(command) }
     }
 }
