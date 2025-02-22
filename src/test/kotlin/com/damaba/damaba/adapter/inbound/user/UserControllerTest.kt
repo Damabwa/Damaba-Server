@@ -13,8 +13,8 @@ import com.damaba.damaba.util.RandomTestUtils.Companion.randomBoolean
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomUrl
-import com.damaba.damaba.util.fixture.SecurityFixture.createAuthenticationToken
 import com.damaba.damaba.util.fixture.UserFixture.createUser
+import com.damaba.damaba.util.withAuthUser
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.every
 import io.mockk.mockk
@@ -25,10 +25,10 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -57,7 +57,7 @@ class UserControllerTest @Autowired constructor(
         fun updateMyInfoUseCase(): UpdateUserProfileUseCase = mockk()
 
         @Bean
-        fun updateUserRegistrationUseCase(): RegisterUserUseCase = mockk()
+        fun registerUserUseCase(): RegisterUserUseCase = mockk()
     }
 
     @Test
@@ -70,7 +70,7 @@ class UserControllerTest @Autowired constructor(
         // when & then
         mvc.perform(
             get("/api/v1/users/me")
-                .with(authentication(createAuthenticationToken(me))),
+                .withAuthUser(me),
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(me.id))
             .andExpect(jsonPath("$.nickname").value(me.nickname))
@@ -98,7 +98,7 @@ class UserControllerTest @Autowired constructor(
             put("/api/v1/users/me/profile")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(mapper.writeValueAsString(request))
-                .with(authentication(createAuthenticationToken(requestUser))),
+                .withAuthUser(requestUser),
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(requestUser.id))
             .andExpect(jsonPath("$.nickname").value(expectedResult.nickname))
@@ -147,10 +147,10 @@ class UserControllerTest @Autowired constructor(
 
         // when & then
         mvc.perform(
-            put("/api/v1/users/me/registration")
+            post("/api/v1/users/me/registration")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(mapper.writeValueAsString(request))
-                .with(authentication(createAuthenticationToken(requester))),
+                .withAuthUser(requester),
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(requester.id))
             .andExpect(jsonPath("$.nickname").value(expectedResult.nickname))
