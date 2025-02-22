@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -69,7 +68,7 @@ class PhotographerController(
     @Operation(
         summary = "사진작가 등록(회원가입)",
         description = "<p>유저 회원가입 시에만 한 번 사용하며, 사진작가 등록 정보(서비스 이용에 필요한 기본 정보)를 받아 설정합니다." +
-            "<p>사진작가의 회원가입에만 사용해야 하며, 일반 유저라면 유저 등록 API(<code>PATCH /api/v*/users/me/registration</code>)를 사용해야 합니다.",
+            "<p>사진작가의 회원가입에만 사용해야 하며, 일반 유저라면 유저 등록 API(<code>POST /api/v*/users/me/registration</code>)를 사용해야 합니다.",
         security = [SecurityRequirement(name = "access-token")],
     )
     @ApiResponses(
@@ -82,7 +81,7 @@ class PhotographerController(
             content = [Content()],
         ),
     )
-    @PutMapping("/api/v1/photographers/me/registration")
+    @PostMapping("/api/v1/photographers/me/registration")
     fun registerPhotographerV1(
         @AuthenticationPrincipal requester: User,
         @RequestBody request: RegisterPhotographerRequest,

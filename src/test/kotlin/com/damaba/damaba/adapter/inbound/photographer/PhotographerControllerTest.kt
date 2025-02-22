@@ -35,7 +35,6 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import kotlin.test.Test
@@ -50,7 +49,7 @@ class PhotographerControllerTest @Autowired constructor(
     private val existsPhotographerNicknameUseCase: ExistsPhotographerNicknameUseCase,
     private val registerPhotographerUseCase: RegisterPhotographerUseCase,
     private val savePhotographerUseCase: SavePhotographerUseCase,
-    private val unsavePhotographer: UnsavePhotographerUseCase,
+    private val unsavePhotographerUseCase: UnsavePhotographerUseCase,
 ) {
     @TestConfiguration
     class TestBeanSetUp {
@@ -126,7 +125,7 @@ class PhotographerControllerTest @Autowired constructor(
 
         // when & then
         mvc.perform(
-            put("/api/v1/photographers/me/registration")
+            post("/api/v1/photographers/me/registration")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(request))
                 .withAuthUser(createUser(id = userId)),
@@ -156,13 +155,13 @@ class PhotographerControllerTest @Autowired constructor(
         val reqUser = createUser(id = randomLong())
         val photographerId = randomLong()
         val command = UnsavePhotographerUseCase.Command(reqUserId = reqUser.id, photographerId = photographerId)
-        every { unsavePhotographer.unsavePhotographer(command) } just runs
+        every { unsavePhotographerUseCase.unsavePhotographer(command) } just runs
 
         // when & then
         mvc.perform(
             delete("/api/v1/photographers/$photographerId/unsave")
                 .withAuthUser(reqUser),
         ).andExpect(status().isNoContent)
-        verify { unsavePhotographer.unsavePhotographer(command) }
+        verify { unsavePhotographerUseCase.unsavePhotographer(command) }
     }
 }
