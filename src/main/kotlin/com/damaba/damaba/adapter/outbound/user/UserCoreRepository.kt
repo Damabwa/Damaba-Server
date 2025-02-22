@@ -1,6 +1,7 @@
 package com.damaba.damaba.adapter.outbound.user
 
 import com.damaba.damaba.application.port.outbound.user.CreateUserPort
+import com.damaba.damaba.application.port.outbound.user.DeleteUserProfileImagePort
 import com.damaba.damaba.application.port.outbound.user.ExistsNicknamePort
 import com.damaba.damaba.application.port.outbound.user.FindUserPort
 import com.damaba.damaba.application.port.outbound.user.GetUserPort
@@ -17,7 +18,8 @@ class UserCoreRepository(
     GetUserPort,
     ExistsNicknamePort,
     CreateUserPort,
-    UpdateUserPort {
+    UpdateUserPort,
+    DeleteUserProfileImagePort {
     override fun findById(id: Long): User? = findUserJpaEntityById(id)?.toUser()
 
     override fun findByOAuthLoginUid(oAuthLoginUid: String): User? = userJpaRepository.findByOAuthLoginUid(oAuthLoginUid)?.toUser()
@@ -35,8 +37,7 @@ class UserCoreRepository(
         val userJpaEntity = getUserJpaEntityById(user.id)
 
         if (userJpaEntity.profileImage.url != user.profileImage.url) {
-            val originalProfileImage = userProfileImageJpaRepository.findByUrl(userJpaEntity.profileImage.url)
-            originalProfileImage?.delete()
+            this.deleteProfileImageIfExists(userJpaEntity.profileImage.url)
             userProfileImageJpaRepository.save(
                 UserProfileImageJpaEntity(
                     userId = user.id,
@@ -50,7 +51,11 @@ class UserCoreRepository(
         return userJpaEntity.toUser()
     }
 
-    private fun findUserJpaEntityById(id: Long): UserJpaEntity? = userJpaRepository.findById(id).orElseGet { null }
+    override fun deleteProfileImageIfExists(profileImageUrl: String) {
+        userProfileImageJpaRepository.findByUrl(profileImageUrl)?.delete()
+    }
+
+    private fun findUserJpaEntityById(id: Long): UserJpaEntity? = userJpaRepository.findById(id).orElse(null)
 
     private fun getUserJpaEntityById(id: Long): UserJpaEntity = userJpaRepository.findById(id).orElseThrow { UserNotFoundException() }
 }

@@ -3,11 +3,10 @@ package com.damaba.damaba.application.service.user
 import com.damaba.damaba.application.port.inbound.user.ExistsUserNicknameUseCase
 import com.damaba.damaba.application.port.inbound.user.RegisterUserUseCase
 import com.damaba.damaba.application.port.inbound.user.UpdateUserProfileUseCase
-import com.damaba.damaba.application.port.outbound.common.PublishEventPort
+import com.damaba.damaba.application.port.outbound.user.DeleteUserProfileImagePort
 import com.damaba.damaba.application.port.outbound.user.ExistsNicknamePort
 import com.damaba.damaba.application.port.outbound.user.GetUserPort
 import com.damaba.damaba.application.port.outbound.user.UpdateUserPort
-import com.damaba.damaba.domain.file.DeleteFileEvent
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.user.constant.Gender
 import com.damaba.damaba.domain.user.constant.UserType
@@ -17,12 +16,13 @@ import com.damaba.damaba.util.RandomTestUtils.Companion.randomBoolean
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomUrl
+import com.damaba.damaba.util.fixture.FileFixture.createImage
 import com.damaba.damaba.util.fixture.UserFixture.createUser
-import io.mockk.Runs
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
+import io.mockk.runs
 import io.mockk.verify
 import io.mockk.verifyOrder
 import org.assertj.core.api.Assertions.assertThat
@@ -33,16 +33,21 @@ class UserServiceTest {
     private val getUserPort: GetUserPort = mockk()
     private val existsNicknamePort: ExistsNicknamePort = mockk()
     private val updateUserPort: UpdateUserPort = mockk()
-    private val publishEventPort: PublishEventPort = mockk()
+    private val deleteUserProfileImagePort: DeleteUserProfileImagePort = mockk()
     private val sut = UserService(
         getUserPort,
         existsNicknamePort,
         updateUserPort,
-        publishEventPort,
+        deleteUserProfileImagePort,
     )
 
     private fun confirmVerifiedEveryMocks() {
-        confirmVerified(getUserPort, existsNicknamePort, updateUserPort, publishEventPort)
+        confirmVerified(
+            getUserPort,
+            existsNicknamePort,
+            updateUserPort,
+            deleteUserProfileImagePort,
+        )
     }
 
     @Test
@@ -166,7 +171,8 @@ class UserServiceTest {
     fun `수정할 유저 정보가 주어지고, 유저 정보를 수정하면, 수정된 유저 정보가 반환된다`() {
         // given
         val userId = randomLong()
-        val user = createUser(id = userId)
+        val originalProfileImage = createImage()
+        val user = createUser(id = userId, profileImage = originalProfileImage)
         val newNickname = randomString(len = 7)
         val newGender = Gender.FEMALE
         val newInstagramId = null
@@ -180,7 +186,7 @@ class UserServiceTest {
         )
         every { getUserPort.getById(userId) } returns user
         every { existsNicknamePort.existsNickname(newNickname) } returns false
-        every { publishEventPort.publish(any(DeleteFileEvent::class)) } just Runs
+        every { deleteUserProfileImagePort.deleteProfileImageIfExists(originalProfileImage.url) } just runs
         every { updateUserPort.update(user) } returns expectedResult
 
         // when
@@ -190,7 +196,7 @@ class UserServiceTest {
         verifyOrder {
             getUserPort.getById(userId)
             existsNicknamePort.existsNickname(newNickname)
-            publishEventPort.publish(any(DeleteFileEvent::class))
+            deleteUserProfileImagePort.deleteProfileImageIfExists(originalProfileImage.url)
             updateUserPort.update(user)
         }
         confirmVerifiedEveryMocks()
@@ -240,8 +246,9 @@ class UserServiceTest {
     fun `변경할 프로필 이미지가 주어지고, 유저 정보를 수정하면, 수정된 유저 정보가 반환된다`() {
         // given
         val userId = randomLong()
-        val user = createUser(id = userId)
-        val newProfileImageUrl = Image(randomString(), randomUrl())
+        val originalProfileImage = createImage()
+        val user = createUser(id = userId, profileImage = originalProfileImage)
+        val newProfileImageUrl = createImage()
         val command = UpdateUserProfileUseCase.Command(userId, user.nickname, user.instagramId, newProfileImageUrl)
         val expectedResult = createUser(
             nickname = user.nickname,
@@ -250,7 +257,7 @@ class UserServiceTest {
             profileImage = newProfileImageUrl,
         )
         every { getUserPort.getById(userId) } returns user
-        every { publishEventPort.publish(any(DeleteFileEvent::class)) } just Runs
+        every { deleteUserProfileImagePort.deleteProfileImageIfExists(originalProfileImage.url) } just runs
         every { updateUserPort.update(user) } returns expectedResult
 
         // when
@@ -259,7 +266,7 @@ class UserServiceTest {
         // then
         verifyOrder {
             getUserPort.getById(userId)
-            publishEventPort.publish(any(DeleteFileEvent::class))
+            deleteUserProfileImagePort.deleteProfileImageIfExists(originalProfileImage.url)
             updateUserPort.update(user)
         }
         confirmVerifiedEveryMocks()
