@@ -4,11 +4,10 @@ import com.damaba.damaba.application.port.inbound.user.ExistsUserNicknameUseCase
 import com.damaba.damaba.application.port.inbound.user.GetUserUseCase
 import com.damaba.damaba.application.port.inbound.user.RegisterUserUseCase
 import com.damaba.damaba.application.port.inbound.user.UpdateUserProfileUseCase
-import com.damaba.damaba.application.port.outbound.common.PublishEventPort
+import com.damaba.damaba.application.port.outbound.user.DeleteUserProfileImagePort
 import com.damaba.damaba.application.port.outbound.user.ExistsNicknamePort
 import com.damaba.damaba.application.port.outbound.user.GetUserPort
 import com.damaba.damaba.application.port.outbound.user.UpdateUserPort
-import com.damaba.damaba.domain.file.DeleteFileEvent
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.domain.user.exception.NicknameAlreadyExistsException
 import com.damaba.damaba.domain.user.exception.UserAlreadyRegisteredException
@@ -21,7 +20,7 @@ class UserService(
     private val getUserPort: GetUserPort,
     private val existsNicknamePort: ExistsNicknamePort,
     private val updateUserPort: UpdateUserPort,
-    private val publishEventPort: PublishEventPort,
+    private val deleteUserProfileImagePort: DeleteUserProfileImagePort,
 ) : GetUserUseCase,
     ExistsUserNicknameUseCase,
     UpdateUserProfileUseCase,
@@ -56,20 +55,14 @@ class UserService(
     override fun updateUserProfile(command: UpdateUserProfileUseCase.Command): User {
         val user = getUserPort.getById(command.userId)
 
-        val isNewNickname = user.nickname != command.nickname
-        if (isNewNickname && existsNicknamePort.existsNickname(command.nickname)) {
+        if ((user.nickname != command.nickname) && existsNicknamePort.existsNickname(command.nickname)) {
             throw NicknameAlreadyExistsException(command.nickname)
         }
-
         if (user.profileImage != command.profileImage) {
-            deleteProfileImage(user.profileImage.url)
+            deleteUserProfileImagePort.deleteProfileImageIfExists(user.profileImage.url)
         }
 
         user.updateProfile(UserMapper.INSTANCE.toUserProfile(command))
         return updateUserPort.update(user)
-    }
-
-    private fun deleteProfileImage(profileImageUrl: String) {
-        publishEventPort.publish(DeleteFileEvent(profileImageUrl))
     }
 }

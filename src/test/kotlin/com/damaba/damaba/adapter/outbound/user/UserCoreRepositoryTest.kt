@@ -22,7 +22,6 @@ class UserCoreRepositoryTest @Autowired constructor(
     private val userCoreRepository: UserCoreRepository,
     private val userProfileImageJpaRepository: UserProfileImageJpaRepository,
 ) {
-
     @Test
     fun `특정 유저의 id가 주어지고, 주어진 id에 해당하는 유저를 조회하면, 유저 정보가 반환된다`() {
         // given
@@ -226,5 +225,32 @@ class UserCoreRepositoryTest @Autowired constructor(
 
         val foundOriginalProfileImage = userProfileImageJpaRepository.findByUrl(originalUser.profileImage.url)
         assertThat(foundOriginalProfileImage).isNull()
+    }
+
+    @Test
+    fun `프로필 이미지 url이 주어지고, 프로필 이미지를 삭제한다`() {
+        // given
+        val profileImageUrl = randomUrl()
+        userProfileImageJpaRepository.save(
+            UserProfileImageJpaEntity(userId = randomLong(), url = profileImageUrl, name = randomString()),
+        )
+
+        // when
+        userCoreRepository.deleteProfileImageIfExists(profileImageUrl)
+
+        // then
+        assertThat(userProfileImageJpaRepository.findByUrl(profileImageUrl)).isNull()
+    }
+
+    @Test
+    fun `프로필 이미지 url이 주어지고, 프로필 이미지를 삭제한다, 만약 이미지가 존재하지 않는다면 아무런 일이 발생하지 않는다`() {
+        // given
+        val profileImageUrl = randomUrl()
+
+        // when
+        userCoreRepository.deleteProfileImageIfExists(profileImageUrl)
+
+        // then
+        assertThat(userProfileImageJpaRepository.findByUrl(profileImageUrl)).isNull()
     }
 }
