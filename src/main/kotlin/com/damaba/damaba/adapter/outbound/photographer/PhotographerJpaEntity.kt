@@ -2,7 +2,9 @@ package com.damaba.damaba.adapter.outbound.photographer
 
 import com.damaba.damaba.adapter.outbound.common.BaseJpaTimeEntity
 import com.damaba.damaba.adapter.outbound.user.UserJpaEntity
+import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.photographer.Photographer
+import com.damaba.damaba.domain.region.Region
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Embedded
@@ -63,6 +65,31 @@ class PhotographerJpaEntity(
         portfolio = this.portfolio.map { it.toImage() },
         activeRegions = this.activeRegions.map { it.toRegion() }.toSet(),
     )
+
+    fun update(photographer: Photographer) {
+        this.contactLink = photographer.contactLink
+        this.description = photographer.description
+        this.address = photographer.address?.let { PhotographerAddressJpaEmbeddable.from(it) }
+        updateMainPhotographyTypes(photographer.mainPhotographyTypes)
+        updateActiveRegions(photographer.activeRegions)
+        // TODO: updatePortfolio(photographer.portfolio)
+    }
+
+    private fun updateMainPhotographyTypes(mainPhotographyTypes: Set<PhotographyType>) {
+        this.mainPhotographyTypes.removeIf { it.photographyType !in mainPhotographyTypes }
+
+        val existingTypes = this.mainPhotographyTypes.map { it.photographyType }.toSet()
+        val toAddTypes = mainPhotographyTypes - existingTypes
+        this.mainPhotographyTypes.addAll(toAddTypes.map { PhotographerPhotographyTypeJpaEntity(this, it) })
+    }
+
+    private fun updateActiveRegions(activeRegions: Set<Region>) {
+        this.activeRegions.removeIf { it.toRegion() !in activeRegions }
+
+        val existingRegions = this.activeRegions.map { it.toRegion() }.toSet()
+        val toAddRegions = activeRegions - existingRegions
+        this.activeRegions.addAll(toAddRegions.map { PhotographerActiveRegionJpaEntity.from(this, it) })
+    }
 
     companion object {
         fun from(photographer: Photographer): PhotographerJpaEntity {
