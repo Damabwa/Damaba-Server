@@ -4,12 +4,15 @@ import com.damaba.damaba.application.port.inbound.photographer.ExistsPhotographe
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.UnsavePhotographerUseCase
+import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerProfileUseCase
 import com.damaba.damaba.application.port.outbound.photographer.CreatePhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.CreateSavedPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.DeleteSavedPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.ExistsSavedPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.FindSavedPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.GetPhotographerPort
+import com.damaba.damaba.application.port.outbound.photographer.UpdatePhotographerPort
+import com.damaba.damaba.application.port.outbound.user.DeleteUserProfileImagePort
 import com.damaba.damaba.application.port.outbound.user.ExistsNicknamePort
 import com.damaba.damaba.application.port.outbound.user.GetUserPort
 import com.damaba.damaba.domain.common.PhotographyType
@@ -46,6 +49,9 @@ class PhotographerServiceTest {
     private val getPhotographerPort: GetPhotographerPort = mockk()
     private val existsNicknamePort: ExistsNicknamePort = mockk()
     private val createPhotographerPort: CreatePhotographerPort = mockk()
+    private val updatePhotographerPort: UpdatePhotographerPort = mockk()
+    private val deleteUserProfileImagePort: DeleteUserProfileImagePort = mockk()
+
     private val findSavedPhotographerPort: FindSavedPhotographerPort = mockk()
     private val existsSavedPhotographerPort: ExistsSavedPhotographerPort = mockk()
     private val createSavedPhotographerPort: CreateSavedPhotographerPort = mockk()
@@ -55,6 +61,8 @@ class PhotographerServiceTest {
         getPhotographerPort,
         existsNicknamePort,
         createPhotographerPort,
+        updatePhotographerPort,
+        deleteUserProfileImagePort,
         findSavedPhotographerPort,
         existsSavedPhotographerPort,
         createSavedPhotographerPort,
@@ -67,6 +75,8 @@ class PhotographerServiceTest {
             getPhotographerPort,
             existsNicknamePort,
             createPhotographerPort,
+            updatePhotographerPort,
+            deleteUserProfileImagePort,
             findSavedPhotographerPort,
             existsSavedPhotographerPort,
             createSavedPhotographerPort,
@@ -245,6 +255,115 @@ class PhotographerServiceTest {
         }
         confirmVerifiedEveryMocks()
         assertThat(ex).isInstanceOf(AlreadySavedPhotographerException::class.java)
+    }
+
+    @Test
+    fun `작가 프로필을 수정하면, 수정된 작가 정보가 반환된다`() {
+        // given
+        val photographerId = randomLong()
+        val originalPhotographer = createPhotographer(
+            id = photographerId,
+            mainPhotographyTypes = setOf(PhotographyType.PROFILE),
+        )
+        val command = UpdatePhotographerProfileUseCase.Command(
+            photographerId = photographerId,
+            nickname = originalPhotographer.nickname,
+            profileImage = originalPhotographer.profileImage,
+            mainPhotographyTypes = setOf(PhotographyType.SNAP),
+            activeRegions = generateRandomSet(maxSize = 3) { createRegion() },
+        )
+        val expectedResult = createPhotographer(
+            id = photographerId,
+            nickname = command.nickname,
+            profileImage = command.profileImage,
+            mainPhotographyTypes = command.mainPhotographyTypes,
+            activeRegions = command.activeRegions,
+        )
+        every { getPhotographerPort.getById(photographerId) } returns originalPhotographer
+        every { updatePhotographerPort.update(expectedResult) } returns expectedResult
+
+        // when
+        val result = sut.updatePhotographerProfile(command)
+
+        // then
+        verifyOrder {
+            getPhotographerPort.getById(photographerId)
+            updatePhotographerPort.update(expectedResult)
+        }
+        confirmVerifiedEveryMocks()
+        assertThat(result).isEqualTo(expectedResult)
+    }
+
+    @Test
+    fun `작가 프로필을 수정한다, 만약 프로필 이미지가 변경되었다면 기존 이미지를 삭제한다`() {
+        // given
+        val photographerId = randomLong()
+        val originalPhotographer = createPhotographer(
+            id = photographerId,
+            mainPhotographyTypes = setOf(PhotographyType.PROFILE),
+        )
+        val originalProfileImageUrl = originalPhotographer.profileImage.url
+        val command = UpdatePhotographerProfileUseCase.Command(
+            photographerId = photographerId,
+            nickname = randomString(len = 10),
+            profileImage = createImage(name = "newImage", url = "https://new-image.jpg"),
+            mainPhotographyTypes = setOf(PhotographyType.SNAP),
+            activeRegions = generateRandomSet(maxSize = 3) { createRegion() },
+        )
+        val expectedResult = createPhotographer(
+            id = photographerId,
+            nickname = command.nickname,
+            profileImage = command.profileImage,
+            mainPhotographyTypes = command.mainPhotographyTypes,
+            activeRegions = command.activeRegions,
+        )
+        every { getPhotographerPort.getById(photographerId) } returns originalPhotographer
+        every { existsNicknamePort.existsNickname(command.nickname) } returns false
+        every { deleteUserProfileImagePort.deleteProfileImageIfExists(originalProfileImageUrl) } just runs
+        every { updatePhotographerPort.update(expectedResult) } returns expectedResult
+
+        // when
+        val result = sut.updatePhotographerProfile(command)
+
+        // then
+        verifyOrder {
+            getPhotographerPort.getById(photographerId)
+            existsNicknamePort.existsNickname(command.nickname)
+            deleteUserProfileImagePort.deleteProfileImageIfExists(originalProfileImageUrl)
+            updatePhotographerPort.update(expectedResult)
+        }
+        confirmVerifiedEveryMocks()
+        assertThat(result).isEqualTo(expectedResult)
+    }
+
+    @Test
+    fun `작가 프로필을 수정한다, 만약 변경하려는 닉네임이 이미 사용중이라면 예외가 발생한다`() {
+        // given
+        val photographerId = randomLong()
+        val originalPhotographer = createPhotographer(
+            id = photographerId,
+            mainPhotographyTypes = setOf(PhotographyType.PROFILE),
+        )
+        val command = UpdatePhotographerProfileUseCase.Command(
+            photographerId = photographerId,
+            nickname = randomString(len = 10),
+            profileImage = createImage(name = "newImage", url = "https://new-image.jpg"),
+            mainPhotographyTypes = setOf(PhotographyType.SNAP),
+            activeRegions = generateRandomSet(maxSize = 3) { createRegion() },
+        )
+        every { getPhotographerPort.getById(photographerId) } returns originalPhotographer
+        every { existsNicknamePort.existsNickname(command.nickname) } returns true
+
+        // when
+        val ex = catchThrowable { sut.updatePhotographerProfile(command) }
+
+        // then
+        verifyOrder {
+            getPhotographerPort.getById(photographerId)
+            existsNicknamePort.existsNickname(command.nickname)
+        }
+        confirmVerifiedEveryMocks()
+        assertThat(ex).isInstanceOf(NicknameAlreadyExistsException::class.java)
     }
 
     @Test

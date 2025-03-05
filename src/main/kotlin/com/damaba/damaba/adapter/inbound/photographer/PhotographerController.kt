@@ -3,11 +3,13 @@ package com.damaba.damaba.adapter.inbound.photographer
 import com.damaba.damaba.adapter.inbound.photographer.dto.ExistsPhotographerNicknameResponse
 import com.damaba.damaba.adapter.inbound.photographer.dto.PhotographerResponse
 import com.damaba.damaba.adapter.inbound.photographer.dto.RegisterPhotographerRequest
+import com.damaba.damaba.adapter.inbound.photographer.dto.UpdateMyPhotographerProfileRequest
 import com.damaba.damaba.application.port.inbound.photographer.ExistsPhotographerNicknameUseCase
 import com.damaba.damaba.application.port.inbound.photographer.GetPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.UnsavePhotographerUseCase
+import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerProfileUseCase
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.mapper.PhotographerMapper
 import io.swagger.v3.oas.annotations.Operation
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -33,6 +36,8 @@ class PhotographerController(
     private val getPhotographerUseCase: GetPhotographerUseCase,
     private val existsPhotographerNicknameUseCase: ExistsPhotographerNicknameUseCase,
     private val registerPhotographerUseCase: RegisterPhotographerUseCase,
+    private val updatePhotographerProfileUseCase: UpdatePhotographerProfileUseCase,
+
     private val savePhotographerUseCase: SavePhotographerUseCase,
     private val unsavePhotographerUseCase: UnsavePhotographerUseCase,
 ) {
@@ -108,6 +113,26 @@ class PhotographerController(
             SavePhotographerUseCase.Command(reqUserId = reqUser.id, photographerId = photographerId),
         )
         return ResponseEntity.noContent().build()
+    }
+
+    @Operation(
+        summary = "내 작가 프로필 수정",
+        description = "<p>내 작가 프로필을 수정합니다. 요청된 정보들로 기존 정보를 변경(overwrite)합니다." +
+            "<p>정보가 변경되지 않은 항목이더라도 요청 데이터에 모두 담아야 합니다. 그 때문에 변경되지 않은 항목은 기존 값을 그대로 담아 요청해야 합니다.",
+        security = [SecurityRequirement(name = "access-token")],
+    )
+    @ApiResponses(
+        ApiResponse(responseCode = "204"),
+        ApiResponse(responseCode = "404", description = "사진작가 저장 이력을 찾을 수 없는 경우.", content = [Content()]),
+    )
+    @PutMapping("/api/v1/photographers/me/profile")
+    fun updateMyPhotographerProfileV1(
+        @AuthenticationPrincipal reqUser: User,
+        @RequestBody request: UpdateMyPhotographerProfileRequest,
+    ): PhotographerResponse {
+        val updatePhotographer =
+            updatePhotographerProfileUseCase.updatePhotographerProfile(request.toCommand(reqUser.id))
+        return PhotographerMapper.INSTANCE.toPhotographerResponse(updatePhotographer)
     }
 
     @Operation(

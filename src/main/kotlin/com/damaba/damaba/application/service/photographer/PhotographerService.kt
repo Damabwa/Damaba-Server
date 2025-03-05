@@ -5,12 +5,15 @@ import com.damaba.damaba.application.port.inbound.photographer.GetPhotographerUs
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.UnsavePhotographerUseCase
+import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerProfileUseCase
 import com.damaba.damaba.application.port.outbound.photographer.CreatePhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.CreateSavedPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.DeleteSavedPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.ExistsSavedPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.FindSavedPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.GetPhotographerPort
+import com.damaba.damaba.application.port.outbound.photographer.UpdatePhotographerPort
+import com.damaba.damaba.application.port.outbound.user.DeleteUserProfileImagePort
 import com.damaba.damaba.application.port.outbound.user.ExistsNicknamePort
 import com.damaba.damaba.application.port.outbound.user.GetUserPort
 import com.damaba.damaba.domain.photographer.Photographer
@@ -20,6 +23,7 @@ import com.damaba.damaba.domain.photographer.exception.SavedPhotographerNotFound
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.domain.user.exception.NicknameAlreadyExistsException
 import com.damaba.damaba.domain.user.exception.UserAlreadyRegisteredException
+import com.damaba.damaba.mapper.PhotographerMapper
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -29,6 +33,8 @@ class PhotographerService(
     private val getPhotographerPort: GetPhotographerPort,
     private val existsNicknamePort: ExistsNicknamePort,
     private val createPhotographerPort: CreatePhotographerPort,
+    private val updatePhotographerPort: UpdatePhotographerPort,
+    private val deleteUserProfileImagePort: DeleteUserProfileImagePort,
 
     private val findSavedPhotographerPort: FindSavedPhotographerPort,
     private val existsSavedPhotographerPort: ExistsSavedPhotographerPort,
@@ -37,6 +43,7 @@ class PhotographerService(
 ) : GetPhotographerUseCase,
     ExistsPhotographerNicknameUseCase,
     RegisterPhotographerUseCase,
+    UpdatePhotographerProfileUseCase,
     SavePhotographerUseCase,
     UnsavePhotographerUseCase {
 
@@ -67,6 +74,21 @@ class PhotographerService(
             activeRegions = command.activeRegions,
         )
         return createPhotographerPort.createIfUserExists(photographer)
+    }
+
+    @Transactional
+    override fun updatePhotographerProfile(command: UpdatePhotographerProfileUseCase.Command): Photographer {
+        val photographer = getPhotographerPort.getById(command.photographerId)
+
+        if (photographer.nickname != command.nickname && existsNicknamePort.existsNickname(command.nickname)) {
+            throw NicknameAlreadyExistsException(command.nickname)
+        }
+        if (photographer.profileImage != command.profileImage) {
+            deleteUserProfileImagePort.deleteProfileImageIfExists(photographer.profileImage.url)
+        }
+
+        photographer.updateProfile(PhotographerMapper.INSTANCE.toPhotographerProfile(command))
+        return updatePhotographerPort.update(photographer)
     }
 
     @Transactional

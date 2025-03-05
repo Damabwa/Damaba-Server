@@ -72,6 +72,13 @@ class Photographer(
         this.activeRegions = activeRegions
     }
 
+    fun updateProfile(photographerProfile: PhotographerProfile) {
+        this.nickname = photographerProfile.nickname
+        this.profileImage = photographerProfile.profileImage
+        this.mainPhotographyTypes = photographerProfile.mainPhotographyTypes
+        this.activeRegions = photographerProfile.activeRegions
+    }
+
     companion object {
         fun create(user: User): Photographer = Photographer(
             id = user.id,
