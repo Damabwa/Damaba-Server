@@ -4,6 +4,7 @@ import com.damaba.damaba.application.port.inbound.photographer.ExistsPhotographe
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.UnsavePhotographerUseCase
+import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerPageUseCase
 import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerProfileUseCase
 import com.damaba.damaba.application.port.outbound.photographer.CreatePhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.CreateSavedPhotographerPort
@@ -24,8 +25,10 @@ import com.damaba.damaba.domain.user.constant.Gender
 import com.damaba.damaba.domain.user.constant.UserType
 import com.damaba.damaba.domain.user.exception.NicknameAlreadyExistsException
 import com.damaba.damaba.domain.user.exception.UserAlreadyRegisteredException
+import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomSet
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomBoolean
+import com.damaba.damaba.util.RandomTestUtils.Companion.randomInt
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.fixture.FileFixture.createImage
@@ -364,6 +367,44 @@ class PhotographerServiceTest {
         }
         confirmVerifiedEveryMocks()
         assertThat(ex).isInstanceOf(NicknameAlreadyExistsException::class.java)
+    }
+
+    @Test
+    fun `작가 페이지를 수정하면, 수정된 작가가 반환된다`() {
+        val photographerId = randomLong()
+        val originalPhotographer = createPhotographer(
+            id = photographerId,
+            mainPhotographyTypes = setOf(PhotographyType.PROFILE),
+        )
+        val command = UpdatePhotographerPageUseCase.Command(
+            photographerId = photographerId,
+            portfolio = generateRandomList(maxSize = 3) { createImage() },
+            address = null,
+            instagramId = null,
+            contactLink = null,
+            description = randomString(len = randomInt(min = 1, max = 300)),
+        )
+        val expectedResult = createPhotographer(
+            id = photographerId,
+            portfolio = command.portfolio,
+            address = command.address,
+            instagramId = command.instagramId,
+            contactLink = command.contactLink,
+            description = command.description,
+        )
+        every { getPhotographerPort.getById(photographerId) } returns originalPhotographer
+        every { updatePhotographerPort.update(expectedResult) } returns expectedResult
+
+        // when
+        val result = sut.updatePhotographerPage(command)
+
+        // then
+        verifyOrder {
+            getPhotographerPort.getById(photographerId)
+            updatePhotographerPort.update(expectedResult)
+        }
+        confirmVerifiedEveryMocks()
+        assertThat(result).isEqualTo(expectedResult)
     }
 
     @Test

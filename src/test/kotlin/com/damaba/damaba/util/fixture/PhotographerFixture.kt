@@ -31,7 +31,7 @@ object PhotographerFixture {
         nickname: String = randomString(len = 7),
         profileImage: Image = Image(randomString(), randomUrl()),
         gender: Gender = Gender.MALE,
-        instagramId: String = randomString(len = 30),
+        instagramId: String? = randomString(len = 30),
         mainPhotographyTypes: Set<PhotographyType> = setOf(PhotographyType.PROFILE),
         contactLink: String? = randomString(),
         description: String? = randomString(),

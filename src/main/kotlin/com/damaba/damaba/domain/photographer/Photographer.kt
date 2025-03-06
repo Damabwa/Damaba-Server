@@ -79,6 +79,14 @@ class Photographer(
         this.activeRegions = photographerProfile.activeRegions
     }
 
+    fun updatePage(page: PhotographerPage) {
+        this.portfolio = page.portfolio
+        this.address = page.address
+        this.instagramId = page.instagramId
+        this.contactLink = page.contactLink
+        this.description = page.description
+    }
+
     companion object {
         fun create(user: User): Photographer = Photographer(
             id = user.id,

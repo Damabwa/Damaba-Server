@@ -3,12 +3,14 @@ package com.damaba.damaba.adapter.inbound.photographer
 import com.damaba.damaba.adapter.inbound.photographer.dto.ExistsPhotographerNicknameResponse
 import com.damaba.damaba.adapter.inbound.photographer.dto.PhotographerResponse
 import com.damaba.damaba.adapter.inbound.photographer.dto.RegisterPhotographerRequest
+import com.damaba.damaba.adapter.inbound.photographer.dto.UpdateMyPhotographerPageRequest
 import com.damaba.damaba.adapter.inbound.photographer.dto.UpdateMyPhotographerProfileRequest
 import com.damaba.damaba.application.port.inbound.photographer.ExistsPhotographerNicknameUseCase
 import com.damaba.damaba.application.port.inbound.photographer.GetPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.UnsavePhotographerUseCase
+import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerPageUseCase
 import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerProfileUseCase
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.mapper.PhotographerMapper
@@ -37,6 +39,7 @@ class PhotographerController(
     private val existsPhotographerNicknameUseCase: ExistsPhotographerNicknameUseCase,
     private val registerPhotographerUseCase: RegisterPhotographerUseCase,
     private val updatePhotographerProfileUseCase: UpdatePhotographerProfileUseCase,
+    private val updatePhotographerPageUseCase: UpdatePhotographerPageUseCase,
 
     private val savePhotographerUseCase: SavePhotographerUseCase,
     private val unsavePhotographerUseCase: UnsavePhotographerUseCase,
@@ -122,17 +125,32 @@ class PhotographerController(
         security = [SecurityRequirement(name = "access-token")],
     )
     @ApiResponses(
-        ApiResponse(responseCode = "204"),
-        ApiResponse(responseCode = "404", description = "사진작가 저장 이력을 찾을 수 없는 경우.", content = [Content()]),
+        ApiResponse(responseCode = "200"),
+        ApiResponse(responseCode = "409", description = "변경하려는 닉네임이 이미 사용중인 경우"),
     )
     @PutMapping("/api/v1/photographers/me/profile")
     fun updateMyPhotographerProfileV1(
         @AuthenticationPrincipal reqUser: User,
         @RequestBody request: UpdateMyPhotographerProfileRequest,
     ): PhotographerResponse {
-        val updatePhotographer =
+        val updatedPhotographer =
             updatePhotographerProfileUseCase.updatePhotographerProfile(request.toCommand(reqUser.id))
-        return PhotographerMapper.INSTANCE.toPhotographerResponse(updatePhotographer)
+        return PhotographerMapper.INSTANCE.toPhotographerResponse(updatedPhotographer)
+    }
+
+    @Operation(
+        summary = "내 작가 페이지 수정",
+        description = "<p>내 작가 페이지를 수정합니다. 요청된 정보들로 기존 정보를 변경(overwrite)합니다." +
+            "<p>정보가 변경되지 않은 항목이더라도 요청 데이터에 모두 담아야 합니다. 그 때문에 변경되지 않은 항목은 기존 값을 그대로 담아 요청해야 합니다.",
+        security = [SecurityRequirement(name = "access-token")],
+    )
+    @PutMapping("/api/v1/photographers/me/page")
+    fun updateMyPhotographerPageV1(
+        @AuthenticationPrincipal reqUser: User,
+        @RequestBody request: UpdateMyPhotographerPageRequest,
+    ): PhotographerResponse {
+        val updatedPhotographer = updatePhotographerPageUseCase.updatePhotographerPage(request.toCommand(reqUser.id))
+        return PhotographerMapper.INSTANCE.toPhotographerResponse(updatedPhotographer)
     }
 
     @Operation(
