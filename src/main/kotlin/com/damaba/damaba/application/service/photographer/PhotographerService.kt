@@ -5,6 +5,7 @@ import com.damaba.damaba.application.port.inbound.photographer.GetPhotographerUs
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.UnsavePhotographerUseCase
+import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerPageUseCase
 import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerProfileUseCase
 import com.damaba.damaba.application.port.outbound.photographer.CreatePhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.CreateSavedPhotographerPort
@@ -44,6 +45,7 @@ class PhotographerService(
     ExistsPhotographerNicknameUseCase,
     RegisterPhotographerUseCase,
     UpdatePhotographerProfileUseCase,
+    UpdatePhotographerPageUseCase,
     SavePhotographerUseCase,
     UnsavePhotographerUseCase {
 
@@ -88,6 +90,13 @@ class PhotographerService(
         }
 
         photographer.updateProfile(PhotographerMapper.INSTANCE.toPhotographerProfile(command))
+        return updatePhotographerPort.update(photographer)
+    }
+
+    @Transactional
+    override fun updatePhotographerPage(command: UpdatePhotographerPageUseCase.Command): Photographer {
+        val photographer = getPhotographerPort.getById(command.photographerId)
+        photographer.updatePage(PhotographerMapper.INSTANCE.toPhotographerPage(command))
         return updatePhotographerPort.update(photographer)
     }
 

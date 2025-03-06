@@ -1,18 +1,22 @@
 package com.damaba.damaba.adapter.inbound.photographer
 
 import com.damaba.damaba.adapter.inbound.photographer.dto.RegisterPhotographerRequest
+import com.damaba.damaba.adapter.inbound.photographer.dto.UpdateMyPhotographerPageRequest
 import com.damaba.damaba.adapter.inbound.photographer.dto.UpdateMyPhotographerProfileRequest
 import com.damaba.damaba.application.port.inbound.photographer.ExistsPhotographerNicknameUseCase
 import com.damaba.damaba.application.port.inbound.photographer.GetPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.UnsavePhotographerUseCase
+import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerPageUseCase
 import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerProfileUseCase
 import com.damaba.damaba.config.ControllerTestConfig
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.user.constant.Gender
+import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomSet
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomBoolean
+import com.damaba.damaba.util.RandomTestUtils.Companion.randomInt
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.fixture.FileFixture.createImageRequest
@@ -52,6 +56,7 @@ class PhotographerControllerTest @Autowired constructor(
     private val existsPhotographerNicknameUseCase: ExistsPhotographerNicknameUseCase,
     private val registerPhotographerUseCase: RegisterPhotographerUseCase,
     private val updatePhotographerProfileUseCase: UpdatePhotographerProfileUseCase,
+    private val updatePhotographerPageUseCase: UpdatePhotographerPageUseCase,
     private val savePhotographerUseCase: SavePhotographerUseCase,
     private val unsavePhotographerUseCase: UnsavePhotographerUseCase,
 ) {
@@ -68,6 +73,9 @@ class PhotographerControllerTest @Autowired constructor(
 
         @Bean
         fun updatePhotographerProfileUseCase(): UpdatePhotographerProfileUseCase = mockk()
+
+        @Bean
+        fun updatePhotographerPageUseCase(): UpdatePhotographerPageUseCase = mockk()
 
         @Bean
         fun savePhotographerUseCase(): SavePhotographerUseCase = mockk()
@@ -179,6 +187,32 @@ class PhotographerControllerTest @Autowired constructor(
                 .withAuthUser(createUser(id = photographerId)),
         ).andExpect(status().isOk)
         verify { updatePhotographerProfileUseCase.updatePhotographerProfile(requestBody.toCommand(photographerId)) }
+    }
+
+    @Test
+    fun `내 작가 페이지를 수정한다`() {
+        // given
+        val photographerId = randomLong()
+        val expectedResult = createPhotographer(id = photographerId)
+        val requestBody = UpdateMyPhotographerPageRequest(
+            portfolio = generateRandomList(maxSize = 3) { createImageRequest() },
+            address = null,
+            instagramId = null,
+            contactLink = null,
+            description = randomString(len = randomInt(min = 1, max = 300)),
+        )
+        every {
+            updatePhotographerPageUseCase.updatePhotographerPage(requestBody.toCommand(photographerId))
+        } returns expectedResult
+
+        // when & then
+        mvc.perform(
+            put("/api/v1/photographers/me/page")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(requestBody))
+                .withAuthUser(createUser(id = photographerId)),
+        ).andExpect(status().isOk)
+        verify { updatePhotographerPageUseCase.updatePhotographerPage(requestBody.toCommand(photographerId)) }
     }
 
     @Test

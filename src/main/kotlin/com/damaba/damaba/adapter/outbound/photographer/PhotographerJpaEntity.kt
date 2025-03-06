@@ -3,6 +3,7 @@ package com.damaba.damaba.adapter.outbound.photographer
 import com.damaba.damaba.adapter.outbound.common.BaseJpaTimeEntity
 import com.damaba.damaba.adapter.outbound.user.UserJpaEntity
 import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.domain.region.Region
 import jakarta.persistence.CascadeType
@@ -72,7 +73,7 @@ class PhotographerJpaEntity(
         this.address = photographer.address?.let { PhotographerAddressJpaEmbeddable.from(it) }
         updateMainPhotographyTypes(photographer.mainPhotographyTypes)
         updateActiveRegions(photographer.activeRegions)
-        // TODO: updatePortfolio(photographer.portfolio)
+        updatePortfolio(photographer.portfolio)
     }
 
     private fun updateMainPhotographyTypes(mainPhotographyTypes: Set<PhotographyType>) {
@@ -89,6 +90,22 @@ class PhotographerJpaEntity(
         val existingRegions = this.activeRegions.map { it.toRegion() }.toSet()
         val toAddRegions = activeRegions - existingRegions
         this.activeRegions.addAll(toAddRegions.map { PhotographerActiveRegionJpaEntity.from(this, it) })
+    }
+
+    private fun updatePortfolio(portfolio: List<Image>) {
+        val portfolioUrls = portfolio.map { it.url }
+        this._portfolio.filter { !it.isDeleted() }.forEach {
+            if (it.url !in portfolioUrls) {
+                it.delete()
+            }
+        }
+
+        val existingPortfolioMap = this._portfolio.associateBy { it.url }
+        val newPortfolio = portfolio.map { image ->
+            existingPortfolioMap[image.url] ?: PhotographerPortfolioImageJpaEntity.from(this, image)
+        }
+        this._portfolio.clear()
+        this._portfolio.addAll(newPortfolio)
     }
 
     companion object {

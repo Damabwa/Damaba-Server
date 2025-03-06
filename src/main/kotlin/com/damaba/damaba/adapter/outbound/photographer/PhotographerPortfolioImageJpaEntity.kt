@@ -44,6 +44,12 @@ class PhotographerPortfolioImageJpaEntity(
 
     fun toImage() = Image(name = this.name, url = this.url)
 
+    fun delete() {
+        this.deletedAt = LocalDateTime.now()
+    }
+
+    fun isDeleted(): Boolean = this.deletedAt != null
+
     companion object {
         fun from(photographerJpaEntity: PhotographerJpaEntity, image: Image) = PhotographerPortfolioImageJpaEntity(
             photographer = photographerJpaEntity,
