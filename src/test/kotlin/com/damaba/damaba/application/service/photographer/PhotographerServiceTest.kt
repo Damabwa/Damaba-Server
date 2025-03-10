@@ -10,6 +10,7 @@ import com.damaba.damaba.application.port.outbound.photographer.CreatePhotograph
 import com.damaba.damaba.application.port.outbound.photographer.CreateSavedPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.DeleteSavedPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.ExistsSavedPhotographerPort
+import com.damaba.damaba.application.port.outbound.photographer.FindPhotographerListPort
 import com.damaba.damaba.application.port.outbound.photographer.FindSavedPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.GetPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.UpdatePhotographerPort
@@ -49,7 +50,9 @@ import kotlin.test.Test
 
 class PhotographerServiceTest {
     private val getUserPort: GetUserPort = mockk()
+
     private val getPhotographerPort: GetPhotographerPort = mockk()
+    private val findPhotographerListPort: FindPhotographerListPort = mockk()
     private val existsNicknamePort: ExistsNicknamePort = mockk()
     private val createPhotographerPort: CreatePhotographerPort = mockk()
     private val updatePhotographerPort: UpdatePhotographerPort = mockk()
@@ -62,6 +65,7 @@ class PhotographerServiceTest {
     private val sut: PhotographerService = PhotographerService(
         getUserPort,
         getPhotographerPort,
+        findPhotographerListPort,
         existsNicknamePort,
         createPhotographerPort,
         updatePhotographerPort,
@@ -76,6 +80,7 @@ class PhotographerServiceTest {
         confirmVerified(
             getUserPort,
             getPhotographerPort,
+            findPhotographerListPort,
             existsNicknamePort,
             createPhotographerPort,
             updatePhotographerPort,

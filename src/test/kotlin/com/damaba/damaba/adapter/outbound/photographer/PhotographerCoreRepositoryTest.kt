@@ -28,6 +28,7 @@ import kotlin.test.Test
     JpaConfig::class,
     KotlinJdslAutoConfiguration::class,
     PhotographerCoreRepository::class,
+    PhotographerJdslRepository::class,
 )
 @DataJpaTest
 class PhotographerCoreRepositoryTest @Autowired constructor(
