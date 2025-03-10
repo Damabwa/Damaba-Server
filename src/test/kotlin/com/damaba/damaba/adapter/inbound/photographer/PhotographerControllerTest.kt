@@ -4,6 +4,7 @@ import com.damaba.damaba.adapter.inbound.photographer.dto.RegisterPhotographerRe
 import com.damaba.damaba.adapter.inbound.photographer.dto.UpdateMyPhotographerPageRequest
 import com.damaba.damaba.adapter.inbound.photographer.dto.UpdateMyPhotographerProfileRequest
 import com.damaba.damaba.application.port.inbound.photographer.ExistsPhotographerNicknameUseCase
+import com.damaba.damaba.application.port.inbound.photographer.FindPhotographerListUseCase
 import com.damaba.damaba.application.port.inbound.photographer.GetPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
@@ -53,6 +54,7 @@ class PhotographerControllerTest @Autowired constructor(
     private val mvc: MockMvc,
     private val mapper: ObjectMapper,
     private val getPhotographerUseCase: GetPhotographerUseCase,
+    private val findPhotographerListUseCase: FindPhotographerListUseCase,
     private val existsPhotographerNicknameUseCase: ExistsPhotographerNicknameUseCase,
     private val registerPhotographerUseCase: RegisterPhotographerUseCase,
     private val updatePhotographerProfileUseCase: UpdatePhotographerProfileUseCase,
@@ -64,6 +66,9 @@ class PhotographerControllerTest @Autowired constructor(
     class TestBeanSetUp {
         @Bean
         fun getPhotographerUseCase(): GetPhotographerUseCase = mockk()
+
+        @Bean
+        fun findPhotographerUseCase(): FindPhotographerListUseCase = mockk()
 
         @Bean
         fun existsPhotographerNicknameUseCase(): ExistsPhotographerNicknameUseCase = mockk()

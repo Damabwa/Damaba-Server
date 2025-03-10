@@ -1,23 +1,33 @@
 package com.damaba.damaba.adapter.outbound.photographer
 
+import com.damaba.damaba.adapter.outbound.common.toPagination
 import com.damaba.damaba.adapter.outbound.user.UserJpaEntity
 import com.damaba.damaba.adapter.outbound.user.UserJpaRepository
 import com.damaba.damaba.adapter.outbound.user.UserProfileImageJpaEntity
 import com.damaba.damaba.adapter.outbound.user.UserProfileImageJpaRepository
 import com.damaba.damaba.application.port.outbound.photographer.CreatePhotographerPort
+import com.damaba.damaba.application.port.outbound.photographer.FindPhotographerListPort
 import com.damaba.damaba.application.port.outbound.photographer.GetPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.UpdatePhotographerPort
+import com.damaba.damaba.domain.common.Pagination
+import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.photographer.Photographer
+import com.damaba.damaba.domain.photographer.PhotographerListItem
+import com.damaba.damaba.domain.photographer.constant.PhotographerSortType
 import com.damaba.damaba.domain.photographer.exception.PhotographerNotFoundException
+import com.damaba.damaba.domain.region.RegionFilterCondition
 import com.damaba.damaba.domain.user.exception.UserNotFoundException
+import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Repository
 
 @Repository
 class PhotographerCoreRepository(
     private val photographerJpaRepository: PhotographerJpaRepository,
+    private val photographerJdslRepository: PhotographerJdslRepository,
     private val userJpaRepository: UserJpaRepository,
     private val userProfileImageJpaRepository: UserProfileImageJpaRepository,
 ) : GetPhotographerPort,
+    FindPhotographerListPort,
     CreatePhotographerPort,
     UpdatePhotographerPort {
     override fun getById(id: Long): Photographer {
@@ -25,6 +35,21 @@ class PhotographerCoreRepository(
         val photographerJpaEntity = getPhotographerJpaEntityById(id)
         return photographerJpaEntity.toPhotographer(userJpaEntity)
     }
+
+    override fun find(
+        reqUserId: Long?,
+        regions: Set<RegionFilterCondition>,
+        photographyTypes: Set<PhotographyType>,
+        sort: PhotographerSortType,
+        page: Int,
+        pageSize: Int,
+    ): Pagination<PhotographerListItem> = photographerJdslRepository.findPhotographerList(
+        reqUserId = reqUserId,
+        regions = regions,
+        photographyTypes = photographyTypes,
+        sort = sort,
+        pageable = PageRequest.of(page, pageSize),
+    ).toPagination()
 
     override fun createIfUserExists(photographer: Photographer): Photographer {
         // Update user

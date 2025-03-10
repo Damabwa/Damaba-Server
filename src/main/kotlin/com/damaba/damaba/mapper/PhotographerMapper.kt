@@ -4,6 +4,7 @@ import com.damaba.damaba.adapter.inbound.photographer.dto.PhotographerResponse
 import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerPageUseCase
 import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerProfileUseCase
 import com.damaba.damaba.domain.photographer.Photographer
+import com.damaba.damaba.domain.photographer.PhotographerListItem
 import com.damaba.damaba.domain.photographer.PhotographerPage
 import com.damaba.damaba.domain.photographer.PhotographerProfile
 import org.mapstruct.Mapper
@@ -16,6 +17,8 @@ interface PhotographerMapper {
     fun toPhotographerProfile(command: UpdatePhotographerProfileUseCase.Command): PhotographerProfile
 
     fun toPhotographerPage(command: UpdatePhotographerPageUseCase.Command): PhotographerPage
+
+    fun toPhotographerListItem(photographer: Photographer, isSaved: Boolean): PhotographerListItem
 
     companion object {
         val INSTANCE: PhotographerMapper = Mappers.getMapper(PhotographerMapper::class.java)

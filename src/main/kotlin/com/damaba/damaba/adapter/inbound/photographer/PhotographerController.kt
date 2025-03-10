@@ -6,12 +6,19 @@ import com.damaba.damaba.adapter.inbound.photographer.dto.RegisterPhotographerRe
 import com.damaba.damaba.adapter.inbound.photographer.dto.UpdateMyPhotographerPageRequest
 import com.damaba.damaba.adapter.inbound.photographer.dto.UpdateMyPhotographerProfileRequest
 import com.damaba.damaba.application.port.inbound.photographer.ExistsPhotographerNicknameUseCase
+import com.damaba.damaba.application.port.inbound.photographer.FindPhotographerListUseCase
 import com.damaba.damaba.application.port.inbound.photographer.GetPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.UnsavePhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerPageUseCase
 import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerProfileUseCase
+import com.damaba.damaba.domain.common.Pagination
+import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.exception.ValidationException
+import com.damaba.damaba.domain.photographer.PhotographerListItem
+import com.damaba.damaba.domain.photographer.constant.PhotographerSortType
+import com.damaba.damaba.domain.region.RegionFilterCondition
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.mapper.PhotographerMapper
 import io.swagger.v3.oas.annotations.Operation
@@ -36,6 +43,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class PhotographerController(
     private val getPhotographerUseCase: GetPhotographerUseCase,
+    private val findPhotographerListUseCase: FindPhotographerListUseCase,
     private val existsPhotographerNicknameUseCase: ExistsPhotographerNicknameUseCase,
     private val registerPhotographerUseCase: RegisterPhotographerUseCase,
     private val updatePhotographerProfileUseCase: UpdatePhotographerProfileUseCase,
@@ -56,6 +64,55 @@ class PhotographerController(
     fun getPhotographerProfileV1(@PathVariable photographerId: Long): PhotographerResponse {
         val photographer = getPhotographerUseCase.getPhotographer(photographerId)
         return PhotographerMapper.INSTANCE.toPhotographerResponse(photographer)
+    }
+
+    @Operation(
+        summary = "사진작가 리스트 조회",
+        description = "'작가님을 만나봐 페이지' > '작가 리스트'에서 필요한 작가 리스트 정보를 조회합니다.",
+    )
+    @GetMapping("/api/v1/photographers/list")
+    fun getPhotographerListV1(
+        @AuthenticationPrincipal
+        reqUser: User?,
+        @RequestParam(required = false)
+        @Parameter(
+            description = "<p>지역 리스트." +
+                "<p>카테고리(시/도)와 지역 이름(시/군/구)는 공백(<code> </code>)으로 구분하여 전달해야 합니다." +
+                "<p>지역 이름이 없는 경우(ex. 서울 전체에 대한 필터링)에는 <code>\"서울\"</code>과 같이 카테고리만 전달합니다.",
+            example = """["서울 강남구", "서울 은평구", "대전"]""",
+        ) regions: List<String>?,
+        @RequestParam(required = false)
+        @Parameter(description = "촬영 종류")
+        photographyTypes: Set<PhotographyType>?,
+        @RequestParam(defaultValue = "LATEST")
+        @Parameter(description = "정렬 기준")
+        sort: PhotographerSortType,
+        @RequestParam(defaultValue = "0")
+        @Parameter(description = "페이지 번호. 0부터 시작합니다.")
+        page: Int,
+        @RequestParam(defaultValue = "10")
+        @Parameter(description = "페이지 크기")
+        pageSize: Int,
+    ): Pagination<PhotographerListItem> {
+        val regionConditions = regions?.map { region ->
+            val parts = region.trim().split(" ")
+            when (parts.size) {
+                1 -> RegionFilterCondition(parts[0], null)
+                2 -> RegionFilterCondition(parts[0], parts[1])
+                else -> throw ValidationException("지역 정보에 불필요한 공백이 포함되어있습니다.")
+            }
+        }?.toSet()
+
+        return findPhotographerListUseCase.findPhotographerList(
+            FindPhotographerListUseCase.Query(
+                reqUserId = reqUser?.id,
+                regions = regionConditions ?: emptySet(),
+                photographyTypes = photographyTypes ?: emptySet(),
+                sort = sort,
+                page = page,
+                pageSize = pageSize,
+            ),
+        )
     }
 
     @Operation(
