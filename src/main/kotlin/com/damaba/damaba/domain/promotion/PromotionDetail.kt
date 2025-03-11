@@ -1,6 +1,5 @@
 package com.damaba.damaba.domain.promotion
 
-import com.damaba.damaba.domain.common.Address
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.promotion.constant.PromotionType
@@ -14,7 +13,6 @@ data class PromotionDetail(
     val promotionType: PromotionType,
     val title: String,
     val content: String,
-    val address: Address,
     val externalLink: String?,
     val startedAt: LocalDate?,
     val endedAt: LocalDate?,

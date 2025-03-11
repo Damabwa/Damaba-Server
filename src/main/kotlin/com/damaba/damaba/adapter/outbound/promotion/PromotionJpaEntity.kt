@@ -5,7 +5,6 @@ import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
-import jakarta.persistence.Embedded
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
@@ -24,7 +23,6 @@ class PromotionJpaEntity(
     promotionType: PromotionType,
     title: String,
     content: String,
-    address: PromotionAddressJpaEmbeddable,
     externalLink: String?,
     startedAt: LocalDate?,
     endedAt: LocalDate?,
@@ -50,10 +48,6 @@ class PromotionJpaEntity(
 
     @Column(name = "content", length = 500, nullable = false)
     var content: String = content
-        private set
-
-    @Embedded
-    var address: PromotionAddressJpaEmbeddable = address
         private set
 
     @Column(name = "external_link")
@@ -99,7 +93,6 @@ class PromotionJpaEntity(
         promotionType = this.promotionType,
         title = this.title,
         content = this.content,
-        address = this.address.toAddress(),
         externalLink = this.externalLink,
         startedAt = this.startedAt,
         endedAt = this.endedAt,
@@ -115,7 +108,6 @@ class PromotionJpaEntity(
         this.promotionType = promotion.promotionType
         this.title = promotion.title
         this.content = promotion.content
-        this.address = PromotionAddressJpaEmbeddable.from(promotion.address)
         this.externalLink = promotion.externalLink
         this.startedAt = promotion.startedAt
         this.endedAt = promotion.endedAt
@@ -129,7 +121,6 @@ class PromotionJpaEntity(
                 promotionType = promotion.promotionType,
                 title = promotion.title,
                 content = promotion.content,
-                address = PromotionAddressJpaEmbeddable.from(promotion.address),
                 externalLink = promotion.externalLink,
                 startedAt = promotion.startedAt,
                 endedAt = promotion.endedAt,

@@ -33,7 +33,6 @@ import com.damaba.damaba.util.RandomTestUtils.Companion.randomInt
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLocalDate
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
-import com.damaba.damaba.util.fixture.AddressFixture.createAddress
 import com.damaba.damaba.util.fixture.FileFixture.createImage
 import com.damaba.damaba.util.fixture.PromotionFixture.createPromotion
 import com.damaba.damaba.util.fixture.PromotionFixture.createPromotionListItem
@@ -336,7 +335,6 @@ class PromotionServiceTest {
             promotionType = PromotionType.FREE,
             title = randomString(len = 10),
             content = randomString(),
-            address = createAddress(),
             externalLink = randomString(),
             startedAt = randomLocalDate(),
             endedAt = randomLocalDate(),

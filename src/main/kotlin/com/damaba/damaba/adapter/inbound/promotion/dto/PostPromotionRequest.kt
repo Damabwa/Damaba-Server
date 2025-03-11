@@ -1,12 +1,10 @@
 package com.damaba.damaba.adapter.inbound.promotion.dto
 
-import com.damaba.damaba.adapter.inbound.common.dto.AddressRequest
 import com.damaba.damaba.adapter.inbound.common.dto.ImageRequest
 import com.damaba.damaba.adapter.inbound.region.dto.RegionRequest
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
-import com.damaba.damaba.mapper.AddressMapper
 import com.damaba.damaba.mapper.ImageMapper
 import com.damaba.damaba.mapper.RegionMapper
 import io.swagger.v3.oas.annotations.media.Schema
@@ -21,9 +19,6 @@ data class PostPromotionRequest(
 
     @Schema(description = "내용. 내용은 500 글자를 초과할 수 없습니다.", example = "이 이벤트는 오늘부터 시작해서...")
     val content: String,
-
-    @Schema(description = "주소 정보")
-    val address: AddressRequest,
 
     @Schema(description = "이벤트 관련 외부 링크", example = "https://promotion-instagram-post")
     val externalLink: String?,
@@ -51,7 +46,6 @@ data class PostPromotionRequest(
         promotionType = promotionType,
         title = title,
         content = content,
-        address = AddressMapper.INSTANCE.toAddress(address),
         externalLink = externalLink,
         startedAt = startedAt,
         endedAt = endedAt,

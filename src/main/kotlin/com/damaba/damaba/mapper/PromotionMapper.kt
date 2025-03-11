@@ -10,7 +10,7 @@ import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.factory.Mappers
 
-@Mapper(uses = [UserMapper::class, AddressMapper::class, ImageMapper::class, RegionMapper::class])
+@Mapper(uses = [UserMapper::class, ImageMapper::class, RegionMapper::class])
 interface PromotionMapper {
     fun toPromotionResponse(promotion: Promotion): PromotionResponse
 

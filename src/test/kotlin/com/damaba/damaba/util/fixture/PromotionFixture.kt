@@ -1,6 +1,5 @@
 package com.damaba.damaba.util.fixture
 
-import com.damaba.damaba.domain.common.Address
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.promotion.Promotion
@@ -16,7 +15,6 @@ import com.damaba.damaba.util.RandomTestUtils.Companion.randomBoolean
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLocalDate
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
-import com.damaba.damaba.util.fixture.AddressFixture.createAddress
 import com.damaba.damaba.util.fixture.FileFixture.createImage
 import com.damaba.damaba.util.fixture.RegionFixture.createRegion
 import com.damaba.damaba.util.fixture.UserFixture.createUser
@@ -29,7 +27,6 @@ object PromotionFixture {
         promotionType: PromotionType = PromotionType.FREE,
         title: String = randomString(10),
         content: String = randomString(30),
-        address: Address = createAddress(),
         externalLink: String? = null,
         startedAt: LocalDate? = randomLocalDate(),
         endedAt: LocalDate? = randomLocalDate(),
@@ -44,7 +41,6 @@ object PromotionFixture {
         promotionType = promotionType,
         title = title,
         content = content,
-        address = address,
         externalLink = externalLink,
         startedAt = startedAt,
         endedAt = endedAt,
@@ -61,7 +57,6 @@ object PromotionFixture {
         promotionType: PromotionType = PromotionType.FREE,
         title: String = randomString(10),
         content: String = randomString(30),
-        address: Address = createAddress(),
         externalLink: String? = null,
         startedAt: LocalDate? = randomLocalDate(),
         endedAt: LocalDate? = randomLocalDate(),
@@ -78,7 +73,6 @@ object PromotionFixture {
         promotionType = promotionType,
         title = title,
         content = content,
-        address = address,
         externalLink = externalLink,
         startedAt = startedAt,
         endedAt = endedAt,

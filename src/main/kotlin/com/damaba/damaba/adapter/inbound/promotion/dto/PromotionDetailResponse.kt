@@ -1,6 +1,5 @@
 package com.damaba.damaba.adapter.inbound.promotion.dto
 
-import com.damaba.damaba.adapter.inbound.common.dto.AddressResponse
 import com.damaba.damaba.adapter.inbound.common.dto.ImageResponse
 import com.damaba.damaba.adapter.inbound.region.dto.RegionResponse
 import com.damaba.damaba.adapter.inbound.user.dto.UserResponse
@@ -24,9 +23,6 @@ data class PromotionDetailResponse(
 
     @Schema(description = "내용", example = "이 이벤트는 오늘부터 시작해서...")
     val content: String,
-
-    @Schema(description = "주소")
-    val address: AddressResponse,
 
     @Schema(description = "이벤트 관련 외부 링크", example = "https://promotion-instagram-post")
     val externalLink: String?,
