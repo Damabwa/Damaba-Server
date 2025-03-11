@@ -301,7 +301,6 @@ class PromotionCoreRepositoryTest @Autowired constructor(
         assertThat(updatedPromotion.promotionType).isEqualTo(newPromotion.promotionType)
         assertThat(updatedPromotion.title).isEqualTo(newPromotion.title)
         assertThat(updatedPromotion.content).isEqualTo(newPromotion.content)
-        assertThat(updatedPromotion.address).isEqualTo(newPromotion.address)
         assertThat(updatedPromotion.externalLink).isEqualTo(newPromotion.externalLink)
         assertThat(updatedPromotion.startedAt).isEqualTo(newPromotion.startedAt)
         assertThat(updatedPromotion.endedAt).isEqualTo(newPromotion.endedAt)

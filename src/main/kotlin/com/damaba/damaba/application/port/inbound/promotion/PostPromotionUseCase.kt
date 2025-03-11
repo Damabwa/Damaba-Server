@@ -1,7 +1,5 @@
 package com.damaba.damaba.application.port.inbound.promotion
 
-import com.damaba.damaba.domain.common.Address
-import com.damaba.damaba.domain.common.AddressValidator
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.exception.ValidationException
 import com.damaba.damaba.domain.file.File
@@ -25,7 +23,6 @@ interface PostPromotionUseCase {
         val promotionType: PromotionType,
         val title: String,
         val content: String,
-        val address: Address,
         val externalLink: String?,
         val startedAt: LocalDate?,
         val endedAt: LocalDate?,
@@ -35,7 +32,6 @@ interface PostPromotionUseCase {
         val hashtags: Set<String>,
     ) {
         init {
-            AddressValidator.validate(address)
             PromotionValidator.validateTitle(title)
             PromotionValidator.validateContent(content)
             if (images.isEmpty() || images.size > 10) {

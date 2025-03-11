@@ -1,6 +1,5 @@
 package com.damaba.damaba.application.port.inbound.promotion
 
-import com.damaba.damaba.domain.common.Address
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.exception.ValidationException
 import com.damaba.damaba.domain.file.File
@@ -8,7 +7,6 @@ import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.domain.region.Region
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
-import com.damaba.damaba.util.fixture.AddressFixture.createAddress
 import com.damaba.damaba.util.fixture.FileFixture.createImage
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
@@ -19,13 +17,6 @@ import java.time.LocalDate
 import kotlin.test.Test
 
 class PostPromotionUseCaseCommandTest {
-    @ParameterizedTest
-    @MethodSource("invalidAddressProvider")
-    fun `유효하지 않은 주소가 입력되면 ValidationException이 발생한다`(address: Address) {
-        val exception = catchThrowable { createCommand(address = address) }
-        assertThat(exception).isInstanceOf(ValidationException::class.java)
-    }
-
     @ParameterizedTest
     @MethodSource("invalidTitleProvider")
     fun `유효하지 않은 제목이 입력되면 ValidationException이 발생한다`(title: String) {
@@ -54,14 +45,6 @@ class PostPromotionUseCaseCommandTest {
 
     companion object {
         @JvmStatic
-        fun invalidAddressProvider() = listOf(
-            Arguments.of(Address(" ", "강남구", "도로명 주소", "지번 주소")),
-            Arguments.of(Address("서울", " ", "도로명 주소", "지번 주소")),
-            Arguments.of(Address("서울", "강남구", " ", "지번 주소")),
-            Arguments.of(Address("서울", "강남구", "도로명 주소", " ")),
-        )
-
-        @JvmStatic
         fun invalidTitleProvider() = listOf(
             Arguments.of(" "),
             Arguments.of("A"),
@@ -75,7 +58,6 @@ class PostPromotionUseCaseCommandTest {
         )
 
         private fun createCommand(
-            address: Address = createAddress(),
             title: String = "Valid title",
             content: String = "Valid content",
             promotionType: PromotionType = PromotionType.FREE,
@@ -88,8 +70,7 @@ class PostPromotionUseCaseCommandTest {
             promotionType = promotionType,
             title = title,
             content = content,
-            address = address,
-            externalLink = "http://example.com",
+            externalLink = "https://example.com",
             startedAt = LocalDate.now(),
             endedAt = LocalDate.now().plusDays(1),
             photographyTypes = photographyTypes,

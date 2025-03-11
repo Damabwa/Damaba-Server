@@ -92,7 +92,6 @@ class PromotionService(
             promotionType = command.promotionType,
             title = command.title,
             content = command.content,
-            address = command.address,
             externalLink = command.externalLink,
             startedAt = command.startedAt,
             endedAt = command.endedAt,

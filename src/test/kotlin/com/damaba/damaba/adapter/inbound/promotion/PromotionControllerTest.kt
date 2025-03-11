@@ -1,6 +1,5 @@
 package com.damaba.damaba.adapter.inbound.promotion
 
-import com.damaba.damaba.adapter.inbound.common.dto.AddressRequest
 import com.damaba.damaba.adapter.inbound.common.dto.ImageRequest
 import com.damaba.damaba.adapter.inbound.promotion.dto.PostPromotionRequest
 import com.damaba.damaba.adapter.inbound.region.dto.RegionRequest
@@ -266,12 +265,6 @@ class PromotionControllerTest @Autowired constructor(
             promotionType = PromotionType.FREE,
             title = randomString(len = 10),
             content = randomString(),
-            address = AddressRequest(
-                sido = randomString(),
-                sigungu = randomString(),
-                roadAddress = randomString(),
-                jibunAddress = randomString(),
-            ),
             externalLink = randomString(),
             startedAt = randomLocalDate(),
             endedAt = randomLocalDate(),
