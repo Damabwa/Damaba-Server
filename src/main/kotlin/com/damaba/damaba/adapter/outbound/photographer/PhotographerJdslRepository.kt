@@ -25,6 +25,9 @@ class PhotographerJdslRepository(private val photographerJpaRepository: Photogra
         val tuples = photographerJpaRepository.findPage(pageable) {
             val conditions = mutableListOf<Predicate>()
 
+            // 작가 페이지 작성 여부 확인
+            conditions += path(PhotographerJpaEntity::description).isNotNull()
+
             // 지역 필터링
             if (regions.isNotEmpty()) {
                 val regionConditions = regions.map { region ->
