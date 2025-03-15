@@ -24,7 +24,7 @@ class UserJpaEntity(
     loginType: LoginType,
     oAuthLoginUid: String,
     nickname: String,
-    profileImage: UserProfileImageJpaEmbeddable,
+    profileImage: UserProfileImageJpaEmbeddable?,
     gender: Gender,
     instagramId: String?,
 ) : BaseJpaTimeEntity() {
@@ -57,7 +57,7 @@ class UserJpaEntity(
         private set
 
     @Column(name = "profile_image_url", nullable = false)
-    var profileImage: UserProfileImageJpaEmbeddable = profileImage
+    var profileImage: UserProfileImageJpaEmbeddable? = profileImage
         private set
 
     @Enumerated(EnumType.STRING)
@@ -76,7 +76,7 @@ class UserJpaEntity(
         type = this.type,
         nickname = this.nickname,
         roles = this.roles,
-        profileImage = this.profileImage.toImage(),
+        profileImage = this.profileImage?.toImage(),
         gender = this.gender,
         instagramId = this.instagramId,
     )
@@ -87,7 +87,7 @@ class UserJpaEntity(
         this.nickname = user.nickname
         this.gender = user.gender
         this.instagramId = user.instagramId
-        this.profileImage = UserProfileImageJpaEmbeddable.from(user.profileImage)
+        this.profileImage = user.profileImage?.let { UserProfileImageJpaEmbeddable.from(it) }
     }
 
     companion object {
@@ -97,7 +97,7 @@ class UserJpaEntity(
             loginType = user.loginType,
             oAuthLoginUid = user.oAuthLoginUid,
             nickname = user.nickname,
-            profileImage = UserProfileImageJpaEmbeddable.from(user.profileImage),
+            profileImage = user.profileImage?.let { UserProfileImageJpaEmbeddable.from(it) },
             gender = user.gender,
             instagramId = user.instagramId,
         )

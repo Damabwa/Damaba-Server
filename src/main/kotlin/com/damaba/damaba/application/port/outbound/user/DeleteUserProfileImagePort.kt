@@ -7,5 +7,5 @@ interface DeleteUserProfileImagePort {
      *
      * @param profileImageUrl 삭제할 프로필 이미지의 url
      */
-    fun deleteProfileImageIfExists(profileImageUrl: String)
+    fun deleteByUrl(profileImageUrl: String)
 }

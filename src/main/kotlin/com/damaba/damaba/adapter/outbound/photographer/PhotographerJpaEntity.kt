@@ -56,7 +56,7 @@ class PhotographerJpaEntity(
         loginType = userJpaEntity.loginType,
         oAuthLoginUid = userJpaEntity.oAuthLoginUid,
         nickname = userJpaEntity.nickname,
-        profileImage = userJpaEntity.profileImage.toImage(),
+        profileImage = userJpaEntity.profileImage?.toImage(),
         gender = userJpaEntity.gender,
         instagramId = userJpaEntity.instagramId,
         contactLink = this.contactLink,

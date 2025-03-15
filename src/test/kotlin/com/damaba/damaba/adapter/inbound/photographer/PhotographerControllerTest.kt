@@ -12,7 +12,10 @@ import com.damaba.damaba.application.port.inbound.photographer.UnsavePhotographe
 import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerPageUseCase
 import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerProfileUseCase
 import com.damaba.damaba.config.ControllerTestConfig
+import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.photographer.constant.PhotographerSortType
+import com.damaba.damaba.domain.region.RegionFilterCondition
 import com.damaba.damaba.domain.user.constant.Gender
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomSet
@@ -20,8 +23,10 @@ import com.damaba.damaba.util.RandomTestUtils.Companion.randomBoolean
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomInt
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
+import com.damaba.damaba.util.fixture.FileFixture.createImage
 import com.damaba.damaba.util.fixture.FileFixture.createImageRequest
 import com.damaba.damaba.util.fixture.PhotographerFixture.createPhotographer
+import com.damaba.damaba.util.fixture.PhotographerFixture.createPhotographerListItem
 import com.damaba.damaba.util.fixture.RegionFixture.createRegionRequest
 import com.damaba.damaba.util.fixture.UserFixture.createUser
 import com.damaba.damaba.util.withAuthUser
@@ -31,6 +36,7 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.verify
+import org.hamcrest.Matchers.hasSize
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.TestConfiguration
@@ -68,7 +74,7 @@ class PhotographerControllerTest @Autowired constructor(
         fun getPhotographerUseCase(): GetPhotographerUseCase = mockk()
 
         @Bean
-        fun findPhotographerUseCase(): FindPhotographerListUseCase = mockk()
+        fun findPhotographerListUseCase(): FindPhotographerListUseCase = mockk()
 
         @Bean
         fun existsPhotographerNicknameUseCase(): ExistsPhotographerNicknameUseCase = mockk()
@@ -101,6 +107,134 @@ class PhotographerControllerTest @Autowired constructor(
             get("/api/v1/photographers/{photographerId}", id),
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(expectedResult.id))
+    }
+
+    @Test
+    fun `필터링 조건들이 주어지고, 사진작가 리스트를 조회한다`() {
+        // given
+        val requestUser = createUser()
+        val regions = setOf(RegionFilterCondition("서울", "강남구"), RegionFilterCondition("대전", null))
+        val photographyTypes = setOf(PhotographyType.PROFILE, PhotographyType.SELF)
+        val sort = PhotographerSortType.LATEST
+        val page = 1
+        val pageSize = randomInt(min = 5, max = 15)
+        val expectedResult = Pagination(
+            items = generateRandomList(maxSize = pageSize) { createPhotographerListItem(profileImage = createImage()) },
+            page = page,
+            pageSize = pageSize,
+            totalPage = 10,
+        )
+        every {
+            findPhotographerListUseCase.findPhotographerList(
+                FindPhotographerListUseCase.Query(
+                    reqUserId = requestUser.id,
+                    regions = regions,
+                    photographyTypes = photographyTypes,
+                    sort = sort,
+                    page = page,
+                    pageSize = pageSize,
+                ),
+            )
+        } returns expectedResult
+
+        // when & then
+        val requestBuilder = get("/api/v1/photographers/list")
+        regions.forEach { region ->
+            requestBuilder.param(
+                "regions",
+                if (region.name == null) region.category else "${region.category} ${region.name}",
+            )
+        }
+        photographyTypes.forEach { photographyType -> requestBuilder.param("photographyTypes", photographyType.name) }
+        requestBuilder
+            .param("sort", sort.name)
+            .param("page", page.toString())
+            .param("pageSize", pageSize.toString())
+            .withAuthUser(requestUser)
+        mvc.perform(requestBuilder)
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.items", hasSize<Int>(expectedResult.items.size)))
+            .andExpect(jsonPath("$.page").value(expectedResult.page))
+            .andExpect(jsonPath("$.pageSize").value(expectedResult.pageSize))
+            .andExpect(jsonPath("$.totalPage").value(expectedResult.totalPage))
+        verify {
+            findPhotographerListUseCase.findPhotographerList(
+                FindPhotographerListUseCase.Query(
+                    reqUserId = requestUser.id,
+                    regions = regions,
+                    photographyTypes = photographyTypes,
+                    sort = sort,
+                    page = page,
+                    pageSize = pageSize,
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun `주어진 필터링 조건 없이, 프로모션 리스트를 조회한다`() {
+        // given
+        val sort = PhotographerSortType.LATEST
+        val page = 1
+        val pageSize = randomInt(min = 5, max = 15)
+        val expectedResult = Pagination(
+            items = generateRandomList(maxSize = pageSize) { createPhotographerListItem(profileImage = createImage()) },
+            page = page,
+            pageSize = pageSize,
+            totalPage = 10,
+        )
+        every {
+            findPhotographerListUseCase.findPhotographerList(
+                FindPhotographerListUseCase.Query(
+                    reqUserId = null,
+                    regions = emptySet(),
+                    photographyTypes = emptySet(),
+                    sort = sort,
+                    page = page,
+                    pageSize = pageSize,
+                ),
+            )
+        } returns expectedResult
+
+        // when & then
+        mvc.perform(
+            get("/api/v1/photographers/list")
+                .param("sort", sort.name)
+                .param("page", page.toString())
+                .param("pageSize", pageSize.toString()),
+        ).andExpect(status().isOk)
+            .andExpect(jsonPath("$.items", hasSize<Int>(expectedResult.items.size)))
+            .andExpect(jsonPath("$.page").value(expectedResult.page))
+            .andExpect(jsonPath("$.pageSize").value(expectedResult.pageSize))
+            .andExpect(jsonPath("$.totalPage").value(expectedResult.totalPage))
+        verify {
+            findPhotographerListUseCase.findPhotographerList(
+                FindPhotographerListUseCase.Query(
+                    reqUserId = null,
+                    regions = emptySet(),
+                    photographyTypes = emptySet(),
+                    sort = sort,
+                    page = page,
+                    pageSize = pageSize,
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun `잘못된 형식의 지역 필터링 데이터가 주어지고, 프로모션 리스트를 조회하면, validation exception이 발생한다`() {
+        // given
+        val page = 1
+        val pageSize = randomInt(min = 5, max = 15)
+
+        // when & then
+        mvc.perform(
+            get("/api/v1/photographers/list")
+                .param("regions", "경기 수원 원천")
+                .param("sort", PhotographerSortType.LATEST.name)
+                .param("page", page.toString())
+                .param("pageSize", pageSize.toString()),
+        ).andExpect(status().isUnprocessableEntity)
     }
 
     @Test

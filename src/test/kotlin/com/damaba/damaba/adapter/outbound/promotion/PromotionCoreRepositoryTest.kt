@@ -66,7 +66,7 @@ class PromotionCoreRepositoryTest @Autowired constructor(
     }
 
     @Test
-    fun `필터 조건이 주어지고, 프로모션 리스트를 조회하면, 주어진 조건에 맞는 프로모션 리스트가 반환된다`() {
+    fun `필터링 조건이 주어지고, 프로모션 리스트를 조회하면, 주어진 조건에 맞는 프로모션 리스트가 반환된다`() {
         // given
         val reqUserId = randomLong()
 
@@ -123,7 +123,7 @@ class PromotionCoreRepositoryTest @Autowired constructor(
     }
 
     @Test
-    fun `필터 조건 없이 프로모션 리스트를 조회하면, 모든 프로모션이 반환된다`() {
+    fun `필터링 조건 없이 프로모션 리스트를 조회하면, 모든 프로모션이 반환된다`() {
         // given
         val author = userCoreRepository.create(createUser())
         promotionCoreRepository.create(createPromotion(authorId = author.id))
@@ -154,7 +154,7 @@ class PromotionCoreRepositoryTest @Autowired constructor(
     }
 
     @Test
-    fun `진행 상태에 대한 필터 조건이 주어지고, 프로모션 리스트를 조회하면, 진행 상태가 UPCOMING인 프로모션만 조회된다`() {
+    fun `진행 상태에 대한 필터링 조건이 주어지고, 프로모션 리스트를 조회하면, 진행 상태가 UPCOMING인 프로모션만 조회된다`() {
         // given
         promotionCoreRepository.create(
             createPromotion(
@@ -193,7 +193,7 @@ class PromotionCoreRepositoryTest @Autowired constructor(
     }
 
     @Test
-    fun `진행 상태에 대한 필터 조건이 주어지고, 프로모션 리스트를 조회하면, 진행 상태가 ENDED인 프로모션만 조회된다`() {
+    fun `진행 상태에 대한 필터링 조건이 주어지고, 프로모션 리스트를 조회하면, 진행 상태가 ENDED인 프로모션만 조회된다`() {
         // given
         promotionCoreRepository.create(
             createPromotion(
@@ -232,7 +232,7 @@ class PromotionCoreRepositoryTest @Autowired constructor(
     }
 
     @Test
-    fun `지역에 대한 필터 조건이 주어지고, 프로모션 리스트를 조회하면, 특정 지역에 해당하는 프로모션만 조회된다`() {
+    fun `지역에 대한 필터링 조건이 주어지고, 프로모션 리스트를 조회하면, 특정 지역에 해당하는 프로모션만 조회된다`() {
         // given
         promotionCoreRepository.create(
             createPromotion(

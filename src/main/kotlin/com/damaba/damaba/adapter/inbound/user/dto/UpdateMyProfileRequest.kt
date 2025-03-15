@@ -13,12 +13,12 @@ data class UpdateMyProfileRequest(
     val instagramId: String?,
 
     @Schema(description = "프로필 이미지")
-    val profileImage: ImageRequest,
+    val profileImage: ImageRequest?,
 ) {
     fun toCommand(requestUserId: Long): UpdateUserProfileUseCase.Command = UpdateUserProfileUseCase.Command(
         userId = requestUserId,
         nickname = this.nickname,
         instagramId = this.instagramId,
-        profileImage = ImageMapper.INSTANCE.toImage(profileImage),
+        profileImage = profileImage?.let { ImageMapper.INSTANCE.toImage(it) },
     )
 }

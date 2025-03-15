@@ -7,12 +7,16 @@ import com.damaba.damaba.adapter.outbound.user.UserProfileImageJpaRepository
 import com.damaba.damaba.config.JpaConfig
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.photographer.Photographer
+import com.damaba.damaba.domain.photographer.SavedPhotographer
+import com.damaba.damaba.domain.photographer.constant.PhotographerSortType
 import com.damaba.damaba.domain.photographer.exception.PhotographerNotFoundException
 import com.damaba.damaba.domain.region.Region
+import com.damaba.damaba.domain.region.RegionFilterCondition
 import com.damaba.damaba.domain.user.constant.UserType
 import com.damaba.damaba.domain.user.exception.UserNotFoundException
 import com.damaba.damaba.util.fixture.PhotographerFixture.createPhotographer
 import com.damaba.damaba.util.fixture.PhotographerFixture.createPhotographerJpaEntity
+import com.damaba.damaba.util.fixture.RegionFixture.createRegion
 import com.damaba.damaba.util.fixture.UserFixture.createUserJpaEntity
 import com.linecorp.kotlinjdsl.support.spring.data.jpa.autoconfigure.KotlinJdslAutoConfiguration
 import org.assertj.core.api.Assertions.assertThat
@@ -29,11 +33,13 @@ import kotlin.test.Test
     KotlinJdslAutoConfiguration::class,
     PhotographerCoreRepository::class,
     PhotographerJdslRepository::class,
+    SavedPhotographerCoreRepository::class,
 )
 @DataJpaTest
 class PhotographerCoreRepositoryTest @Autowired constructor(
     private val sut: PhotographerCoreRepository,
     private val photographerJpaRepository: PhotographerJpaRepository,
+    private val savedPhotographerCoreRepository: SavedPhotographerCoreRepository,
     private val userJpaRepository: UserJpaRepository,
     private val userProfileImageJpaRepository: UserProfileImageJpaRepository,
 ) {
@@ -75,11 +81,137 @@ class PhotographerCoreRepositoryTest @Autowired constructor(
     }
 
     @Test
+    fun `필터링 조건이 주어지고, 사진작가 리스트를 조회하면, 주어진 조건에 맞는 사진작가 리스트가 반환된다`() {
+        // given
+        val user1 = userJpaRepository.save(createUserJpaEntity())
+        val reqUserId = user1.id
+        val photographer1 = sut.createIfUserExists(
+            createPhotographer(
+                id = user1.id,
+                mainPhotographyTypes = setOf(PhotographyType.SNAP),
+                activeRegions = setOf(createRegion(category = "RegionA", name = "CityA")),
+            ),
+        )
+        savedPhotographerCoreRepository.create(
+            SavedPhotographer.create(userId = reqUserId, photographerId = photographer1.id),
+        )
+
+        val user2 = userJpaRepository.save(createUserJpaEntity())
+        sut.createIfUserExists(
+            createPhotographer(
+                id = user2.id,
+                mainPhotographyTypes = setOf(PhotographyType.SNAP),
+                activeRegions = setOf(createRegion(category = "RegionA", name = "CityA")),
+            ),
+        )
+
+        val regions = setOf(
+            RegionFilterCondition(category = "RegionA", name = "CityA"),
+            RegionFilterCondition(category = "RegionB", name = null),
+        )
+        val photographyTypes = setOf(PhotographyType.SNAP)
+        val sortType = PhotographerSortType.LATEST
+        val page = 0
+        val pageSize = 10
+
+        // when
+        val promotions = sut.find(
+            reqUserId = reqUserId,
+            regions = regions,
+            photographyTypes = photographyTypes,
+            sort = sortType,
+            page = page,
+            pageSize = pageSize,
+        )
+
+        // then
+        assertThat(promotions.items).hasSize(2)
+        assertThat(promotions.page).isEqualTo(page)
+        assertThat(promotions.pageSize).isEqualTo(pageSize)
+    }
+
+    @Test
+    fun `필터링 조건 없이 사진작가 리스트를 조회하면, 모든 사진작가이 반환된다`() {
+        // given
+        val user1 = userJpaRepository.save(createUserJpaEntity())
+        sut.createIfUserExists(
+            createPhotographer(
+                id = user1.id,
+                mainPhotographyTypes = setOf(PhotographyType.SNAP),
+                activeRegions = setOf(createRegion(category = "RegionA", name = "CityA")),
+            ),
+        )
+        val user2 = userJpaRepository.save(createUserJpaEntity())
+        sut.createIfUserExists(
+            createPhotographer(
+                id = user2.id,
+                mainPhotographyTypes = setOf(PhotographyType.SNAP),
+                activeRegions = setOf(createRegion(category = "RegionA", name = "CityA")),
+            ),
+        )
+        val page = 0
+        val pageSize = 10
+
+        // when
+        val promotions = sut.find(
+            reqUserId = null,
+            regions = emptySet(),
+            photographyTypes = emptySet(),
+            sort = PhotographerSortType.POPULAR,
+            page = page,
+            pageSize = pageSize,
+        )
+
+        // then
+        assertThat(promotions.items).hasSize(2)
+        assertThat(promotions.items.first().isSaved).isFalse()
+        assertThat(promotions.page).isEqualTo(page)
+        assertThat(promotions.pageSize).isEqualTo(pageSize)
+    }
+
+    @Test
+    fun `지역에 대한 필터링 조건이 주어지고, 사진작가 리스트를 조회하면, 특정 지역에 해당하는 사진작가만 조회된다`() {
+        // given
+        val user1 = userJpaRepository.save(createUserJpaEntity())
+        sut.createIfUserExists(
+            createPhotographer(
+                id = user1.id,
+                mainPhotographyTypes = setOf(PhotographyType.SNAP),
+                activeRegions = setOf(createRegion(category = "RegionA", name = "CityA")),
+            ),
+        )
+        val user2 = userJpaRepository.save(createUserJpaEntity())
+        sut.createIfUserExists(
+            createPhotographer(
+                id = user2.id,
+                mainPhotographyTypes = setOf(PhotographyType.SNAP),
+                activeRegions = setOf(createRegion(category = "RegionB", name = "CityB")),
+            ),
+        )
+        val regions = setOf(RegionFilterCondition(category = "RegionA", name = "CityA"))
+        val page = 0
+        val pageSize = 10
+
+        // when
+        val photographers = sut.find(
+            reqUserId = null,
+            regions = regions,
+            photographyTypes = emptySet(),
+            sort = PhotographerSortType.LATEST,
+            page = page,
+            pageSize = pageSize,
+        )
+
+        // then
+        assertThat(photographers.items).hasSize(1)
+    }
+
+    @Test
     fun `기존 유저 데이터가 존재할 때, 사진작가를 저장한다`() {
         // given
-        val createdUserJpaEntity = userJpaRepository.save(createUserJpaEntity())
+        val createdUserJpaEntity = userJpaRepository.save(createUserJpaEntity(profileImage = null))
         val userId = createdUserJpaEntity.id
-        val photographer = createPhotographer(id = userId, nickname = "newNick")
+        val photographer = createPhotographer(id = userId, nickname = "newNick", profileImage = null)
 
         // when
         val result = sut.createIfUserExists(photographer)
@@ -94,9 +226,6 @@ class PhotographerCoreRepositoryTest @Autowired constructor(
 
         val createdPhotographer = sut.getById(userId)
         assertEquals(createdPhotographer, photographer)
-
-        val createdProfileImage = userProfileImageJpaRepository.findByUrl(photographer.profileImage.url)
-        assertThat(createdProfileImage).isNotNull
     }
 
     @Test
@@ -107,8 +236,8 @@ class PhotographerCoreRepositoryTest @Autowired constructor(
         val originalProfileImage = userProfileImageJpaRepository.save(
             UserProfileImageJpaEntity(
                 userId = userId,
-                name = createdUserJpaEntity.profileImage.name,
-                url = createdUserJpaEntity.profileImage.url,
+                name = createdUserJpaEntity.profileImage!!.name,
+                url = createdUserJpaEntity.profileImage!!.url,
             ),
         )
         val photographer = createPhotographer(id = userId, nickname = "newNick")
@@ -128,7 +257,7 @@ class PhotographerCoreRepositoryTest @Autowired constructor(
         assertEquals(createdPhotographer, photographer)
 
         assertThat(userProfileImageJpaRepository.findByUrl(originalProfileImage.url)).isNull()
-        val newProfileImage = userProfileImageJpaRepository.findByUrl(photographer.profileImage.url)
+        val newProfileImage = userProfileImageJpaRepository.findByUrl(photographer.profileImage!!.url)
         assertThat(newProfileImage).isNotNull
     }
 
@@ -147,17 +276,17 @@ class PhotographerCoreRepositoryTest @Autowired constructor(
     @Test
     fun `작가 정보가 주어지고, 주어진 작가로 작가 정보를 업데이트하면, 갱신된 작가 정보가 반환된다`() {
         // given
-        val userJpaEntity = userJpaRepository.save(createUserJpaEntity())
+        val originalUserJpaEntity = userJpaRepository.save(createUserJpaEntity())
         val photographerJpaEntity = sut.createIfUserExists(
             createPhotographer(
-                id = userJpaEntity.id,
+                id = originalUserJpaEntity.id,
                 mainPhotographyTypes = setOf(PhotographyType.PROFILE),
                 activeRegions = setOf(Region("서울", "강남구")),
             ),
         )
         val newPhotographer = createPhotographer(
             id = photographerJpaEntity.id,
-            profileImage = userJpaEntity.profileImage.toImage(),
+            profileImage = originalUserJpaEntity.profileImage?.toImage(),
             mainPhotographyTypes = setOf(PhotographyType.SNAP),
             activeRegions = setOf(Region("대전", "서구")),
         )
@@ -166,7 +295,33 @@ class PhotographerCoreRepositoryTest @Autowired constructor(
         val updatedPhotographer = sut.update(newPhotographer)
 
         // then
-        val foundPhotographer = sut.getById(userJpaEntity.id)
+        val foundPhotographer = sut.getById(originalUserJpaEntity.id)
+        assertThat(foundPhotographer).isEqualTo(updatedPhotographer) // update가 반환한 작가가 조회된 작가와 같아야 함
+    }
+
+    @Test
+    fun `(기존 프로필 이미지가 없는 경우) 작가 정보가 주어지고, 주어진 작가로 작가 정보를 업데이트하면, 갱신된 작가 정보가 반환된다`() {
+        // given
+        val originalUserJpaEntity = userJpaRepository.save(createUserJpaEntity(profileImage = null))
+        val photographerJpaEntity = sut.createIfUserExists(
+            createPhotographer(
+                id = originalUserJpaEntity.id,
+                mainPhotographyTypes = setOf(PhotographyType.PROFILE),
+                activeRegions = setOf(Region("서울", "강남구")),
+            ),
+        )
+        val newPhotographer = createPhotographer(
+            id = photographerJpaEntity.id,
+            profileImage = originalUserJpaEntity.profileImage?.toImage(),
+            mainPhotographyTypes = setOf(PhotographyType.SNAP),
+            activeRegions = setOf(Region("대전", "서구")),
+        )
+
+        // when
+        val updatedPhotographer = sut.update(newPhotographer)
+
+        // then
+        val foundPhotographer = sut.getById(originalUserJpaEntity.id)
         assertThat(foundPhotographer).isEqualTo(updatedPhotographer) // update가 반환한 작가가 조회된 작가와 같아야 함
     }
 
@@ -195,11 +350,63 @@ class PhotographerCoreRepositoryTest @Autowired constructor(
         assertThat(foundPhotographer).isEqualTo(updatedPhotographer) // update가 반환한 작가가 조회된 작가와 같아야 함
     }
 
+    @Test
+    fun `(기존 이미지가 없는 경우) 작가 정보가 주어지고, 주어진 작가로 작가 정보를 업데이트한다, 만약 프로필 이미지가 변경되었다면 기존 이미지를 삭제하고 신규 이미지를 저장한다`() {
+        // given
+        val originalUserJpaEntity = userJpaRepository.save(createUserJpaEntity(profileImage = null))
+        val photographerJpaEntity = sut.createIfUserExists(
+            createPhotographer(
+                id = originalUserJpaEntity.id,
+                profileImage = null,
+                mainPhotographyTypes = setOf(PhotographyType.PROFILE),
+                activeRegions = setOf(Region("서울", "강남구")),
+            ),
+        )
+        val newPhotographer = createPhotographer(
+            id = photographerJpaEntity.id,
+            mainPhotographyTypes = setOf(PhotographyType.SNAP),
+            activeRegions = setOf(Region("대전", "서구")),
+        )
+
+        // when
+        val updatedPhotographer = sut.update(newPhotographer)
+
+        // then
+        val foundPhotographer = sut.getById(originalUserJpaEntity.id)
+        assertThat(foundPhotographer).isEqualTo(updatedPhotographer) // update가 반환한 작가가 조회된 작가와 같아야 함
+    }
+
+    @Test
+    fun `(이미지를 null로 업데이트하는 경우) 작가 정보가 주어지고, 주어진 작가로 작가 정보를 업데이트한다, 만약 프로필 이미지가 변경되었다면 기존 이미지를 삭제하고 신규 이미지를 저장한다`() {
+        // given
+        val userJpaEntity = userJpaRepository.save(createUserJpaEntity())
+        val photographerJpaEntity = sut.createIfUserExists(
+            createPhotographer(
+                id = userJpaEntity.id,
+                mainPhotographyTypes = setOf(PhotographyType.PROFILE),
+                activeRegions = setOf(Region("서울", "강남구")),
+            ),
+        )
+        val newPhotographer = createPhotographer(
+            id = photographerJpaEntity.id,
+            profileImage = null,
+            mainPhotographyTypes = setOf(PhotographyType.SNAP),
+            activeRegions = setOf(Region("대전", "서구")),
+        )
+
+        // when
+        val updatedPhotographer = sut.update(newPhotographer)
+
+        // then
+        val foundPhotographer = sut.getById(userJpaEntity.id)
+        assertThat(foundPhotographer).isEqualTo(updatedPhotographer) // update가 반환한 작가가 조회된 작가와 같아야 함
+    }
+
     private fun assertEquals(photographer: Photographer, userJpaEntity: UserJpaEntity) {
         assertThat(userJpaEntity.type).isEqualTo(UserType.PHOTOGRAPHER)
         assertThat(userJpaEntity.nickname).isEqualTo(photographer.nickname)
-        assertThat(userJpaEntity.profileImage.name).isEqualTo(photographer.profileImage.name)
-        assertThat(userJpaEntity.profileImage.url).isEqualTo(photographer.profileImage.url)
+        assertThat(userJpaEntity.profileImage?.name).isEqualTo(photographer.profileImage?.name)
+        assertThat(userJpaEntity.profileImage?.url).isEqualTo(photographer.profileImage?.url)
         assertThat(userJpaEntity.gender).isEqualTo(photographer.gender)
         assertThat(userJpaEntity.instagramId).isEqualTo(photographer.instagramId)
     }

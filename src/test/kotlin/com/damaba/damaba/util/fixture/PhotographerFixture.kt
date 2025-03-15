@@ -9,16 +9,19 @@ import com.damaba.damaba.domain.common.Address
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.photographer.Photographer
+import com.damaba.damaba.domain.photographer.PhotographerListItem
 import com.damaba.damaba.domain.photographer.SavedPhotographer
 import com.damaba.damaba.domain.region.Region
 import com.damaba.damaba.domain.user.constant.Gender
 import com.damaba.damaba.domain.user.constant.LoginType
 import com.damaba.damaba.domain.user.constant.UserRoleType
 import com.damaba.damaba.domain.user.constant.UserType
+import com.damaba.damaba.util.RandomTestUtils.Companion.randomBoolean
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomUrl
 import com.damaba.damaba.util.fixture.AddressFixture.createAddress
+import com.damaba.damaba.util.fixture.FileFixture.createImage
 import org.springframework.test.util.ReflectionTestUtils
 
 object PhotographerFixture {
@@ -29,7 +32,7 @@ object PhotographerFixture {
         oAuthLoginUid: String = randomString(),
         loginType: LoginType = LoginType.KAKAO,
         nickname: String = randomString(len = 7),
-        profileImage: Image = Image(randomString(), randomUrl()),
+        profileImage: Image? = Image(randomString(), randomUrl()),
         gender: Gender = Gender.MALE,
         instagramId: String? = randomString(len = 30),
         mainPhotographyTypes: Set<PhotographyType> = setOf(PhotographyType.PROFILE),
@@ -54,6 +57,20 @@ object PhotographerFixture {
         address = address,
         portfolio = portfolio,
         activeRegions = activeRegions,
+    )
+
+    fun createPhotographerListItem(
+        id: Long = randomLong(),
+        nickname: String = randomString(len = 7),
+        profileImage: Image? = createImage(),
+        mainPhotographyTypes: Set<PhotographyType> = setOf(PhotographyType.PROFILE),
+        isSaved: Boolean = randomBoolean(),
+    ) = PhotographerListItem(
+        id = id,
+        nickname = nickname,
+        profileImage = profileImage,
+        isSaved = isSaved,
+        mainPhotographyTypes = mainPhotographyTypes,
     )
 
     fun createSavedPhotographer(

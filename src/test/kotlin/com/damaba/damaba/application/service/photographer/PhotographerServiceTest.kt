@@ -1,6 +1,7 @@
 package com.damaba.damaba.application.service.photographer
 
 import com.damaba.damaba.application.port.inbound.photographer.ExistsPhotographerNicknameUseCase
+import com.damaba.damaba.application.port.inbound.photographer.FindPhotographerListUseCase
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.UnsavePhotographerUseCase
@@ -17,11 +18,14 @@ import com.damaba.damaba.application.port.outbound.photographer.UpdatePhotograph
 import com.damaba.damaba.application.port.outbound.user.DeleteUserProfileImagePort
 import com.damaba.damaba.application.port.outbound.user.ExistsNicknamePort
 import com.damaba.damaba.application.port.outbound.user.GetUserPort
+import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.domain.photographer.SavedPhotographer
+import com.damaba.damaba.domain.photographer.constant.PhotographerSortType
 import com.damaba.damaba.domain.photographer.exception.AlreadySavedPhotographerException
 import com.damaba.damaba.domain.photographer.exception.SavedPhotographerNotFoundException
+import com.damaba.damaba.domain.region.RegionFilterCondition
 import com.damaba.damaba.domain.user.constant.Gender
 import com.damaba.damaba.domain.user.constant.UserType
 import com.damaba.damaba.domain.user.exception.NicknameAlreadyExistsException
@@ -34,6 +38,7 @@ import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.fixture.FileFixture.createImage
 import com.damaba.damaba.util.fixture.PhotographerFixture.createPhotographer
+import com.damaba.damaba.util.fixture.PhotographerFixture.createPhotographerListItem
 import com.damaba.damaba.util.fixture.PhotographerFixture.createSavedPhotographer
 import com.damaba.damaba.util.fixture.RegionFixture.createRegion
 import com.damaba.damaba.util.fixture.UserFixture.createUser
@@ -45,6 +50,7 @@ import io.mockk.runs
 import io.mockk.verify
 import io.mockk.verifyOrder
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatIterable
 import org.assertj.core.api.Assertions.catchThrowable
 import kotlin.test.Test
 
@@ -106,6 +112,100 @@ class PhotographerServiceTest {
         verify { getPhotographerPort.getById(id) }
         confirmVerifiedEveryMocks()
         assertThat(actualResult).isEqualTo(expectedResult)
+    }
+
+    @Test
+    fun `프로모션 리스트를 조회한다`() {
+        // given
+        val query = FindPhotographerListUseCase.Query(
+            reqUserId = null,
+            regions = setOf(RegionFilterCondition("서울", "강남구"), RegionFilterCondition("대전", "중구")),
+            photographyTypes = setOf(PhotographyType.PROFILE, PhotographyType.SELF),
+            sort = PhotographerSortType.LATEST,
+            page = randomInt(min = 1),
+            pageSize = randomInt(min = 5, max = 10),
+        )
+        val expectedResult = Pagination(
+            items = generateRandomList(maxSize = query.pageSize) { createPhotographerListItem(profileImage = createImage()) },
+            page = query.page,
+            pageSize = query.pageSize,
+            totalPage = 10,
+        )
+        every {
+            findPhotographerListPort.find(
+                reqUserId = query.reqUserId,
+                regions = query.regions,
+                photographyTypes = query.photographyTypes,
+                sort = query.sort,
+                page = query.page,
+                pageSize = query.pageSize,
+            )
+        } returns expectedResult
+
+        // when
+        val actualResult = sut.findPhotographerList(query)
+
+        // then
+        verify {
+            findPhotographerListPort.find(
+                reqUserId = query.reqUserId,
+                regions = query.regions,
+                photographyTypes = query.photographyTypes,
+                sort = query.sort,
+                page = query.page,
+                pageSize = query.pageSize,
+            )
+        }
+        confirmVerifiedEveryMocks()
+        assertThat(actualResult).isEqualTo(expectedResult)
+        assertThatIterable(actualResult.items).isEqualTo(expectedResult.items)
+    }
+
+    @Test
+    fun `프로모션 리스트를 조회한다_`() {
+        // given
+        val query = FindPhotographerListUseCase.Query(
+            reqUserId = null,
+            regions = setOf(RegionFilterCondition("서울", "강남구"), RegionFilterCondition("대전", "중구")),
+            photographyTypes = setOf(PhotographyType.PROFILE, PhotographyType.SELF),
+            sort = PhotographerSortType.LATEST,
+            page = randomInt(min = 1),
+            pageSize = randomInt(min = 5, max = 10),
+        )
+        val expectedResult = Pagination(
+            items = generateRandomList(maxSize = query.pageSize) { createPhotographerListItem(profileImage = null) },
+            page = query.page,
+            pageSize = query.pageSize,
+            totalPage = 10,
+        )
+        every {
+            findPhotographerListPort.find(
+                reqUserId = query.reqUserId,
+                regions = query.regions,
+                photographyTypes = query.photographyTypes,
+                sort = query.sort,
+                page = query.page,
+                pageSize = query.pageSize,
+            )
+        } returns expectedResult
+
+        // when
+        val actualResult = sut.findPhotographerList(query)
+
+        // then
+        verify {
+            findPhotographerListPort.find(
+                reqUserId = query.reqUserId,
+                regions = query.regions,
+                photographyTypes = query.photographyTypes,
+                sort = query.sort,
+                page = query.page,
+                pageSize = query.pageSize,
+            )
+        }
+        confirmVerifiedEveryMocks()
+        assertThat(actualResult).isEqualTo(expectedResult)
+        assertThatIterable(actualResult.items).isEqualTo(expectedResult.items)
     }
 
     @Test
@@ -303,6 +403,44 @@ class PhotographerServiceTest {
     }
 
     @Test
+    fun `(기존 프로필 이미지가 null인 경우) 작가 프로필을 수정하면, 수정된 작가 정보가 반환된다`() {
+        // given
+        val photographerId = randomLong()
+        val originalPhotographer = createPhotographer(
+            id = photographerId,
+            mainPhotographyTypes = setOf(PhotographyType.PROFILE),
+            profileImage = null,
+        )
+        val command = UpdatePhotographerProfileUseCase.Command(
+            photographerId = photographerId,
+            nickname = originalPhotographer.nickname,
+            profileImage = originalPhotographer.profileImage,
+            mainPhotographyTypes = setOf(PhotographyType.SNAP),
+            activeRegions = generateRandomSet(maxSize = 3) { createRegion() },
+        )
+        val expectedResult = createPhotographer(
+            id = photographerId,
+            nickname = command.nickname,
+            profileImage = command.profileImage,
+            mainPhotographyTypes = command.mainPhotographyTypes,
+            activeRegions = command.activeRegions,
+        )
+        every { getPhotographerPort.getById(photographerId) } returns originalPhotographer
+        every { updatePhotographerPort.update(expectedResult) } returns expectedResult
+
+        // when
+        val result = sut.updatePhotographerProfile(command)
+
+        // then
+        verifyOrder {
+            getPhotographerPort.getById(photographerId)
+            updatePhotographerPort.update(expectedResult)
+        }
+        confirmVerifiedEveryMocks()
+        assertThat(result).isEqualTo(expectedResult)
+    }
+
+    @Test
     fun `작가 프로필을 수정한다, 만약 프로필 이미지가 변경되었다면 기존 이미지를 삭제한다`() {
         // given
         val photographerId = randomLong()
@@ -310,7 +448,7 @@ class PhotographerServiceTest {
             id = photographerId,
             mainPhotographyTypes = setOf(PhotographyType.PROFILE),
         )
-        val originalProfileImageUrl = originalPhotographer.profileImage.url
+        val originalProfileImageUrl = originalPhotographer.profileImage!!.url
         val command = UpdatePhotographerProfileUseCase.Command(
             photographerId = photographerId,
             nickname = randomString(len = 10),
@@ -327,7 +465,7 @@ class PhotographerServiceTest {
         )
         every { getPhotographerPort.getById(photographerId) } returns originalPhotographer
         every { existsNicknamePort.existsNickname(command.nickname) } returns false
-        every { deleteUserProfileImagePort.deleteProfileImageIfExists(originalProfileImageUrl) } just runs
+        every { deleteUserProfileImagePort.deleteByUrl(originalProfileImageUrl) } just runs
         every { updatePhotographerPort.update(expectedResult) } returns expectedResult
 
         // when
@@ -337,7 +475,7 @@ class PhotographerServiceTest {
         verifyOrder {
             getPhotographerPort.getById(photographerId)
             existsNicknamePort.existsNickname(command.nickname)
-            deleteUserProfileImagePort.deleteProfileImageIfExists(originalProfileImageUrl)
+            deleteUserProfileImagePort.deleteByUrl(originalProfileImageUrl)
             updatePhotographerPort.update(expectedResult)
         }
         confirmVerifiedEveryMocks()

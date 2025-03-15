@@ -13,7 +13,7 @@ data class UpdateMyPhotographerProfileRequest(
     val nickname: String,
 
     @Schema(description = "프로필 이미지")
-    val profileImage: ImageRequest,
+    val profileImage: ImageRequest?,
 
     @Schema(description = "주요 촬영 종류 목록")
     val mainPhotographyTypes: Set<PhotographyType>,
@@ -24,7 +24,7 @@ data class UpdateMyPhotographerProfileRequest(
     fun toCommand(reqUserId: Long) = UpdatePhotographerProfileUseCase.Command(
         photographerId = reqUserId,
         nickname = this.nickname,
-        profileImage = ImageMapper.INSTANCE.toImage(this.profileImage),
+        profileImage = this.profileImage?.let { ImageMapper.INSTANCE.toImage(it) },
         mainPhotographyTypes = this.mainPhotographyTypes,
         activeRegions = this.activeRegions.map { RegionMapper.INSTANCE.toRegion(it) }.toSet(),
     )

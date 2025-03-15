@@ -6,7 +6,7 @@ import com.damaba.damaba.domain.region.Region
 
 data class PhotographerProfile(
     val nickname: String,
-    val profileImage: Image,
+    val profileImage: Image?,
     val mainPhotographyTypes: Set<PhotographyType>,
     val activeRegions: Set<Region>,
 )

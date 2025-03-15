@@ -55,19 +55,22 @@ class PhotographerCoreRepository(
         // Update user
         val userJpaEntity = getUserJpaEntityById(photographer.id)
 
-        val originalProfileImage = userJpaEntity.profileImage
-        deleteProfileImageIfExists(originalProfileImage.url)
+        userJpaEntity.profileImage?.let { originalProfileImage ->
+            deleteProfileImageIfExists(originalProfileImage.url)
+        }
 
         userJpaEntity.update(photographer)
 
         // Create photographer
-        userProfileImageJpaRepository.save(
-            UserProfileImageJpaEntity(
-                userId = photographer.id,
-                name = photographer.profileImage.name,
-                url = photographer.profileImage.url,
-            ),
-        )
+        photographer.profileImage?.let { profileImage ->
+            userProfileImageJpaRepository.save(
+                UserProfileImageJpaEntity(
+                    userId = photographer.id,
+                    name = profileImage.name,
+                    url = profileImage.url,
+                ),
+            )
+        }
 
         val photographerJpaEntity = PhotographerJpaEntity.from(photographer)
         photographerJpaRepository.save(photographerJpaEntity)
@@ -78,15 +81,19 @@ class PhotographerCoreRepository(
         val userJpaEntity = getUserJpaEntityById(photographer.id)
         val photographerJpaEntity = getPhotographerJpaEntityById(photographer.id)
 
-        if (userJpaEntity.profileImage.url != photographer.profileImage.url) {
-            this.deleteProfileImageIfExists(userJpaEntity.profileImage.url)
-            userProfileImageJpaRepository.save(
-                UserProfileImageJpaEntity(
-                    userId = photographer.id,
-                    name = photographer.profileImage.name,
-                    url = photographer.profileImage.url,
-                ),
-            )
+        if (userJpaEntity.profileImage?.url != photographer.profileImage?.url) {
+            userJpaEntity.profileImage?.let { originalProfileImage ->
+                deleteProfileImageIfExists(originalProfileImage.url)
+            }
+            photographer.profileImage?.let { newProfileImage ->
+                userProfileImageJpaRepository.save(
+                    UserProfileImageJpaEntity(
+                        userId = photographer.id,
+                        name = newProfileImage.name,
+                        url = newProfileImage.url,
+                    ),
+                )
+            }
         }
 
         userJpaEntity.update(photographer)
@@ -100,7 +107,6 @@ class PhotographerCoreRepository(
     private fun getPhotographerJpaEntityById(id: Long): PhotographerJpaEntity = photographerJpaRepository.findById(id).orElseThrow { PhotographerNotFoundException() }
 
     private fun deleteProfileImageIfExists(imageUrl: String) {
-        val profileImage = userProfileImageJpaRepository.findByUrl(imageUrl)
-        profileImage?.delete()
+        userProfileImageJpaRepository.findByUrl(imageUrl)?.delete()
     }
 }

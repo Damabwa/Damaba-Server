@@ -27,6 +27,7 @@ import com.damaba.damaba.util.fixture.PromotionFixture.createPromotionDetail
 import com.damaba.damaba.util.fixture.PromotionFixture.createPromotionListItem
 import com.damaba.damaba.util.fixture.SecurityFixture.createAuthenticationToken
 import com.damaba.damaba.util.fixture.UserFixture.createUser
+import com.damaba.damaba.util.withAuthUser
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.every
 import io.mockk.just
@@ -114,6 +115,27 @@ class PromotionControllerTest @Autowired constructor(
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(expectedResult.id))
         verify { getPromotionDetailUseCase.getPromotionDetail(GetPromotionDetailUseCase.Query(null, promotionId)) }
+    }
+
+    @Test
+    fun `요청자 정보와 프로모션 id가 주어지고, 프로모션을 상세 조회한다`() {
+        // given
+        val requestUser = createUser()
+        val promotionId = randomLong(positive = true)
+        val expectedResult = createPromotionDetail(id = promotionId, author = null)
+        every {
+            getPromotionDetailUseCase.getPromotionDetail(GetPromotionDetailUseCase.Query(requestUser.id, promotionId))
+        } returns expectedResult
+
+        // when & then
+        mvc.perform(
+            get("/api/v1/promotions/$promotionId/details")
+                .withAuthUser(requestUser),
+        ).andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").value(expectedResult.id))
+        verify {
+            getPromotionDetailUseCase.getPromotionDetail(GetPromotionDetailUseCase.Query(requestUser.id, promotionId))
+        }
     }
 
     @Test
