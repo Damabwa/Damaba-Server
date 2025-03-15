@@ -14,7 +14,7 @@ open class User(
     type: UserType,
     roles: Set<UserRoleType>,
     nickname: String,
-    profileImage: Image,
+    profileImage: Image?,
     gender: Gender,
     instagramId: String?,
 ) {
@@ -27,7 +27,7 @@ open class User(
     var nickname: String = nickname
         protected set
 
-    var profileImage: Image = profileImage
+    var profileImage: Image? = profileImage
         protected set
 
     var gender: Gender = gender
@@ -65,11 +65,6 @@ open class User(
     override fun hashCode(): Int = Objects.hashCode(id)
 
     companion object {
-        val DEFAULT_PROFILE_IMAGE = Image(
-            name = "default-user-profile-image.jpg",
-            url = "https://dummyimage.com/244x100.png/cc0000/ffffff",
-        )
-
         fun create(loginType: LoginType, oAuthLoginUid: String, nickname: String): User = User(
             id = 0,
             type = UserType.UNDEFINED,
@@ -77,7 +72,7 @@ open class User(
             loginType = loginType,
             oAuthLoginUid = oAuthLoginUid,
             nickname = nickname,
-            profileImage = DEFAULT_PROFILE_IMAGE,
+            profileImage = null,
             gender = Gender.MALE,
             instagramId = null,
         )

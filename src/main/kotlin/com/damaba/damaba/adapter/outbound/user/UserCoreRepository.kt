@@ -36,22 +36,28 @@ class UserCoreRepository(
     override fun update(user: User): User {
         val userJpaEntity = getUserJpaEntityById(user.id)
 
-        if (userJpaEntity.profileImage.url != user.profileImage.url) {
-            this.deleteProfileImageIfExists(userJpaEntity.profileImage.url)
-            userProfileImageJpaRepository.save(
-                UserProfileImageJpaEntity(
-                    userId = user.id,
-                    name = user.profileImage.name,
-                    url = user.profileImage.url,
-                ),
-            )
-        }
+        if (userJpaEntity.profileImage?.url != user.profileImage?.url) {
+            val originalProfileImageUrl = userJpaEntity.profileImage?.url
+            if (originalProfileImageUrl != null) {
+                this.deleteByUrl(originalProfileImageUrl)
+            }
 
+            val userProfileImage = user.profileImage
+            if (userProfileImage != null) {
+                userProfileImageJpaRepository.save(
+                    UserProfileImageJpaEntity(
+                        userId = user.id,
+                        name = userProfileImage.name,
+                        url = userProfileImage.url,
+                    ),
+                )
+            }
+        }
         userJpaEntity.update(user)
         return userJpaEntity.toUser()
     }
 
-    override fun deleteProfileImageIfExists(profileImageUrl: String) {
+    override fun deleteByUrl(profileImageUrl: String) {
         userProfileImageJpaRepository.findByUrl(profileImageUrl)?.delete()
     }
 

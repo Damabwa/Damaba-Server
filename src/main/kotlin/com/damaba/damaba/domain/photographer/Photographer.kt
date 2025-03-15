@@ -18,7 +18,7 @@ class Photographer(
     loginType: LoginType,
     oAuthLoginUid: String,
     nickname: String,
-    profileImage: Image,
+    profileImage: Image?,
     gender: Gender,
     instagramId: String?,
     contactLink: String?,

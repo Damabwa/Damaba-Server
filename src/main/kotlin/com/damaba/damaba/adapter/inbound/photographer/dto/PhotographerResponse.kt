@@ -23,7 +23,7 @@ data class PhotographerResponse(
     val nickname: String,
 
     @Schema(description = "프로필 이미지")
-    val profileImage: ImageResponse,
+    val profileImage: ImageResponse?,
 
     @Schema(description = "성별")
     val gender: Gender,

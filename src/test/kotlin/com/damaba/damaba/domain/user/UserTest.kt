@@ -30,7 +30,7 @@ class UserTest {
         assertThat(userCreated.loginType).isEqualTo(loginType)
         assertThat(userCreated.oAuthLoginUid).isEqualTo(oAuthLoginUid)
         assertThat(userCreated.nickname).isEqualTo(nickname)
-        assertThat(userCreated.profileImage).isEqualTo(User.DEFAULT_PROFILE_IMAGE)
+        assertThat(userCreated.profileImage).isNull()
         assertThat(userCreated.instagramId).isNull()
 
         // 유저가 생성된 직후에는 isRegistrationCompleted가 false
@@ -47,7 +47,7 @@ class UserTest {
             type = UserType.UNDEFINED,
             roles = setOf(UserRoleType.USER),
             nickname = "initialNickname",
-            profileImage = DEFAULT_PROFILE_IMAGE,
+            profileImage = null,
             gender = Gender.MALE,
             instagramId = null,
         ) {

@@ -104,8 +104,8 @@ class UserControllerTest @Autowired constructor(
             .andExpect(jsonPath("$.nickname").value(expectedResult.nickname))
             .andExpect(jsonPath("$.gender").value(expectedResult.gender.toString()))
             .andExpect(jsonPath("$.instagramId").value(expectedResult.instagramId))
-            .andExpect(jsonPath("$.profileImage.name").value(expectedResult.profileImage.name))
-            .andExpect(jsonPath("$.profileImage.url").value(expectedResult.profileImage.url))
+            .andExpect(jsonPath("$.profileImage.name").value(expectedResult.profileImage?.name))
+            .andExpect(jsonPath("$.profileImage.url").value(expectedResult.profileImage?.url))
         verify { updateUserProfileUseCase.updateUserProfile(request.toCommand(requestUser.id)) }
     }
 

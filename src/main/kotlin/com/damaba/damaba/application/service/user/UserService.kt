@@ -58,8 +58,10 @@ class UserService(
         if ((user.nickname != command.nickname) && existsNicknamePort.existsNickname(command.nickname)) {
             throw NicknameAlreadyExistsException(command.nickname)
         }
-        if (user.profileImage != command.profileImage) {
-            deleteUserProfileImagePort.deleteProfileImageIfExists(user.profileImage.url)
+        user.profileImage?.let { originalProfileImage ->
+            if (originalProfileImage != command.profileImage) {
+                deleteUserProfileImagePort.deleteByUrl(originalProfileImage.url)
+            }
         }
 
         user.updateProfile(UserMapper.INSTANCE.toUserProfile(command))

@@ -6,10 +6,10 @@ import jakarta.persistence.Embeddable
 
 @Embeddable
 data class UserProfileImageJpaEmbeddable(
-    @Column(name = "profile_image_name", nullable = false)
+    @Column(name = "profile_image_name", nullable = true)
     val name: String,
 
-    @Column(name = "profile_image_url", nullable = false)
+    @Column(name = "profile_image_url", nullable = true)
     val url: String,
 ) {
     fun toImage() = Image(name = this.name, url = this.url)

@@ -171,8 +171,7 @@ class UserServiceTest {
     fun `수정할 유저 정보가 주어지고, 유저 정보를 수정하면, 수정된 유저 정보가 반환된다`() {
         // given
         val userId = randomLong()
-        val originalProfileImage = createImage()
-        val user = createUser(id = userId, profileImage = originalProfileImage)
+        val originalUser = createUser(id = userId, profileImage = null)
         val newNickname = randomString(len = 7)
         val newGender = Gender.FEMALE
         val newInstagramId = null
@@ -184,10 +183,9 @@ class UserServiceTest {
             instagramId = newInstagramId,
             profileImage = newProfileImageUrl,
         )
-        every { getUserPort.getById(userId) } returns user
+        every { getUserPort.getById(userId) } returns originalUser
         every { existsNicknamePort.existsNickname(newNickname) } returns false
-        every { deleteUserProfileImagePort.deleteProfileImageIfExists(originalProfileImage.url) } just runs
-        every { updateUserPort.update(user) } returns expectedResult
+        every { updateUserPort.update(originalUser) } returns expectedResult
 
         // when
         val actualResult = sut.updateUserProfile(command)
@@ -196,8 +194,7 @@ class UserServiceTest {
         verifyOrder {
             getUserPort.getById(userId)
             existsNicknamePort.existsNickname(newNickname)
-            deleteUserProfileImagePort.deleteProfileImageIfExists(originalProfileImage.url)
-            updateUserPort.update(user)
+            updateUserPort.update(originalUser)
         }
         confirmVerifiedEveryMocks()
         assertThat(actualResult).isEqualTo(expectedResult)
@@ -214,12 +211,12 @@ class UserServiceTest {
         val userId = randomLong()
         val user = createUser(id = userId)
         val newNickname = randomString(len = 7)
-        val command = UpdateUserProfileUseCase.Command(userId, newNickname, user.instagramId, user.profileImage)
+        val command = UpdateUserProfileUseCase.Command(userId, newNickname, user.instagramId, user.profileImage!!)
         val expectedResult = createUser(
             nickname = newNickname,
             gender = user.gender,
             instagramId = user.instagramId,
-            profileImage = user.profileImage,
+            profileImage = user.profileImage!!,
         )
         every { getUserPort.getById(userId) } returns user
         every { existsNicknamePort.existsNickname(newNickname) } returns false
@@ -257,7 +254,7 @@ class UserServiceTest {
             profileImage = newProfileImageUrl,
         )
         every { getUserPort.getById(userId) } returns user
-        every { deleteUserProfileImagePort.deleteProfileImageIfExists(originalProfileImage.url) } just runs
+        every { deleteUserProfileImagePort.deleteByUrl(originalProfileImage.url) } just runs
         every { updateUserPort.update(user) } returns expectedResult
 
         // when
@@ -266,7 +263,7 @@ class UserServiceTest {
         // then
         verifyOrder {
             getUserPort.getById(userId)
-            deleteUserProfileImagePort.deleteProfileImageIfExists(originalProfileImage.url)
+            deleteUserProfileImagePort.deleteByUrl(originalProfileImage.url)
             updateUserPort.update(user)
         }
         confirmVerifiedEveryMocks()

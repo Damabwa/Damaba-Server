@@ -21,7 +21,7 @@ object UserFixture {
         oAuthLoginUid: String = randomString(),
         loginType: LoginType = LoginType.KAKAO,
         nickname: String = randomString(len = 7),
-        profileImage: Image = Image(randomString(), randomUrl()),
+        profileImage: Image? = Image(randomString(), randomUrl()),
         gender: Gender = Gender.MALE,
         instagramId: String? = randomString(len = 30),
     ): User = User(
@@ -52,7 +52,7 @@ object UserFixture {
         oAuthLoginUid: String = randomString(),
         loginType: LoginType = LoginType.KAKAO,
         nickname: String = randomString(len = 7),
-        profileImage: UserProfileImageJpaEmbeddable = UserProfileImageJpaEmbeddable(randomString(), randomUrl()),
+        profileImage: UserProfileImageJpaEmbeddable? = UserProfileImageJpaEmbeddable(randomString(), randomUrl()),
         gender: Gender = Gender.MALE,
         instagramId: String = randomString(len = 30),
     ) = UserJpaEntity(

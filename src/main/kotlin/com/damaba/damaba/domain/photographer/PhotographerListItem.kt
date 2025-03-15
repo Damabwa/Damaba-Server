@@ -9,7 +9,7 @@ import com.damaba.damaba.domain.file.Image
 data class PhotographerListItem(
     val id: Long,
     val nickname: String,
-    val profileImage: Image,
+    val profileImage: Image?,
     val isSaved: Boolean,
     val mainPhotographyTypes: Set<PhotographyType>,
 )

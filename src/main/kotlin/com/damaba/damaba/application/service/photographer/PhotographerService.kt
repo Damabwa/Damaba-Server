@@ -104,8 +104,10 @@ class PhotographerService(
         if (photographer.nickname != command.nickname && existsNicknamePort.existsNickname(command.nickname)) {
             throw NicknameAlreadyExistsException(command.nickname)
         }
-        if (photographer.profileImage != command.profileImage) {
-            deleteUserProfileImagePort.deleteProfileImageIfExists(photographer.profileImage.url)
+        photographer.profileImage?.let { originalProfileImage ->
+            if (originalProfileImage != command.profileImage) {
+                deleteUserProfileImagePort.deleteByUrl(originalProfileImage.url)
+            }
         }
 
         photographer.updateProfile(PhotographerMapper.INSTANCE.toPhotographerProfile(command))

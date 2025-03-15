@@ -6,7 +6,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
 import kotlin.test.Test
 
-class FindPromotionListUseCaseCommandTest {
+class FindPromotionListUseCaseQueryTest {
     @Test
     fun `page 번호가 음수라면 validation exception이 발생한다`() {
         // given

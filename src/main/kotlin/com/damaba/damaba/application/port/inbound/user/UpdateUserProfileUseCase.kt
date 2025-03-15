@@ -11,7 +11,7 @@ interface UpdateUserProfileUseCase {
         val userId: Long,
         val nickname: String,
         val instagramId: String?,
-        val profileImage: Image,
+        val profileImage: Image?,
     ) {
         init {
             UserValidator.validateNickname(nickname)

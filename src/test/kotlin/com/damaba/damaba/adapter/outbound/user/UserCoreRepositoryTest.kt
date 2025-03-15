@@ -6,6 +6,7 @@ import com.damaba.damaba.domain.user.exception.UserNotFoundException
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomUrl
+import com.damaba.damaba.util.fixture.FileFixture.createImage
 import com.damaba.damaba.util.fixture.UserFixture.createUser
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
@@ -139,7 +140,7 @@ class UserCoreRepositoryTest @Autowired constructor(
     @Test
     fun `변경되지 않은 기존 유저 정보가 주어지고, 유저를 업데이트하면, 아무런 일도 일어나지 않는다`() {
         // given
-        val originalUser = userCoreRepository.create(createUser())
+        val originalUser = userCoreRepository.create(createUser(profileImage = null))
 
         // when
         val updatedUser = userCoreRepository.update(originalUser)
@@ -155,18 +156,69 @@ class UserCoreRepositoryTest @Autowired constructor(
     @Test
     fun `갱신할 유저 정보가 주어지고, 유저를 업데이트하면, 수정된 유저 정보가 반환된다`() {
         // given
-        val profileImage = Image(randomString(), randomUrl())
-        val originalUser =
-            userCoreRepository.create(createUser(profileImage = profileImage))
+        val newProfileImage = createImage()
+        val originalUser = userCoreRepository.create(createUser(profileImage = createImage()))
+
+        // when
+        val result = userCoreRepository.update(createUser(id = originalUser.id, profileImage = newProfileImage))
+
+        // then
+        val updatedUser = userCoreRepository.getById(originalUser.id)
+        assertThat(result).isEqualTo(updatedUser)
+        assertThat(result.nickname).isEqualTo(updatedUser.nickname)
+        assertThat(result.gender).isEqualTo(updatedUser.gender)
+        assertThat(result.instagramId).isEqualTo(updatedUser.instagramId)
+        assertThat(result.profileImage).isEqualTo(updatedUser.profileImage)
+    }
+
+    @Test
+    fun `(기존 프로필 이미지가 없는 경우) 갱신할 유저 정보가 주어지고, 유저를 업데이트하면, 수정된 유저 정보가 반환된다`() {
+        // given
+        val newProfileImage = createImage()
+        val originalUser = userCoreRepository.create(createUser(profileImage = null))
+
+        // when
+        val result = userCoreRepository.update(createUser(id = originalUser.id, profileImage = newProfileImage))
+
+        // then
+        val updatedUser = userCoreRepository.getById(originalUser.id)
+        assertThat(result).isEqualTo(updatedUser)
+        assertThat(result.nickname).isEqualTo(updatedUser.nickname)
+        assertThat(result.gender).isEqualTo(updatedUser.gender)
+        assertThat(result.instagramId).isEqualTo(updatedUser.instagramId)
+        assertThat(result.profileImage).isEqualTo(updatedUser.profileImage)
+    }
+
+    @Test
+    fun `유저 프로필 이미지를 null로 업데이트하면, 수정된 유저 정보가 반환된다`() {
+        // given
+        val originalUser = userCoreRepository.create(createUser(profileImage = createImage()))
 
         // when
         val result =
             userCoreRepository.update(
                 createUser(
                     id = originalUser.id,
-                    profileImage = profileImage,
+                    profileImage = null,
                 ),
             )
+
+        // then
+        val updatedUser = userCoreRepository.getById(originalUser.id)
+        assertThat(result).isEqualTo(updatedUser)
+        assertThat(result.nickname).isEqualTo(updatedUser.nickname)
+        assertThat(result.gender).isEqualTo(updatedUser.gender)
+        assertThat(result.instagramId).isEqualTo(updatedUser.instagramId)
+        assertThat(result.profileImage).isEqualTo(updatedUser.profileImage)
+    }
+
+    @Test
+    fun `(기존 프로필 이미지가 없는 경우) 유저 프로필 이미지를 null로 업데이트하면, 수정된 유저 정보가 반환된다`() {
+        // given
+        val originalUser = userCoreRepository.create(createUser(profileImage = null))
+
+        // when
+        val result = userCoreRepository.update(createUser(id = originalUser.id, profileImage = null))
 
         // then
         val updatedUser = userCoreRepository.getById(originalUser.id)
@@ -223,7 +275,7 @@ class UserCoreRepositoryTest @Autowired constructor(
         assertThat(result.instagramId).isEqualTo(updatedUser.instagramId)
         assertThat(result.profileImage).isEqualTo(updatedUser.profileImage)
 
-        val foundOriginalProfileImage = userProfileImageJpaRepository.findByUrl(originalUser.profileImage.url)
+        val foundOriginalProfileImage = userProfileImageJpaRepository.findByUrl(originalUser.profileImage!!.url)
         assertThat(foundOriginalProfileImage).isNull()
     }
 
@@ -236,7 +288,7 @@ class UserCoreRepositoryTest @Autowired constructor(
         )
 
         // when
-        userCoreRepository.deleteProfileImageIfExists(profileImageUrl)
+        userCoreRepository.deleteByUrl(profileImageUrl)
 
         // then
         assertThat(userProfileImageJpaRepository.findByUrl(profileImageUrl)).isNull()
@@ -248,7 +300,7 @@ class UserCoreRepositoryTest @Autowired constructor(
         val profileImageUrl = randomUrl()
 
         // when
-        userCoreRepository.deleteProfileImageIfExists(profileImageUrl)
+        userCoreRepository.deleteByUrl(profileImageUrl)
 
         // then
         assertThat(userProfileImageJpaRepository.findByUrl(profileImageUrl)).isNull()

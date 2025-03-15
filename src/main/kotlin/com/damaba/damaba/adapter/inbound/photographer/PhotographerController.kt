@@ -71,7 +71,7 @@ class PhotographerController(
         description = "'작가님을 만나봐 페이지' > '작가 리스트'에서 필요한 작가 리스트 정보를 조회합니다.",
     )
     @GetMapping("/api/v1/photographers/list")
-    fun getPhotographerListV1(
+    fun findPhotographerListV1(
         @AuthenticationPrincipal
         reqUser: User?,
         @RequestParam(required = false)

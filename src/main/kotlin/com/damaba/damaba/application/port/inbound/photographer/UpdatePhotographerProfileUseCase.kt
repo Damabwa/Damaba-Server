@@ -12,7 +12,7 @@ interface UpdatePhotographerProfileUseCase {
     data class Command(
         val photographerId: Long,
         val nickname: String,
-        val profileImage: Image,
+        val profileImage: Image?,
         val mainPhotographyTypes: Set<PhotographyType>,
         val activeRegions: Set<Region>,
     ) {
