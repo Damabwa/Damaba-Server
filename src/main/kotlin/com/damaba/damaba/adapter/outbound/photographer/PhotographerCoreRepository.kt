@@ -6,7 +6,7 @@ import com.damaba.damaba.adapter.outbound.user.UserJpaRepository
 import com.damaba.damaba.adapter.outbound.user.UserProfileImageJpaEntity
 import com.damaba.damaba.adapter.outbound.user.UserProfileImageJpaRepository
 import com.damaba.damaba.application.port.outbound.photographer.CreatePhotographerPort
-import com.damaba.damaba.application.port.outbound.photographer.FindPhotographerListPort
+import com.damaba.damaba.application.port.outbound.photographer.FindPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.GetPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.UpdatePhotographerPort
 import com.damaba.damaba.domain.common.Pagination
@@ -27,7 +27,7 @@ class PhotographerCoreRepository(
     private val userJpaRepository: UserJpaRepository,
     private val userProfileImageJpaRepository: UserProfileImageJpaRepository,
 ) : GetPhotographerPort,
-    FindPhotographerListPort,
+    FindPhotographerPort,
     CreatePhotographerPort,
     UpdatePhotographerPort {
     override fun getById(id: Long): Photographer {
@@ -36,18 +36,27 @@ class PhotographerCoreRepository(
         return photographerJpaEntity.toPhotographer(userJpaEntity)
     }
 
-    override fun find(
-        reqUserId: Long?,
+    override fun findPhotographerList(
+        requestUserId: Long?,
         regions: Set<RegionFilterCondition>,
         photographyTypes: Set<PhotographyType>,
         sort: PhotographerSortType,
         page: Int,
         pageSize: Int,
     ): Pagination<PhotographerListItem> = photographerJdslRepository.findPhotographerList(
-        reqUserId = reqUserId,
+        requestUserId = requestUserId,
         regions = regions,
         photographyTypes = photographyTypes,
         sort = sort,
+        pageable = PageRequest.of(page, pageSize),
+    ).toPagination()
+
+    override fun findSavedPhotographerList(
+        requestUserId: Long?,
+        page: Int,
+        pageSize: Int,
+    ): Pagination<PhotographerListItem> = photographerJdslRepository.findSavedPhotographerList(
+        requestUserId = requestUserId,
         pageable = PageRequest.of(page, pageSize),
     ).toPagination()
 

@@ -1,4 +1,4 @@
-package com.damaba.damaba.adapter.inbound.photographer.dto
+package com.damaba.damaba.adapter.inbound.photographer
 
 import io.swagger.v3.oas.annotations.media.Schema
 

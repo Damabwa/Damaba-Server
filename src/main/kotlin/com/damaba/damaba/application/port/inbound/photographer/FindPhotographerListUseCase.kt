@@ -11,7 +11,7 @@ interface FindPhotographerListUseCase {
     fun findPhotographerList(query: Query): Pagination<PhotographerListItem>
 
     data class Query(
-        val reqUserId: Long?,
+        val requestUserId: Long?,
         val regions: Set<RegionFilterCondition>,
         val photographyTypes: Set<PhotographyType>,
         val sort: PhotographerSortType,

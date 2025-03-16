@@ -1,10 +1,8 @@
 package com.damaba.damaba.adapter.inbound.photographer
 
-import com.damaba.damaba.adapter.inbound.photographer.dto.RegisterPhotographerRequest
-import com.damaba.damaba.adapter.inbound.photographer.dto.UpdateMyPhotographerPageRequest
-import com.damaba.damaba.adapter.inbound.photographer.dto.UpdateMyPhotographerProfileRequest
 import com.damaba.damaba.application.port.inbound.photographer.ExistsPhotographerNicknameUseCase
 import com.damaba.damaba.application.port.inbound.photographer.FindPhotographerListUseCase
+import com.damaba.damaba.application.port.inbound.photographer.FindSavedPhotographerListUseCase
 import com.damaba.damaba.application.port.inbound.photographer.GetPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
@@ -61,6 +59,7 @@ class PhotographerControllerTest @Autowired constructor(
     private val mapper: ObjectMapper,
     private val getPhotographerUseCase: GetPhotographerUseCase,
     private val findPhotographerListUseCase: FindPhotographerListUseCase,
+    private val findSavedPhotographerListUseCase: FindSavedPhotographerListUseCase,
     private val existsPhotographerNicknameUseCase: ExistsPhotographerNicknameUseCase,
     private val registerPhotographerUseCase: RegisterPhotographerUseCase,
     private val updatePhotographerProfileUseCase: UpdatePhotographerProfileUseCase,
@@ -75,6 +74,9 @@ class PhotographerControllerTest @Autowired constructor(
 
         @Bean
         fun findPhotographerListUseCase(): FindPhotographerListUseCase = mockk()
+
+        @Bean
+        fun findSavedPhotographerListUseCase(): FindSavedPhotographerListUseCase = mockk()
 
         @Bean
         fun existsPhotographerNicknameUseCase(): ExistsPhotographerNicknameUseCase = mockk()
@@ -127,7 +129,7 @@ class PhotographerControllerTest @Autowired constructor(
         every {
             findPhotographerListUseCase.findPhotographerList(
                 FindPhotographerListUseCase.Query(
-                    reqUserId = requestUser.id,
+                    requestUserId = requestUser.id,
                     regions = regions,
                     photographyTypes = photographyTypes,
                     sort = sort,
@@ -160,7 +162,7 @@ class PhotographerControllerTest @Autowired constructor(
         verify {
             findPhotographerListUseCase.findPhotographerList(
                 FindPhotographerListUseCase.Query(
-                    reqUserId = requestUser.id,
+                    requestUserId = requestUser.id,
                     regions = regions,
                     photographyTypes = photographyTypes,
                     sort = sort,
@@ -172,7 +174,7 @@ class PhotographerControllerTest @Autowired constructor(
     }
 
     @Test
-    fun `주어진 필터링 조건 없이, 프로모션 리스트를 조회한다`() {
+    fun `주어진 필터링 조건 없이, 사진작가 리스트를 조회한다`() {
         // given
         val sort = PhotographerSortType.LATEST
         val page = 1
@@ -186,7 +188,7 @@ class PhotographerControllerTest @Autowired constructor(
         every {
             findPhotographerListUseCase.findPhotographerList(
                 FindPhotographerListUseCase.Query(
-                    reqUserId = null,
+                    requestUserId = null,
                     regions = emptySet(),
                     photographyTypes = emptySet(),
                     sort = sort,
@@ -210,7 +212,7 @@ class PhotographerControllerTest @Autowired constructor(
         verify {
             findPhotographerListUseCase.findPhotographerList(
                 FindPhotographerListUseCase.Query(
-                    reqUserId = null,
+                    requestUserId = null,
                     regions = emptySet(),
                     photographyTypes = emptySet(),
                     sort = sort,
@@ -222,7 +224,7 @@ class PhotographerControllerTest @Autowired constructor(
     }
 
     @Test
-    fun `잘못된 형식의 지역 필터링 데이터가 주어지고, 프로모션 리스트를 조회하면, validation exception이 발생한다`() {
+    fun `잘못된 형식의 지역 필터링 데이터가 주어지고, 사진작가 리스트를 조회하면, validation exception이 발생한다`() {
         // given
         val page = 1
         val pageSize = randomInt(min = 5, max = 15)
@@ -235,6 +237,50 @@ class PhotographerControllerTest @Autowired constructor(
                 .param("page", page.toString())
                 .param("pageSize", pageSize.toString()),
         ).andExpect(status().isUnprocessableEntity)
+    }
+
+    @Test
+    fun `저장된 사진작가 리스트를 조회한다`() {
+        // given
+        val requestUser = createUser()
+        val page = 1
+        val pageSize = randomInt(min = 5, max = 15)
+        val expectedResult = Pagination(
+            items = generateRandomList(maxSize = pageSize) { createPhotographerListItem(profileImage = createImage()) },
+            page = page,
+            pageSize = pageSize,
+            totalPage = 10,
+        )
+        every {
+            findSavedPhotographerListUseCase.findSavedPhotographerList(
+                FindSavedPhotographerListUseCase.Query(
+                    requestUserId = requestUser.id,
+                    page = page,
+                    pageSize = pageSize,
+                ),
+            )
+        } returns expectedResult
+
+        // when & then
+        mvc.perform(
+            get("/api/v1/photographers/saved")
+                .param("page", page.toString())
+                .param("pageSize", pageSize.toString())
+                .withAuthUser(requestUser),
+        ).andExpect(status().isOk)
+            .andExpect(jsonPath("$.items", hasSize<Int>(expectedResult.items.size)))
+            .andExpect(jsonPath("$.page").value(expectedResult.page))
+            .andExpect(jsonPath("$.pageSize").value(expectedResult.pageSize))
+            .andExpect(jsonPath("$.totalPage").value(expectedResult.totalPage))
+        verify {
+            findSavedPhotographerListUseCase.findSavedPhotographerList(
+                FindSavedPhotographerListUseCase.Query(
+                    requestUserId = requestUser.id,
+                    page = page,
+                    pageSize = pageSize,
+                ),
+            )
+        }
     }
 
     @Test
@@ -292,7 +338,7 @@ class PhotographerControllerTest @Autowired constructor(
         // given
         val reqUser = createUser(id = randomLong())
         val photographerId = randomLong()
-        val command = SavePhotographerUseCase.Command(reqUserId = reqUser.id, photographerId = photographerId)
+        val command = SavePhotographerUseCase.Command(requestUserId = reqUser.id, photographerId = photographerId)
         every { savePhotographerUseCase.savePhotographer(command) } just runs
 
         // when & then
@@ -359,7 +405,7 @@ class PhotographerControllerTest @Autowired constructor(
         // given
         val reqUser = createUser(id = randomLong())
         val photographerId = randomLong()
-        val command = UnsavePhotographerUseCase.Command(reqUserId = reqUser.id, photographerId = photographerId)
+        val command = UnsavePhotographerUseCase.Command(requestUserId = reqUser.id, photographerId = photographerId)
         every { unsavePhotographerUseCase.unsavePhotographer(command) } just runs
 
         // when & then

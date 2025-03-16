@@ -129,20 +129,12 @@ class PromotionJdslRepository(private val promotionJpaRepository: PromotionJpaRe
                 .where(path(PromotionSaveJpaEntity::promotionId).eq(path(PromotionJpaEntity::id)))
                 .asSubquery()
 
-            val isSavedQuery = select(path(PromotionSaveJpaEntity::id))
-                .from(entity(PromotionSaveJpaEntity::class))
-                .whereAnd(
-                    path(PromotionSaveJpaEntity::promotionId).eq(path(PromotionJpaEntity::id)),
-                    path(PromotionSaveJpaEntity::userId).eq(requestUserId),
-                ).asSubquery()
-
             // Query 생성
             selectDistinct<Tuple>(
                 entity(PromotionJpaEntity::class),
                 entity(UserJpaEntity::class),
                 path(PromotionSaveJpaEntity::createdAt),
                 saveCountQuery.`as`(expression(Long::class, "saveCount")),
-                exists(isSavedQuery).`as`(expression(Boolean::class, "isSaved")),
             ).from(
                 entity(PromotionSaveJpaEntity::class),
                 fetchJoin(PromotionJpaEntity::class)
@@ -168,7 +160,7 @@ class PromotionJdslRepository(private val promotionJpaRepository: PromotionJpaRe
                 promotion = (tuple.get(0) as PromotionJpaEntity).toPromotion(),
                 author = tuple.get(1)?.let { (it as UserJpaEntity).toUser() },
                 saveCount = tuple.get(3) as Long,
-                isSaved = tuple.get(4) as Boolean,
+                isSaved = true,
             )
         }
     }

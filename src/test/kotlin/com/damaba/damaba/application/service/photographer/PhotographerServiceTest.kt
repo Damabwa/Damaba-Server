@@ -2,6 +2,7 @@ package com.damaba.damaba.application.service.photographer
 
 import com.damaba.damaba.application.port.inbound.photographer.ExistsPhotographerNicknameUseCase
 import com.damaba.damaba.application.port.inbound.photographer.FindPhotographerListUseCase
+import com.damaba.damaba.application.port.inbound.photographer.FindSavedPhotographerListUseCase
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.UnsavePhotographerUseCase
@@ -11,7 +12,7 @@ import com.damaba.damaba.application.port.outbound.photographer.CreatePhotograph
 import com.damaba.damaba.application.port.outbound.photographer.CreatePhotographerSavePort
 import com.damaba.damaba.application.port.outbound.photographer.DeletePhotographerSavePort
 import com.damaba.damaba.application.port.outbound.photographer.ExistsPhotographerSavePort
-import com.damaba.damaba.application.port.outbound.photographer.FindPhotographerListPort
+import com.damaba.damaba.application.port.outbound.photographer.FindPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.FindPhotographerSavePort
 import com.damaba.damaba.application.port.outbound.photographer.GetPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.UpdatePhotographerPort
@@ -58,7 +59,7 @@ class PhotographerServiceTest {
     private val getUserPort: GetUserPort = mockk()
 
     private val getPhotographerPort: GetPhotographerPort = mockk()
-    private val findPhotographerListPort: FindPhotographerListPort = mockk()
+    private val findPhotographerPort: FindPhotographerPort = mockk()
     private val existsNicknamePort: ExistsNicknamePort = mockk()
     private val createPhotographerPort: CreatePhotographerPort = mockk()
     private val updatePhotographerPort: UpdatePhotographerPort = mockk()
@@ -71,7 +72,7 @@ class PhotographerServiceTest {
     private val sut: PhotographerService = PhotographerService(
         getUserPort,
         getPhotographerPort,
-        findPhotographerListPort,
+        findPhotographerPort,
         existsNicknamePort,
         createPhotographerPort,
         updatePhotographerPort,
@@ -86,7 +87,7 @@ class PhotographerServiceTest {
         confirmVerified(
             getUserPort,
             getPhotographerPort,
-            findPhotographerListPort,
+            findPhotographerPort,
             existsNicknamePort,
             createPhotographerPort,
             updatePhotographerPort,
@@ -115,10 +116,10 @@ class PhotographerServiceTest {
     }
 
     @Test
-    fun `프로모션 리스트를 조회한다`() {
+    fun `사진작가 리스트를 조회한다`() {
         // given
         val query = FindPhotographerListUseCase.Query(
-            reqUserId = null,
+            requestUserId = null,
             regions = setOf(RegionFilterCondition("서울", "강남구"), RegionFilterCondition("대전", "중구")),
             photographyTypes = setOf(PhotographyType.PROFILE, PhotographyType.SELF),
             sort = PhotographerSortType.LATEST,
@@ -132,8 +133,8 @@ class PhotographerServiceTest {
             totalPage = 10,
         )
         every {
-            findPhotographerListPort.find(
-                reqUserId = query.reqUserId,
+            findPhotographerPort.findPhotographerList(
+                requestUserId = query.requestUserId,
                 regions = query.regions,
                 photographyTypes = query.photographyTypes,
                 sort = query.sort,
@@ -147,8 +148,8 @@ class PhotographerServiceTest {
 
         // then
         verify {
-            findPhotographerListPort.find(
-                reqUserId = query.reqUserId,
+            findPhotographerPort.findPhotographerList(
+                requestUserId = query.requestUserId,
                 regions = query.regions,
                 photographyTypes = query.photographyTypes,
                 sort = query.sort,
@@ -162,10 +163,10 @@ class PhotographerServiceTest {
     }
 
     @Test
-    fun `프로모션 리스트를 조회한다_`() {
+    fun `사진작가 리스트를 조회한다_`() {
         // given
         val query = FindPhotographerListUseCase.Query(
-            reqUserId = null,
+            requestUserId = null,
             regions = setOf(RegionFilterCondition("서울", "강남구"), RegionFilterCondition("대전", "중구")),
             photographyTypes = setOf(PhotographyType.PROFILE, PhotographyType.SELF),
             sort = PhotographerSortType.LATEST,
@@ -179,8 +180,8 @@ class PhotographerServiceTest {
             totalPage = 10,
         )
         every {
-            findPhotographerListPort.find(
-                reqUserId = query.reqUserId,
+            findPhotographerPort.findPhotographerList(
+                requestUserId = query.requestUserId,
                 regions = query.regions,
                 photographyTypes = query.photographyTypes,
                 sort = query.sort,
@@ -194,11 +195,50 @@ class PhotographerServiceTest {
 
         // then
         verify {
-            findPhotographerListPort.find(
-                reqUserId = query.reqUserId,
+            findPhotographerPort.findPhotographerList(
+                requestUserId = query.requestUserId,
                 regions = query.regions,
                 photographyTypes = query.photographyTypes,
                 sort = query.sort,
+                page = query.page,
+                pageSize = query.pageSize,
+            )
+        }
+        confirmVerifiedEveryMocks()
+        assertThat(actualResult).isEqualTo(expectedResult)
+        assertThatIterable(actualResult.items).isEqualTo(expectedResult.items)
+    }
+
+    @Test
+    fun `저장된 사진작가 리스트를 조회한다`() {
+        // given
+        val requestUser = createUser()
+        val query = FindSavedPhotographerListUseCase.Query(
+            requestUserId = requestUser.id,
+            page = randomInt(min = 1),
+            pageSize = randomInt(min = 5, max = 10),
+        )
+        val expectedResult = Pagination(
+            items = generateRandomList(maxSize = query.pageSize) { createPhotographerListItem(profileImage = null) },
+            page = query.page,
+            pageSize = query.pageSize,
+            totalPage = 10,
+        )
+        every {
+            findPhotographerPort.findSavedPhotographerList(
+                requestUserId = query.requestUserId,
+                page = query.page,
+                pageSize = query.pageSize,
+            )
+        } returns expectedResult
+
+        // when
+        val actualResult = sut.findSavedPhotographerList(query)
+
+        // then
+        verify {
+            findPhotographerPort.findSavedPhotographerList(
+                requestUserId = query.requestUserId,
                 page = query.page,
                 pageSize = query.pageSize,
             )
@@ -313,12 +353,12 @@ class PhotographerServiceTest {
     @Test
     fun `사진작가를 저장한다`() {
         // given
-        val command = SavePhotographerUseCase.Command(reqUserId = randomLong(), photographerId = randomLong())
+        val command = SavePhotographerUseCase.Command(requestUserId = randomLong(), photographerId = randomLong())
         every {
-            existsPhotographerSavePort.existsByUserIdAndPhotographerId(command.reqUserId, command.photographerId)
+            existsPhotographerSavePort.existsByUserIdAndPhotographerId(command.requestUserId, command.photographerId)
         } returns false
         every {
-            createPhotographerSavePort.create(PhotographerSave.create(command.reqUserId, command.photographerId))
+            createPhotographerSavePort.create(PhotographerSave.create(command.requestUserId, command.photographerId))
         } just runs
 
         // when
@@ -327,7 +367,7 @@ class PhotographerServiceTest {
         // then
         verify {
             existsPhotographerSavePort.existsByUserIdAndPhotographerId(
-                command.reqUserId,
+                command.requestUserId,
                 command.photographerId,
             )
         }
@@ -335,7 +375,7 @@ class PhotographerServiceTest {
             createPhotographerSavePort.create(
                 PhotographerSave(
                     id = 0L,
-                    userId = command.reqUserId,
+                    userId = command.requestUserId,
                     photographerId = command.photographerId,
                 ),
             )
@@ -346,9 +386,9 @@ class PhotographerServiceTest {
     @Test
     fun `사진작가를 저장한다, 만약 이미 저장한 사진작가라면 예외가 발생한다`() {
         // given
-        val command = SavePhotographerUseCase.Command(reqUserId = randomLong(), photographerId = randomLong())
+        val command = SavePhotographerUseCase.Command(requestUserId = randomLong(), photographerId = randomLong())
         every {
-            existsPhotographerSavePort.existsByUserIdAndPhotographerId(command.reqUserId, command.photographerId)
+            existsPhotographerSavePort.existsByUserIdAndPhotographerId(command.requestUserId, command.photographerId)
         } returns true
 
         // when
@@ -357,7 +397,7 @@ class PhotographerServiceTest {
         // then
         verify {
             existsPhotographerSavePort.existsByUserIdAndPhotographerId(
-                command.reqUserId,
+                command.requestUserId,
                 command.photographerId,
             )
         }
@@ -553,10 +593,10 @@ class PhotographerServiceTest {
     @Test
     fun `사진작가를 저장 해제한다`() {
         // given
-        val command = UnsavePhotographerUseCase.Command(reqUserId = randomLong(), photographerId = randomLong())
+        val command = UnsavePhotographerUseCase.Command(requestUserId = randomLong(), photographerId = randomLong())
         val photographerSave = createPhotographerSave()
         every {
-            findPhotographerSavePort.findByUserIdAndPhotographerId(command.reqUserId, command.photographerId)
+            findPhotographerSavePort.findByUserIdAndPhotographerId(command.requestUserId, command.photographerId)
         } returns photographerSave
         every { deletePhotographerSavePort.delete(photographerSave) } just runs
 
@@ -564,7 +604,7 @@ class PhotographerServiceTest {
         sut.unsavePhotographer(command)
 
         // then
-        verify { findPhotographerSavePort.findByUserIdAndPhotographerId(command.reqUserId, command.photographerId) }
+        verify { findPhotographerSavePort.findByUserIdAndPhotographerId(command.requestUserId, command.photographerId) }
         verify { deletePhotographerSavePort.delete(photographerSave) }
         confirmVerifiedEveryMocks()
     }
@@ -572,16 +612,16 @@ class PhotographerServiceTest {
     @Test
     fun `사진작가를 저장 해제한다, 만약 저장한 적 없는 사진작가라면 예외가 발생한다`() {
         // given
-        val command = UnsavePhotographerUseCase.Command(reqUserId = randomLong(), photographerId = randomLong())
+        val command = UnsavePhotographerUseCase.Command(requestUserId = randomLong(), photographerId = randomLong())
         every {
-            findPhotographerSavePort.findByUserIdAndPhotographerId(command.reqUserId, command.photographerId)
+            findPhotographerSavePort.findByUserIdAndPhotographerId(command.requestUserId, command.photographerId)
         } returns null
 
         // when
         val ex = catchThrowable { sut.unsavePhotographer(command) }
 
         // then
-        verify { findPhotographerSavePort.findByUserIdAndPhotographerId(command.reqUserId, command.photographerId) }
+        verify { findPhotographerSavePort.findByUserIdAndPhotographerId(command.requestUserId, command.photographerId) }
         confirmVerifiedEveryMocks()
         assertThat(ex).isInstanceOf(PhotographerSaveNotFoundException::class.java)
     }

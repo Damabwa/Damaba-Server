@@ -1,4 +1,4 @@
-package com.damaba.damaba.adapter.inbound.photographer.dto
+package com.damaba.damaba.adapter.inbound.photographer
 
 import com.damaba.damaba.adapter.inbound.common.dto.ImageRequest
 import com.damaba.damaba.adapter.inbound.region.dto.RegionRequest
