@@ -8,14 +8,20 @@ import com.damaba.damaba.domain.promotion.constant.PromotionSortType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.domain.region.RegionFilterCondition
 
-interface FindPromotionListPort {
+interface FindPromotionPort {
     fun findPromotionList(
-        reqUserId: Long?,
+        requestUserId: Long?,
         type: PromotionType?,
         progressStatus: PromotionProgressStatus?,
         regions: Set<RegionFilterCondition>,
         photographyTypes: Set<PhotographyType>,
         sortType: PromotionSortType,
+        page: Int,
+        pageSize: Int,
+    ): Pagination<PromotionListItem>
+
+    fun findSavedPromotionList(
+        requestUserId: Long,
         page: Int,
         pageSize: Int,
     ): Pagination<PromotionListItem>

@@ -1,4 +1,4 @@
-package com.damaba.damaba.adapter.inbound.promotion.dto
+package com.damaba.damaba.adapter.inbound.promotion
 
 import com.damaba.damaba.adapter.inbound.common.dto.ImageRequest
 import com.damaba.damaba.adapter.inbound.region.dto.RegionRequest

@@ -3,6 +3,7 @@ package com.damaba.damaba.application.service.promotion
 import com.damaba.damaba.adapter.outbound.promotion.PromotionCoreRepository
 import com.damaba.damaba.adapter.outbound.user.UserCoreRepository
 import com.damaba.damaba.application.port.inbound.promotion.FindPromotionListUseCase
+import com.damaba.damaba.application.port.inbound.promotion.FindSavedPromotionListUseCase
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.SavePromotionUseCase
@@ -12,7 +13,7 @@ import com.damaba.damaba.application.port.outbound.promotion.CreatePromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.CreateSavedPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.DeleteSavedPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.ExistsSavedPromotionPort
-import com.damaba.damaba.application.port.outbound.promotion.FindPromotionListPort
+import com.damaba.damaba.application.port.outbound.promotion.FindPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.GetPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.GetSavedPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.UpdatePromotionPort
@@ -59,10 +60,12 @@ class PromotionServiceTest {
     @Nested
     inner class UnitTest {
         private val getUserPort: GetUserPort = mockk()
+
         private val getPromotionPort: GetPromotionPort = mockk()
-        private val findPromotionListPort: FindPromotionListPort = mockk()
+        private val findPromotionPort: FindPromotionPort = mockk()
         private val updatePromotionPort: UpdatePromotionPort = mockk()
         private val createSavedPromotionPort: CreateSavedPromotionPort = mockk()
+
         private val getSavedPromotionPort: GetSavedPromotionPort = mockk()
         private val existsSavedPromotionPort: ExistsSavedPromotionPort = mockk()
         private val countSavedPromotionPort: CountSavedPromotionPort = mockk()
@@ -72,7 +75,7 @@ class PromotionServiceTest {
         private val sut: PromotionService = PromotionService(
             getUserPort,
             getPromotionPort,
-            findPromotionListPort,
+            findPromotionPort,
             createPromotionPort,
             updatePromotionPort,
             getSavedPromotionPort,
@@ -86,7 +89,7 @@ class PromotionServiceTest {
             confirmVerified(
                 getUserPort,
                 getPromotionPort,
-                findPromotionListPort,
+                findPromotionPort,
                 createPromotionPort,
                 updatePromotionPort,
                 getSavedPromotionPort,
@@ -211,6 +214,43 @@ class PromotionServiceTest {
         @Test
         fun `프로모션 리스트를 조회한다`() {
             // given
+            val query = FindSavedPromotionListUseCase.Query(
+                requestUserId = randomLong(),
+                page = 1,
+                pageSize = randomInt(min = 5, max = 10),
+            )
+            val expectedResult = Pagination(
+                items = generateRandomList(maxSize = query.pageSize) { createPromotionListItem() },
+                page = query.page,
+                pageSize = query.pageSize,
+                totalPage = 1,
+            )
+            every {
+                findPromotionPort.findSavedPromotionList(
+                    requestUserId = query.requestUserId,
+                    page = query.page,
+                    pageSize = query.pageSize,
+                )
+            } returns expectedResult
+
+            // when
+            val actualResult = sut.findSavedPromotionList(query)
+
+            // then
+            verify {
+                findPromotionPort.findSavedPromotionList(
+                    requestUserId = query.requestUserId,
+                    page = query.page,
+                    pageSize = query.pageSize,
+                )
+            }
+            confirmVerifiedEveryMocks()
+            assertThat(actualResult).isEqualTo(expectedResult)
+        }
+
+        @Test
+        fun `저장된 프로모션 리스트를 조회한다`() {
+            // given
             val query = FindPromotionListUseCase.Query(
                 reqUserId = null,
                 type = PromotionType.FREE,
@@ -228,8 +268,8 @@ class PromotionServiceTest {
                 totalPage = 1,
             )
             every {
-                findPromotionListPort.findPromotionList(
-                    reqUserId = query.reqUserId,
+                findPromotionPort.findPromotionList(
+                    requestUserId = query.reqUserId,
                     type = query.type,
                     progressStatus = query.progressStatus,
                     regions = query.regions,
@@ -245,8 +285,8 @@ class PromotionServiceTest {
 
             // then
             verify {
-                findPromotionListPort.findPromotionList(
-                    reqUserId = query.reqUserId,
+                findPromotionPort.findPromotionList(
+                    requestUserId = query.reqUserId,
                     type = query.type,
                     progressStatus = query.progressStatus,
                     regions = query.regions,
