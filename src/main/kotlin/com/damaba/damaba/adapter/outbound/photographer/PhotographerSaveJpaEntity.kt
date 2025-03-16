@@ -1,7 +1,7 @@
 package com.damaba.damaba.adapter.outbound.photographer
 
 import com.damaba.damaba.adapter.outbound.common.BaseJpaTimeEntity
-import com.damaba.damaba.domain.photographer.SavedPhotographer
+import com.damaba.damaba.domain.photographer.PhotographerSave
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -10,8 +10,8 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 
 @Entity
-@Table(name = "saved_photographer")
-class SavedPhotographerJpaEntity(
+@Table(name = "photographer_save")
+class PhotographerSaveJpaEntity(
     userId: Long,
     photographerId: Long,
 ) : BaseJpaTimeEntity() {
@@ -28,7 +28,7 @@ class SavedPhotographerJpaEntity(
     var photographerId: Long = photographerId
         private set
 
-    fun toSavedPhotographer() = SavedPhotographer(
+    fun toPhotographerSave() = PhotographerSave(
         id = this.id,
         userId = this.userId,
         photographerId = this.photographerId,

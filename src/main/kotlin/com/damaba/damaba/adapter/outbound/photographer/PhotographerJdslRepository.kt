@@ -45,16 +45,16 @@ class PhotographerJdslRepository(private val photographerJpaRepository: Photogra
                 conditions += path(PhotographerPhotographyTypeJpaEntity::photographyType).`in`(photographyTypes)
             }
 
-            val saveCountQuery = select(count(SavedPhotographerJpaEntity::id))
-                .from(entity(SavedPhotographerJpaEntity::class))
-                .where(path(SavedPhotographerJpaEntity::photographerId).eq(path(PhotographerJpaEntity::userId)))
+            val saveCountQuery = select(count(PhotographerSaveJpaEntity::id))
+                .from(entity(PhotographerSaveJpaEntity::class))
+                .where(path(PhotographerSaveJpaEntity::photographerId).eq(path(PhotographerJpaEntity::userId)))
                 .asSubquery()
 
-            val isSavedQuery = select(path(SavedPhotographerJpaEntity::id))
-                .from(entity(SavedPhotographerJpaEntity::class))
+            val isSavedQuery = select(path(PhotographerSaveJpaEntity::id))
+                .from(entity(PhotographerSaveJpaEntity::class))
                 .whereAnd(
-                    path(SavedPhotographerJpaEntity::photographerId).eq(path(PhotographerJpaEntity::userId)),
-                    path(SavedPhotographerJpaEntity::userId).eq(reqUserId),
+                    path(PhotographerSaveJpaEntity::photographerId).eq(path(PhotographerJpaEntity::userId)),
+                    path(PhotographerSaveJpaEntity::userId).eq(reqUserId),
                 ).asSubquery()
 
             val saveCount = expression(Long::class, "saveCount")

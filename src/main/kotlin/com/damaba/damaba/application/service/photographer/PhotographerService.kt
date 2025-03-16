@@ -9,11 +9,11 @@ import com.damaba.damaba.application.port.inbound.photographer.UnsavePhotographe
 import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerPageUseCase
 import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerProfileUseCase
 import com.damaba.damaba.application.port.outbound.photographer.CreatePhotographerPort
-import com.damaba.damaba.application.port.outbound.photographer.CreateSavedPhotographerPort
-import com.damaba.damaba.application.port.outbound.photographer.DeleteSavedPhotographerPort
-import com.damaba.damaba.application.port.outbound.photographer.ExistsSavedPhotographerPort
+import com.damaba.damaba.application.port.outbound.photographer.CreatePhotographerSavePort
+import com.damaba.damaba.application.port.outbound.photographer.DeletePhotographerSavePort
+import com.damaba.damaba.application.port.outbound.photographer.ExistsPhotographerSavePort
 import com.damaba.damaba.application.port.outbound.photographer.FindPhotographerListPort
-import com.damaba.damaba.application.port.outbound.photographer.FindSavedPhotographerPort
+import com.damaba.damaba.application.port.outbound.photographer.FindPhotographerSavePort
 import com.damaba.damaba.application.port.outbound.photographer.GetPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.UpdatePhotographerPort
 import com.damaba.damaba.application.port.outbound.user.DeleteUserProfileImagePort
@@ -22,9 +22,9 @@ import com.damaba.damaba.application.port.outbound.user.GetUserPort
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.domain.photographer.PhotographerListItem
-import com.damaba.damaba.domain.photographer.SavedPhotographer
-import com.damaba.damaba.domain.photographer.exception.AlreadySavedPhotographerException
-import com.damaba.damaba.domain.photographer.exception.SavedPhotographerNotFoundException
+import com.damaba.damaba.domain.photographer.PhotographerSave
+import com.damaba.damaba.domain.photographer.exception.AlreadyPhotographerSaveException
+import com.damaba.damaba.domain.photographer.exception.PhotographerSaveNotFoundException
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.domain.user.exception.NicknameAlreadyExistsException
 import com.damaba.damaba.domain.user.exception.UserAlreadyRegisteredException
@@ -43,10 +43,10 @@ class PhotographerService(
     private val updatePhotographerPort: UpdatePhotographerPort,
     private val deleteUserProfileImagePort: DeleteUserProfileImagePort,
 
-    private val findSavedPhotographerPort: FindSavedPhotographerPort,
-    private val existsSavedPhotographerPort: ExistsSavedPhotographerPort,
-    private val createSavedPhotographerPort: CreateSavedPhotographerPort,
-    private val deleteSavedPhotographerPort: DeleteSavedPhotographerPort,
+    private val findPhotographerSavePort: FindPhotographerSavePort,
+    private val existsPhotographerSavePort: ExistsPhotographerSavePort,
+    private val createPhotographerSavePort: CreatePhotographerSavePort,
+    private val deletePhotographerSavePort: DeletePhotographerSavePort,
 ) : GetPhotographerUseCase,
     FindPhotographerListUseCase,
     ExistsPhotographerNicknameUseCase,
@@ -123,19 +123,19 @@ class PhotographerService(
 
     @Transactional
     override fun savePhotographer(command: SavePhotographerUseCase.Command) {
-        if (existsSavedPhotographerPort.existsByUserIdAndPhotographerId(command.reqUserId, command.photographerId)) {
-            throw AlreadySavedPhotographerException()
+        if (existsPhotographerSavePort.existsByUserIdAndPhotographerId(command.reqUserId, command.photographerId)) {
+            throw AlreadyPhotographerSaveException()
         }
-        createSavedPhotographerPort.create(
-            SavedPhotographer.create(userId = command.reqUserId, photographerId = command.photographerId),
+        createPhotographerSavePort.create(
+            PhotographerSave.create(userId = command.reqUserId, photographerId = command.photographerId),
         )
     }
 
     @Transactional
     override fun unsavePhotographer(command: UnsavePhotographerUseCase.Command) {
-        val savedPhotographer =
-            findSavedPhotographerPort.findByUserIdAndPhotographerId(command.reqUserId, command.photographerId)
-                ?: throw SavedPhotographerNotFoundException()
-        deleteSavedPhotographerPort.delete(savedPhotographer)
+        val photographerSave =
+            findPhotographerSavePort.findByUserIdAndPhotographerId(command.reqUserId, command.photographerId)
+                ?: throw PhotographerSaveNotFoundException()
+        deletePhotographerSavePort.delete(photographerSave)
     }
 }
