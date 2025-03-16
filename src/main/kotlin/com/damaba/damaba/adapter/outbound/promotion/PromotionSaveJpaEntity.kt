@@ -1,7 +1,7 @@
 package com.damaba.damaba.adapter.outbound.promotion
 
 import com.damaba.damaba.adapter.outbound.common.BaseJpaTimeEntity
-import com.damaba.damaba.domain.promotion.SavedPromotion
+import com.damaba.damaba.domain.promotion.PromotionSave
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -9,9 +9,9 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 
-@Table(name = "saved_promotion")
+@Table(name = "promotion_save")
 @Entity
-class SavedPromotionJpaEntity(
+class PromotionSaveJpaEntity(
     userId: Long,
     promotionId: Long,
 ) : BaseJpaTimeEntity() {
@@ -28,7 +28,7 @@ class SavedPromotionJpaEntity(
     var promotionId: Long = promotionId
         private set
 
-    fun toSavedPromotion() = SavedPromotion(
+    fun toPromotionSave() = PromotionSave(
         id = this.id,
         userId = this.userId,
         promotionId = this.promotionId,

@@ -71,16 +71,16 @@ class PromotionJdslRepository(private val promotionJpaRepository: PromotionJpaRe
                 conditions += or(*regionConditions.toTypedArray())
             }
 
-            val saveCountQuery = select(count(SavedPromotionJpaEntity::id))
-                .from(entity(SavedPromotionJpaEntity::class))
-                .where(path(SavedPromotionJpaEntity::promotionId).eq(path(PromotionJpaEntity::id)))
+            val saveCountQuery = select(count(PromotionSaveJpaEntity::id))
+                .from(entity(PromotionSaveJpaEntity::class))
+                .where(path(PromotionSaveJpaEntity::promotionId).eq(path(PromotionJpaEntity::id)))
                 .asSubquery()
 
-            val isSavedQuery = select(path(SavedPromotionJpaEntity::id))
-                .from(entity(SavedPromotionJpaEntity::class))
+            val isSavedQuery = select(path(PromotionSaveJpaEntity::id))
+                .from(entity(PromotionSaveJpaEntity::class))
                 .whereAnd(
-                    path(SavedPromotionJpaEntity::promotionId).eq(path(PromotionJpaEntity::id)),
-                    path(SavedPromotionJpaEntity::userId).eq(requestUserId),
+                    path(PromotionSaveJpaEntity::promotionId).eq(path(PromotionJpaEntity::id)),
+                    path(PromotionSaveJpaEntity::userId).eq(requestUserId),
                 ).asSubquery()
 
             // Query 생성
@@ -124,29 +124,29 @@ class PromotionJdslRepository(private val promotionJpaRepository: PromotionJpaRe
 
     fun findSavedPromotionList(requestUserId: Long, pageable: Pageable): Page<PromotionListItem> {
         val result = promotionJpaRepository.findPage(pageable) {
-            val saveCountQuery = select(count(SavedPromotionJpaEntity::id))
-                .from(entity(SavedPromotionJpaEntity::class))
-                .where(path(SavedPromotionJpaEntity::promotionId).eq(path(PromotionJpaEntity::id)))
+            val saveCountQuery = select(count(PromotionSaveJpaEntity::id))
+                .from(entity(PromotionSaveJpaEntity::class))
+                .where(path(PromotionSaveJpaEntity::promotionId).eq(path(PromotionJpaEntity::id)))
                 .asSubquery()
 
-            val isSavedQuery = select(path(SavedPromotionJpaEntity::id))
-                .from(entity(SavedPromotionJpaEntity::class))
+            val isSavedQuery = select(path(PromotionSaveJpaEntity::id))
+                .from(entity(PromotionSaveJpaEntity::class))
                 .whereAnd(
-                    path(SavedPromotionJpaEntity::promotionId).eq(path(PromotionJpaEntity::id)),
-                    path(SavedPromotionJpaEntity::userId).eq(requestUserId),
+                    path(PromotionSaveJpaEntity::promotionId).eq(path(PromotionJpaEntity::id)),
+                    path(PromotionSaveJpaEntity::userId).eq(requestUserId),
                 ).asSubquery()
 
             // Query 생성
             selectDistinct<Tuple>(
                 entity(PromotionJpaEntity::class),
                 entity(UserJpaEntity::class),
-                path(SavedPromotionJpaEntity::createdAt),
+                path(PromotionSaveJpaEntity::createdAt),
                 saveCountQuery.`as`(expression(Long::class, "saveCount")),
                 exists(isSavedQuery).`as`(expression(Boolean::class, "isSaved")),
             ).from(
-                entity(SavedPromotionJpaEntity::class),
+                entity(PromotionSaveJpaEntity::class),
                 fetchJoin(PromotionJpaEntity::class)
-                    .on(path(SavedPromotionJpaEntity::promotionId).eq(path(PromotionJpaEntity::id))),
+                    .on(path(PromotionSaveJpaEntity::promotionId).eq(path(PromotionJpaEntity::id))),
                 leftFetchJoin(UserJpaEntity::class)
                     .on(path(PromotionJpaEntity::authorId).eq(path(UserJpaEntity::id))),
                 leftJoin(PromotionPhotographyTypeJpaEntity::class).on(
@@ -158,9 +158,9 @@ class PromotionJdslRepository(private val promotionJpaRepository: PromotionJpaRe
                         .eq(path(PromotionJpaEntity::id)),
                 ),
             ).whereAnd(
-                path(SavedPromotionJpaEntity::userId).eq(requestUserId),
+                path(PromotionSaveJpaEntity::userId).eq(requestUserId),
             ).orderBy(
-                path(SavedPromotionJpaEntity::createdAt).desc(),
+                path(PromotionSaveJpaEntity::createdAt).desc(),
             )
         }
         return result.filterNotNull().map { tuple ->

@@ -7,14 +7,14 @@ import com.damaba.damaba.application.port.inbound.promotion.GetPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.SavePromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.UnsavePromotionUseCase
-import com.damaba.damaba.application.port.outbound.promotion.CountSavedPromotionPort
+import com.damaba.damaba.application.port.outbound.promotion.CountPromotionSavePort
 import com.damaba.damaba.application.port.outbound.promotion.CreatePromotionPort
-import com.damaba.damaba.application.port.outbound.promotion.CreateSavedPromotionPort
-import com.damaba.damaba.application.port.outbound.promotion.DeleteSavedPromotionPort
-import com.damaba.damaba.application.port.outbound.promotion.ExistsSavedPromotionPort
+import com.damaba.damaba.application.port.outbound.promotion.CreatePromotionSavePort
+import com.damaba.damaba.application.port.outbound.promotion.DeletePromotionSavePort
+import com.damaba.damaba.application.port.outbound.promotion.ExistsPromotionSavePort
 import com.damaba.damaba.application.port.outbound.promotion.FindPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.GetPromotionPort
-import com.damaba.damaba.application.port.outbound.promotion.GetSavedPromotionPort
+import com.damaba.damaba.application.port.outbound.promotion.GetPromotionSavePort
 import com.damaba.damaba.application.port.outbound.promotion.UpdatePromotionPort
 import com.damaba.damaba.application.port.outbound.user.GetUserPort
 import com.damaba.damaba.domain.common.LockType.PESSIMISTIC
@@ -24,8 +24,8 @@ import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.PromotionDetail
 import com.damaba.damaba.domain.promotion.PromotionListItem
-import com.damaba.damaba.domain.promotion.SavedPromotion
-import com.damaba.damaba.domain.promotion.exception.AlreadySavedPromotionException
+import com.damaba.damaba.domain.promotion.PromotionSave
+import com.damaba.damaba.domain.promotion.exception.AlreadyPromotionSaveException
 import com.damaba.damaba.domain.region.Region
 import com.damaba.damaba.mapper.PromotionMapper
 import org.springframework.stereotype.Service
@@ -40,11 +40,11 @@ class PromotionService(
     private val createPromotionPort: CreatePromotionPort,
     private val updatePromotionPort: UpdatePromotionPort,
 
-    private val getSavedPromotionPort: GetSavedPromotionPort,
-    private val existsSavedPromotionPort: ExistsSavedPromotionPort,
-    private val countSavedPromotionPort: CountSavedPromotionPort,
-    private val createSavedPromotionPort: CreateSavedPromotionPort,
-    private val deleteSavedPromotionPort: DeleteSavedPromotionPort,
+    private val getPromotionSavePort: GetPromotionSavePort,
+    private val existsPromotionSavePort: ExistsPromotionSavePort,
+    private val countPromotionSavePort: CountPromotionSavePort,
+    private val createPromotionSavePort: CreatePromotionSavePort,
+    private val deletePromotionSavePort: DeletePromotionSavePort,
 ) : GetPromotionUseCase,
     GetPromotionDetailUseCase,
     FindPromotionListUseCase,
@@ -64,9 +64,9 @@ class PromotionService(
         updatePromotionPort.update(promotion)
 
         val author = promotion.authorId?.let { getUserPort.getById(it) }
-        val saveCount = countSavedPromotionPort.countByPromotionId(query.promotionId)
+        val saveCount = countPromotionSavePort.countByPromotionId(query.promotionId)
         val isSaved = if (query.requestUserId != null) {
-            existsSavedPromotionPort.existsByUserIdAndPromotionId(query.requestUserId, query.promotionId)
+            existsPromotionSavePort.existsByUserIdAndPromotionId(query.requestUserId, query.promotionId)
         } else {
             false
         }
@@ -115,15 +115,15 @@ class PromotionService(
 
     @Transactional
     override fun savePromotion(command: SavePromotionUseCase.Command) {
-        if (existsSavedPromotionPort.existsByUserIdAndPromotionId(command.userId, command.promotionId)) {
-            throw AlreadySavedPromotionException()
+        if (existsPromotionSavePort.existsByUserIdAndPromotionId(command.userId, command.promotionId)) {
+            throw AlreadyPromotionSaveException()
         }
-        createSavedPromotionPort.create(SavedPromotion.create(command.userId, command.promotionId))
+        createPromotionSavePort.create(PromotionSave.create(command.userId, command.promotionId))
     }
 
     @Transactional
     override fun unsavePromotion(command: UnsavePromotionUseCase.Command) {
-        val savedPromotion = getSavedPromotionPort.getByUserIdAndPromotionId(command.userId, command.promotionId)
-        deleteSavedPromotionPort.delete(savedPromotion)
+        val promotionSave = getPromotionSavePort.getByUserIdAndPromotionId(command.userId, command.promotionId)
+        deletePromotionSavePort.delete(promotionSave)
     }
 }
