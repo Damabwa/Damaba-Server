@@ -7,7 +7,7 @@ import com.damaba.damaba.adapter.outbound.user.UserProfileImageJpaRepository
 import com.damaba.damaba.config.JpaConfig
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.photographer.Photographer
-import com.damaba.damaba.domain.photographer.SavedPhotographer
+import com.damaba.damaba.domain.photographer.PhotographerSave
 import com.damaba.damaba.domain.photographer.constant.PhotographerSortType
 import com.damaba.damaba.domain.photographer.exception.PhotographerNotFoundException
 import com.damaba.damaba.domain.region.Region
@@ -33,13 +33,13 @@ import kotlin.test.Test
     KotlinJdslAutoConfiguration::class,
     PhotographerCoreRepository::class,
     PhotographerJdslRepository::class,
-    SavedPhotographerCoreRepository::class,
+    PhotographerSaveCoreRepository::class,
 )
 @DataJpaTest
 class PhotographerCoreRepositoryTest @Autowired constructor(
     private val sut: PhotographerCoreRepository,
     private val photographerJpaRepository: PhotographerJpaRepository,
-    private val savedPhotographerCoreRepository: SavedPhotographerCoreRepository,
+    private val photographerSaveCoreRepository: PhotographerSaveCoreRepository,
     private val userJpaRepository: UserJpaRepository,
     private val userProfileImageJpaRepository: UserProfileImageJpaRepository,
 ) {
@@ -92,8 +92,8 @@ class PhotographerCoreRepositoryTest @Autowired constructor(
                 activeRegions = setOf(createRegion(category = "RegionA", name = "CityA")),
             ),
         )
-        savedPhotographerCoreRepository.create(
-            SavedPhotographer.create(userId = reqUserId, photographerId = photographer1.id),
+        photographerSaveCoreRepository.create(
+            PhotographerSave.create(userId = reqUserId, photographerId = photographer1.id),
         )
 
         val user2 = userJpaRepository.save(createUserJpaEntity())

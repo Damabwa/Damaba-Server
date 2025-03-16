@@ -10,7 +10,7 @@ import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.domain.photographer.PhotographerListItem
-import com.damaba.damaba.domain.photographer.SavedPhotographer
+import com.damaba.damaba.domain.photographer.PhotographerSave
 import com.damaba.damaba.domain.region.Region
 import com.damaba.damaba.domain.user.constant.Gender
 import com.damaba.damaba.domain.user.constant.LoginType
@@ -73,11 +73,11 @@ object PhotographerFixture {
         mainPhotographyTypes = mainPhotographyTypes,
     )
 
-    fun createSavedPhotographer(
+    fun createPhotographerSave(
         id: Long = randomLong(),
         userId: Long = randomLong(),
         photographerId: Long = randomLong(),
-    ) = SavedPhotographer(
+    ) = PhotographerSave(
         id = id,
         userId = userId,
         photographerId = photographerId,

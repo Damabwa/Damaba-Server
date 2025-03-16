@@ -1,5 +1,5 @@
 package com.damaba.damaba.application.port.outbound.photographer
 
-interface ExistsSavedPhotographerPort {
+interface ExistsPhotographerSavePort {
     fun existsByUserIdAndPhotographerId(userId: Long, photographerId: Long): Boolean
 }

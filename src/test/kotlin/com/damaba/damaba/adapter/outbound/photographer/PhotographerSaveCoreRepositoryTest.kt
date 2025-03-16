@@ -1,7 +1,7 @@
 package com.damaba.damaba.adapter.outbound.photographer
 
 import com.damaba.damaba.config.RepositoryTestConfig
-import com.damaba.damaba.domain.photographer.SavedPhotographer
+import com.damaba.damaba.domain.photographer.PhotographerSave
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import org.assertj.core.api.Assertions.assertThat
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,18 +11,18 @@ import org.springframework.test.context.ActiveProfiles
 import kotlin.test.Test
 
 @ActiveProfiles("test")
-@Import(RepositoryTestConfig::class, SavedPhotographerCoreRepository::class)
+@Import(RepositoryTestConfig::class, PhotographerSaveCoreRepository::class)
 @DataJpaTest
-class SavedPhotographerCoreRepositoryTest @Autowired constructor(
-    private val sut: SavedPhotographerCoreRepository,
-    private val savedPhotographerJpaRepository: SavedPhotographerJpaRepository,
+class PhotographerSaveCoreRepositoryTest @Autowired constructor(
+    private val sut: PhotographerSaveCoreRepository,
+    private val photographerSaveJpaRepository: PhotographerSaveJpaRepository,
 ) {
     @Test
     fun `(Find) userId와 photographerId가 주어지고, 사진작가 저장 이력을 조회한다`() {
         // given
         val userId = randomLong()
         val photographerId = randomLong()
-        sut.create(SavedPhotographer.create(userId, photographerId))
+        sut.create(PhotographerSave.create(userId, photographerId))
 
         // when
         val result = sut.findByUserIdAndPhotographerId(userId, photographerId)
@@ -52,7 +52,7 @@ class SavedPhotographerCoreRepositoryTest @Autowired constructor(
         // given
         val userId = randomLong()
         val photographerId = randomLong()
-        sut.create(SavedPhotographer.create(userId, photographerId))
+        sut.create(PhotographerSave.create(userId, photographerId))
 
         // when
         val result = sut.existsByUserIdAndPhotographerId(userId, photographerId)
@@ -77,10 +77,10 @@ class SavedPhotographerCoreRepositoryTest @Autowired constructor(
         val photographerId = randomLong()
 
         // when
-        sut.create(SavedPhotographer.create(userId, photographerId))
+        sut.create(PhotographerSave.create(userId, photographerId))
 
         // then
-        val result = savedPhotographerJpaRepository.findAll()
+        val result = photographerSaveJpaRepository.findAll()
         assertThat(result.size).isEqualTo(1)
     }
 
@@ -89,14 +89,14 @@ class SavedPhotographerCoreRepositoryTest @Autowired constructor(
         // given
         val userId = randomLong()
         val photographerId = randomLong()
-        sut.create(SavedPhotographer.create(userId, photographerId))
-        val savedPhotographer = sut.findByUserIdAndPhotographerId(userId, photographerId)
+        sut.create(PhotographerSave.create(userId, photographerId))
+        val photographerSave = sut.findByUserIdAndPhotographerId(userId, photographerId)
 
         // when
-        sut.delete(savedPhotographer!!)
+        sut.delete(photographerSave!!)
 
         // then
-        val savedPhotographers = savedPhotographerJpaRepository.findAll()
-        assertThat(savedPhotographers.size).isEqualTo(0)
+        val photographerSaves = photographerSaveJpaRepository.findAll()
+        assertThat(photographerSaves.size).isEqualTo(0)
     }
 }
