@@ -12,7 +12,7 @@ interface SavePhotographerUseCase {
     fun savePhotographer(command: Command)
 
     data class Command(
-        val reqUserId: Long,
+        val requestUserId: Long,
         val photographerId: Long,
     )
 }

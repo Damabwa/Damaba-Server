@@ -2,6 +2,7 @@ package com.damaba.damaba.application.service.photographer
 
 import com.damaba.damaba.application.port.inbound.photographer.ExistsPhotographerNicknameUseCase
 import com.damaba.damaba.application.port.inbound.photographer.FindPhotographerListUseCase
+import com.damaba.damaba.application.port.inbound.photographer.FindSavedPhotographerListUseCase
 import com.damaba.damaba.application.port.inbound.photographer.GetPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
@@ -12,7 +13,7 @@ import com.damaba.damaba.application.port.outbound.photographer.CreatePhotograph
 import com.damaba.damaba.application.port.outbound.photographer.CreatePhotographerSavePort
 import com.damaba.damaba.application.port.outbound.photographer.DeletePhotographerSavePort
 import com.damaba.damaba.application.port.outbound.photographer.ExistsPhotographerSavePort
-import com.damaba.damaba.application.port.outbound.photographer.FindPhotographerListPort
+import com.damaba.damaba.application.port.outbound.photographer.FindPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.FindPhotographerSavePort
 import com.damaba.damaba.application.port.outbound.photographer.GetPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.UpdatePhotographerPort
@@ -37,7 +38,7 @@ class PhotographerService(
     private val getUserPort: GetUserPort,
 
     private val getPhotographerPort: GetPhotographerPort,
-    private val findPhotographerListPort: FindPhotographerListPort,
+    private val findPhotographerPort: FindPhotographerPort,
     private val existsNicknamePort: ExistsNicknamePort,
     private val createPhotographerPort: CreatePhotographerPort,
     private val updatePhotographerPort: UpdatePhotographerPort,
@@ -49,6 +50,7 @@ class PhotographerService(
     private val deletePhotographerSavePort: DeletePhotographerSavePort,
 ) : GetPhotographerUseCase,
     FindPhotographerListUseCase,
+    FindSavedPhotographerListUseCase,
     ExistsPhotographerNicknameUseCase,
     RegisterPhotographerUseCase,
     UpdatePhotographerProfileUseCase,
@@ -62,11 +64,20 @@ class PhotographerService(
     @Transactional(readOnly = true)
     override fun findPhotographerList(
         query: FindPhotographerListUseCase.Query,
-    ): Pagination<PhotographerListItem> = findPhotographerListPort.find(
-        reqUserId = query.reqUserId,
+    ): Pagination<PhotographerListItem> = findPhotographerPort.findPhotographerList(
+        requestUserId = query.requestUserId,
         regions = query.regions,
         photographyTypes = query.photographyTypes,
         sort = query.sort,
+        page = query.page,
+        pageSize = query.pageSize,
+    )
+
+    @Transactional(readOnly = true)
+    override fun findSavedPhotographerList(
+        query: FindSavedPhotographerListUseCase.Query,
+    ): Pagination<PhotographerListItem> = findPhotographerPort.findSavedPhotographerList(
+        requestUserId = query.requestUserId,
         page = query.page,
         pageSize = query.pageSize,
     )
@@ -123,18 +134,18 @@ class PhotographerService(
 
     @Transactional
     override fun savePhotographer(command: SavePhotographerUseCase.Command) {
-        if (existsPhotographerSavePort.existsByUserIdAndPhotographerId(command.reqUserId, command.photographerId)) {
+        if (existsPhotographerSavePort.existsByUserIdAndPhotographerId(command.requestUserId, command.photographerId)) {
             throw AlreadyPhotographerSaveException()
         }
         createPhotographerSavePort.create(
-            PhotographerSave.create(userId = command.reqUserId, photographerId = command.photographerId),
+            PhotographerSave.create(userId = command.requestUserId, photographerId = command.photographerId),
         )
     }
 
     @Transactional
     override fun unsavePhotographer(command: UnsavePhotographerUseCase.Command) {
         val photographerSave =
-            findPhotographerSavePort.findByUserIdAndPhotographerId(command.reqUserId, command.photographerId)
+            findPhotographerSavePort.findByUserIdAndPhotographerId(command.requestUserId, command.photographerId)
                 ?: throw PhotographerSaveNotFoundException()
         deletePhotographerSavePort.delete(photographerSave)
     }

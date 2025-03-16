@@ -1,12 +1,8 @@
 package com.damaba.damaba.adapter.inbound.photographer
 
-import com.damaba.damaba.adapter.inbound.photographer.dto.ExistsPhotographerNicknameResponse
-import com.damaba.damaba.adapter.inbound.photographer.dto.PhotographerResponse
-import com.damaba.damaba.adapter.inbound.photographer.dto.RegisterPhotographerRequest
-import com.damaba.damaba.adapter.inbound.photographer.dto.UpdateMyPhotographerPageRequest
-import com.damaba.damaba.adapter.inbound.photographer.dto.UpdateMyPhotographerProfileRequest
 import com.damaba.damaba.application.port.inbound.photographer.ExistsPhotographerNicknameUseCase
 import com.damaba.damaba.application.port.inbound.photographer.FindPhotographerListUseCase
+import com.damaba.damaba.application.port.inbound.photographer.FindSavedPhotographerListUseCase
 import com.damaba.damaba.application.port.inbound.photographer.GetPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
@@ -16,7 +12,7 @@ import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographe
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.exception.ValidationException
-import com.damaba.damaba.domain.photographer.PhotographerListItem
+import com.damaba.damaba.domain.photographer.PhotographerListItemResponse
 import com.damaba.damaba.domain.photographer.constant.PhotographerSortType
 import com.damaba.damaba.domain.region.RegionFilterCondition
 import com.damaba.damaba.domain.user.User
@@ -44,6 +40,7 @@ import org.springframework.web.bind.annotation.RestController
 class PhotographerController(
     private val getPhotographerUseCase: GetPhotographerUseCase,
     private val findPhotographerListUseCase: FindPhotographerListUseCase,
+    private val findSavedPhotographerListUseCase: FindSavedPhotographerListUseCase,
     private val existsPhotographerNicknameUseCase: ExistsPhotographerNicknameUseCase,
     private val registerPhotographerUseCase: RegisterPhotographerUseCase,
     private val updatePhotographerProfileUseCase: UpdatePhotographerProfileUseCase,
@@ -93,7 +90,7 @@ class PhotographerController(
         @RequestParam(defaultValue = "10")
         @Parameter(description = "페이지 크기")
         pageSize: Int,
-    ): Pagination<PhotographerListItem> {
+    ): Pagination<PhotographerListItemResponse> {
         val regionConditions = regions?.map { region ->
             val parts = region.trim().split(" ")
             when (parts.size) {
@@ -103,9 +100,9 @@ class PhotographerController(
             }
         }?.toSet()
 
-        return findPhotographerListUseCase.findPhotographerList(
+        val photographerList = findPhotographerListUseCase.findPhotographerList(
             FindPhotographerListUseCase.Query(
-                reqUserId = reqUser?.id,
+                requestUserId = reqUser?.id,
                 regions = regionConditions ?: emptySet(),
                 photographyTypes = photographyTypes ?: emptySet(),
                 sort = sort,
@@ -113,6 +110,28 @@ class PhotographerController(
                 pageSize = pageSize,
             ),
         )
+        return photographerList.map { PhotographerMapper.INSTANCE.toPhotographerListItemResponse(it) }
+    }
+
+    @Operation(
+        summary = "저장한 사진작가 리스트 조회",
+        description = "저장한 사진작가들을 조회합니다.",
+        security = [SecurityRequirement(name = "access-token")],
+    )
+    @GetMapping("/api/v1/photographers/saved")
+    fun findSavedPhotographerListV1(
+        @AuthenticationPrincipal requestUser: User,
+        @RequestParam(defaultValue = "0") @Parameter(description = "페이지 번호. 0부터 시작합니다.") page: Int,
+        @RequestParam(defaultValue = "10") @Parameter(description = "페이지 크기") pageSize: Int,
+    ): Pagination<PhotographerListItemResponse> {
+        val photographerList = findSavedPhotographerListUseCase.findSavedPhotographerList(
+            FindSavedPhotographerListUseCase.Query(
+                requestUserId = requestUser.id,
+                page = page,
+                pageSize = pageSize,
+            ),
+        )
+        return photographerList.map { PhotographerMapper.INSTANCE.toPhotographerListItemResponse(it) }
     }
 
     @Operation(
@@ -170,7 +189,7 @@ class PhotographerController(
         @PathVariable photographerId: Long,
     ): ResponseEntity<Unit> {
         savePhotographerUseCase.savePhotographer(
-            SavePhotographerUseCase.Command(reqUserId = reqUser.id, photographerId = photographerId),
+            SavePhotographerUseCase.Command(requestUserId = reqUser.id, photographerId = photographerId),
         )
         return ResponseEntity.noContent().build()
     }
@@ -225,7 +244,7 @@ class PhotographerController(
         @PathVariable photographerId: Long,
     ): ResponseEntity<Unit> {
         unsavePhotographerUseCase.unsavePhotographer(
-            UnsavePhotographerUseCase.Command(reqUserId = reqUser.id, photographerId = photographerId),
+            UnsavePhotographerUseCase.Command(requestUserId = reqUser.id, photographerId = photographerId),
         )
         return ResponseEntity.noContent().build()
     }

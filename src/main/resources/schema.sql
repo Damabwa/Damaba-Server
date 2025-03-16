@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS photographer_photography_type;
 DROP TABLE IF EXISTS photographer_active_region;
 DROP TABLE IF EXISTS photographer_portfolio_image;
 DROP TABLE IF EXISTS user_profile_image;
-DROP TABLE IF EXISTS saved_photographer;
+DROP TABLE IF EXISTS photographer_save;
 DROP TABLE IF EXISTS promotion;
 DROP TABLE IF EXISTS promotion_photography_type;
 DROP TABLE IF EXISTS promotion_image;
@@ -98,7 +98,7 @@ CREATE TABLE user_profile_image
 );
 CREATE INDEX idx__user_profile_image__url ON user_profile_image (url);
 
-CREATE TABLE saved_photographer
+CREATE TABLE photographer_save
 (
     id              BIGINT   NOT NULL AUTO_INCREMENT,
     user_id         BIGINT   NOT NULL COMMENT '(FK) id of request user',
@@ -107,8 +107,8 @@ CREATE TABLE saved_photographer
     updated_at      DATETIME NOT NULL,
     PRIMARY KEY (id)
 );
-CREATE INDEX idx__saved_photographer__user_id ON saved_photographer (user_id);
-CREATE INDEX idx__saved_photographer__photographer_id ON saved_photographer (photographer_id);
+CREATE INDEX idx__photographer_save__user_id ON photographer_save (user_id);
+CREATE INDEX idx__photographer_save__photographer_id ON photographer_save (photographer_id);
 
 CREATE TABLE promotion
 (

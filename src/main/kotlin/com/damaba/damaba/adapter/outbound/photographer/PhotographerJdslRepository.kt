@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository
 @Repository
 class PhotographerJdslRepository(private val photographerJpaRepository: PhotographerJpaRepository) {
     fun findPhotographerList(
-        reqUserId: Long?,
+        requestUserId: Long?,
         regions: Set<RegionFilterCondition>,
         photographyTypes: Set<PhotographyType>,
         sort: PhotographerSortType,
@@ -54,7 +54,7 @@ class PhotographerJdslRepository(private val photographerJpaRepository: Photogra
                 .from(entity(PhotographerSaveJpaEntity::class))
                 .whereAnd(
                     path(PhotographerSaveJpaEntity::photographerId).eq(path(PhotographerJpaEntity::userId)),
-                    path(PhotographerSaveJpaEntity::userId).eq(reqUserId),
+                    path(PhotographerSaveJpaEntity::userId).eq(requestUserId),
                 ).asSubquery()
 
             val saveCount = expression(Long::class, "saveCount")
@@ -91,6 +91,46 @@ class PhotographerJdslRepository(private val photographerJpaRepository: Photogra
             PhotographerMapper.INSTANCE.toPhotographerListItem(
                 photographer = (tuple.get(0) as PhotographerJpaEntity).toPhotographer(tuple.get(1) as UserJpaEntity),
                 isSaved = tuple.get(3) as Boolean,
+            )
+        }
+    }
+
+    fun findSavedPhotographerList(
+        requestUserId: Long?,
+        pageable: Pageable,
+    ): Page<PhotographerListItem> {
+        val tuples = photographerJpaRepository.findPage(pageable) {
+            selectDistinct<Tuple>(
+                entity(PhotographerJpaEntity::class),
+                entity(UserJpaEntity::class),
+                path(PhotographerSaveJpaEntity::createdAt),
+            ).from(
+                entity(PhotographerSaveJpaEntity::class),
+                fetchJoin(PhotographerJpaEntity::class).on(
+                    path(PhotographerSaveJpaEntity::photographerId).eq(path(PhotographerJpaEntity::userId)),
+                ),
+                fetchJoin(UserJpaEntity::class).on(
+                    path(PhotographerJpaEntity::userId).eq(path(UserJpaEntity::id)),
+                ),
+                leftJoin(PhotographerActiveRegionJpaEntity::class).on(
+                    path(PhotographerActiveRegionJpaEntity::photographer)(PhotographerJpaEntity::userId)
+                        .eq(path(PhotographerJpaEntity::userId)),
+                ),
+                leftJoin(PhotographerPhotographyTypeJpaEntity::class).on(
+                    path(PhotographerPhotographyTypeJpaEntity::photographer)(PhotographerJpaEntity::userId)
+                        .eq(path(PhotographerJpaEntity::userId)),
+                ),
+            ).where(
+                path(PhotographerSaveJpaEntity::userId).eq(requestUserId),
+            ).orderBy(
+                path(PhotographerSaveJpaEntity::createdAt).desc(),
+            )
+        }
+
+        return tuples.filterNotNull().map { tuple ->
+            PhotographerMapper.INSTANCE.toPhotographerListItem(
+                photographer = (tuple.get(0) as PhotographerJpaEntity).toPhotographer(tuple.get(1) as UserJpaEntity),
+                isSaved = true,
             )
         }
     }
