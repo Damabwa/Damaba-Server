@@ -1,7 +1,8 @@
 package com.damaba.damaba.mapper
 
-import com.damaba.damaba.adapter.inbound.promotion.dto.PromotionDetailResponse
-import com.damaba.damaba.adapter.inbound.promotion.dto.PromotionResponse
+import com.damaba.damaba.adapter.inbound.promotion.PromotionDetailResponse
+import com.damaba.damaba.adapter.inbound.promotion.PromotionListItemResponse
+import com.damaba.damaba.adapter.inbound.promotion.PromotionResponse
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.PromotionDetail
 import com.damaba.damaba.domain.promotion.PromotionListItem
@@ -16,6 +17,9 @@ interface PromotionMapper {
 
     @Mapping(source = "saved", target = "isSaved")
     fun toPromotionDetailResponse(promotionDetail: PromotionDetail): PromotionDetailResponse
+
+    @Mapping(source = "saved", target = "isSaved")
+    fun toPromotionListItemResponse(promotionListItem: PromotionListItem): PromotionListItemResponse
 
     @Mapping(source = "promotion.id", target = "id")
     fun toPromotionDetail(

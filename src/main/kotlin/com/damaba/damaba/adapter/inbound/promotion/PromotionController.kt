@@ -1,9 +1,7 @@
 package com.damaba.damaba.adapter.inbound.promotion
 
-import com.damaba.damaba.adapter.inbound.promotion.dto.PostPromotionRequest
-import com.damaba.damaba.adapter.inbound.promotion.dto.PromotionDetailResponse
-import com.damaba.damaba.adapter.inbound.promotion.dto.PromotionResponse
 import com.damaba.damaba.application.port.inbound.promotion.FindPromotionListUseCase
+import com.damaba.damaba.application.port.inbound.promotion.FindSavedPromotionListUseCase
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
@@ -12,7 +10,6 @@ import com.damaba.damaba.application.port.inbound.promotion.UnsavePromotionUseCa
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.exception.ValidationException
-import com.damaba.damaba.domain.promotion.PromotionListItem
 import com.damaba.damaba.domain.promotion.constant.PromotionProgressStatus
 import com.damaba.damaba.domain.promotion.constant.PromotionSortType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
@@ -43,6 +40,7 @@ class PromotionController(
     private val getPromotionUseCase: GetPromotionUseCase,
     private val getPromotionDetailUseCase: GetPromotionDetailUseCase,
     private val findPromotionListUseCase: FindPromotionListUseCase,
+    private val findSavedPromotionListUseCase: FindSavedPromotionListUseCase,
     private val postPromotionUseCase: PostPromotionUseCase,
     private val savePromotionUseCase: SavePromotionUseCase,
     private val unsavePromotionUseCase: UnsavePromotionUseCase,
@@ -118,7 +116,7 @@ class PromotionController(
         @RequestParam(defaultValue = "10")
         @Parameter(description = "페이지 크기")
         pageSize: Int,
-    ): Pagination<PromotionListItem> {
+    ): Pagination<PromotionListItemResponse> {
         val regionConditions = regions?.map { region ->
             val parts = region.trim().split(" ")
             when (parts.size) {
@@ -128,7 +126,7 @@ class PromotionController(
             }
         }?.toSet()
 
-        return findPromotionListUseCase.findPromotionList(
+        val promotionList = findPromotionListUseCase.findPromotionList(
             FindPromotionListUseCase.Query(
                 reqUserId = reqUser?.id,
                 type = type,
@@ -140,6 +138,28 @@ class PromotionController(
                 pageSize = pageSize,
             ),
         )
+        return promotionList.map { PromotionMapper.INSTANCE.toPromotionListItemResponse(it) }
+    }
+
+    @Operation(
+        summary = "저장한 프로모션 목록 조회",
+        description = "저장한 프로모션들을 조회합니다.",
+        security = [SecurityRequirement(name = "access-token")],
+    )
+    @GetMapping("/api/v1/promotions/saved")
+    fun findSavedPromotionListV1(
+        @AuthenticationPrincipal requestUser: User,
+        @RequestParam(defaultValue = "0") @Parameter(description = "페이지 번호. 0부터 시작합니다.") page: Int,
+        @RequestParam(defaultValue = "10") @Parameter(description = "페이지 크기") pageSize: Int,
+    ): Pagination<PromotionListItemResponse> {
+        val promotionList = findSavedPromotionListUseCase.findSavedPromotionList(
+            FindSavedPromotionListUseCase.Query(
+                requestUserId = requestUser.id,
+                page = page,
+                pageSize = pageSize,
+            ),
+        )
+        return promotionList.map { PromotionMapper.INSTANCE.toPromotionListItemResponse(it) }
     }
 
     @Operation(

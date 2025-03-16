@@ -29,4 +29,11 @@ data class Pagination<T>(
 
     val hasNextPage: Boolean
         get() = !isLastPage
+
+    fun <R> map(transform: (T) -> R): Pagination<R> = Pagination(
+        items = items.map(transform = transform),
+        page = page,
+        pageSize = pageSize,
+        totalPage = totalPage,
+    )
 }

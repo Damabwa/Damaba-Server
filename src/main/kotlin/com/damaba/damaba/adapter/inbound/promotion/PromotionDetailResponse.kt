@@ -1,18 +1,19 @@
-package com.damaba.damaba.adapter.inbound.promotion.dto
+package com.damaba.damaba.adapter.inbound.promotion
 
 import com.damaba.damaba.adapter.inbound.common.dto.ImageResponse
 import com.damaba.damaba.adapter.inbound.region.dto.RegionResponse
+import com.damaba.damaba.adapter.inbound.user.dto.UserResponse
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 
-data class PromotionResponse(
+data class PromotionDetailResponse(
     @Schema(description = "Id of the promotion")
     val id: Long,
 
     @Schema(description = "프로모션 작성자의 id")
-    val authorId: Long?,
+    val author: UserResponse?,
 
     @Schema(description = "프로모션 종류")
     val promotionType: PromotionType,
@@ -35,10 +36,16 @@ data class PromotionResponse(
     @Schema(description = "조회수", example = "15")
     val viewCount: Long,
 
+    @Schema(description = "저장된 수", example = "5")
+    val saveCount: Int,
+
+    @Schema(description = "게시글 저장 여부. 이미 저장한 게시글이라면 <code>true</code>")
+    val isSaved: Boolean,
+
     @Schema(description = "촬영 종류 리스트")
     val photographyTypes: Set<PhotographyType>,
 
-    @Schema(description = "이미지 url 리스트", example = "[\"https://promotion-image\"]")
+    @Schema(description = "이미지 url 리스트")
     val images: List<ImageResponse>,
 
     @Schema(description = "활동 지역 리스트")

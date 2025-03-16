@@ -1,6 +1,7 @@
 package com.damaba.damaba.application.service.promotion
 
 import com.damaba.damaba.application.port.inbound.promotion.FindPromotionListUseCase
+import com.damaba.damaba.application.port.inbound.promotion.FindSavedPromotionListUseCase
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
@@ -11,7 +12,7 @@ import com.damaba.damaba.application.port.outbound.promotion.CreatePromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.CreateSavedPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.DeleteSavedPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.ExistsSavedPromotionPort
-import com.damaba.damaba.application.port.outbound.promotion.FindPromotionListPort
+import com.damaba.damaba.application.port.outbound.promotion.FindPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.GetPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.GetSavedPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.UpdatePromotionPort
@@ -35,7 +36,7 @@ class PromotionService(
     private val getUserPort: GetUserPort,
 
     private val getPromotionPort: GetPromotionPort,
-    private val findPromotionListPort: FindPromotionListPort,
+    private val findPromotionPort: FindPromotionPort,
     private val createPromotionPort: CreatePromotionPort,
     private val updatePromotionPort: UpdatePromotionPort,
 
@@ -47,6 +48,7 @@ class PromotionService(
 ) : GetPromotionUseCase,
     GetPromotionDetailUseCase,
     FindPromotionListUseCase,
+    FindSavedPromotionListUseCase,
     PostPromotionUseCase,
     SavePromotionUseCase,
     UnsavePromotionUseCase {
@@ -74,7 +76,7 @@ class PromotionService(
     @Transactional(readOnly = true)
     override fun findPromotionList(
         query: FindPromotionListUseCase.Query,
-    ): Pagination<PromotionListItem> = findPromotionListPort.findPromotionList(
+    ): Pagination<PromotionListItem> = findPromotionPort.findPromotionList(
         query.reqUserId,
         query.type,
         query.progressStatus,
@@ -83,6 +85,15 @@ class PromotionService(
         query.sortType,
         query.page,
         query.pageSize,
+    )
+
+    @Transactional(readOnly = true)
+    override fun findSavedPromotionList(
+        query: FindSavedPromotionListUseCase.Query,
+    ): Pagination<PromotionListItem> = findPromotionPort.findSavedPromotionList(
+        requestUserId = query.requestUserId,
+        page = query.page,
+        pageSize = query.pageSize,
     )
 
     @Transactional

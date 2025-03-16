@@ -104,7 +104,7 @@ class PromotionCoreRepositoryTest @Autowired constructor(
 
         // when
         val promotions = promotionCoreRepository.findPromotionList(
-            reqUserId = reqUserId,
+            requestUserId = reqUserId,
             type = type,
             progressStatus = progressStatus,
             regions = regions,
@@ -135,7 +135,7 @@ class PromotionCoreRepositoryTest @Autowired constructor(
 
         // when
         val promotions = promotionCoreRepository.findPromotionList(
-            reqUserId = null,
+            requestUserId = null,
             type = null,
             progressStatus = null,
             regions = emptySet(),
@@ -177,7 +177,7 @@ class PromotionCoreRepositoryTest @Autowired constructor(
 
         // when
         val promotions = promotionCoreRepository.findPromotionList(
-            reqUserId = null,
+            requestUserId = null,
             type = null,
             progressStatus = progressStatus,
             regions = emptySet(),
@@ -216,7 +216,7 @@ class PromotionCoreRepositoryTest @Autowired constructor(
 
         // when
         val promotions = promotionCoreRepository.findPromotionList(
-            reqUserId = null,
+            requestUserId = null,
             type = null,
             progressStatus = progressStatus,
             regions = emptySet(),
@@ -253,7 +253,7 @@ class PromotionCoreRepositoryTest @Autowired constructor(
 
         // when
         val promotions = promotionCoreRepository.findPromotionList(
-            reqUserId = null,
+            requestUserId = null,
             type = null,
             progressStatus = null,
             regions = regions,
@@ -266,6 +266,34 @@ class PromotionCoreRepositoryTest @Autowired constructor(
         // then
         assertThat(promotions.items).hasSize(1)
         assertThat(promotions.items.first().activeRegions.map { it.category }).contains("RegionA")
+    }
+
+    @Test
+    fun `저장된 프로모션 리스트를 조회한다`() {
+        // given
+        val requestUser = userCoreRepository.create(createUser())
+        val promotion1 = promotionCoreRepository.create(createPromotion(authorId = requestUser.id))
+        val promotion2 = promotionCoreRepository.create(createPromotion(authorId = null))
+        val promotion3 = promotionCoreRepository.create(createPromotion(authorId = null))
+        savedPromotionCoreRepository.create(SavedPromotion.create(userId = requestUser.id, promotionId = promotion1.id))
+        savedPromotionCoreRepository.create(SavedPromotion.create(userId = requestUser.id, promotionId = promotion2.id))
+        savedPromotionCoreRepository.create(SavedPromotion.create(userId = requestUser.id, promotionId = promotion3.id))
+        val page = 0
+        val pageSize = 10
+
+        // when
+        val promotions = promotionCoreRepository.findSavedPromotionList(
+            requestUserId = requestUser.id,
+            page = page,
+            pageSize = pageSize,
+        )
+
+        // then
+        assertThat(promotions.items).hasSize(3)
+        assertThat(promotions.items.first().saveCount).isEqualTo(1)
+        assertThat(promotions.items.first().isSaved).isTrue()
+        assertThat(promotions.page).isEqualTo(page)
+        assertThat(promotions.pageSize).isEqualTo(pageSize)
     }
 
     @Test

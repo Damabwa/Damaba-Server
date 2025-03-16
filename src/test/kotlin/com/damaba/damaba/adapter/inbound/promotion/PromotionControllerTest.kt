@@ -1,9 +1,9 @@
 package com.damaba.damaba.adapter.inbound.promotion
 
 import com.damaba.damaba.adapter.inbound.common.dto.ImageRequest
-import com.damaba.damaba.adapter.inbound.promotion.dto.PostPromotionRequest
 import com.damaba.damaba.adapter.inbound.region.dto.RegionRequest
 import com.damaba.damaba.application.port.inbound.promotion.FindPromotionListUseCase
+import com.damaba.damaba.application.port.inbound.promotion.FindSavedPromotionListUseCase
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
@@ -60,10 +60,12 @@ class PromotionControllerTest @Autowired constructor(
     private val getPromotionUseCase: GetPromotionUseCase,
     private val getPromotionDetailUseCase: GetPromotionDetailUseCase,
     private val findPromotionListUseCase: FindPromotionListUseCase,
+    private val findSavedPromotionListUseCase: FindSavedPromotionListUseCase,
     private val postPromotionUseCase: PostPromotionUseCase,
     private val savePromotionUseCase: SavePromotionUseCase,
     private val unsavePromotionUseCase: UnsavePromotionUseCase,
 ) {
+
     @TestConfiguration
     class MockBeanSetUp {
         @Bean
@@ -74,6 +76,9 @@ class PromotionControllerTest @Autowired constructor(
 
         @Bean
         fun findPromotionListUseCase(): FindPromotionListUseCase = mockk()
+
+        @Bean
+        fun findSavedPromotionListUseCase(): FindSavedPromotionListUseCase = mockk()
 
         @Bean
         fun postPromotionUseCase(): PostPromotionUseCase = mockk()
@@ -277,6 +282,50 @@ class PromotionControllerTest @Autowired constructor(
                 .param("page", page.toString())
                 .param("pageSize", pageSize.toString()),
         ).andExpect(status().isUnprocessableEntity)
+    }
+
+    @Test
+    fun `저장된 프로모션 리스트를 조회한다`() {
+        // given
+        val requestUser = createUser()
+        val page = 1
+        val pageSize = randomInt(min = 5, max = 15)
+        val expectedResult = Pagination(
+            items = generateRandomList(maxSize = pageSize) { createPromotionListItem() },
+            page = page,
+            pageSize = pageSize,
+            totalPage = randomInt(min = 1, max = 10),
+        )
+        every {
+            findSavedPromotionListUseCase.findSavedPromotionList(
+                FindSavedPromotionListUseCase.Query(
+                    requestUserId = requestUser.id,
+                    page = page,
+                    pageSize = pageSize,
+                ),
+            )
+        } returns expectedResult
+
+        // when & then
+        mvc.perform(
+            get("/api/v1/promotions/saved")
+                .param("page", page.toString())
+                .param("pageSize", pageSize.toString())
+                .with(authentication(createAuthenticationToken(requestUser))),
+        ).andExpect(status().isOk)
+            .andExpect(jsonPath("$.items", hasSize<Int>(expectedResult.items.size)))
+            .andExpect(jsonPath("$.page").value(expectedResult.page))
+            .andExpect(jsonPath("$.pageSize").value(expectedResult.pageSize))
+            .andExpect(jsonPath("$.totalPage").value(expectedResult.totalPage))
+        verify {
+            findSavedPromotionListUseCase.findSavedPromotionList(
+                FindSavedPromotionListUseCase.Query(
+                    requestUserId = requestUser.id,
+                    page = page,
+                    pageSize = pageSize,
+                ),
+            )
+        }
     }
 
     @Test

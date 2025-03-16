@@ -2,7 +2,7 @@ package com.damaba.damaba.adapter.outbound.promotion
 
 import com.damaba.damaba.adapter.outbound.common.toPagination
 import com.damaba.damaba.application.port.outbound.promotion.CreatePromotionPort
-import com.damaba.damaba.application.port.outbound.promotion.FindPromotionListPort
+import com.damaba.damaba.application.port.outbound.promotion.FindPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.GetPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.UpdatePromotionPort
 import com.damaba.damaba.domain.common.Pagination
@@ -22,13 +22,13 @@ class PromotionCoreRepository(
     private val promotionJpaRepository: PromotionJpaRepository,
     private val promotionJdslRepository: PromotionJdslRepository,
 ) : GetPromotionPort,
-    FindPromotionListPort,
+    FindPromotionPort,
     CreatePromotionPort,
     UpdatePromotionPort {
     override fun getById(id: Long): Promotion = getJpaEntityById(id).toPromotion()
 
     override fun findPromotionList(
-        reqUserId: Long?,
+        requestUserId: Long?,
         type: PromotionType?,
         progressStatus: PromotionProgressStatus?,
         regions: Set<RegionFilterCondition>,
@@ -37,13 +37,22 @@ class PromotionCoreRepository(
         page: Int,
         pageSize: Int,
     ): Pagination<PromotionListItem> = promotionJdslRepository.findPromotionList(
-        reqUserId,
-        type,
-        progressStatus,
-        regions,
-        photographyTypes,
-        sortType,
-        PageRequest.of(page, pageSize),
+        requestUserId = requestUserId,
+        type = type,
+        progressStatus = progressStatus,
+        regions = regions,
+        photographyTypes = photographyTypes,
+        sortType = sortType,
+        pageable = PageRequest.of(page, pageSize),
+    ).toPagination()
+
+    override fun findSavedPromotionList(
+        requestUserId: Long,
+        page: Int,
+        pageSize: Int,
+    ): Pagination<PromotionListItem> = promotionJdslRepository.findSavedPromotionList(
+        requestUserId = requestUserId,
+        pageable = PageRequest.of(page, pageSize),
     ).toPagination()
 
     override fun create(promotion: Promotion): Promotion {
