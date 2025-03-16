@@ -1,5 +1,5 @@
 package com.damaba.damaba.application.port.outbound.promotion
 
-interface CountSavedPromotionPort {
+interface CountPromotionSavePort {
     fun countByPromotionId(promotionId: Long): Long
 }

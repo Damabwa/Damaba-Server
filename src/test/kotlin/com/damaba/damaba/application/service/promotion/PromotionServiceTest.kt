@@ -8,24 +8,24 @@ import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUs
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.SavePromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.UnsavePromotionUseCase
-import com.damaba.damaba.application.port.outbound.promotion.CountSavedPromotionPort
+import com.damaba.damaba.application.port.outbound.promotion.CountPromotionSavePort
 import com.damaba.damaba.application.port.outbound.promotion.CreatePromotionPort
-import com.damaba.damaba.application.port.outbound.promotion.CreateSavedPromotionPort
-import com.damaba.damaba.application.port.outbound.promotion.DeleteSavedPromotionPort
-import com.damaba.damaba.application.port.outbound.promotion.ExistsSavedPromotionPort
+import com.damaba.damaba.application.port.outbound.promotion.CreatePromotionSavePort
+import com.damaba.damaba.application.port.outbound.promotion.DeletePromotionSavePort
+import com.damaba.damaba.application.port.outbound.promotion.ExistsPromotionSavePort
 import com.damaba.damaba.application.port.outbound.promotion.FindPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.GetPromotionPort
-import com.damaba.damaba.application.port.outbound.promotion.GetSavedPromotionPort
+import com.damaba.damaba.application.port.outbound.promotion.GetPromotionSavePort
 import com.damaba.damaba.application.port.outbound.promotion.UpdatePromotionPort
 import com.damaba.damaba.application.port.outbound.user.GetUserPort
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.promotion.Promotion
-import com.damaba.damaba.domain.promotion.SavedPromotion
+import com.damaba.damaba.domain.promotion.PromotionSave
 import com.damaba.damaba.domain.promotion.constant.PromotionProgressStatus
 import com.damaba.damaba.domain.promotion.constant.PromotionSortType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
-import com.damaba.damaba.domain.promotion.exception.AlreadySavedPromotionException
+import com.damaba.damaba.domain.promotion.exception.AlreadyPromotionSaveException
 import com.damaba.damaba.domain.region.RegionFilterCondition
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomSet
@@ -37,7 +37,7 @@ import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.fixture.FileFixture.createImage
 import com.damaba.damaba.util.fixture.PromotionFixture.createPromotion
 import com.damaba.damaba.util.fixture.PromotionFixture.createPromotionListItem
-import com.damaba.damaba.util.fixture.PromotionFixture.createSavedPromotion
+import com.damaba.damaba.util.fixture.PromotionFixture.createPromotionSave
 import com.damaba.damaba.util.fixture.RegionFixture.createRegion
 import com.damaba.damaba.util.fixture.UserFixture.createUser
 import io.mockk.confirmVerified
@@ -64,13 +64,13 @@ class PromotionServiceTest {
         private val getPromotionPort: GetPromotionPort = mockk()
         private val findPromotionPort: FindPromotionPort = mockk()
         private val updatePromotionPort: UpdatePromotionPort = mockk()
-        private val createSavedPromotionPort: CreateSavedPromotionPort = mockk()
+        private val createPromotionSavePort: CreatePromotionSavePort = mockk()
 
-        private val getSavedPromotionPort: GetSavedPromotionPort = mockk()
-        private val existsSavedPromotionPort: ExistsSavedPromotionPort = mockk()
-        private val countSavedPromotionPort: CountSavedPromotionPort = mockk()
+        private val getPromotionSavePort: GetPromotionSavePort = mockk()
+        private val existsPromotionSavePort: ExistsPromotionSavePort = mockk()
+        private val countPromotionSavePort: CountPromotionSavePort = mockk()
         private val createPromotionPort: CreatePromotionPort = mockk()
-        private val deleteSavedPromotionPort: DeleteSavedPromotionPort = mockk()
+        private val deletePromotionSavePort: DeletePromotionSavePort = mockk()
 
         private val sut: PromotionService = PromotionService(
             getUserPort,
@@ -78,11 +78,11 @@ class PromotionServiceTest {
             findPromotionPort,
             createPromotionPort,
             updatePromotionPort,
-            getSavedPromotionPort,
-            existsSavedPromotionPort,
-            countSavedPromotionPort,
-            createSavedPromotionPort,
-            deleteSavedPromotionPort,
+            getPromotionSavePort,
+            existsPromotionSavePort,
+            countPromotionSavePort,
+            createPromotionSavePort,
+            deletePromotionSavePort,
         )
 
         private fun confirmVerifiedEveryMocks() {
@@ -92,11 +92,11 @@ class PromotionServiceTest {
                 findPromotionPort,
                 createPromotionPort,
                 updatePromotionPort,
-                getSavedPromotionPort,
-                existsSavedPromotionPort,
-                countSavedPromotionPort,
-                createSavedPromotionPort,
-                deleteSavedPromotionPort,
+                getPromotionSavePort,
+                existsPromotionSavePort,
+                countPromotionSavePort,
+                createPromotionSavePort,
+                deletePromotionSavePort,
             )
         }
 
@@ -129,9 +129,9 @@ class PromotionServiceTest {
             every { getPromotionPort.getById(promotionId) } returns promotion
             every { updatePromotionPort.update(any(Promotion::class)) } returns promotion
             every { getUserPort.getById(promotion.authorId!!) } returns author
-            every { countSavedPromotionPort.countByPromotionId(promotionId) } returns expectedSaveCount
+            every { countPromotionSavePort.countByPromotionId(promotionId) } returns expectedSaveCount
             every {
-                existsSavedPromotionPort.existsByUserIdAndPromotionId(requestUserId, promotionId)
+                existsPromotionSavePort.existsByUserIdAndPromotionId(requestUserId, promotionId)
             } returns expectedIsSaved
 
             // when
@@ -141,8 +141,8 @@ class PromotionServiceTest {
             verify { getPromotionPort.getById(promotionId) }
             verify { updatePromotionPort.update(any(Promotion::class)) }
             verify { getUserPort.getById(promotion.authorId!!) }
-            verify { countSavedPromotionPort.countByPromotionId(promotionId) }
-            verify { existsSavedPromotionPort.existsByUserIdAndPromotionId(requestUserId, promotionId) }
+            verify { countPromotionSavePort.countByPromotionId(promotionId) }
+            verify { existsPromotionSavePort.existsByUserIdAndPromotionId(requestUserId, promotionId) }
             confirmVerifiedEveryMocks()
             assertThat(result.id).isEqualTo(promotion.id)
             assertThat(result.viewCount).isEqualTo(originalViewCount + 1)
@@ -162,7 +162,7 @@ class PromotionServiceTest {
             every { getPromotionPort.getById(promotionId) } returns promotion
             every { updatePromotionPort.update(any(Promotion::class)) } returns promotion
             every { getUserPort.getById(promotion.authorId!!) } returns author
-            every { countSavedPromotionPort.countByPromotionId(promotionId) } returns expectedSaveCount
+            every { countPromotionSavePort.countByPromotionId(promotionId) } returns expectedSaveCount
 
             // when
             val result = sut.getPromotionDetail(GetPromotionDetailUseCase.Query(requestUserId, promotionId))
@@ -171,7 +171,7 @@ class PromotionServiceTest {
             verify { getPromotionPort.getById(promotionId) }
             verify { updatePromotionPort.update(any(Promotion::class)) }
             verify { getUserPort.getById(promotion.authorId!!) }
-            verify { countSavedPromotionPort.countByPromotionId(promotionId) }
+            verify { countPromotionSavePort.countByPromotionId(promotionId) }
             confirmVerifiedEveryMocks()
             assertThat(result.id).isEqualTo(promotion.id)
             assertThat(result.viewCount).isEqualTo(originalViewCount + 1)
@@ -190,9 +190,9 @@ class PromotionServiceTest {
             val expectedIsSaved = randomBoolean()
             every { getPromotionPort.getById(promotionId) } returns promotion
             every { updatePromotionPort.update(any(Promotion::class)) } returns promotion
-            every { countSavedPromotionPort.countByPromotionId(promotionId) } returns expectedSaveCount
+            every { countPromotionSavePort.countByPromotionId(promotionId) } returns expectedSaveCount
             every {
-                existsSavedPromotionPort.existsByUserIdAndPromotionId(requestUserId, promotionId)
+                existsPromotionSavePort.existsByUserIdAndPromotionId(requestUserId, promotionId)
             } returns expectedIsSaved
 
             // when
@@ -201,8 +201,8 @@ class PromotionServiceTest {
             // then
             verify { getPromotionPort.getById(promotionId) }
             verify { updatePromotionPort.update(any(Promotion::class)) }
-            verify { countSavedPromotionPort.countByPromotionId(promotionId) }
-            verify { existsSavedPromotionPort.existsByUserIdAndPromotionId(requestUserId, promotionId) }
+            verify { countPromotionSavePort.countByPromotionId(promotionId) }
+            verify { existsPromotionSavePort.existsByUserIdAndPromotionId(requestUserId, promotionId) }
             confirmVerifiedEveryMocks()
             assertThat(result.id).isEqualTo(promotion.id)
             assertThat(result.author).isNull()
@@ -324,15 +324,15 @@ class PromotionServiceTest {
             // given
             val userId = randomLong()
             val promotionId = randomLong()
-            every { existsSavedPromotionPort.existsByUserIdAndPromotionId(userId, promotionId) } returns false
-            every { createSavedPromotionPort.create(any(SavedPromotion::class)) } just runs
+            every { existsPromotionSavePort.existsByUserIdAndPromotionId(userId, promotionId) } returns false
+            every { createPromotionSavePort.create(any(PromotionSave::class)) } just runs
 
             // when
             sut.savePromotion(SavePromotionUseCase.Command(userId, promotionId))
 
             // then
-            verify { existsSavedPromotionPort.existsByUserIdAndPromotionId(userId, promotionId) }
-            verify { createSavedPromotionPort.create(any(SavedPromotion::class)) }
+            verify { existsPromotionSavePort.existsByUserIdAndPromotionId(userId, promotionId) }
+            verify { createPromotionSavePort.create(any(PromotionSave::class)) }
             confirmVerifiedEveryMocks()
         }
 
@@ -341,15 +341,15 @@ class PromotionServiceTest {
             // given
             val userId = randomLong()
             val promotionId = randomLong()
-            every { existsSavedPromotionPort.existsByUserIdAndPromotionId(userId, promotionId) } returns true
+            every { existsPromotionSavePort.existsByUserIdAndPromotionId(userId, promotionId) } returns true
 
             // when
             val ex = catchThrowable { sut.savePromotion(SavePromotionUseCase.Command(userId, promotionId)) }
 
             // then
-            verify { existsSavedPromotionPort.existsByUserIdAndPromotionId(userId, promotionId) }
+            verify { existsPromotionSavePort.existsByUserIdAndPromotionId(userId, promotionId) }
             confirmVerifiedEveryMocks()
-            assertThat(ex).isInstanceOf(AlreadySavedPromotionException::class.java)
+            assertThat(ex).isInstanceOf(AlreadyPromotionSaveException::class.java)
         }
 
         @Test
@@ -357,16 +357,16 @@ class PromotionServiceTest {
             // given
             val userId = randomLong()
             val promotionId = randomLong()
-            val savedPromotion = createSavedPromotion(userId = userId, promotionId = promotionId)
-            every { getSavedPromotionPort.getByUserIdAndPromotionId(userId, promotionId) } returns savedPromotion
-            every { deleteSavedPromotionPort.delete(savedPromotion) } just runs
+            val promotionSave = createPromotionSave(userId = userId, promotionId = promotionId)
+            every { getPromotionSavePort.getByUserIdAndPromotionId(userId, promotionId) } returns promotionSave
+            every { deletePromotionSavePort.delete(promotionSave) } just runs
 
             // when
             sut.unsavePromotion(UnsavePromotionUseCase.Command(userId, promotionId))
 
             // then
-            verify { getSavedPromotionPort.getByUserIdAndPromotionId(userId, promotionId) }
-            verify { deleteSavedPromotionPort.delete(savedPromotion) }
+            verify { getPromotionSavePort.getByUserIdAndPromotionId(userId, promotionId) }
+            verify { deletePromotionSavePort.delete(promotionSave) }
             confirmVerifiedEveryMocks()
         }
 

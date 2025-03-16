@@ -3,7 +3,7 @@ package com.damaba.damaba.adapter.outbound.promotion
 import com.damaba.damaba.adapter.outbound.user.UserCoreRepository
 import com.damaba.damaba.config.JpaConfig
 import com.damaba.damaba.domain.common.PhotographyType
-import com.damaba.damaba.domain.promotion.SavedPromotion
+import com.damaba.damaba.domain.promotion.PromotionSave
 import com.damaba.damaba.domain.promotion.constant.PromotionProgressStatus
 import com.damaba.damaba.domain.promotion.constant.PromotionSortType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
@@ -32,12 +32,12 @@ import kotlin.test.Test
     UserCoreRepository::class,
     PromotionCoreRepository::class,
     PromotionJdslRepository::class,
-    SavedPromotionCoreRepository::class,
+    PromotionSaveCoreRepository::class,
 )
 @DataJpaTest
 class PromotionCoreRepositoryTest @Autowired constructor(
     private val promotionCoreRepository: PromotionCoreRepository,
-    private val savedPromotionCoreRepository: SavedPromotionCoreRepository,
+    private val promotionSaveCoreRepository: PromotionSaveCoreRepository,
 ) {
     @Autowired
     private lateinit var userCoreRepository: UserCoreRepository
@@ -79,7 +79,7 @@ class PromotionCoreRepositoryTest @Autowired constructor(
                 activeRegions = setOf(createRegion(category = "RegionA", name = "CityA")),
             ),
         )
-        savedPromotionCoreRepository.create(SavedPromotion.create(userId = reqUserId, promotionId = freePromotion.id))
+        promotionSaveCoreRepository.create(PromotionSave.create(userId = reqUserId, promotionId = freePromotion.id))
 
         promotionCoreRepository.create(
             createPromotion(
@@ -275,9 +275,9 @@ class PromotionCoreRepositoryTest @Autowired constructor(
         val promotion1 = promotionCoreRepository.create(createPromotion(authorId = requestUser.id))
         val promotion2 = promotionCoreRepository.create(createPromotion(authorId = null))
         val promotion3 = promotionCoreRepository.create(createPromotion(authorId = null))
-        savedPromotionCoreRepository.create(SavedPromotion.create(userId = requestUser.id, promotionId = promotion1.id))
-        savedPromotionCoreRepository.create(SavedPromotion.create(userId = requestUser.id, promotionId = promotion2.id))
-        savedPromotionCoreRepository.create(SavedPromotion.create(userId = requestUser.id, promotionId = promotion3.id))
+        promotionSaveCoreRepository.create(PromotionSave.create(userId = requestUser.id, promotionId = promotion1.id))
+        promotionSaveCoreRepository.create(PromotionSave.create(userId = requestUser.id, promotionId = promotion2.id))
+        promotionSaveCoreRepository.create(PromotionSave.create(userId = requestUser.id, promotionId = promotion3.id))
         val page = 0
         val pageSize = 10
 

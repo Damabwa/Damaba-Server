@@ -1,8 +1,8 @@
 package com.damaba.damaba.adapter.outbound.promotion
 
 import com.damaba.damaba.config.RepositoryTestConfig
-import com.damaba.damaba.domain.promotion.SavedPromotion
-import com.damaba.damaba.domain.promotion.exception.SavedPromotionNotFoundException
+import com.damaba.damaba.domain.promotion.PromotionSave
+import com.damaba.damaba.domain.promotion.exception.PromotionSaveNotFoundException
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
@@ -13,18 +13,18 @@ import org.springframework.test.context.ActiveProfiles
 import kotlin.test.Test
 
 @ActiveProfiles("test")
-@Import(RepositoryTestConfig::class, SavedPromotionCoreRepository::class)
+@Import(RepositoryTestConfig::class, PromotionSaveCoreRepository::class)
 @DataJpaTest
-class SavedPromotionCoreRepositoryTest @Autowired constructor(
-    private val sut: SavedPromotionCoreRepository,
-    private val savedPromotionJpaRepository: SavedPromotionJpaRepository,
+class PromotionSaveCoreRepositoryTest @Autowired constructor(
+    private val sut: PromotionSaveCoreRepository,
+    private val promotionSaveJpaRepository: PromotionSaveJpaRepository,
 ) {
     @Test
     fun `(GET) 유저 id와 프로모션 id가 주어지고, 프로모션 저장 이력을 조회한다`() {
         // given
         val userId = randomLong()
         val promotionId = randomLong()
-        sut.create(SavedPromotion.create(userId, promotionId))
+        sut.create(PromotionSave.create(userId, promotionId))
 
         // when
         val result = sut.getByUserIdAndPromotionId(userId, promotionId)
@@ -41,7 +41,7 @@ class SavedPromotionCoreRepositoryTest @Autowired constructor(
         val ex = catchThrowable { sut.getByUserIdAndPromotionId(randomLong(), randomLong()) }
 
         // then
-        assertThat(ex).isInstanceOf(SavedPromotionNotFoundException::class.java)
+        assertThat(ex).isInstanceOf(PromotionSaveNotFoundException::class.java)
     }
 
     @Test
@@ -49,7 +49,7 @@ class SavedPromotionCoreRepositoryTest @Autowired constructor(
         // given
         val userId = randomLong()
         val promotionId = randomLong()
-        sut.create(SavedPromotion.create(userId, promotionId))
+        sut.create(PromotionSave.create(userId, promotionId))
 
         // when
         val result = sut.existsByUserIdAndPromotionId(userId, promotionId)
@@ -74,10 +74,10 @@ class SavedPromotionCoreRepositoryTest @Autowired constructor(
         val promotionId = randomLong()
 
         // when
-        sut.create(SavedPromotion.create(userId, promotionId))
+        sut.create(PromotionSave.create(userId, promotionId))
 
         // then
-        val result = savedPromotionJpaRepository.findAll()
+        val result = promotionSaveJpaRepository.findAll()
         assertThat(result.size).isEqualTo(1)
     }
 
@@ -86,14 +86,14 @@ class SavedPromotionCoreRepositoryTest @Autowired constructor(
         // given
         val userId = randomLong()
         val promotionId = randomLong()
-        sut.create(SavedPromotion.create(userId, promotionId))
-        val savedPromotion = sut.getByUserIdAndPromotionId(userId, promotionId)
+        sut.create(PromotionSave.create(userId, promotionId))
+        val promotionSave = sut.getByUserIdAndPromotionId(userId, promotionId)
 
         // when
-        sut.delete(savedPromotion)
+        sut.delete(promotionSave)
 
         // then
-        val result = savedPromotionJpaRepository.findAll()
+        val result = promotionSaveJpaRepository.findAll()
         assertThat(result.size).isEqualTo(0)
     }
 }
