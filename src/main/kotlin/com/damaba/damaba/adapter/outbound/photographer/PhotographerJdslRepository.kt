@@ -33,7 +33,8 @@ class PhotographerJdslRepository(private val photographerJpaRepository: Photogra
                 val regionConditions = regions.map { region ->
                     var regionCond = path(PhotographerActiveRegionJpaEntity::category).eq(region.category)
                     if (region.name != null) {
-                        regionCond = regionCond.and(path(PhotographerActiveRegionJpaEntity::name).eq(region.name))
+                        regionCond =
+                            regionCond.and(path(PhotographerActiveRegionJpaEntity::name).like("%${region.name}%"))
                     }
                     return@map regionCond
                 }
