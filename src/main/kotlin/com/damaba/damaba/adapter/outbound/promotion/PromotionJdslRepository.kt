@@ -64,7 +64,8 @@ class PromotionJdslRepository(private val promotionJpaRepository: PromotionJpaRe
                 val regionConditions = regions.map { region ->
                     var regionCond = path(PromotionActiveRegionJpaEntity::category).eq(region.category)
                     if (region.name != null) {
-                        regionCond = regionCond.and(path(PromotionActiveRegionJpaEntity::name).eq(region.name))
+                        regionCond =
+                            regionCond.and(path(PromotionActiveRegionJpaEntity::name).like("%${region.name}%"))
                     }
                     return@map regionCond
                 }
