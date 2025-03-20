@@ -3,6 +3,7 @@ package com.damaba.damaba.adapter.inbound.user.dto
 import com.damaba.damaba.adapter.inbound.common.dto.ImageResponse
 import com.damaba.damaba.domain.user.constant.Gender
 import com.damaba.damaba.domain.user.constant.LoginType
+import com.damaba.damaba.domain.user.constant.UserRoleType
 import com.damaba.damaba.domain.user.constant.UserType
 import io.swagger.v3.oas.annotations.media.Schema
 
@@ -12,6 +13,9 @@ data class UserResponse(
 
     @Schema(description = "User type")
     val type: UserType,
+
+    @Schema(description = "User roles")
+    val roles: Set<UserRoleType>,
 
     @Schema(description = "사용하는 로그인 종류")
     val loginType: LoginType,
