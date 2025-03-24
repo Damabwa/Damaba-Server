@@ -2,6 +2,7 @@ package com.damaba.damaba.adapter.inbound.promotion
 
 import com.damaba.damaba.adapter.inbound.common.dto.ImageResponse
 import com.damaba.damaba.adapter.inbound.region.dto.RegionResponse
+import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.user.User
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
@@ -27,6 +28,9 @@ data class PromotionListItemResponse(
 
     @Schema(description = "게시글 저장 여부. 이미 저장한 게시글이라면 <code>true</code>")
     val isSaved: Boolean,
+
+    @Schema(description = "촬영 종류")
+    val photographyTypes: Set<PhotographyType>,
 
     @Schema(description = "이미지 url 리스트")
     val images: List<ImageResponse>,

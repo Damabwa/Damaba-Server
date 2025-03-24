@@ -1,5 +1,6 @@
 package com.damaba.damaba.domain.promotion
 
+import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.region.Region
 import com.damaba.damaba.domain.user.User
@@ -16,6 +17,7 @@ data class PromotionListItem(
     val endedAt: LocalDate?,
     val saveCount: Long,
     val isSaved: Boolean,
+    val photographyTypes: Set<PhotographyType>,
     val images: List<Image>,
     val activeRegions: Set<Region>,
     val hashtags: Set<String>,
