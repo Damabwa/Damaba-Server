@@ -2,6 +2,7 @@ package com.damaba.damaba.adapter.inbound.promotion
 
 import com.damaba.damaba.adapter.inbound.common.dto.ImageRequest
 import com.damaba.damaba.adapter.inbound.region.dto.RegionRequest
+import com.damaba.damaba.application.port.inbound.promotion.DeletePromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.FindPromotionListUseCase
 import com.damaba.damaba.application.port.inbound.promotion.FindSavedPromotionListUseCase
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
@@ -57,11 +58,14 @@ import kotlin.test.Test
 class PromotionControllerTest @Autowired constructor(
     private val mvc: MockMvc,
     private val mapper: ObjectMapper,
+
     private val getPromotionUseCase: GetPromotionUseCase,
     private val getPromotionDetailUseCase: GetPromotionDetailUseCase,
     private val findPromotionListUseCase: FindPromotionListUseCase,
     private val findSavedPromotionListUseCase: FindSavedPromotionListUseCase,
     private val postPromotionUseCase: PostPromotionUseCase,
+    private val deletePromotionUseCase: DeletePromotionUseCase,
+
     private val savePromotionUseCase: SavePromotionUseCase,
     private val unsavePromotionUseCase: UnsavePromotionUseCase,
 ) {
@@ -82,6 +86,9 @@ class PromotionControllerTest @Autowired constructor(
 
         @Bean
         fun postPromotionUseCase(): PostPromotionUseCase = mockk()
+
+        @Bean
+        fun deletePromotionUseCase(): DeletePromotionUseCase = mockk()
 
         @Bean
         fun savePromotionUseCase(): SavePromotionUseCase = mockk()
@@ -373,6 +380,22 @@ class PromotionControllerTest @Autowired constructor(
                 .with(authentication(createAuthenticationToken(requester))),
         ).andExpect(status().isNoContent)
         verify { savePromotionUseCase.savePromotion(command) }
+    }
+
+    @Test
+    fun `프로모션을 삭제한다`() {
+        // given
+        val requestUser = createUser(id = 1L)
+        val promotionId = randomLong()
+        val command = DeletePromotionUseCase.Command(requestUser = requestUser, promotionId = promotionId)
+        every { deletePromotionUseCase.deletePromotion(command) } just runs
+
+        // when & then
+        mvc.perform(
+            delete("/api/v1/promotions/$promotionId")
+                .withAuthUser(requestUser),
+        ).andExpect(status().isNoContent)
+        verify { deletePromotionUseCase.deletePromotion(command) }
     }
 
     @Test

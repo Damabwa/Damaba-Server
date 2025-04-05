@@ -37,7 +37,10 @@ open class User(
         protected set
 
     val isRegistrationCompleted
-        get() = type != UserType.UNDEFINED
+        get() = this.type != UserType.UNDEFINED
+
+    val isAdmin
+        get() = this.roles.contains(UserRoleType.ADMIN)
 
     fun registerUser(
         nickname: String,

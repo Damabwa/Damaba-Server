@@ -40,6 +40,9 @@ class PromotionCoreRepositoryTest @Autowired constructor(
     private val promotionSaveCoreRepository: PromotionSaveCoreRepository,
 ) {
     @Autowired
+    private lateinit var promotionJpaRepository: PromotionJpaRepository
+
+    @Autowired
     private lateinit var userCoreRepository: UserCoreRepository
 
     @Test
@@ -333,5 +336,18 @@ class PromotionCoreRepositoryTest @Autowired constructor(
         assertThat(updatedPromotion.startedAt).isEqualTo(newPromotion.startedAt)
         assertThat(updatedPromotion.endedAt).isEqualTo(newPromotion.endedAt)
         assertThat(updatedPromotion.viewCount).isEqualTo(newPromotion.viewCount)
+    }
+
+    @Test
+    fun `프로모션을 삭제한다`() {
+        // given
+        val promotion = promotionCoreRepository.create(createPromotion())
+
+        // when
+        promotionCoreRepository.delete(promotion)
+
+        // then
+        val optionalPromotionJpaEntity = promotionJpaRepository.findById(promotion.id)
+        assertThat(optionalPromotionJpaEntity.isEmpty).isTrue()
     }
 }

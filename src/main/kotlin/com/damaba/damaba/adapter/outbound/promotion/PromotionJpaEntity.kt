@@ -71,7 +71,8 @@ class PromotionJpaEntity(
         private set
 
     @OneToMany(mappedBy = "promotion", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val photographyTypes: MutableSet<PromotionPhotographyTypeJpaEntity> = mutableSetOf()
+    var photographyTypes: MutableSet<PromotionPhotographyTypeJpaEntity> = mutableSetOf()
+        private set
 
     @OneToMany(mappedBy = "promotion", cascade = [CascadeType.PERSIST])
     private var _images: MutableList<PromotionImageJpaEntity> = mutableListOf()
@@ -112,6 +113,10 @@ class PromotionJpaEntity(
         this.startedAt = promotion.startedAt
         this.endedAt = promotion.endedAt
         this.viewCount = promotion.viewCount
+    }
+
+    fun delete() {
+        this.deletedAt = LocalDateTime.now()
     }
 
     companion object {

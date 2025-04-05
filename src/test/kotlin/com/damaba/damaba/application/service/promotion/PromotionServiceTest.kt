@@ -2,6 +2,7 @@ package com.damaba.damaba.application.service.promotion
 
 import com.damaba.damaba.adapter.outbound.promotion.PromotionCoreRepository
 import com.damaba.damaba.adapter.outbound.user.UserCoreRepository
+import com.damaba.damaba.application.port.inbound.promotion.DeletePromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.FindPromotionListUseCase
 import com.damaba.damaba.application.port.inbound.promotion.FindSavedPromotionListUseCase
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
@@ -11,6 +12,7 @@ import com.damaba.damaba.application.port.inbound.promotion.UnsavePromotionUseCa
 import com.damaba.damaba.application.port.outbound.promotion.CountPromotionSavePort
 import com.damaba.damaba.application.port.outbound.promotion.CreatePromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.CreatePromotionSavePort
+import com.damaba.damaba.application.port.outbound.promotion.DeletePromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.DeletePromotionSavePort
 import com.damaba.damaba.application.port.outbound.promotion.ExistsPromotionSavePort
 import com.damaba.damaba.application.port.outbound.promotion.FindPromotionPort
@@ -26,7 +28,9 @@ import com.damaba.damaba.domain.promotion.constant.PromotionProgressStatus
 import com.damaba.damaba.domain.promotion.constant.PromotionSortType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.domain.promotion.exception.AlreadyPromotionSaveException
+import com.damaba.damaba.domain.promotion.exception.PromotionDeletePermissionDeniedException
 import com.damaba.damaba.domain.region.RegionFilterCondition
+import com.damaba.damaba.domain.user.constant.UserRoleType
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomSet
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomBoolean
@@ -46,6 +50,7 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.verify
+import io.mockk.verifyOrder
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatIterable
 import org.assertj.core.api.Assertions.catchThrowable
@@ -63,13 +68,14 @@ class PromotionServiceTest {
 
         private val getPromotionPort: GetPromotionPort = mockk()
         private val findPromotionPort: FindPromotionPort = mockk()
+        private val createPromotionPort: CreatePromotionPort = mockk()
         private val updatePromotionPort: UpdatePromotionPort = mockk()
-        private val createPromotionSavePort: CreatePromotionSavePort = mockk()
+        private val deletePromotionPort: DeletePromotionPort = mockk()
 
         private val getPromotionSavePort: GetPromotionSavePort = mockk()
         private val existsPromotionSavePort: ExistsPromotionSavePort = mockk()
         private val countPromotionSavePort: CountPromotionSavePort = mockk()
-        private val createPromotionPort: CreatePromotionPort = mockk()
+        private val createPromotionSavePort: CreatePromotionSavePort = mockk()
         private val deletePromotionSavePort: DeletePromotionSavePort = mockk()
 
         private val sut: PromotionService = PromotionService(
@@ -78,6 +84,7 @@ class PromotionServiceTest {
             findPromotionPort,
             createPromotionPort,
             updatePromotionPort,
+            deletePromotionPort,
             getPromotionSavePort,
             existsPromotionSavePort,
             countPromotionSavePort,
@@ -92,6 +99,7 @@ class PromotionServiceTest {
                 findPromotionPort,
                 createPromotionPort,
                 updatePromotionPort,
+                deletePromotionPort,
                 getPromotionSavePort,
                 existsPromotionSavePort,
                 countPromotionSavePort,
@@ -350,6 +358,74 @@ class PromotionServiceTest {
             verify { existsPromotionSavePort.existsByUserIdAndPromotionId(userId, promotionId) }
             confirmVerifiedEveryMocks()
             assertThat(ex).isInstanceOf(AlreadyPromotionSaveException::class.java)
+        }
+
+        @Test
+        fun `작성자가 프로모션을 삭제한다`() {
+            // given
+            val author = createUser()
+            val promotionId = randomLong()
+            val promotion = createPromotion(id = promotionId, authorId = author.id)
+            every { getPromotionPort.getById(promotionId) } returns promotion
+            every { deletePromotionPort.delete(promotion) } just runs
+
+            // when
+            sut.deletePromotion(
+                DeletePromotionUseCase.Command(requestUser = author, promotionId = promotionId),
+            )
+
+            // then
+            verifyOrder {
+                getPromotionPort.getById(promotionId)
+                deletePromotionPort.delete(promotion)
+            }
+            confirmVerifiedEveryMocks()
+        }
+
+        @Test
+        fun `관리자가 프로모션을 삭제한다`() {
+            // given
+            val admin = createUser(id = 1L, roles = setOf(UserRoleType.USER, UserRoleType.ADMIN))
+            val promotionId = randomLong()
+            val promotion = createPromotion(id = promotionId, authorId = 2L)
+            every { getPromotionPort.getById(promotionId) } returns promotion
+            every { deletePromotionPort.delete(promotion) } just runs
+
+            // when
+            sut.deletePromotion(
+                DeletePromotionUseCase.Command(requestUser = admin, promotionId = promotionId),
+            )
+
+            // then
+            verifyOrder {
+                getPromotionPort.getById(promotionId)
+                deletePromotionPort.delete(promotion)
+            }
+            confirmVerifiedEveryMocks()
+        }
+
+        @Test
+        fun `권한이 없는 유저가 프로모션을 삭제하면, 예외가 발생한다`() {
+            // given
+            val requestUser = createUser(id = 1L)
+            val promotionId = randomLong()
+            val promotion = createPromotion(id = promotionId, authorId = 2L)
+            every { getPromotionPort.getById(promotionId) } returns promotion
+
+            // when
+            val ex = catchThrowable {
+                sut.deletePromotion(
+                    DeletePromotionUseCase.Command(
+                        requestUser = requestUser,
+                        promotionId = promotionId,
+                    ),
+                )
+            }
+
+            // then
+            verify { getPromotionPort.getById(promotionId) }
+            confirmVerifiedEveryMocks()
+            assertThat(ex).isInstanceOf(PromotionDeletePermissionDeniedException::class.java)
         }
 
         @Test
