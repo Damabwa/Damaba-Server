@@ -9,6 +9,7 @@ import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUs
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.SavePromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.UnsavePromotionUseCase
+import com.damaba.damaba.application.port.inbound.promotion.UpdatePromotionUseCase
 import com.damaba.damaba.application.port.outbound.promotion.CountPromotionSavePort
 import com.damaba.damaba.application.port.outbound.promotion.CreatePromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.CreatePromotionSavePort
@@ -29,6 +30,7 @@ import com.damaba.damaba.domain.promotion.constant.PromotionSortType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.domain.promotion.exception.AlreadyPromotionSaveException
 import com.damaba.damaba.domain.promotion.exception.PromotionDeletePermissionDeniedException
+import com.damaba.damaba.domain.promotion.exception.PromotionUpdatePermissionDeniedException
 import com.damaba.damaba.domain.region.RegionFilterCondition
 import com.damaba.damaba.domain.user.constant.UserRoleType
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
@@ -38,6 +40,7 @@ import com.damaba.damaba.util.RandomTestUtils.Companion.randomInt
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLocalDate
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
+import com.damaba.damaba.util.RandomTestUtils.Companion.randomUrl
 import com.damaba.damaba.util.fixture.FileFixture.createImage
 import com.damaba.damaba.util.fixture.PromotionFixture.createPromotion
 import com.damaba.damaba.util.fixture.PromotionFixture.createPromotionListItem
@@ -358,6 +361,102 @@ class PromotionServiceTest {
             verify { existsPromotionSavePort.existsByUserIdAndPromotionId(userId, promotionId) }
             confirmVerifiedEveryMocks()
             assertThat(ex).isInstanceOf(AlreadyPromotionSaveException::class.java)
+        }
+
+        @Test
+        fun `작성자가 프로모션을 수정한다`() {
+            // given
+            val authorId = randomLong()
+            val promotionId = randomLong()
+            val originalPromotion = createPromotion(id = promotionId, authorId = authorId)
+            val newPromotionType = PromotionType.FREE
+            val newTitle = randomString()
+            val newContent = randomString()
+            val newExternalLink = randomUrl()
+            val newStartedAt = randomLocalDate()
+            val newEndedAt = randomLocalDate()
+            val newPhotographyTypes = setOf(PhotographyType.ID_PHOTO)
+            val newImages = listOf(createImage())
+            val newActiveRegions = setOf(createRegion())
+            val newHashtags = setOf(randomString())
+            val updatedPromotion = createPromotion(
+                id = promotionId,
+                authorId = authorId,
+                promotionType = newPromotionType,
+                title = newTitle,
+                content = newContent,
+                externalLink = newExternalLink,
+                startedAt = newStartedAt,
+                endedAt = newEndedAt,
+                viewCount = originalPromotion.viewCount,
+                photographyTypes = newPhotographyTypes,
+                images = newImages,
+                activeRegions = newActiveRegions,
+                hashtags = newHashtags,
+            )
+            every { getPromotionPort.getById(id = promotionId) } returns originalPromotion
+            every { updatePromotionPort.update(updatedPromotion) } returns updatedPromotion
+
+            // when
+            val result = sut.updatePromotion(
+                command = UpdatePromotionUseCase.Command(
+                    requestUserId = authorId,
+                    promotionId = promotionId,
+                    promotionType = newPromotionType,
+                    title = newTitle,
+                    content = newContent,
+                    externalLink = newExternalLink,
+                    startedAt = newStartedAt,
+                    endedAt = newEndedAt,
+                    photographyTypes = newPhotographyTypes,
+                    images = newImages,
+                    activeRegions = newActiveRegions,
+                    hashtags = newHashtags,
+                ),
+            )
+
+            // then
+            verifyOrder {
+                getPromotionPort.getById(id = promotionId)
+                updatePromotionPort.update(updatedPromotion)
+            }
+            confirmVerifiedEveryMocks()
+            assertThat(result).isEqualTo(updatedPromotion)
+        }
+
+        @Test
+        fun `작성자가 아닌 사용자가 프로모션을 수정하면, 예외가 발생한다`() {
+            // given
+            val requestUserId = 1L
+            val promotionId = randomLong()
+            every {
+                getPromotionPort.getById(id = promotionId)
+            } returns createPromotion(id = promotionId, authorId = 5L)
+
+            // when
+            val ex = catchThrowable {
+                sut.updatePromotion(
+                    command = UpdatePromotionUseCase.Command(
+                        requestUserId = requestUserId,
+                        promotionId = promotionId,
+                        promotionType = PromotionType.FREE,
+                        title = randomString(),
+                        content = randomString(),
+                        externalLink = randomUrl(),
+                        startedAt = randomLocalDate(),
+                        endedAt = randomLocalDate(),
+                        photographyTypes = setOf(PhotographyType.ID_PHOTO),
+                        images = listOf(createImage()),
+                        activeRegions = setOf(createRegion()),
+                        hashtags = setOf(randomString()),
+                    ),
+                )
+            }
+
+            // then
+            verify { getPromotionPort.getById(id = promotionId) }
+            confirmVerifiedEveryMocks()
+            assertThat(ex).isInstanceOf(PromotionUpdatePermissionDeniedException::class.java)
         }
 
         @Test

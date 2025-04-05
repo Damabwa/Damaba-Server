@@ -40,7 +40,7 @@ open class User(
         get() = this.type != UserType.UNDEFINED
 
     val isAdmin
-        get() = this.roles.contains(UserRoleType.ADMIN)
+        get() = UserRoleType.ADMIN in this.roles
 
     fun registerUser(
         nickname: String,

@@ -9,19 +9,49 @@ import java.time.LocalDate
 class Promotion(
     val id: Long,
     val authorId: Long?,
-    val promotionType: PromotionType,
-    val title: String,
-    val content: String,
-    val externalLink: String?,
-    val startedAt: LocalDate?,
-    val endedAt: LocalDate?,
+    promotionType: PromotionType,
+    title: String,
+    content: String,
+    externalLink: String?,
+    startedAt: LocalDate?,
+    endedAt: LocalDate?,
     viewCount: Long,
-    val photographyTypes: Set<PhotographyType>,
-    val images: List<Image>,
-    val activeRegions: Set<Region>,
-    val hashtags: Set<String>,
+    photographyTypes: Set<PhotographyType>,
+    images: List<Image>,
+    activeRegions: Set<Region>,
+    hashtags: Set<String>,
 ) {
+    var promotionType: PromotionType = promotionType
+        private set
+
+    var title: String = title
+        private set
+
+    var content: String = content
+        private set
+
+    var externalLink: String? = externalLink
+        private set
+
+    var startedAt: LocalDate? = startedAt
+        private set
+
+    var endedAt: LocalDate? = endedAt
+        private set
+
     var viewCount: Long = viewCount
+        private set
+
+    var photographyTypes: Set<PhotographyType> = photographyTypes
+        private set
+
+    var images: List<Image> = images
+        private set
+
+    var activeRegions: Set<Region> = activeRegions
+        private set
+
+    var hashtags: Set<String> = hashtags
         private set
 
     override fun equals(other: Any?): Boolean {
@@ -34,6 +64,30 @@ class Promotion(
 
     fun incrementViewCount() {
         this.viewCount++
+    }
+
+    fun update(
+        promotionType: PromotionType,
+        title: String,
+        content: String,
+        externalLink: String?,
+        startedAt: LocalDate?,
+        endedAt: LocalDate?,
+        photographyTypes: Set<PhotographyType>,
+        images: List<Image>,
+        activeRegions: Set<Region>,
+        hashtags: Set<String>,
+    ) {
+        this.promotionType = promotionType
+        this.title = title
+        this.content = content
+        this.externalLink = externalLink
+        this.startedAt = startedAt
+        this.endedAt = endedAt
+        this.photographyTypes = photographyTypes
+        this.images = images
+        this.activeRegions = activeRegions
+        this.hashtags = hashtags
     }
 
     companion object {

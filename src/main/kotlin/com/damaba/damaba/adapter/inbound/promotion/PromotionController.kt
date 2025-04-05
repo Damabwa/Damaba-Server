@@ -8,6 +8,7 @@ import com.damaba.damaba.application.port.inbound.promotion.GetPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.SavePromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.UnsavePromotionUseCase
+import com.damaba.damaba.application.port.inbound.promotion.UpdatePromotionUseCase
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.exception.ValidationException
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -43,6 +45,7 @@ class PromotionController(
     private val findPromotionListUseCase: FindPromotionListUseCase,
     private val findSavedPromotionListUseCase: FindSavedPromotionListUseCase,
     private val postPromotionUseCase: PostPromotionUseCase,
+    private val updatePromotionUseCase: UpdatePromotionUseCase,
     private val deletePromotionUseCase: DeletePromotionUseCase,
 
     private val savePromotionUseCase: SavePromotionUseCase,
@@ -197,6 +200,40 @@ class PromotionController(
     ): ResponseEntity<Unit> {
         savePromotionUseCase.savePromotion(SavePromotionUseCase.Command(requestUser.id, promotionId))
         return ResponseEntity.noContent().build()
+    }
+
+    @Operation(
+        summary = "프로모션 수정",
+        description = "<p>프로모션을 수정합니다. 요청된 정보들로 기존 정보를 변경(overwrite)합니다." +
+            "<p>정보가 변경되지 않은 항목이더라도 요청 데이터에 모두 담아야 합니다. 그 때문에 변경되지 않은 항목은 기존 값을 그대로 담아 요청해야 합니다.",
+        security = [SecurityRequirement(name = "access-token")],
+    )
+    @ApiResponses(
+        ApiResponse(responseCode = "200"),
+        ApiResponse(
+            responseCode = "403",
+            description = "프로모션 수정 권한이 없는 경우. 프로모션은 작성자만 수정할 수 있음.",
+            content = [Content()],
+        ),
+        ApiResponse(
+            responseCode = "404",
+            description = "<code>promotionId</code>에 해당하는 프로모션을 찾을 수 없는 경우",
+            content = [Content()],
+        ),
+    )
+    @PutMapping("/api/v1/promotions/{promotionId}")
+    fun updatePromotionV1(
+        @AuthenticationPrincipal requestUser: User,
+        @PathVariable promotionId: Long,
+        @RequestBody request: UpdatePromotionRequest,
+    ): PromotionResponse {
+        val promotion = updatePromotionUseCase.updatePromotion(
+            request.toCommand(
+                requestUserId = requestUser.id,
+                promotionId = promotionId,
+            ),
+        )
+        return PromotionMapper.INSTANCE.toPromotionResponse(promotion = promotion)
     }
 
     @Operation(
