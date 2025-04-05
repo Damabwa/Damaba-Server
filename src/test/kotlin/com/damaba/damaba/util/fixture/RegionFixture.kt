@@ -18,19 +18,17 @@ object RegionFixture {
         name: String = randomString(),
     ) = Region(category, name)
 
-    private fun createRegionGroup(): RegionGroup =
-        RegionGroup(
-            category = randomString(),
-            regions = generateRandomList(maxSize = 10) { randomString() },
-        )
+    private fun createRegionGroup(): RegionGroup = RegionGroup(
+        category = randomString(),
+        regions = generateRandomList(maxSize = 10) { randomString() },
+    )
 
     fun createRegionGroups(): List<RegionGroup> = generateRandomList(maxSize = 10) { createRegionGroup() }
 
-    private fun createRegionCluster(): RegionCluster =
-        RegionCluster(
-            category = randomString(),
-            clusters = generateRandomList(maxSize = 10) { randomString() },
-        )
+    private fun createRegionCluster(): RegionCluster = RegionCluster(
+        category = randomString(),
+        clusters = generateRandomList(maxSize = 10) { randomString() },
+    )
 
     fun createRegionClusters(): List<RegionCluster> = generateRandomList(maxSize = 10) { createRegionCluster() }
 }

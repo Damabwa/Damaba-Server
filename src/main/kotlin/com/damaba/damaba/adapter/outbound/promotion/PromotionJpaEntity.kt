@@ -1,8 +1,11 @@
 package com.damaba.damaba.adapter.outbound.promotion
 
 import com.damaba.damaba.adapter.outbound.common.BaseJpaTimeEntity
+import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.constant.PromotionType
+import com.damaba.damaba.domain.region.Region
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -113,10 +116,56 @@ class PromotionJpaEntity(
         this.startedAt = promotion.startedAt
         this.endedAt = promotion.endedAt
         this.viewCount = promotion.viewCount
+        updatePhotographyTypes(photographyTypes = promotion.photographyTypes)
+        updateImages(images = promotion.images)
+        updateActiveRegions(activeRegions = promotion.activeRegions)
+        updateHashtags(hashtags = promotion.hashtags)
     }
 
     fun delete() {
         this.deletedAt = LocalDateTime.now()
+    }
+
+    private fun updatePhotographyTypes(photographyTypes: Set<PhotographyType>) {
+        this.photographyTypes.removeIf { it.type !in photographyTypes }
+
+        val existingTypes = this.photographyTypes.map { it.type }.toSet()
+        val toAddTypes = photographyTypes - existingTypes
+        this.photographyTypes.addAll(toAddTypes.map { PromotionPhotographyTypeJpaEntity(this, it) })
+    }
+
+    private fun updateImages(images: List<Image>) {
+        val newImageUrls = images.map { it.url }
+        this._images.filter { image ->
+            !image.isDeleted()
+        }.forEach { image ->
+            if (image.url !in newImageUrls) {
+                image.delete()
+            }
+        }
+
+        val existingImagesMap = this._images.associateBy { it.url }
+        val newImages = images.map { image ->
+            existingImagesMap[image.url] ?: PromotionImageJpaEntity.from(this, image)
+        }
+        this._images.clear()
+        this._images.addAll(newImages)
+    }
+
+    private fun updateActiveRegions(activeRegions: Set<Region>) {
+        this.activeRegions.removeIf { it.toRegion() !in activeRegions }
+
+        val existingRegions = this.activeRegions.map { it.toRegion() }.toSet()
+        val toAddRegions = activeRegions - existingRegions
+        this.activeRegions.addAll(toAddRegions.map { PromotionActiveRegionJpaEntity.from(this, it) })
+    }
+
+    private fun updateHashtags(hashtags: Set<String>) {
+        this.hashtags.removeIf { it.content !in hashtags }
+
+        val existingHashtags = this.hashtags.map { it.content }.toSet()
+        val toAddHashtags = hashtags - existingHashtags
+        this.hashtags.addAll(toAddHashtags.map { PromotionHashtagJpaEntity(promotion = this, content = it) })
     }
 
     companion object {

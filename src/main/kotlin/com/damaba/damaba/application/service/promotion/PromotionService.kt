@@ -8,6 +8,7 @@ import com.damaba.damaba.application.port.inbound.promotion.GetPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.SavePromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.UnsavePromotionUseCase
+import com.damaba.damaba.application.port.inbound.promotion.UpdatePromotionUseCase
 import com.damaba.damaba.application.port.outbound.promotion.CountPromotionSavePort
 import com.damaba.damaba.application.port.outbound.promotion.CreatePromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.CreatePromotionSavePort
@@ -29,6 +30,7 @@ import com.damaba.damaba.domain.promotion.PromotionListItem
 import com.damaba.damaba.domain.promotion.PromotionSave
 import com.damaba.damaba.domain.promotion.exception.AlreadyPromotionSaveException
 import com.damaba.damaba.domain.promotion.exception.PromotionDeletePermissionDeniedException
+import com.damaba.damaba.domain.promotion.exception.PromotionUpdatePermissionDeniedException
 import com.damaba.damaba.domain.region.Region
 import com.damaba.damaba.mapper.PromotionMapper
 import org.springframework.stereotype.Service
@@ -54,6 +56,7 @@ class PromotionService(
     FindPromotionListUseCase,
     FindSavedPromotionListUseCase,
     PostPromotionUseCase,
+    UpdatePromotionUseCase,
     DeletePromotionUseCase,
 
     SavePromotionUseCase,
@@ -125,6 +128,27 @@ class PromotionService(
             throw AlreadyPromotionSaveException()
         }
         createPromotionSavePort.create(PromotionSave.create(command.userId, command.promotionId))
+    }
+
+    @Transactional
+    override fun updatePromotion(command: UpdatePromotionUseCase.Command): Promotion {
+        val promotion = getPromotionPort.getById(id = command.promotionId)
+        if (promotion.authorId != command.requestUserId) {
+            throw PromotionUpdatePermissionDeniedException()
+        }
+        promotion.update(
+            promotionType = command.promotionType,
+            title = command.title,
+            content = command.content,
+            externalLink = command.externalLink,
+            startedAt = command.startedAt,
+            endedAt = command.endedAt,
+            photographyTypes = command.photographyTypes,
+            images = command.images,
+            activeRegions = command.activeRegions,
+            hashtags = command.hashtags,
+        )
+        return updatePromotionPort.update(promotion = promotion)
     }
 
     @Transactional

@@ -10,6 +10,7 @@ import com.damaba.damaba.application.port.inbound.promotion.GetPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.SavePromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.UnsavePromotionUseCase
+import com.damaba.damaba.application.port.inbound.promotion.UpdatePromotionUseCase
 import com.damaba.damaba.config.ControllerTestConfig
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.PhotographyType
@@ -17,15 +18,20 @@ import com.damaba.damaba.domain.promotion.constant.PromotionProgressStatus
 import com.damaba.damaba.domain.promotion.constant.PromotionSortType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.domain.region.RegionFilterCondition
+import com.damaba.damaba.mapper.ImageMapper
+import com.damaba.damaba.mapper.RegionMapper
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomSet
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomInt
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLocalDate
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
+import com.damaba.damaba.util.RandomTestUtils.Companion.randomUrl
+import com.damaba.damaba.util.fixture.FileFixture.createImageRequest
 import com.damaba.damaba.util.fixture.PromotionFixture.createPromotion
 import com.damaba.damaba.util.fixture.PromotionFixture.createPromotionDetail
 import com.damaba.damaba.util.fixture.PromotionFixture.createPromotionListItem
+import com.damaba.damaba.util.fixture.RegionFixture.createRegionRequest
 import com.damaba.damaba.util.fixture.SecurityFixture.createAuthenticationToken
 import com.damaba.damaba.util.fixture.UserFixture.createUser
 import com.damaba.damaba.util.withAuthUser
@@ -48,6 +54,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import kotlin.test.Test
@@ -64,6 +71,7 @@ class PromotionControllerTest @Autowired constructor(
     private val findPromotionListUseCase: FindPromotionListUseCase,
     private val findSavedPromotionListUseCase: FindSavedPromotionListUseCase,
     private val postPromotionUseCase: PostPromotionUseCase,
+    private val updatePromotionUseCase: UpdatePromotionUseCase,
     private val deletePromotionUseCase: DeletePromotionUseCase,
 
     private val savePromotionUseCase: SavePromotionUseCase,
@@ -86,6 +94,9 @@ class PromotionControllerTest @Autowired constructor(
 
         @Bean
         fun postPromotionUseCase(): PostPromotionUseCase = mockk()
+
+        @Bean
+        fun updatePromotionUseCase(): UpdatePromotionUseCase = mockk()
 
         @Bean
         fun deletePromotionUseCase(): DeletePromotionUseCase = mockk()
@@ -380,6 +391,71 @@ class PromotionControllerTest @Autowired constructor(
                 .with(authentication(createAuthenticationToken(requester))),
         ).andExpect(status().isNoContent)
         verify { savePromotionUseCase.savePromotion(command) }
+    }
+
+    @Test
+    fun `프로모션을 수정한다`() {
+        // given
+        val requestUser = createUser()
+        val promotionId = randomLong()
+        val request = UpdatePromotionRequest(
+            promotionType = PromotionType.FREE,
+            title = randomString(),
+            content = randomString(),
+            externalLink = randomUrl(),
+            startedAt = randomLocalDate(),
+            endedAt = randomLocalDate(),
+            photographyTypes = setOf(PhotographyType.ID_PHOTO),
+            images = listOf(createImageRequest()),
+            activeRegions = setOf(createRegionRequest()),
+            hashtags = setOf(randomString()),
+        )
+        val command = UpdatePromotionUseCase.Command(
+            requestUserId = requestUser.id,
+            promotionId = promotionId,
+            promotionType = request.promotionType,
+            title = request.title,
+            content = request.content,
+            externalLink = request.externalLink,
+            startedAt = request.startedAt,
+            endedAt = request.endedAt,
+            photographyTypes = request.photographyTypes,
+            images = request.images.map { ImageMapper.INSTANCE.toImage(it) },
+            activeRegions = request.activeRegions.map { RegionMapper.INSTANCE.toRegion(it) }.toSet(),
+            hashtags = request.hashtags,
+        )
+        val expectedResult = createPromotion(
+            id = promotionId,
+            authorId = requestUser.id,
+            promotionType = command.promotionType,
+            title = command.title,
+            content = command.content,
+            externalLink = command.externalLink,
+            startedAt = command.startedAt,
+            endedAt = command.endedAt,
+            photographyTypes = command.photographyTypes,
+            images = command.images,
+            activeRegions = command.activeRegions,
+            hashtags = command.hashtags,
+        )
+        every { updatePromotionUseCase.updatePromotion(command) } returns expectedResult
+
+        // when & then
+        mvc.perform(
+            put("/api/v1/promotions/$promotionId")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(mapper.writeValueAsString(request))
+                .withAuthUser(requestUser),
+        ).andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").value(expectedResult.id))
+            .andExpect(jsonPath("$.authorId").value(expectedResult.authorId))
+            .andExpect(jsonPath("$.promotionType").value(expectedResult.promotionType.name))
+            .andExpect(jsonPath("$.title").value(expectedResult.title))
+            .andExpect(jsonPath("$.content").value(expectedResult.content))
+            .andExpect(jsonPath("$.externalLink").value(expectedResult.externalLink))
+            .andExpect(jsonPath("$.startedAt").value(expectedResult.startedAt.toString()))
+            .andExpect(jsonPath("$.endedAt").value(expectedResult.endedAt.toString()))
+        verify { updatePromotionUseCase.updatePromotion(command) }
     }
 
     @Test
