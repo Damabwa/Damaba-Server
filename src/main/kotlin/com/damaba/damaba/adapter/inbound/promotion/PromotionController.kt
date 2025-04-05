@@ -1,5 +1,6 @@
 package com.damaba.damaba.adapter.inbound.promotion
 
+import com.damaba.damaba.application.port.inbound.promotion.DeletePromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.FindPromotionListUseCase
 import com.damaba.damaba.application.port.inbound.promotion.FindSavedPromotionListUseCase
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
@@ -42,6 +43,8 @@ class PromotionController(
     private val findPromotionListUseCase: FindPromotionListUseCase,
     private val findSavedPromotionListUseCase: FindSavedPromotionListUseCase,
     private val postPromotionUseCase: PostPromotionUseCase,
+    private val deletePromotionUseCase: DeletePromotionUseCase,
+
     private val savePromotionUseCase: SavePromotionUseCase,
     private val unsavePromotionUseCase: UnsavePromotionUseCase,
 ) {
@@ -193,6 +196,38 @@ class PromotionController(
         @PathVariable promotionId: Long,
     ): ResponseEntity<Unit> {
         savePromotionUseCase.savePromotion(SavePromotionUseCase.Command(requestUser.id, promotionId))
+        return ResponseEntity.noContent().build()
+    }
+
+    @Operation(
+        summary = "프로모션 삭제",
+        description = "프로모션을 삭제합니다.",
+        security = [SecurityRequirement(name = "access-token")],
+    )
+    @ApiResponses(
+        ApiResponse(responseCode = "204"),
+        ApiResponse(
+            responseCode = "403",
+            description = "프로모션 삭제 권한이 없는 경우. 프로모션은 작성자 또는 관리자만 삭제할 수 있음.",
+            content = [Content()],
+        ),
+        ApiResponse(
+            responseCode = "404",
+            description = "<code>promotionId</code>에 해당하는 프로모션을 찾을 수 없는 경우",
+            content = [Content()],
+        ),
+    )
+    @DeleteMapping("/api/v1/promotions/{promotionId}")
+    fun deletePromotionV1(
+        @AuthenticationPrincipal requestUser: User,
+        @PathVariable promotionId: Long,
+    ): ResponseEntity<Unit> {
+        deletePromotionUseCase.deletePromotion(
+            DeletePromotionUseCase.Command(
+                requestUser = requestUser,
+                promotionId = promotionId,
+            ),
+        )
         return ResponseEntity.noContent().build()
     }
 

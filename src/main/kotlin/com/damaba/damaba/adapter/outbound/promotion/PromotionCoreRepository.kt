@@ -2,6 +2,7 @@ package com.damaba.damaba.adapter.outbound.promotion
 
 import com.damaba.damaba.adapter.outbound.common.toPagination
 import com.damaba.damaba.application.port.outbound.promotion.CreatePromotionPort
+import com.damaba.damaba.application.port.outbound.promotion.DeletePromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.FindPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.GetPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.UpdatePromotionPort
@@ -24,7 +25,8 @@ class PromotionCoreRepository(
 ) : GetPromotionPort,
     FindPromotionPort,
     CreatePromotionPort,
-    UpdatePromotionPort {
+    UpdatePromotionPort,
+    DeletePromotionPort {
     override fun getById(id: Long): Promotion = getJpaEntityById(id).toPromotion()
 
     override fun findPromotionList(
@@ -64,6 +66,11 @@ class PromotionCoreRepository(
         val promotionJpaEntity = getJpaEntityById(promotion.id)
         promotionJpaEntity.update(promotion)
         return promotionJpaEntity.toPromotion()
+    }
+
+    override fun delete(promotion: Promotion) {
+        val promotionJpaEntity = getJpaEntityById(promotion.id)
+        promotionJpaEntity.delete()
     }
 
     private fun getJpaEntityById(id: Long): PromotionJpaEntity = promotionJpaRepository.findById(id).orElseThrow { PromotionNotFoundException() }

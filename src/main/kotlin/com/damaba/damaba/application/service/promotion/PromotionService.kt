@@ -1,5 +1,6 @@
 package com.damaba.damaba.application.service.promotion
 
+import com.damaba.damaba.application.port.inbound.promotion.DeletePromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.FindPromotionListUseCase
 import com.damaba.damaba.application.port.inbound.promotion.FindSavedPromotionListUseCase
 import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
@@ -10,6 +11,7 @@ import com.damaba.damaba.application.port.inbound.promotion.UnsavePromotionUseCa
 import com.damaba.damaba.application.port.outbound.promotion.CountPromotionSavePort
 import com.damaba.damaba.application.port.outbound.promotion.CreatePromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.CreatePromotionSavePort
+import com.damaba.damaba.application.port.outbound.promotion.DeletePromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.DeletePromotionSavePort
 import com.damaba.damaba.application.port.outbound.promotion.ExistsPromotionSavePort
 import com.damaba.damaba.application.port.outbound.promotion.FindPromotionPort
@@ -26,6 +28,7 @@ import com.damaba.damaba.domain.promotion.PromotionDetail
 import com.damaba.damaba.domain.promotion.PromotionListItem
 import com.damaba.damaba.domain.promotion.PromotionSave
 import com.damaba.damaba.domain.promotion.exception.AlreadyPromotionSaveException
+import com.damaba.damaba.domain.promotion.exception.PromotionDeletePermissionDeniedException
 import com.damaba.damaba.domain.region.Region
 import com.damaba.damaba.mapper.PromotionMapper
 import org.springframework.stereotype.Service
@@ -39,6 +42,7 @@ class PromotionService(
     private val findPromotionPort: FindPromotionPort,
     private val createPromotionPort: CreatePromotionPort,
     private val updatePromotionPort: UpdatePromotionPort,
+    private val deletePromotionPort: DeletePromotionPort,
 
     private val getPromotionSavePort: GetPromotionSavePort,
     private val existsPromotionSavePort: ExistsPromotionSavePort,
@@ -50,6 +54,8 @@ class PromotionService(
     FindPromotionListUseCase,
     FindSavedPromotionListUseCase,
     PostPromotionUseCase,
+    DeletePromotionUseCase,
+
     SavePromotionUseCase,
     UnsavePromotionUseCase {
 
@@ -119,6 +125,16 @@ class PromotionService(
             throw AlreadyPromotionSaveException()
         }
         createPromotionSavePort.create(PromotionSave.create(command.userId, command.promotionId))
+    }
+
+    @Transactional
+    override fun deletePromotion(command: DeletePromotionUseCase.Command) {
+        val requestUser = command.requestUser
+        val promotion = getPromotionPort.getById(command.promotionId)
+        if (!requestUser.isAdmin && promotion.authorId != requestUser.id) {
+            throw PromotionDeletePermissionDeniedException()
+        }
+        deletePromotionPort.delete(promotion)
     }
 
     @Transactional
