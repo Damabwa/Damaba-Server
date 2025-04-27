@@ -47,7 +47,7 @@ jobs:
       - name: Build and push docker image to AWS ECR
         run: |
           docker build -t damaba --platform $DOCKER_IMAGE_PLATFORM -f $DOCKER_FILE .
-          docker tag damaba ${{secrets.PROD_AWS_ECR_REGISTRY}}/${{secrets.PROD_AWS_ECR_REPOSITORY}}
+          docker tag damaba ${{secrets.PROD_AWS_ECR_REGISTRY}}/${{secrets.PROD_AWS_ECR_REPOSITORY}}:latest
           docker push ${{secrets.PROD_AWS_ECR_REGISTRY}}/${{secrets.PROD_AWS_ECR_REPOSITORY}}:latest
 
       - name: Deploy to ECS
