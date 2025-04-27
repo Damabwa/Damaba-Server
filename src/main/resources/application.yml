@@ -1,0 +1,75 @@
+damaba:
+  web-url: ${DAMABA_WEB_URL}
+  server-url: ${DAMABA_SERVER_URL}
+  file-server-url: ${DAMABA_FILE_SERVER_URL}
+  auth:
+    jwt-secret: ${JWT_SECRET}
+    access-token-duration-millis: 7200000  # 2 day
+    refresh-token-duration-millis: 2592000 # 1 month
+
+thread-pool:
+  core-pool-size: ${THREAD_POOL_CORE_POOL_SIZE}
+  max-pool-size: ${THREAD_POOL_MAX_POOL_SIZE}
+  queue-capacity: ${THREAD_POOL_QUEUE_CAPACITY}
+
+server:
+  compression:
+    enabled: true
+    min-response-size: 1024
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+
+spring:
+  application:
+    name: damaba-damaba
+
+  servlet:
+    multipart:
+      # 담아봐-프로모션 이미지 정책: 장당 3MB, 최대 10장까지 업로드 가능
+      max-file-size: 3MB
+      max-request-size: 33MB
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: false
+        show_sql: false
+        default_batch_fetch_size: 100
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+
+  cloud:
+    openfeign.client.config:
+      default:
+        connect-timeout: 3000
+        read-timeout: 5000
+        logger-level: none
+      KakaoKApiClient:
+        url: https://kapi.kakao.com
+
+springdoc:
+  swagger-ui:
+    operations-sorter: method
+
+aws:
+  s3:
+    bucket-name: ${AWS_S3_BUCKET_NAME}
+    access-key: ${AWS_S3_ACCESS_KEY}
+    secret-key: ${AWS_S3_SECRET_KEY}
+
+logging:
+  level:
+    com.damaba: info
+    org:
+      hibernate.SQL: info

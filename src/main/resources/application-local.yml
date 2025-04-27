@@ -1,0 +1,26 @@
+spring:
+  sql.init.mode: always
+
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+    defer-datasource-initialization: false
+
+  cloud:
+    openfeign.client.config:
+      KakaoKApiClient:
+        logger-level: basic
+
+springdoc:
+  show-actuator: true
+
+logging:
+  level:
+    com.damaba: debug
+    com.linecorp.kotlinjdsl: debug
+    org:
+      hibernate:
+        type: trace
+        SQL: debug
+        orm.jdbc.bind: trace

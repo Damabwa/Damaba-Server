@@ -1,0 +1,6 @@
+FROM openjdk:17-jdk-slim
+WORKDIR /spring
+ARG BUILD_FILE=./build/libs/damaba-0.0.1.jar
+COPY ${BUILD_FILE} /damaba/app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-Dspring.profiles.active=dev", "-jar", "/damaba/app.jar"]
