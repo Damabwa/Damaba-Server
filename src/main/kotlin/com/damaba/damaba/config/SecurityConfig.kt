@@ -64,7 +64,7 @@ class SecurityConfig(private val env: Environment) {
         .formLogin { it.disable() }
         .sessionManagement { session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
         .cors {
-            it.configurationSource(corsConfigurationSource(listOf(damabaProperties.webUrl, damabaProperties.serverUrl)))
+            it.configurationSource(corsConfigurationSource(damabaProperties.corsAllowedOrigins.split(",")))
         }.authorizeHttpRequests { auth ->
             auth.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
             AUTH_WHITE_PATHS.forEach { authWhitePath -> auth.requestMatchers(authWhitePath).permitAll() }

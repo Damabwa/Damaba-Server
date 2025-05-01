@@ -1,5 +1,5 @@
 damaba:
-  web-url: ${DAMABA_WEB_URL}
+  cors-allowed-origins: ${CORS_ALLOWED_ORIGINS}
   server-url: ${DAMABA_SERVER_URL}
   file-server-url: ${DAMABA_FILE_SERVER_URL}
   auth:
