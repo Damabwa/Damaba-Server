@@ -19,7 +19,7 @@ CREATE TABLE `user`
     roles              VARCHAR(255) NOT NULL,
     login_type         VARCHAR(255) NOT NULL,
     o_auth_login_uid   VARCHAR(255) NOT NULL UNIQUE,
-    nickname           VARCHAR(7)   NOT NULL UNIQUE,
+    nickname           VARCHAR(15)  NOT NULL UNIQUE,
     profile_image_name VARCHAR(255),
     profile_image_url  VARCHAR(255),
     gender             VARCHAR(255) NOT NULL,

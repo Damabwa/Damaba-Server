@@ -6,6 +6,7 @@ import com.damaba.damaba.adapter.inbound.region.dto.RegionResponse
 import com.damaba.damaba.domain.common.PhotographyType
 import com.damaba.damaba.domain.user.constant.Gender
 import com.damaba.damaba.domain.user.constant.LoginType
+import com.damaba.damaba.domain.user.constant.UserRoleType
 import com.damaba.damaba.domain.user.constant.UserType
 import io.swagger.v3.oas.annotations.media.Schema
 
@@ -15,6 +16,9 @@ data class PhotographerResponse(
 
     @Schema(description = "User type")
     val type: UserType,
+
+    @Schema(description = "User roles")
+    val roles: Set<UserRoleType>,
 
     @Schema(description = "사용하는 로그인 종류")
     val loginType: LoginType,
