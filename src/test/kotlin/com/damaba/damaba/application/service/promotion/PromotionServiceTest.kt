@@ -1,7 +1,5 @@
 package com.damaba.damaba.application.service.promotion
 
-import com.damaba.damaba.adapter.outbound.promotion.PromotionCoreRepository
-import com.damaba.damaba.adapter.outbound.user.UserCoreRepository
 import com.damaba.damaba.application.port.inbound.promotion.DeletePromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.FindPromotionListUseCase
 import com.damaba.damaba.application.port.inbound.promotion.FindSavedPromotionListUseCase
@@ -33,6 +31,8 @@ import com.damaba.damaba.domain.promotion.exception.PromotionDeletePermissionDen
 import com.damaba.damaba.domain.promotion.exception.PromotionUpdatePermissionDeniedException
 import com.damaba.damaba.domain.region.RegionFilterCondition
 import com.damaba.damaba.domain.user.constant.UserRoleType
+import com.damaba.damaba.infrastructure.promotion.PromotionCoreRepository
+import com.damaba.damaba.infrastructure.user.UserCoreRepository
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomSet
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomBoolean

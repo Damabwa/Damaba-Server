@@ -1,7 +1,7 @@
 package com.damaba.damaba.config
 
-import com.damaba.damaba.adapter.outbound.common.TransactionalLockManager
 import com.damaba.damaba.domain.common.TransactionalLock
+import com.damaba.damaba.infrastructure.common.TransactionalLockManager
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
