@@ -1,11 +1,5 @@
 package com.damaba.damaba.infrastructure.user
 
-import com.damaba.damaba.application.port.outbound.user.CreateUserPort
-import com.damaba.damaba.application.port.outbound.user.DeleteUserProfileImagePort
-import com.damaba.damaba.application.port.outbound.user.ExistsNicknamePort
-import com.damaba.damaba.application.port.outbound.user.FindUserPort
-import com.damaba.damaba.application.port.outbound.user.GetUserPort
-import com.damaba.damaba.application.port.outbound.user.UpdateUserPort
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.domain.user.exception.UserNotFoundException
 import org.springframework.stereotype.Repository
@@ -14,12 +8,7 @@ import org.springframework.stereotype.Repository
 class UserCoreRepository(
     private val userJpaRepository: UserJpaRepository,
     private val userProfileImageJpaRepository: UserProfileImageJpaRepository,
-) : FindUserPort,
-    GetUserPort,
-    ExistsNicknamePort,
-    CreateUserPort,
-    UpdateUserPort,
-    DeleteUserProfileImagePort {
+) : UserRepository {
     override fun findById(id: Long): User? = findUserJpaEntityById(id)?.toUser()
 
     override fun findByOAuthLoginUid(oAuthLoginUid: String): User? = userJpaRepository.findByOAuthLoginUid(oAuthLoginUid)?.toUser()

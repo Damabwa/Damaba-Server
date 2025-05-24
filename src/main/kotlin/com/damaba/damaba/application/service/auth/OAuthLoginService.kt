@@ -1,14 +1,12 @@
 package com.damaba.damaba.application.service.auth
 
 import com.damaba.damaba.application.port.inbound.auth.OAuthLoginUseCase
-import com.damaba.damaba.application.port.outbound.auth.CreateAuthTokenPort
-import com.damaba.damaba.application.port.outbound.auth.CreateRefreshTokenPort
-import com.damaba.damaba.application.port.outbound.auth.GetOAuthLoginUidPort
-import com.damaba.damaba.application.port.outbound.user.CreateUserPort
-import com.damaba.damaba.application.port.outbound.user.ExistsNicknamePort
-import com.damaba.damaba.application.port.outbound.user.FindUserPort
 import com.damaba.damaba.domain.auth.RefreshToken
 import com.damaba.damaba.domain.user.User
+import com.damaba.damaba.infrastructure.auth.AuthTokenManager
+import com.damaba.damaba.infrastructure.auth.OAuthLoginProvider
+import com.damaba.damaba.infrastructure.auth.RefreshTokenRepository
+import com.damaba.damaba.infrastructure.user.UserRepository
 import com.damaba.damaba.property.AuthProperties
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -16,24 +14,22 @@ import java.util.UUID
 
 @Service
 class OAuthLoginService(
-    private val getOAuthLoginUidPort: GetOAuthLoginUidPort,
-    private val findUserPort: FindUserPort,
-    private val existsNicknamePort: ExistsNicknamePort,
-    private val createUserPort: CreateUserPort,
-    private val createAuthTokenPort: CreateAuthTokenPort,
-    private val createRefreshTokenPort: CreateRefreshTokenPort,
+    private val authTokenManager: AuthTokenManager,
+    private val oAuthLoginProvider: OAuthLoginProvider,
+    private val refreshTokenRepo: RefreshTokenRepository,
+    private val userRepo: UserRepository,
     private val authProperties: AuthProperties,
 ) : OAuthLoginUseCase {
 
     @Transactional
     override fun oAuthLogin(command: OAuthLoginUseCase.Command): OAuthLoginUseCase.Result {
-        val oAuthLoginUid = getOAuthLoginUidPort.getOAuthLoginUid(command.loginType, command.authKey)
+        val oAuthLoginUid = oAuthLoginProvider.getOAuthLoginUid(command.loginType, command.authKey)
 
         var isNewUser = false
-        var user = findUserPort.findByOAuthLoginUid(oAuthLoginUid)
+        var user = userRepo.findByOAuthLoginUid(oAuthLoginUid)
         if (user == null) {
             isNewUser = true
-            user = createUserPort.create(
+            user = userRepo.create(
                 User.create(
                     loginType = command.loginType,
                     oAuthLoginUid = oAuthLoginUid,
@@ -42,9 +38,9 @@ class OAuthLoginService(
             )
         }
 
-        val accessToken = createAuthTokenPort.createAccessToken(user)
-        val refreshToken = createAuthTokenPort.createRefreshToken(user)
-        createRefreshTokenPort.create(
+        val accessToken = authTokenManager.createAccessToken(user)
+        val refreshToken = authTokenManager.createRefreshToken(user)
+        refreshTokenRepo.create(
             refreshToken = RefreshToken(user.id, refreshToken.value),
             ttlMillis = authProperties.refreshTokenDurationMillis,
         )
@@ -56,7 +52,7 @@ class OAuthLoginService(
         var nickname: String
         do {
             nickname = UUID.randomUUID().toString().substring(0, 7)
-        } while (existsNicknamePort.existsNickname(nickname))
+        } while (userRepo.existsNickname(nickname))
         return nickname
     }
 }

@@ -1,9 +1,8 @@
 package com.damaba.damaba.config
 
-import com.damaba.damaba.application.port.outbound.auth.ParseUserIdFromAuthTokenPort
-import com.damaba.damaba.application.port.outbound.auth.ValidateAuthTokenPort
-import com.damaba.damaba.application.port.outbound.user.FindUserPort
 import com.damaba.damaba.domain.user.exception.UserNotFoundException
+import com.damaba.damaba.infrastructure.auth.AuthTokenManager
+import com.damaba.damaba.infrastructure.user.UserRepository
 import com.damaba.damaba.logger.MdcLogTraceManager
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -18,9 +17,8 @@ import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
 class AuthFilter(
-    private val validateAuthTokenPort: ValidateAuthTokenPort,
-    private val parseUserIdFromAuthTokenPort: ParseUserIdFromAuthTokenPort,
-    private val findUserPort: FindUserPort,
+    private val authTokenManager: AuthTokenManager,
+    private val userRepo: UserRepository,
 ) : OncePerRequestFilter() {
     companion object {
         private const val BEARER_PREFIX = "Bearer "
@@ -38,10 +36,10 @@ class AuthFilter(
                 throw AuthenticationCredentialsNotFoundException("Access token does not exist.")
             }
 
-            validateAuthTokenPort.validateAccessToken(accessToken)
+            authTokenManager.validateAccessToken(accessToken)
 
-            val userId = parseUserIdFromAuthTokenPort.parseUserId(accessToken)
-            val user = findUserPort.findById(userId) ?: throw UserNotFoundException()
+            val userId = authTokenManager.parseUserId(accessToken)
+            val user = userRepo.findById(userId) ?: throw UserNotFoundException()
             MdcLogTraceManager.setRequestUserIdIfAbsent(user.id)
 
             val authorities = user.roles

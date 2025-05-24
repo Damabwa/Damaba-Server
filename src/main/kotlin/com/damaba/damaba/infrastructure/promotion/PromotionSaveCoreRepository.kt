@@ -1,10 +1,5 @@
 package com.damaba.damaba.infrastructure.promotion
 
-import com.damaba.damaba.application.port.outbound.promotion.CountPromotionSavePort
-import com.damaba.damaba.application.port.outbound.promotion.CreatePromotionSavePort
-import com.damaba.damaba.application.port.outbound.promotion.DeletePromotionSavePort
-import com.damaba.damaba.application.port.outbound.promotion.ExistsPromotionSavePort
-import com.damaba.damaba.application.port.outbound.promotion.GetPromotionSavePort
 import com.damaba.damaba.domain.promotion.PromotionSave
 import com.damaba.damaba.domain.promotion.exception.PromotionSaveNotFoundException
 import org.springframework.stereotype.Repository
@@ -12,11 +7,7 @@ import org.springframework.stereotype.Repository
 @Repository
 class PromotionSaveCoreRepository(
     private val promotionSaveJpaRepository: PromotionSaveJpaRepository,
-) : GetPromotionSavePort,
-    ExistsPromotionSavePort,
-    CountPromotionSavePort,
-    CreatePromotionSavePort,
-    DeletePromotionSavePort {
+) : PromotionSaveRepository {
     override fun getByUserIdAndPromotionId(userId: Long, promotionId: Long): PromotionSave {
         val promotionSaveJpaEntity = promotionSaveJpaRepository
             .findByUserIdAndPromotionId(userId, promotionId)

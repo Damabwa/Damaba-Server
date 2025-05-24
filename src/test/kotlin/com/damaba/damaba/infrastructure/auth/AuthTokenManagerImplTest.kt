@@ -16,9 +16,9 @@ import java.time.LocalDateTime
 import java.util.Date
 import kotlin.test.Test
 
-class AuthTokenAdapterTest {
+class AuthTokenManagerImplTest {
     private val authProperties: AuthProperties = mockk()
-    private val sut: AuthTokenManager = AuthTokenManager(authProperties)
+    private val sut: AuthTokenManagerImpl = AuthTokenManagerImpl(authProperties)
 
     @BeforeEach
     fun setup() {
