@@ -1,9 +1,5 @@
 package com.damaba.damaba.infrastructure.photographer
 
-import com.damaba.damaba.application.port.outbound.photographer.CreatePhotographerPort
-import com.damaba.damaba.application.port.outbound.photographer.FindPhotographerPort
-import com.damaba.damaba.application.port.outbound.photographer.GetPhotographerPort
-import com.damaba.damaba.application.port.outbound.photographer.UpdatePhotographerPort
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.photographer.Photographer
@@ -26,10 +22,7 @@ class PhotographerCoreRepository(
     private val photographerJdslRepository: PhotographerJdslRepository,
     private val userJpaRepository: UserJpaRepository,
     private val userProfileImageJpaRepository: UserProfileImageJpaRepository,
-) : GetPhotographerPort,
-    FindPhotographerPort,
-    CreatePhotographerPort,
-    UpdatePhotographerPort {
+) : PhotographerRepository {
     override fun getById(id: Long): Photographer {
         val userJpaEntity = getUserJpaEntityById(id)
         val photographerJpaEntity = getPhotographerJpaEntityById(id)

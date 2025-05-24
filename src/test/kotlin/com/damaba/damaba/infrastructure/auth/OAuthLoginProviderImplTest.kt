@@ -11,9 +11,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
 import kotlin.test.Test
 
-class OAuthLoginAdapterTest {
+class OAuthLoginProviderImplTest {
     private val kakaoKApiClient: KakaoKApiFeignClient = mockk()
-    private val sut: OAuthLoginProvider = OAuthLoginProvider(kakaoKApiClient)
+    private val sut: OAuthLoginProvider = OAuthLoginProviderImpl(kakaoKApiClient)
 
     @Test
     fun `Kakao access token이 주어지고, 주어진 token으로 kakao user id를 조회한다`() {

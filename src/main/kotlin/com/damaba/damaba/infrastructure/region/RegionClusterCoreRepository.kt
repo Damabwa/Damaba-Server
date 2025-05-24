@@ -1,6 +1,5 @@
 package com.damaba.damaba.infrastructure.region
 
-import com.damaba.damaba.application.port.outbound.region.FindRegionClustersPort
 import com.damaba.damaba.domain.region.RegionCluster
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -11,7 +10,7 @@ import org.springframework.stereotype.Repository
 class RegionClusterCoreRepository(
     private val resourceLoader: ResourceLoader,
     private val mapper: ObjectMapper,
-) : FindRegionClustersPort {
+) : RegionClusterRepository {
     private val regionClusters: List<RegionCluster> by lazy {
         val regionClustersFile = resourceLoader.getResource(REGION_CLUSTERS_DATE_FILE_PATH)
         val regionClusterMap: Map<String, List<String>> =

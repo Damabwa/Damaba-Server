@@ -8,17 +8,6 @@ import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerU
 import com.damaba.damaba.application.port.inbound.photographer.UnsavePhotographerUseCase
 import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerPageUseCase
 import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerProfileUseCase
-import com.damaba.damaba.application.port.outbound.photographer.CreatePhotographerPort
-import com.damaba.damaba.application.port.outbound.photographer.CreatePhotographerSavePort
-import com.damaba.damaba.application.port.outbound.photographer.DeletePhotographerSavePort
-import com.damaba.damaba.application.port.outbound.photographer.ExistsPhotographerSavePort
-import com.damaba.damaba.application.port.outbound.photographer.FindPhotographerPort
-import com.damaba.damaba.application.port.outbound.photographer.FindPhotographerSavePort
-import com.damaba.damaba.application.port.outbound.photographer.GetPhotographerPort
-import com.damaba.damaba.application.port.outbound.photographer.UpdatePhotographerPort
-import com.damaba.damaba.application.port.outbound.user.DeleteUserProfileImagePort
-import com.damaba.damaba.application.port.outbound.user.ExistsNicknamePort
-import com.damaba.damaba.application.port.outbound.user.GetUserPort
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.photographer.Photographer
@@ -31,6 +20,9 @@ import com.damaba.damaba.domain.user.constant.Gender
 import com.damaba.damaba.domain.user.constant.UserType
 import com.damaba.damaba.domain.user.exception.NicknameAlreadyExistsException
 import com.damaba.damaba.domain.user.exception.UserAlreadyRegisteredException
+import com.damaba.damaba.infrastructure.photographer.PhotographerRepository
+import com.damaba.damaba.infrastructure.photographer.PhotographerSaveRepository
+import com.damaba.damaba.infrastructure.user.UserRepository
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomSet
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomBoolean
@@ -56,46 +48,20 @@ import org.assertj.core.api.Assertions.catchThrowable
 import kotlin.test.Test
 
 class PhotographerServiceTest {
-    private val getUserPort: GetUserPort = mockk()
-
-    private val getPhotographerPort: GetPhotographerPort = mockk()
-    private val findPhotographerPort: FindPhotographerPort = mockk()
-    private val existsNicknamePort: ExistsNicknamePort = mockk()
-    private val createPhotographerPort: CreatePhotographerPort = mockk()
-    private val updatePhotographerPort: UpdatePhotographerPort = mockk()
-    private val deleteUserProfileImagePort: DeleteUserProfileImagePort = mockk()
-
-    private val findPhotographerSavePort: FindPhotographerSavePort = mockk()
-    private val existsPhotographerSavePort: ExistsPhotographerSavePort = mockk()
-    private val createPhotographerSavePort: CreatePhotographerSavePort = mockk()
-    private val deletePhotographerSavePort: DeletePhotographerSavePort = mockk()
+    private val userRepo: UserRepository = mockk()
+    private val photographerRepo: PhotographerRepository = mockk()
+    private val photographerSaveRepo: PhotographerSaveRepository = mockk()
     private val sut: PhotographerService = PhotographerService(
-        getUserPort,
-        getPhotographerPort,
-        findPhotographerPort,
-        existsNicknamePort,
-        createPhotographerPort,
-        updatePhotographerPort,
-        deleteUserProfileImagePort,
-        findPhotographerSavePort,
-        existsPhotographerSavePort,
-        createPhotographerSavePort,
-        deletePhotographerSavePort,
+        userRepo,
+        photographerRepo,
+        photographerSaveRepo,
     )
 
     private fun confirmVerifiedEveryMocks() {
         confirmVerified(
-            getUserPort,
-            getPhotographerPort,
-            findPhotographerPort,
-            existsNicknamePort,
-            createPhotographerPort,
-            updatePhotographerPort,
-            deleteUserProfileImagePort,
-            findPhotographerSavePort,
-            existsPhotographerSavePort,
-            createPhotographerSavePort,
-            deletePhotographerSavePort,
+            userRepo,
+            photographerRepo,
+            photographerSaveRepo,
         )
     }
 
@@ -104,13 +70,13 @@ class PhotographerServiceTest {
         // given
         val id = randomLong()
         val expectedResult = createPhotographer(id = id)
-        every { getPhotographerPort.getById(id) } returns expectedResult
+        every { photographerRepo.getById(id) } returns expectedResult
 
         // when
         val actualResult = sut.getPhotographer(id)
 
         // then
-        verify { getPhotographerPort.getById(id) }
+        verify { photographerRepo.getById(id) }
         confirmVerifiedEveryMocks()
         assertThat(actualResult).isEqualTo(expectedResult)
     }
@@ -133,7 +99,7 @@ class PhotographerServiceTest {
             totalPage = 10,
         )
         every {
-            findPhotographerPort.findPhotographerList(
+            photographerRepo.findPhotographerList(
                 requestUserId = query.requestUserId,
                 regions = query.regions,
                 photographyTypes = query.photographyTypes,
@@ -148,7 +114,7 @@ class PhotographerServiceTest {
 
         // then
         verify {
-            findPhotographerPort.findPhotographerList(
+            photographerRepo.findPhotographerList(
                 requestUserId = query.requestUserId,
                 regions = query.regions,
                 photographyTypes = query.photographyTypes,
@@ -180,7 +146,7 @@ class PhotographerServiceTest {
             totalPage = 10,
         )
         every {
-            findPhotographerPort.findPhotographerList(
+            photographerRepo.findPhotographerList(
                 requestUserId = query.requestUserId,
                 regions = query.regions,
                 photographyTypes = query.photographyTypes,
@@ -195,7 +161,7 @@ class PhotographerServiceTest {
 
         // then
         verify {
-            findPhotographerPort.findPhotographerList(
+            photographerRepo.findPhotographerList(
                 requestUserId = query.requestUserId,
                 regions = query.regions,
                 photographyTypes = query.photographyTypes,
@@ -225,7 +191,7 @@ class PhotographerServiceTest {
             totalPage = 10,
         )
         every {
-            findPhotographerPort.findSavedPhotographerList(
+            photographerRepo.findSavedPhotographerList(
                 requestUserId = query.requestUserId,
                 page = query.page,
                 pageSize = query.pageSize,
@@ -237,7 +203,7 @@ class PhotographerServiceTest {
 
         // then
         verify {
-            findPhotographerPort.findSavedPhotographerList(
+            photographerRepo.findSavedPhotographerList(
                 requestUserId = query.requestUserId,
                 page = query.page,
                 pageSize = query.pageSize,
@@ -253,13 +219,13 @@ class PhotographerServiceTest {
         // given
         val nickname = randomString()
         val expectedResult = randomBoolean()
-        every { existsNicknamePort.existsNickname(nickname) } returns expectedResult
+        every { userRepo.existsNickname(nickname) } returns expectedResult
 
         // when
         val actualResult = sut.existsNickname(ExistsPhotographerNicknameUseCase.Query(nickname))
 
         // then
-        verify { existsNicknamePort.existsNickname(nickname) }
+        verify { userRepo.existsNickname(nickname) }
         confirmVerifiedEveryMocks()
         assertThat(actualResult).isEqualTo(expectedResult)
     }
@@ -279,18 +245,18 @@ class PhotographerServiceTest {
             activeRegions = generateRandomSet(maxSize = 3) { createRegion() },
         )
         val expectedResult = createPhotographer(id = userId)
-        every { getUserPort.getById(userId) } returns unregisteredUser
-        every { existsNicknamePort.existsNickname(command.nickname) } returns false
-        every { createPhotographerPort.createIfUserExists(any(Photographer::class)) } returns expectedResult
+        every { userRepo.getById(userId) } returns unregisteredUser
+        every { userRepo.existsNickname(command.nickname) } returns false
+        every { photographerRepo.createIfUserExists(any(Photographer::class)) } returns expectedResult
 
         // when
         val actualResult = sut.register(command)
 
         // then
         verifyOrder {
-            getUserPort.getById(userId)
-            existsNicknamePort.existsNickname(command.nickname)
-            createPhotographerPort.createIfUserExists(any(Photographer::class))
+            userRepo.getById(userId)
+            userRepo.existsNickname(command.nickname)
+            photographerRepo.createIfUserExists(any(Photographer::class))
         }
         confirmVerifiedEveryMocks()
         assertThat(actualResult).isEqualTo(expectedResult)
@@ -310,13 +276,13 @@ class PhotographerServiceTest {
             mainPhotographyTypes = setOf(PhotographyType.PROFILE, PhotographyType.SELF),
             activeRegions = generateRandomSet(maxSize = 3) { createRegion() },
         )
-        every { getUserPort.getById(userId) } returns registeredUser
+        every { userRepo.getById(userId) } returns registeredUser
 
         // when
         val ex = catchThrowable { sut.register(command) }
 
         // then
-        verify { getUserPort.getById(userId) }
+        verify { userRepo.getById(userId) }
         confirmVerifiedEveryMocks()
         assertThat(ex).isInstanceOf(UserAlreadyRegisteredException::class.java)
     }
@@ -335,16 +301,16 @@ class PhotographerServiceTest {
             mainPhotographyTypes = setOf(PhotographyType.PROFILE, PhotographyType.SELF),
             activeRegions = generateRandomSet(maxSize = 3) { createRegion() },
         )
-        every { getUserPort.getById(userId) } returns unregisteredUser
-        every { existsNicknamePort.existsNickname(command.nickname) } returns true
+        every { userRepo.getById(userId) } returns unregisteredUser
+        every { userRepo.existsNickname(command.nickname) } returns true
 
         // when
         val ex = catchThrowable { sut.register(command) }
 
         // then
         verifyOrder {
-            getUserPort.getById(userId)
-            existsNicknamePort.existsNickname(command.nickname)
+            userRepo.getById(userId)
+            userRepo.existsNickname(command.nickname)
         }
         confirmVerifiedEveryMocks()
         assertThat(ex).isInstanceOf(NicknameAlreadyExistsException::class.java)
@@ -355,10 +321,10 @@ class PhotographerServiceTest {
         // given
         val command = SavePhotographerUseCase.Command(requestUserId = randomLong(), photographerId = randomLong())
         every {
-            existsPhotographerSavePort.existsByUserIdAndPhotographerId(command.requestUserId, command.photographerId)
+            photographerSaveRepo.existsByUserIdAndPhotographerId(command.requestUserId, command.photographerId)
         } returns false
         every {
-            createPhotographerSavePort.create(PhotographerSave.create(command.requestUserId, command.photographerId))
+            photographerSaveRepo.create(PhotographerSave.create(command.requestUserId, command.photographerId))
         } just runs
 
         // when
@@ -366,13 +332,13 @@ class PhotographerServiceTest {
 
         // then
         verify {
-            existsPhotographerSavePort.existsByUserIdAndPhotographerId(
+            photographerSaveRepo.existsByUserIdAndPhotographerId(
                 command.requestUserId,
                 command.photographerId,
             )
         }
         verify {
-            createPhotographerSavePort.create(
+            photographerSaveRepo.create(
                 PhotographerSave(
                     id = 0L,
                     userId = command.requestUserId,
@@ -388,7 +354,7 @@ class PhotographerServiceTest {
         // given
         val command = SavePhotographerUseCase.Command(requestUserId = randomLong(), photographerId = randomLong())
         every {
-            existsPhotographerSavePort.existsByUserIdAndPhotographerId(command.requestUserId, command.photographerId)
+            photographerSaveRepo.existsByUserIdAndPhotographerId(command.requestUserId, command.photographerId)
         } returns true
 
         // when
@@ -396,7 +362,7 @@ class PhotographerServiceTest {
 
         // then
         verify {
-            existsPhotographerSavePort.existsByUserIdAndPhotographerId(
+            photographerSaveRepo.existsByUserIdAndPhotographerId(
                 command.requestUserId,
                 command.photographerId,
             )
@@ -427,16 +393,16 @@ class PhotographerServiceTest {
             mainPhotographyTypes = command.mainPhotographyTypes,
             activeRegions = command.activeRegions,
         )
-        every { getPhotographerPort.getById(photographerId) } returns originalPhotographer
-        every { updatePhotographerPort.update(expectedResult) } returns expectedResult
+        every { photographerRepo.getById(photographerId) } returns originalPhotographer
+        every { photographerRepo.update(expectedResult) } returns expectedResult
 
         // when
         val result = sut.updatePhotographerProfile(command)
 
         // then
         verifyOrder {
-            getPhotographerPort.getById(photographerId)
-            updatePhotographerPort.update(expectedResult)
+            photographerRepo.getById(photographerId)
+            photographerRepo.update(expectedResult)
         }
         confirmVerifiedEveryMocks()
         assertThat(result).isEqualTo(expectedResult)
@@ -465,16 +431,16 @@ class PhotographerServiceTest {
             mainPhotographyTypes = command.mainPhotographyTypes,
             activeRegions = command.activeRegions,
         )
-        every { getPhotographerPort.getById(photographerId) } returns originalPhotographer
-        every { updatePhotographerPort.update(expectedResult) } returns expectedResult
+        every { photographerRepo.getById(photographerId) } returns originalPhotographer
+        every { photographerRepo.update(expectedResult) } returns expectedResult
 
         // when
         val result = sut.updatePhotographerProfile(command)
 
         // then
         verifyOrder {
-            getPhotographerPort.getById(photographerId)
-            updatePhotographerPort.update(expectedResult)
+            photographerRepo.getById(photographerId)
+            photographerRepo.update(expectedResult)
         }
         confirmVerifiedEveryMocks()
         assertThat(result).isEqualTo(expectedResult)
@@ -503,20 +469,20 @@ class PhotographerServiceTest {
             mainPhotographyTypes = command.mainPhotographyTypes,
             activeRegions = command.activeRegions,
         )
-        every { getPhotographerPort.getById(photographerId) } returns originalPhotographer
-        every { existsNicknamePort.existsNickname(command.nickname) } returns false
-        every { deleteUserProfileImagePort.deleteByUrl(originalProfileImageUrl) } just runs
-        every { updatePhotographerPort.update(expectedResult) } returns expectedResult
+        every { photographerRepo.getById(photographerId) } returns originalPhotographer
+        every { userRepo.existsNickname(command.nickname) } returns false
+        every { userRepo.deleteByUrl(originalProfileImageUrl) } just runs
+        every { photographerRepo.update(expectedResult) } returns expectedResult
 
         // when
         val result = sut.updatePhotographerProfile(command)
 
         // then
         verifyOrder {
-            getPhotographerPort.getById(photographerId)
-            existsNicknamePort.existsNickname(command.nickname)
-            deleteUserProfileImagePort.deleteByUrl(originalProfileImageUrl)
-            updatePhotographerPort.update(expectedResult)
+            photographerRepo.getById(photographerId)
+            userRepo.existsNickname(command.nickname)
+            userRepo.deleteByUrl(originalProfileImageUrl)
+            photographerRepo.update(expectedResult)
         }
         confirmVerifiedEveryMocks()
         assertThat(result).isEqualTo(expectedResult)
@@ -537,16 +503,16 @@ class PhotographerServiceTest {
             mainPhotographyTypes = setOf(PhotographyType.SNAP),
             activeRegions = generateRandomSet(maxSize = 3) { createRegion() },
         )
-        every { getPhotographerPort.getById(photographerId) } returns originalPhotographer
-        every { existsNicknamePort.existsNickname(command.nickname) } returns true
+        every { photographerRepo.getById(photographerId) } returns originalPhotographer
+        every { userRepo.existsNickname(command.nickname) } returns true
 
         // when
         val ex = catchThrowable { sut.updatePhotographerProfile(command) }
 
         // then
         verifyOrder {
-            getPhotographerPort.getById(photographerId)
-            existsNicknamePort.existsNickname(command.nickname)
+            photographerRepo.getById(photographerId)
+            userRepo.existsNickname(command.nickname)
         }
         confirmVerifiedEveryMocks()
         assertThat(ex).isInstanceOf(NicknameAlreadyExistsException::class.java)
@@ -575,16 +541,16 @@ class PhotographerServiceTest {
             contactLink = command.contactLink,
             description = command.description,
         )
-        every { getPhotographerPort.getById(photographerId) } returns originalPhotographer
-        every { updatePhotographerPort.update(expectedResult) } returns expectedResult
+        every { photographerRepo.getById(photographerId) } returns originalPhotographer
+        every { photographerRepo.update(expectedResult) } returns expectedResult
 
         // when
         val result = sut.updatePhotographerPage(command)
 
         // then
         verifyOrder {
-            getPhotographerPort.getById(photographerId)
-            updatePhotographerPort.update(expectedResult)
+            photographerRepo.getById(photographerId)
+            photographerRepo.update(expectedResult)
         }
         confirmVerifiedEveryMocks()
         assertThat(result).isEqualTo(expectedResult)
@@ -596,16 +562,16 @@ class PhotographerServiceTest {
         val command = UnsavePhotographerUseCase.Command(requestUserId = randomLong(), photographerId = randomLong())
         val photographerSave = createPhotographerSave()
         every {
-            findPhotographerSavePort.findByUserIdAndPhotographerId(command.requestUserId, command.photographerId)
+            photographerSaveRepo.findByUserIdAndPhotographerId(command.requestUserId, command.photographerId)
         } returns photographerSave
-        every { deletePhotographerSavePort.delete(photographerSave) } just runs
+        every { photographerSaveRepo.delete(photographerSave) } just runs
 
         // when
         sut.unsavePhotographer(command)
 
         // then
-        verify { findPhotographerSavePort.findByUserIdAndPhotographerId(command.requestUserId, command.photographerId) }
-        verify { deletePhotographerSavePort.delete(photographerSave) }
+        verify { photographerSaveRepo.findByUserIdAndPhotographerId(command.requestUserId, command.photographerId) }
+        verify { photographerSaveRepo.delete(photographerSave) }
         confirmVerifiedEveryMocks()
     }
 
@@ -614,14 +580,14 @@ class PhotographerServiceTest {
         // given
         val command = UnsavePhotographerUseCase.Command(requestUserId = randomLong(), photographerId = randomLong())
         every {
-            findPhotographerSavePort.findByUserIdAndPhotographerId(command.requestUserId, command.photographerId)
+            photographerSaveRepo.findByUserIdAndPhotographerId(command.requestUserId, command.photographerId)
         } returns null
 
         // when
         val ex = catchThrowable { sut.unsavePhotographer(command) }
 
         // then
-        verify { findPhotographerSavePort.findByUserIdAndPhotographerId(command.requestUserId, command.photographerId) }
+        verify { photographerSaveRepo.findByUserIdAndPhotographerId(command.requestUserId, command.photographerId) }
         confirmVerifiedEveryMocks()
         assertThat(ex).isInstanceOf(PhotographerSaveNotFoundException::class.java)
     }

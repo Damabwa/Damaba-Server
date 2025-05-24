@@ -1,15 +1,13 @@
 package com.damaba.damaba.application.service.auth
 
 import com.damaba.damaba.application.port.inbound.auth.OAuthLoginUseCase
-import com.damaba.damaba.application.port.outbound.auth.CreateAuthTokenPort
-import com.damaba.damaba.application.port.outbound.auth.CreateRefreshTokenPort
-import com.damaba.damaba.application.port.outbound.auth.GetOAuthLoginUidPort
-import com.damaba.damaba.application.port.outbound.user.CreateUserPort
-import com.damaba.damaba.application.port.outbound.user.ExistsNicknamePort
-import com.damaba.damaba.application.port.outbound.user.FindUserPort
 import com.damaba.damaba.domain.auth.RefreshToken
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.domain.user.constant.LoginType
+import com.damaba.damaba.infrastructure.auth.AuthTokenManager
+import com.damaba.damaba.infrastructure.auth.OAuthLoginProvider
+import com.damaba.damaba.infrastructure.auth.RefreshTokenRepository
+import com.damaba.damaba.infrastructure.user.UserRepository
 import com.damaba.damaba.property.AuthProperties
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.fixture.AuthFixture.createAccessToken
@@ -26,20 +24,16 @@ import org.junit.jupiter.api.BeforeEach
 import kotlin.test.Test
 
 class OAuthLoginServiceTest {
-    private val getOAuthLoginUidPort: GetOAuthLoginUidPort = mockk()
-    private val findUserPort: FindUserPort = mockk()
-    private val existsNicknamePort: ExistsNicknamePort = mockk()
-    private val createUserPort: CreateUserPort = mockk()
-    private val createAuthTokenPort: CreateAuthTokenPort = mockk()
-    private val createRefreshTokenPort: CreateRefreshTokenPort = mockk()
+    private val authTokenManager: AuthTokenManager = mockk()
+    private val oAuthLoginProvider: OAuthLoginProvider = mockk()
+    private val refreshTokenRepo: RefreshTokenRepository = mockk()
+    private val userRepo: UserRepository = mockk()
     private val authProperties: AuthProperties = mockk()
     private val sut: OAuthLoginService = OAuthLoginService(
-        getOAuthLoginUidPort,
-        findUserPort,
-        existsNicknamePort,
-        createUserPort,
-        createAuthTokenPort,
-        createRefreshTokenPort,
+        authTokenManager,
+        oAuthLoginProvider,
+        refreshTokenRepo,
+        userRepo,
         authProperties,
     )
 
@@ -50,12 +44,10 @@ class OAuthLoginServiceTest {
 
     private fun confirmVerifiedEveryMocks() {
         confirmVerified(
-            getOAuthLoginUidPort,
-            findUserPort,
-            existsNicknamePort,
-            createUserPort,
-            createAuthTokenPort,
-            createRefreshTokenPort,
+            authTokenManager,
+            oAuthLoginProvider,
+            refreshTokenRepo,
+            userRepo,
         )
     }
 
@@ -71,25 +63,25 @@ class OAuthLoginServiceTest {
         val refreshToken = createRefreshToken()
 
         every {
-            getOAuthLoginUidPort.getOAuthLoginUid(loginType, kakaoAccessToken)
+            oAuthLoginProvider.getOAuthLoginUid(loginType, kakaoAccessToken)
         } returns kakaoUserId
         every {
-            findUserPort.findByOAuthLoginUid(kakaoUserId)
+            userRepo.findByOAuthLoginUid(kakaoUserId)
         } returns null
         every {
-            existsNicknamePort.existsNickname(any(String::class))
+            userRepo.existsNickname(any(String::class))
         } returns true andThen false
         every {
-            createUserPort.create(any(User::class))
+            userRepo.create(any(User::class))
         } returns newUser
         every {
-            createAuthTokenPort.createAccessToken(newUser)
+            authTokenManager.createAccessToken(newUser)
         } returns accessToken
         every {
-            createAuthTokenPort.createRefreshToken(newUser)
+            authTokenManager.createRefreshToken(newUser)
         } returns refreshToken
         every {
-            createRefreshTokenPort.create(RefreshToken(newUser.id, refreshToken.value), REFRESH_TOKEN_DURATION_MILLIS)
+            refreshTokenRepo.create(RefreshToken(newUser.id, refreshToken.value), REFRESH_TOKEN_DURATION_MILLIS)
         } just Runs
 
         // when
@@ -97,14 +89,14 @@ class OAuthLoginServiceTest {
 
         // then
         verifyOrder {
-            getOAuthLoginUidPort.getOAuthLoginUid(loginType, kakaoAccessToken)
-            findUserPort.findByOAuthLoginUid(kakaoUserId)
-            existsNicknamePort.existsNickname(any(String::class))
-            existsNicknamePort.existsNickname(any(String::class))
-            createUserPort.create(any(User::class))
-            createAuthTokenPort.createAccessToken(newUser)
-            createAuthTokenPort.createRefreshToken(newUser)
-            createRefreshTokenPort.create(RefreshToken(newUser.id, refreshToken.value), REFRESH_TOKEN_DURATION_MILLIS)
+            oAuthLoginProvider.getOAuthLoginUid(loginType, kakaoAccessToken)
+            userRepo.findByOAuthLoginUid(kakaoUserId)
+            userRepo.existsNickname(any(String::class))
+            userRepo.existsNickname(any(String::class))
+            userRepo.create(any(User::class))
+            authTokenManager.createAccessToken(newUser)
+            authTokenManager.createRefreshToken(newUser)
+            refreshTokenRepo.create(RefreshToken(newUser.id, refreshToken.value), REFRESH_TOKEN_DURATION_MILLIS)
         }
         confirmVerifiedEveryMocks()
         assertThat(result.user).isEqualTo(newUser)
@@ -123,12 +115,12 @@ class OAuthLoginServiceTest {
         val accessToken = createAccessToken()
         val refreshToken = createRefreshToken()
 
-        every { getOAuthLoginUidPort.getOAuthLoginUid(loginType, kakaoAccessToken) } returns kakaoUserId
-        every { findUserPort.findByOAuthLoginUid(kakaoUserId) } returns user
-        every { createAuthTokenPort.createAccessToken(user) } returns accessToken
-        every { createAuthTokenPort.createRefreshToken(user) } returns refreshToken
+        every { oAuthLoginProvider.getOAuthLoginUid(loginType, kakaoAccessToken) } returns kakaoUserId
+        every { userRepo.findByOAuthLoginUid(kakaoUserId) } returns user
+        every { authTokenManager.createAccessToken(user) } returns accessToken
+        every { authTokenManager.createRefreshToken(user) } returns refreshToken
         every {
-            createRefreshTokenPort.create(RefreshToken(user.id, refreshToken.value), REFRESH_TOKEN_DURATION_MILLIS)
+            refreshTokenRepo.create(RefreshToken(user.id, refreshToken.value), REFRESH_TOKEN_DURATION_MILLIS)
         } just Runs
 
         // when
@@ -136,11 +128,11 @@ class OAuthLoginServiceTest {
 
         // then
         verifyOrder {
-            getOAuthLoginUidPort.getOAuthLoginUid(loginType, kakaoAccessToken)
-            findUserPort.findByOAuthLoginUid(kakaoUserId)
-            createAuthTokenPort.createAccessToken(user)
-            createAuthTokenPort.createRefreshToken(user)
-            createRefreshTokenPort.create(RefreshToken(user.id, refreshToken.value), REFRESH_TOKEN_DURATION_MILLIS)
+            oAuthLoginProvider.getOAuthLoginUid(loginType, kakaoAccessToken)
+            userRepo.findByOAuthLoginUid(kakaoUserId)
+            authTokenManager.createAccessToken(user)
+            authTokenManager.createRefreshToken(user)
+            refreshTokenRepo.create(RefreshToken(user.id, refreshToken.value), REFRESH_TOKEN_DURATION_MILLIS)
         }
         confirmVerifiedEveryMocks()
         assertThat(result.user).isEqualTo(user)

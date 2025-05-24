@@ -2,20 +2,16 @@ package com.damaba.damaba.application.service.region
 
 import com.damaba.damaba.application.port.inbound.region.FindRegionCategoriesUseCase
 import com.damaba.damaba.application.port.inbound.region.FindRegionGroupsUseCase
-import com.damaba.damaba.application.port.outbound.region.FindRegionCategoriesPort
-import com.damaba.damaba.application.port.outbound.region.FindRegionGroupsPort
 import com.damaba.damaba.domain.region.RegionGroup
+import com.damaba.damaba.infrastructure.region.RegionRepository
 import org.springframework.stereotype.Service
 
 @Service
 class RegionService(
-    private val findRegionCategoriesPort: FindRegionCategoriesPort,
-    private val findRegionGroupsPort: FindRegionGroupsPort,
+    private val regionRepo: RegionRepository,
 ) : FindRegionCategoriesUseCase,
     FindRegionGroupsUseCase {
-    override fun findRegionCategories(): List<String> =
-        findRegionCategoriesPort.findRegionCategories()
+    override fun findRegionCategories(): List<String> = regionRepo.findRegionCategories()
 
-    override fun findRegionGroups(): List<RegionGroup> =
-        findRegionGroupsPort.findRegionGroups()
+    override fun findRegionGroups(): List<RegionGroup> = regionRepo.findRegionGroups()
 }
