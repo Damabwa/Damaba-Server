@@ -136,13 +136,12 @@ tasks.jacocoTestReport {
             sourceSets.main.get().output.asFileTree.matching {
                 include(
                     listOf(
-                        "**/adapter/inbound/**/*Controller*",
-                        "**/adapter/outbound/**/*Repository*",
-                        "**/adapter/outbound/**/*Adapter*",
+                        "**/controller/**/*Controller*",
                         "**/application/listener/**/*EventListener*",
                         "**/application/service/**",
                         "**/application/port/**",
                         "**/domain/**",
+                        "**/infrastructure/**/*",
                     ),
                 )
             },
@@ -170,18 +169,23 @@ tasks.jacocoTestCoverageVerification {
             }
 
             includes = listOf(
-                "*.adapter.inbound.*.*Controller*",
-                "*.adapter.outbound.*.*Repository*",
-                "*.adapter.outbound.*.*Adapter*",
+                "*.controller.*.*Controller*",
                 "*.application.listener.*.*EventListener*",
                 "*.application.service.*",
                 "*.application.port.*",
-                "*.domain.*.*",
+                "*.domain.*",
+                "*.infrastructure.*",
             )
 
             excludes = listOf(
                 "*.domain.file.*",
                 "*.domain.exception.*",
+                "*.infrastructure.*.*Entity*",
+                "*.infrastructure.*.KakaoApiException",
+                "*.infrastructure.*.KakaoKApiFeignErrorDecoder",
+                "*.infrastructure.*.KakaoKApiFeignErrorDecoder.KakaoKApiErrorResponse",
+                "*.infrastructure.*.TransactionalDBLockManager",
+                "*.infrastructure.*.PageMappingExtensionsKt",
             )
         }
     }
