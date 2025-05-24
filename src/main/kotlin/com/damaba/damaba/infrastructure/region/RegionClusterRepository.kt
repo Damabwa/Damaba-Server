@@ -1,7 +1,7 @@
-package com.damaba.damaba.application.port.outbound.region
+package com.damaba.damaba.infrastructure.region
 
 import com.damaba.damaba.domain.region.RegionCluster
 
-interface FindRegionClustersPort {
+interface RegionClusterRepository {
     fun findRegionClusters(): List<RegionCluster>
 }

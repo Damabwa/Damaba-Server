@@ -1,19 +1,12 @@
 package com.damaba.damaba.infrastructure.photographer
 
-import com.damaba.damaba.application.port.outbound.photographer.CreatePhotographerSavePort
-import com.damaba.damaba.application.port.outbound.photographer.DeletePhotographerSavePort
-import com.damaba.damaba.application.port.outbound.photographer.ExistsPhotographerSavePort
-import com.damaba.damaba.application.port.outbound.photographer.FindPhotographerSavePort
 import com.damaba.damaba.domain.photographer.PhotographerSave
 import org.springframework.stereotype.Repository
 
 @Repository
 class PhotographerSaveCoreRepository(
     private val photographerSaveJpaRepository: PhotographerSaveJpaRepository,
-) : FindPhotographerSavePort,
-    ExistsPhotographerSavePort,
-    CreatePhotographerSavePort,
-    DeletePhotographerSavePort {
+) : PhotographerSaveRepository {
     override fun findByUserIdAndPhotographerId(
         userId: Long,
         photographerId: Long,

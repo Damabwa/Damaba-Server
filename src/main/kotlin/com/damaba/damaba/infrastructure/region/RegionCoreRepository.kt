@@ -1,7 +1,5 @@
 package com.damaba.damaba.infrastructure.region
 
-import com.damaba.damaba.application.port.outbound.region.FindRegionCategoriesPort
-import com.damaba.damaba.application.port.outbound.region.FindRegionGroupsPort
 import com.damaba.damaba.domain.region.RegionGroup
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -12,8 +10,7 @@ import org.springframework.stereotype.Repository
 class RegionCoreRepository(
     private val resourceLoader: ResourceLoader,
     private val mapper: ObjectMapper,
-) : FindRegionCategoriesPort,
-    FindRegionGroupsPort {
+) : RegionRepository {
     companion object {
         private const val REGION_DATA_FILE_PATH = "classpath:regions.json"
     }
