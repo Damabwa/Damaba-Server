@@ -1,10 +1,5 @@
 package com.damaba.damaba.util.fixture
 
-import com.damaba.damaba.adapter.outbound.photographer.PhotographerActiveRegionJpaEntity
-import com.damaba.damaba.adapter.outbound.photographer.PhotographerAddressJpaEmbeddable
-import com.damaba.damaba.adapter.outbound.photographer.PhotographerJpaEntity
-import com.damaba.damaba.adapter.outbound.photographer.PhotographerPhotographyTypeJpaEntity
-import com.damaba.damaba.adapter.outbound.photographer.PhotographerPortfolioImageJpaEntity
 import com.damaba.damaba.domain.common.Address
 import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.file.Image
@@ -16,6 +11,11 @@ import com.damaba.damaba.domain.user.constant.Gender
 import com.damaba.damaba.domain.user.constant.LoginType
 import com.damaba.damaba.domain.user.constant.UserRoleType
 import com.damaba.damaba.domain.user.constant.UserType
+import com.damaba.damaba.infrastructure.photographer.PhotographerActiveRegionJpaEntity
+import com.damaba.damaba.infrastructure.photographer.PhotographerAddressJpaEmbeddable
+import com.damaba.damaba.infrastructure.photographer.PhotographerJpaEntity
+import com.damaba.damaba.infrastructure.photographer.PhotographerPhotographyTypeJpaEntity
+import com.damaba.damaba.infrastructure.photographer.PhotographerPortfolioImageJpaEntity
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomBoolean
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
@@ -87,7 +87,12 @@ object PhotographerFixture {
         id: Long = randomLong(),
         contactLink: String? = randomString(),
         description: String? = randomString(),
-        address: PhotographerAddressJpaEmbeddable? = null,
+        address: PhotographerAddressJpaEmbeddable? = PhotographerAddressJpaEmbeddable(
+            sido = randomString(),
+            sigungu = randomString(),
+            roadAddress = randomString(),
+            jibunAddress = randomString(),
+        ),
         mainPhotographyTypes: Set<PhotographerPhotographyTypeJpaEntity> = emptySet(),
         portfolio: List<PhotographerPortfolioImageJpaEntity> = emptyList(),
         activeRegions: Set<PhotographerActiveRegionJpaEntity> = emptySet(),
