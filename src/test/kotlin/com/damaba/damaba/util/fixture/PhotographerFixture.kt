@@ -6,7 +6,7 @@ import com.damaba.damaba.adapter.outbound.photographer.PhotographerJpaEntity
 import com.damaba.damaba.adapter.outbound.photographer.PhotographerPhotographyTypeJpaEntity
 import com.damaba.damaba.adapter.outbound.photographer.PhotographerPortfolioImageJpaEntity
 import com.damaba.damaba.domain.common.Address
-import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.domain.photographer.PhotographerListItem

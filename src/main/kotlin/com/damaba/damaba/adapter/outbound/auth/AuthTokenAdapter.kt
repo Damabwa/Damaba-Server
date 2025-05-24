@@ -4,7 +4,7 @@ import com.damaba.damaba.application.port.outbound.auth.CreateAuthTokenPort
 import com.damaba.damaba.application.port.outbound.auth.ParseUserIdFromAuthTokenPort
 import com.damaba.damaba.application.port.outbound.auth.ValidateAuthTokenPort
 import com.damaba.damaba.domain.auth.AuthToken
-import com.damaba.damaba.domain.auth.AuthTokenType
+import com.damaba.damaba.domain.auth.constant.AuthTokenType
 import com.damaba.damaba.domain.auth.exception.InvalidAuthTokenException
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.property.AuthProperties

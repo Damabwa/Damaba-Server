@@ -20,7 +20,7 @@ import com.damaba.damaba.application.port.outbound.user.DeleteUserProfileImagePo
 import com.damaba.damaba.application.port.outbound.user.ExistsNicknamePort
 import com.damaba.damaba.application.port.outbound.user.GetUserPort
 import com.damaba.damaba.domain.common.Pagination
-import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.domain.photographer.PhotographerSave
 import com.damaba.damaba.domain.photographer.constant.PhotographerSortType
