@@ -1,8 +1,5 @@
 package com.damaba.damaba.infrastructure.file
 
-import com.damaba.damaba.application.port.outbound.file.DeleteFilePort
-import com.damaba.damaba.application.port.outbound.file.UploadFilePort
-import com.damaba.damaba.application.port.outbound.file.UploadFilesPort
 import com.damaba.damaba.domain.file.File
 import com.damaba.damaba.domain.file.UploadFile
 import com.damaba.damaba.property.AwsProperties
@@ -19,9 +16,7 @@ class AwsS3FileStorageManager(
     private val s3Client: S3Client,
     private val damabaProperties: DamabaProperties,
     private val awsProperties: AwsProperties,
-) : UploadFilePort,
-    UploadFilesPort,
-    DeleteFilePort {
+) : FileStorageManager {
 
     override fun upload(file: UploadFile, path: String): File {
         val originalFileName = if (file.name.isNullOrBlank()) UNKNOWN_FILE_NAME else file.name

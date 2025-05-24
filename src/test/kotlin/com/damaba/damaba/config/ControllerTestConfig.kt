@@ -18,7 +18,7 @@ import org.springframework.test.context.ActiveProfiles
 @ActiveProfiles("test")
 class ControllerTestConfig {
     @Bean
-    fun authFilter(): AuthFilter = object : AuthFilter(mockk(), mockk(), mockk()) {
+    fun authFilter(): AuthFilter = object : AuthFilter(mockk(), mockk()) {
         override fun doFilterInternal(
             request: HttpServletRequest,
             response: HttpServletResponse,

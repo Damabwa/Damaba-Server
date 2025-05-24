@@ -1,8 +1,8 @@
 package com.damaba.damaba.application.service.file
 
 import com.damaba.damaba.application.port.inbound.file.UploadFilesUseCase
-import com.damaba.damaba.application.port.outbound.file.UploadFilesPort
 import com.damaba.damaba.domain.file.FileType
+import com.damaba.damaba.infrastructure.file.FileStorageManager
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
 import com.damaba.damaba.util.fixture.FileFixture.createFile
 import com.damaba.damaba.util.fixture.FileFixture.createUploadFile
@@ -14,11 +14,11 @@ import org.assertj.core.api.Assertions.assertThat
 import kotlin.test.Test
 
 class FileServiceTest {
-    private val uploadFilesPort: UploadFilesPort = mockk()
-    private val sut = FileService(uploadFilesPort)
+    private val fileStorageManager: FileStorageManager = mockk()
+    private val sut = FileService(fileStorageManager)
 
     private fun confirmVerifiedEveryMocks() {
-        confirmVerified(uploadFilesPort)
+        confirmVerified(fileStorageManager)
     }
 
     @Test
@@ -29,13 +29,13 @@ class FileServiceTest {
             files = generateRandomList(maxSize = 10) { createUploadFile() },
         )
         val expectedResult = List(command.files.size) { createFile() }
-        every { uploadFilesPort.upload(command.files, command.fileType.uploadPath) } returns expectedResult
+        every { fileStorageManager.upload(command.files, command.fileType.uploadPath) } returns expectedResult
 
         // when
         val actualResult = sut.uploadFiles(command)
 
         // then
-        verify { uploadFilesPort.upload(command.files, command.fileType.uploadPath) }
+        verify { fileStorageManager.upload(command.files, command.fileType.uploadPath) }
         confirmVerifiedEveryMocks()
         assertThat(actualResult).isEqualTo(expectedResult)
     }

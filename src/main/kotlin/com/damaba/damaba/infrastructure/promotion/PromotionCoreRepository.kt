@@ -1,10 +1,5 @@
 package com.damaba.damaba.infrastructure.promotion
 
-import com.damaba.damaba.application.port.outbound.promotion.CreatePromotionPort
-import com.damaba.damaba.application.port.outbound.promotion.DeletePromotionPort
-import com.damaba.damaba.application.port.outbound.promotion.FindPromotionPort
-import com.damaba.damaba.application.port.outbound.promotion.GetPromotionPort
-import com.damaba.damaba.application.port.outbound.promotion.UpdatePromotionPort
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.promotion.Promotion
@@ -22,11 +17,7 @@ import org.springframework.stereotype.Repository
 class PromotionCoreRepository(
     private val promotionJpaRepository: PromotionJpaRepository,
     private val promotionJdslRepository: PromotionJdslRepository,
-) : GetPromotionPort,
-    FindPromotionPort,
-    CreatePromotionPort,
-    UpdatePromotionPort,
-    DeletePromotionPort {
+) : PromotionRepository {
     override fun getById(id: Long): Promotion = getJpaEntityById(id).toPromotion()
 
     override fun findPromotionList(
