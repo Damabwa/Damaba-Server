@@ -10,7 +10,7 @@ import com.damaba.damaba.application.port.outbound.photographer.FindPhotographer
 import com.damaba.damaba.application.port.outbound.photographer.GetPhotographerPort
 import com.damaba.damaba.application.port.outbound.photographer.UpdatePhotographerPort
 import com.damaba.damaba.domain.common.Pagination
-import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.domain.photographer.PhotographerListItem
 import com.damaba.damaba.domain.photographer.constant.PhotographerSortType

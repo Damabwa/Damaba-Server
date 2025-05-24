@@ -2,7 +2,7 @@ package com.damaba.damaba.adapter.outbound.promotion
 
 import com.damaba.damaba.adapter.outbound.common.filterNotNull
 import com.damaba.damaba.adapter.outbound.user.UserJpaEntity
-import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.promotion.PromotionListItem
 import com.damaba.damaba.domain.promotion.constant.PromotionProgressStatus
 import com.damaba.damaba.domain.promotion.constant.PromotionSortType

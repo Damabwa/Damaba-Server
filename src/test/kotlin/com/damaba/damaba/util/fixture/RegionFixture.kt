@@ -1,6 +1,6 @@
 package com.damaba.damaba.util.fixture
 
-import com.damaba.damaba.adapter.inbound.region.dto.RegionRequest
+import com.damaba.damaba.controller.region.request.RegionRequest
 import com.damaba.damaba.domain.region.Region
 import com.damaba.damaba.domain.region.RegionCluster
 import com.damaba.damaba.domain.region.RegionGroup

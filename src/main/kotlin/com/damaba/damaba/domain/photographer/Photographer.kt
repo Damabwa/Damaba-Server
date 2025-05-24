@@ -1,7 +1,7 @@
 package com.damaba.damaba.domain.photographer
 
 import com.damaba.damaba.domain.common.Address
-import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.region.Region
 import com.damaba.damaba.domain.user.User

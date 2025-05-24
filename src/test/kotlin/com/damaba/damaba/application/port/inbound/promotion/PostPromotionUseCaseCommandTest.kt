@@ -1,6 +1,6 @@
 package com.damaba.damaba.application.port.inbound.promotion
 
-import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.exception.ValidationException
 import com.damaba.damaba.domain.file.File
 import com.damaba.damaba.domain.promotion.constant.PromotionType

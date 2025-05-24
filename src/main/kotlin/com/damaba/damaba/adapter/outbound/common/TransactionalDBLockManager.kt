@@ -1,7 +1,7 @@
 package com.damaba.damaba.adapter.outbound.common
 
 import com.damaba.damaba.adapter.outbound.promotion.PromotionJpaRepository
-import com.damaba.damaba.domain.common.LockType
+import com.damaba.damaba.domain.common.constant.LockType
 import com.damaba.damaba.domain.promotion.Promotion
 import org.aspectj.lang.ProceedingJoinPoint
 import org.springframework.stereotype.Component

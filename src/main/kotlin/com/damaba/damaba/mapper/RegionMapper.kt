@@ -1,9 +1,9 @@
 package com.damaba.damaba.mapper
 
-import com.damaba.damaba.adapter.inbound.region.dto.RegionClusterResponse
-import com.damaba.damaba.adapter.inbound.region.dto.RegionGroupResponse
-import com.damaba.damaba.adapter.inbound.region.dto.RegionRequest
-import com.damaba.damaba.adapter.inbound.region.dto.RegionResponse
+import com.damaba.damaba.controller.region.request.RegionRequest
+import com.damaba.damaba.controller.region.response.RegionClusterResponse
+import com.damaba.damaba.controller.region.response.RegionGroupResponse
+import com.damaba.damaba.controller.region.response.RegionResponse
 import com.damaba.damaba.domain.region.Region
 import com.damaba.damaba.domain.region.RegionCluster
 import com.damaba.damaba.domain.region.RegionGroup

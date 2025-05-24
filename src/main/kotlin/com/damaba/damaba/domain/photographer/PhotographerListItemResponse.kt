@@ -1,6 +1,6 @@
 package com.damaba.damaba.domain.photographer
 
-import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.file.Image
 import io.swagger.v3.oas.annotations.media.Schema
 

@@ -5,7 +5,7 @@ import com.damaba.damaba.adapter.outbound.user.UserJpaRepository
 import com.damaba.damaba.adapter.outbound.user.UserProfileImageJpaEntity
 import com.damaba.damaba.adapter.outbound.user.UserProfileImageJpaRepository
 import com.damaba.damaba.config.JpaConfig
-import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.domain.photographer.PhotographerSave
 import com.damaba.damaba.domain.photographer.constant.PhotographerSortType
