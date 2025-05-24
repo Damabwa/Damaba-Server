@@ -1,6 +1,6 @@
 package com.damaba.damaba.util.fixture
 
-import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.PromotionDetail

@@ -1,6 +1,6 @@
 package com.damaba.damaba.application.port.inbound.photographer
 
-import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.domain.photographer.PhotographerValidator

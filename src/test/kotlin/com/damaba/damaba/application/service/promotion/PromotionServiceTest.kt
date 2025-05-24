@@ -22,7 +22,7 @@ import com.damaba.damaba.application.port.outbound.promotion.GetPromotionSavePor
 import com.damaba.damaba.application.port.outbound.promotion.UpdatePromotionPort
 import com.damaba.damaba.application.port.outbound.user.GetUserPort
 import com.damaba.damaba.domain.common.Pagination
-import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.PromotionSave
 import com.damaba.damaba.domain.promotion.constant.PromotionProgressStatus

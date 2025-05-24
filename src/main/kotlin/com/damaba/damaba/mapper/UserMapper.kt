@@ -1,7 +1,7 @@
 package com.damaba.damaba.mapper
 
-import com.damaba.damaba.adapter.inbound.user.dto.UserResponse
 import com.damaba.damaba.application.port.inbound.user.UpdateUserProfileUseCase
+import com.damaba.damaba.controller.user.response.UserResponse
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.domain.user.UserProfile
 import org.mapstruct.Mapper

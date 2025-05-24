@@ -1,6 +1,6 @@
 package com.damaba.damaba.adapter.outbound.common
 
-import com.damaba.damaba.domain.common.LockType
+import com.damaba.damaba.domain.common.constant.LockType
 import org.aspectj.lang.ProceedingJoinPoint
 import kotlin.reflect.KClass
 

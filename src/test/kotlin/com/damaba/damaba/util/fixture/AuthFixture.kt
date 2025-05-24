@@ -1,7 +1,7 @@
 package com.damaba.damaba.util.fixture
 
 import com.damaba.damaba.domain.auth.AuthToken
-import com.damaba.damaba.domain.auth.AuthTokenType
+import com.damaba.damaba.domain.auth.constant.AuthTokenType
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import java.time.LocalDateTime
 

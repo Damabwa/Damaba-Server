@@ -20,9 +20,9 @@ import com.damaba.damaba.application.port.outbound.promotion.GetPromotionPort
 import com.damaba.damaba.application.port.outbound.promotion.GetPromotionSavePort
 import com.damaba.damaba.application.port.outbound.promotion.UpdatePromotionPort
 import com.damaba.damaba.application.port.outbound.user.GetUserPort
-import com.damaba.damaba.domain.common.LockType.PESSIMISTIC
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.TransactionalLock
+import com.damaba.damaba.domain.common.constant.LockType.PESSIMISTIC
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.PromotionDetail

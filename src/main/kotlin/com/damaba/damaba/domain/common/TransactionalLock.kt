@@ -1,5 +1,6 @@
 package com.damaba.damaba.domain.common
 
+import com.damaba.damaba.domain.common.constant.LockType
 import kotlin.reflect.KClass
 
 @Target(AnnotationTarget.FUNCTION)

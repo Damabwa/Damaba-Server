@@ -1,7 +1,7 @@
 package com.damaba.damaba.adapter.outbound.promotion
 
 import com.damaba.damaba.adapter.outbound.common.BaseJpaTimeEntity
-import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.constant.PromotionType

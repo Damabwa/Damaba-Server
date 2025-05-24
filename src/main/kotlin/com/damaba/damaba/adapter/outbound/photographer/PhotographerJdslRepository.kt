@@ -2,7 +2,7 @@ package com.damaba.damaba.adapter.outbound.photographer
 
 import com.damaba.damaba.adapter.outbound.common.filterNotNull
 import com.damaba.damaba.adapter.outbound.user.UserJpaEntity
-import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.photographer.PhotographerListItem
 import com.damaba.damaba.domain.photographer.constant.PhotographerSortType
 import com.damaba.damaba.domain.region.RegionFilterCondition
