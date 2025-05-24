@@ -1,7 +1,7 @@
 package com.damaba.damaba.mapper
 
-import com.damaba.damaba.adapter.inbound.common.dto.ImageRequest
-import com.damaba.damaba.adapter.inbound.common.dto.ImageResponse
+import com.damaba.damaba.controller.common.request.ImageRequest
+import com.damaba.damaba.controller.common.response.ImageResponse
 import com.damaba.damaba.domain.file.Image
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers

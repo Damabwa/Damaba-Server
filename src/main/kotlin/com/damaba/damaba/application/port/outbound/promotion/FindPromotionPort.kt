@@ -1,7 +1,7 @@
 package com.damaba.damaba.application.port.outbound.promotion
 
 import com.damaba.damaba.domain.common.Pagination
-import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.promotion.PromotionListItem
 import com.damaba.damaba.domain.promotion.constant.PromotionProgressStatus
 import com.damaba.damaba.domain.promotion.constant.PromotionSortType

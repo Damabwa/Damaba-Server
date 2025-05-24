@@ -1,6 +1,6 @@
 package com.damaba.damaba.domain.promotion
 
-import com.damaba.damaba.domain.common.PhotographyType
+import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.region.Region
 import com.damaba.damaba.domain.user.User
