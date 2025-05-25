@@ -1,6 +1,6 @@
 package com.damaba.damaba.application.file
 
-import com.damaba.damaba.application.port.inbound.file.UploadFilesUseCase
+import com.damaba.damaba.application.file.dto.UploadFilesCommand
 import com.damaba.damaba.domain.file.FileType
 import com.damaba.damaba.infrastructure.file.FileStorageManager
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
@@ -24,7 +24,7 @@ class FileServiceTest {
     @Test
     fun `업로드할 파일 유형과 파일들이 주어지고, 주어진 파일들을 업로드한다`() {
         // given
-        val command = UploadFilesUseCase.Command(
+        val command = UploadFilesCommand(
             fileType = FileType.PROMOTION_IMAGE,
             files = generateRandomList(maxSize = 10) { createUploadFile() },
         )

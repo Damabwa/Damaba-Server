@@ -1,6 +1,6 @@
 package com.damaba.damaba.controller.photographer.request
 
-import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerPageUseCase
+import com.damaba.damaba.application.photographer.dto.UpdatePhotographerPageCommand
 import com.damaba.damaba.controller.common.request.AddressRequest
 import com.damaba.damaba.controller.common.request.ImageRequest
 import com.damaba.damaba.mapper.AddressMapper
@@ -13,7 +13,7 @@ data class UpdateMyPhotographerPageRequest(
     val contactLink: String?,
     val description: String,
 ) {
-    fun toCommand(photographerId: Long) = UpdatePhotographerPageUseCase.Command(
+    fun toCommand(photographerId: Long) = UpdatePhotographerPageCommand(
         photographerId = photographerId,
         portfolio = this.portfolio.map { ImageMapper.INSTANCE.toImage(it) },
         address = this.address?.let { AddressMapper.INSTANCE.toAddress(it) },

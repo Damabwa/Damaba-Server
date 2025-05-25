@@ -1,8 +1,8 @@
 package com.damaba.damaba.application.user
 
-import com.damaba.damaba.application.port.inbound.user.ExistsUserNicknameUseCase
-import com.damaba.damaba.application.port.inbound.user.RegisterUserUseCase
-import com.damaba.damaba.application.port.inbound.user.UpdateUserProfileUseCase
+import com.damaba.damaba.application.user.dto.ExistsUserNicknameQuery
+import com.damaba.damaba.application.user.dto.RegisterUserCommand
+import com.damaba.damaba.application.user.dto.UpdateUserProfileCommand
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.user.constant.Gender
 import com.damaba.damaba.domain.user.constant.UserType
@@ -54,7 +54,7 @@ class UserServiceTest {
     fun `닉네임이 주어지고, 주어진 닉네임이 존재하는지 확인한다`() {
         // given
         val nickname = randomString(len = 7)
-        val query = ExistsUserNicknameUseCase.Query(nickname)
+        val query = ExistsUserNicknameQuery(nickname)
         val expectedResult = randomBoolean()
         every { userRepo.existsNickname(nickname) } returns expectedResult
 
@@ -72,7 +72,7 @@ class UserServiceTest {
         // given
         val userId = randomLong()
         val originalUser = createUser(id = userId, type = UserType.UNDEFINED)
-        val command = RegisterUserUseCase.Command(
+        val command = RegisterUserCommand(
             userId = userId,
             nickname = randomString(len = 7),
             gender = Gender.FEMALE,
@@ -108,7 +108,7 @@ class UserServiceTest {
         // given
         val userId = randomLong()
         val user = createUser(id = userId, type = UserType.USER)
-        val command = RegisterUserUseCase.Command(
+        val command = RegisterUserCommand(
             userId = userId,
             nickname = randomString(len = 7),
             gender = Gender.FEMALE,
@@ -130,7 +130,7 @@ class UserServiceTest {
         // given
         val userId = randomLong()
         val originalUser = createUser(id = userId, type = UserType.UNDEFINED)
-        val command = RegisterUserUseCase.Command(
+        val command = RegisterUserCommand(
             userId = userId,
             nickname = randomString(len = 7),
             gender = Gender.FEMALE,
@@ -160,7 +160,7 @@ class UserServiceTest {
         val newGender = Gender.FEMALE
         val newInstagramId = null
         val newProfileImageUrl = Image(randomString(), randomUrl())
-        val command = UpdateUserProfileUseCase.Command(userId, newNickname, newInstagramId, newProfileImageUrl)
+        val command = UpdateUserProfileCommand(userId, newNickname, newInstagramId, newProfileImageUrl)
         val expectedResult = createUser(
             nickname = newNickname,
             gender = newGender,
@@ -195,7 +195,7 @@ class UserServiceTest {
         val userId = randomLong()
         val user = createUser(id = userId)
         val newNickname = randomString(len = 7)
-        val command = UpdateUserProfileUseCase.Command(userId, newNickname, user.instagramId, user.profileImage!!)
+        val command = UpdateUserProfileCommand(userId, newNickname, user.instagramId, user.profileImage!!)
         val expectedResult = createUser(
             nickname = newNickname,
             gender = user.gender,
@@ -230,7 +230,7 @@ class UserServiceTest {
         val originalProfileImage = createImage()
         val user = createUser(id = userId, profileImage = originalProfileImage)
         val newProfileImageUrl = createImage()
-        val command = UpdateUserProfileUseCase.Command(userId, user.nickname, user.instagramId, newProfileImageUrl)
+        val command = UpdateUserProfileCommand(userId, user.nickname, user.instagramId, newProfileImageUrl)
         val expectedResult = createUser(
             nickname = user.nickname,
             gender = user.gender,
@@ -263,7 +263,7 @@ class UserServiceTest {
         // given
         val userId = randomLong()
         val existingNickname = randomString(len = 7)
-        val command = UpdateUserProfileUseCase.Command(
+        val command = UpdateUserProfileCommand(
             userId,
             existingNickname,
             randomString(),

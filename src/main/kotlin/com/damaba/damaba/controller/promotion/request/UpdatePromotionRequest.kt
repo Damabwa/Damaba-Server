@@ -1,6 +1,6 @@
 package com.damaba.damaba.controller.promotion.request
 
-import com.damaba.damaba.application.port.inbound.promotion.UpdatePromotionUseCase
+import com.damaba.damaba.application.promotion.dto.UpdatePromotionCommand
 import com.damaba.damaba.controller.common.request.ImageRequest
 import com.damaba.damaba.controller.region.request.RegionRequest
 import com.damaba.damaba.domain.common.constant.PhotographyType
@@ -41,7 +41,7 @@ data class UpdatePromotionRequest(
     @Schema(description = "해시태그 리스트", example = "[\"수원핫플\", \"스냅사진\"]")
     val hashtags: Set<String>,
 ) {
-    fun toCommand(requestUserId: Long, promotionId: Long) = UpdatePromotionUseCase.Command(
+    fun toCommand(requestUserId: Long, promotionId: Long) = UpdatePromotionCommand(
         requestUserId = requestUserId,
         promotionId = promotionId,
         promotionType = promotionType,

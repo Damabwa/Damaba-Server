@@ -1,6 +1,6 @@
 package com.damaba.damaba.controller.user.request
 
-import com.damaba.damaba.application.port.inbound.user.RegisterUserUseCase
+import com.damaba.damaba.application.user.dto.RegisterUserCommand
 import com.damaba.damaba.domain.user.constant.Gender
 import io.swagger.v3.oas.annotations.media.Schema
 
@@ -14,7 +14,7 @@ data class RegisterUserRequest(
     @Schema(description = "인스타 아이디", example = "damaba.unofficial")
     val instagramId: String?,
 ) {
-    fun toCommand(requestUserId: Long) = RegisterUserUseCase.Command(
+    fun toCommand(requestUserId: Long) = RegisterUserCommand(
         userId = requestUserId,
         nickname = nickname,
         gender = gender,

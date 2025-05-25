@@ -1,7 +1,7 @@
 package com.damaba.damaba.mapper
 
-import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerPageUseCase
-import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerProfileUseCase
+import com.damaba.damaba.application.photographer.dto.UpdatePhotographerPageCommand
+import com.damaba.damaba.application.photographer.dto.UpdatePhotographerProfileCommand
 import com.damaba.damaba.controller.photographer.response.PhotographerResponse
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.domain.photographer.PhotographerListItem
@@ -19,9 +19,9 @@ interface PhotographerMapper {
     @Mapping(source = "saved", target = "isSaved")
     fun toPhotographerListItemResponse(photographerListItem: PhotographerListItem): PhotographerListItemResponse
 
-    fun toPhotographerProfile(command: UpdatePhotographerProfileUseCase.Command): PhotographerProfile
+    fun toPhotographerProfile(command: UpdatePhotographerProfileCommand): PhotographerProfile
 
-    fun toPhotographerPage(command: UpdatePhotographerPageUseCase.Command): PhotographerPage
+    fun toPhotographerPage(command: UpdatePhotographerPageCommand): PhotographerPage
 
     fun toPhotographerListItem(photographer: Photographer, isSaved: Boolean): PhotographerListItem
 

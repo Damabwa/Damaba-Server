@@ -1,6 +1,6 @@
 package com.damaba.damaba.controller.photographer.request
 
-import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerProfileUseCase
+import com.damaba.damaba.application.photographer.dto.UpdatePhotographerProfileCommand
 import com.damaba.damaba.controller.common.request.ImageRequest
 import com.damaba.damaba.controller.region.request.RegionRequest
 import com.damaba.damaba.domain.common.constant.PhotographyType
@@ -21,7 +21,7 @@ data class UpdateMyPhotographerProfileRequest(
     @Schema(description = "활동 지역 목록")
     val activeRegions: Set<RegionRequest>,
 ) {
-    fun toCommand(reqUserId: Long) = UpdatePhotographerProfileUseCase.Command(
+    fun toCommand(reqUserId: Long) = UpdatePhotographerProfileCommand(
         photographerId = reqUserId,
         nickname = this.nickname,
         profileImage = this.profileImage?.let { ImageMapper.INSTANCE.toImage(it) },

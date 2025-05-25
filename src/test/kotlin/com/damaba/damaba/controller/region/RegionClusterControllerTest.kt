@@ -1,6 +1,6 @@
 package com.damaba.damaba.controller.region
 
-import com.damaba.damaba.application.port.inbound.region.FindRegionClustersUseCase
+import com.damaba.damaba.application.region.RegionClusterService
 import com.damaba.damaba.config.ControllerTestConfig
 import com.damaba.damaba.util.fixture.RegionFixture.createRegionClusters
 import io.mockk.every
@@ -21,25 +21,25 @@ import kotlin.test.Test
 @WebMvcTest(RegionClusterController::class)
 class RegionClusterControllerTest @Autowired constructor(
     private val mvc: MockMvc,
-    private val findRegionClustersUseCase: FindRegionClustersUseCase,
+    private val regionClusterService: RegionClusterService,
 ) {
     @TestConfiguration
     class MockBeanSetUp {
         @Bean
-        fun findRegionClustersUseCase(): FindRegionClustersUseCase = mockk()
+        fun regionClusterService(): RegionClusterService = mockk()
     }
 
     @Test
     fun `Region cluster 리스트를 조회한다`() {
         // given
         val expectedResult = createRegionClusters()
-        every { findRegionClustersUseCase.findRegionClusters() } returns expectedResult
+        every { regionClusterService.findRegionClusters() } returns expectedResult
 
         // when & then
         mvc.perform(
             get("/api/v1/region-clusters"),
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.regionClusters.size()").value(expectedResult.size))
-        verify { findRegionClustersUseCase.findRegionClusters() }
+        verify { regionClusterService.findRegionClusters() }
     }
 }

@@ -1,6 +1,6 @@
 package com.damaba.damaba.controller.promotion.request
 
-import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
+import com.damaba.damaba.application.promotion.dto.PostPromotionCommand
 import com.damaba.damaba.controller.common.request.ImageRequest
 import com.damaba.damaba.controller.region.request.RegionRequest
 import com.damaba.damaba.domain.common.constant.PhotographyType
@@ -41,7 +41,7 @@ data class PostPromotionRequest(
     @Schema(description = "해시태그 리스트", example = "[\"수원핫플\", \"스냅사진\"]")
     val hashtags: Set<String>,
 ) {
-    fun toCommand(requestUserId: Long) = PostPromotionUseCase.Command(
+    fun toCommand(requestUserId: Long) = PostPromotionCommand(
         authorId = requestUserId,
         promotionType = promotionType,
         title = title,

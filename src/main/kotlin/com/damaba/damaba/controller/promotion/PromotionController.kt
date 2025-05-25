@@ -1,14 +1,12 @@
 package com.damaba.damaba.controller.promotion
 
-import com.damaba.damaba.application.port.inbound.promotion.DeletePromotionUseCase
-import com.damaba.damaba.application.port.inbound.promotion.FindPromotionListUseCase
-import com.damaba.damaba.application.port.inbound.promotion.FindSavedPromotionListUseCase
-import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
-import com.damaba.damaba.application.port.inbound.promotion.GetPromotionUseCase
-import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
-import com.damaba.damaba.application.port.inbound.promotion.SavePromotionUseCase
-import com.damaba.damaba.application.port.inbound.promotion.UnsavePromotionUseCase
-import com.damaba.damaba.application.port.inbound.promotion.UpdatePromotionUseCase
+import com.damaba.damaba.application.promotion.PromotionService
+import com.damaba.damaba.application.promotion.dto.DeletePromotionCommand
+import com.damaba.damaba.application.promotion.dto.FindPromotionListQuery
+import com.damaba.damaba.application.promotion.dto.FindSavedPromotionListQuery
+import com.damaba.damaba.application.promotion.dto.GetPromotionDetailQuery
+import com.damaba.damaba.application.promotion.dto.SavePromotionCommand
+import com.damaba.damaba.application.promotion.dto.UnsavePromotionCommand
 import com.damaba.damaba.controller.promotion.request.PostPromotionRequest
 import com.damaba.damaba.controller.promotion.request.UpdatePromotionRequest
 import com.damaba.damaba.controller.promotion.response.PromotionDetailResponse
@@ -44,18 +42,7 @@ import java.net.URI
 
 @Tag(name = "프로모션 관련 API")
 @RestController
-class PromotionController(
-    private val getPromotionUseCase: GetPromotionUseCase,
-    private val getPromotionDetailUseCase: GetPromotionDetailUseCase,
-    private val findPromotionListUseCase: FindPromotionListUseCase,
-    private val findSavedPromotionListUseCase: FindSavedPromotionListUseCase,
-    private val postPromotionUseCase: PostPromotionUseCase,
-    private val updatePromotionUseCase: UpdatePromotionUseCase,
-    private val deletePromotionUseCase: DeletePromotionUseCase,
-
-    private val savePromotionUseCase: SavePromotionUseCase,
-    private val unsavePromotionUseCase: UnsavePromotionUseCase,
-) {
+class PromotionController(private val promotionService: PromotionService) {
     @Operation(
         summary = "프로모션 단건 조회",
         description = "<p><code>promotionId</code>에 해당하는 프로모션을 단건 조회합니다." +
@@ -67,7 +54,7 @@ class PromotionController(
     )
     @GetMapping("/api/v1/promotions/{promotionId}")
     fun getPromotionV1(@PathVariable promotionId: Long): PromotionResponse {
-        val promotion = getPromotionUseCase.getPromotion(promotionId)
+        val promotion = promotionService.getPromotion(promotionId)
         return PromotionMapper.INSTANCE.toPromotionResponse(promotion)
     }
 
@@ -85,8 +72,8 @@ class PromotionController(
         @AuthenticationPrincipal requestUser: User?,
         @PathVariable promotionId: Long,
     ): PromotionDetailResponse {
-        val promotionDetail = getPromotionDetailUseCase.getPromotionDetail(
-            GetPromotionDetailUseCase.Query(
+        val promotionDetail = promotionService.getPromotionDetail(
+            GetPromotionDetailQuery(
                 requestUserId = requestUser?.id,
                 promotionId = promotionId,
             ),
@@ -137,9 +124,9 @@ class PromotionController(
             }
         }?.toSet()
 
-        val promotionList = findPromotionListUseCase.findPromotionList(
-            FindPromotionListUseCase.Query(
-                reqUserId = reqUser?.id,
+        val promotionList = promotionService.findPromotionList(
+            FindPromotionListQuery(
+                requestUserId = reqUser?.id,
                 type = type,
                 progressStatus = progressStatus,
                 regions = regionConditions ?: emptySet(),
@@ -163,8 +150,8 @@ class PromotionController(
         @RequestParam(defaultValue = "0") @Parameter(description = "페이지 번호. 0부터 시작합니다.") page: Int,
         @RequestParam(defaultValue = "10") @Parameter(description = "페이지 크기") pageSize: Int,
     ): Pagination<PromotionListItemResponse> {
-        val promotionList = findSavedPromotionListUseCase.findSavedPromotionList(
-            FindSavedPromotionListUseCase.Query(
+        val promotionList = promotionService.findSavedPromotionList(
+            FindSavedPromotionListQuery(
                 requestUserId = requestUser.id,
                 page = page,
                 pageSize = pageSize,
@@ -183,7 +170,7 @@ class PromotionController(
         @AuthenticationPrincipal requestUser: User,
         @RequestBody request: PostPromotionRequest,
     ): ResponseEntity<PromotionResponse> {
-        val promotion = postPromotionUseCase.postPromotion(request.toCommand(requestUser.id))
+        val promotion = promotionService.postPromotion(request.toCommand(requestUser.id))
         return ResponseEntity
             .created(URI.create("/api/v*/promotions/${promotion.id}"))
             .body(PromotionMapper.INSTANCE.toPromotionResponse(promotion))
@@ -203,7 +190,7 @@ class PromotionController(
         @AuthenticationPrincipal requestUser: User,
         @PathVariable promotionId: Long,
     ): ResponseEntity<Unit> {
-        savePromotionUseCase.savePromotion(SavePromotionUseCase.Command(requestUser.id, promotionId))
+        promotionService.savePromotion(SavePromotionCommand(requestUser.id, promotionId))
         return ResponseEntity.noContent().build()
     }
 
@@ -232,7 +219,7 @@ class PromotionController(
         @PathVariable promotionId: Long,
         @RequestBody request: UpdatePromotionRequest,
     ): PromotionResponse {
-        val promotion = updatePromotionUseCase.updatePromotion(
+        val promotion = promotionService.updatePromotion(
             request.toCommand(
                 requestUserId = requestUser.id,
                 promotionId = promotionId,
@@ -264,8 +251,8 @@ class PromotionController(
         @AuthenticationPrincipal requestUser: User,
         @PathVariable promotionId: Long,
     ): ResponseEntity<Unit> {
-        deletePromotionUseCase.deletePromotion(
-            DeletePromotionUseCase.Command(
+        promotionService.deletePromotion(
+            DeletePromotionCommand(
                 requestUser = requestUser,
                 promotionId = promotionId,
             ),
@@ -287,7 +274,7 @@ class PromotionController(
         @AuthenticationPrincipal requestUser: User,
         @PathVariable promotionId: Long,
     ): ResponseEntity<Unit> {
-        unsavePromotionUseCase.unsavePromotion(UnsavePromotionUseCase.Command(requestUser.id, promotionId))
+        promotionService.unsavePromotion(UnsavePromotionCommand(requestUser.id, promotionId))
         return ResponseEntity.noContent().build()
     }
 }
