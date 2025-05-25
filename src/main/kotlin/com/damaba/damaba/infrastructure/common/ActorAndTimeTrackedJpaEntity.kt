@@ -9,10 +9,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 
 @EntityListeners(AuditingEntityListener::class)
 @MappedSuperclass
-abstract class BaseJpaEntity protected constructor(
+abstract class ActorAndTimeTrackedJpaEntity protected constructor(
     createdBy: Long = 0,
     updatedBy: Long = 0,
-) : BaseJpaTimeEntity() {
+) : TimeTrackedJpaEntity() {
     @Column(name = "created_by", nullable = false, updatable = false)
     @CreatedBy
     var createdBy: Long = createdBy

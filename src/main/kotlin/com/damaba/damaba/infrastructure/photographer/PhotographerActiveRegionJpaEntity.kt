@@ -1,7 +1,7 @@
 package com.damaba.damaba.infrastructure.photographer
 
 import com.damaba.damaba.domain.region.Region
-import com.damaba.damaba.infrastructure.common.BaseJpaTimeEntity
+import com.damaba.damaba.infrastructure.common.TimeTrackedJpaEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
@@ -18,7 +18,7 @@ class PhotographerActiveRegionJpaEntity(
     photographer: PhotographerJpaEntity,
     category: String,
     name: String,
-) : BaseJpaTimeEntity() {
+) : TimeTrackedJpaEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
