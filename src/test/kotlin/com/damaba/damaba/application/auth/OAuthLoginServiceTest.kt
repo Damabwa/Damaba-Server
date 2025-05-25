@@ -1,6 +1,6 @@
 package com.damaba.damaba.application.auth
 
-import com.damaba.damaba.application.port.inbound.auth.OAuthLoginUseCase
+import com.damaba.damaba.application.auth.dto.OAuthLoginCommand
 import com.damaba.damaba.domain.auth.RefreshToken
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.domain.user.constant.LoginType
@@ -85,7 +85,7 @@ class OAuthLoginServiceTest {
         } just Runs
 
         // when
-        val result = sut.oAuthLogin(OAuthLoginUseCase.Command(loginType = loginType, authKey = kakaoAccessToken))
+        val result = sut.oAuthLogin(OAuthLoginCommand(loginType = loginType, authKey = kakaoAccessToken))
 
         // then
         verifyOrder {
@@ -124,7 +124,7 @@ class OAuthLoginServiceTest {
         } just Runs
 
         // when
-        val result = sut.oAuthLogin(OAuthLoginUseCase.Command(loginType = loginType, authKey = kakaoAccessToken))
+        val result = sut.oAuthLogin(OAuthLoginCommand(loginType = loginType, authKey = kakaoAccessToken))
 
         // then
         verifyOrder {

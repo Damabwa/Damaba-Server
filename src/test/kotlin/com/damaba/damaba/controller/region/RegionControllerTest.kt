@@ -1,7 +1,6 @@
 package com.damaba.damaba.controller.region
 
-import com.damaba.damaba.application.port.inbound.region.FindRegionCategoriesUseCase
-import com.damaba.damaba.application.port.inbound.region.FindRegionGroupsUseCase
+import com.damaba.damaba.application.region.RegionService
 import com.damaba.damaba.config.ControllerTestConfig
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
@@ -28,43 +27,39 @@ import kotlin.test.Test
 @WebMvcTest(RegionController::class)
 class RegionControllerTest @Autowired constructor(
     private val mvc: MockMvc,
-    private val findRegionCategoriesUseCase: FindRegionCategoriesUseCase,
-    private val findRegionGroupsUseCase: FindRegionGroupsUseCase,
+    private val regionService: RegionService,
 ) {
     @TestConfiguration
     class MockBeanSetUp {
         @Bean
-        fun findRegionCategoriesUseCase(): FindRegionCategoriesUseCase = mockk()
-
-        @Bean
-        fun findRegionGroupsUseCase(): FindRegionGroupsUseCase = mockk()
+        fun regionService(): RegionService = mockk()
     }
 
     @Test
     fun `전체 지역 카테고리 리스트를 조회한다`() {
         // given
         val expectedResult = generateRandomList(maxSize = 10) { randomString() }
-        every { findRegionCategoriesUseCase.findRegionCategories() } returns expectedResult
+        every { regionService.findRegionCategories() } returns expectedResult
 
         // when & then
         mvc.perform(
             get("/api/v1/regions/categories"),
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.categories", hasSize<Int>(expectedResult.size)))
-        verify { findRegionCategoriesUseCase.findRegionCategories() }
+        verify { regionService.findRegionCategories() }
     }
 
     @Test
     fun `전체 지역 리스트를 조회한다`() {
         // given
         val expectedResult = createRegionGroups()
-        every { findRegionGroupsUseCase.findRegionGroups() } returns expectedResult
+        every { regionService.findRegionGroups() } returns expectedResult
 
         // when & then
         mvc.perform(
             get("/api/v1/regions/groups"),
         ).andExpect(status().isOk)
             .andExpect(jsonPath("regionGroups.size()").value(expectedResult.size))
-        verify { findRegionGroupsUseCase.findRegionGroups() }
+        verify { regionService.findRegionGroups() }
     }
 }

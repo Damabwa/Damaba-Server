@@ -1,13 +1,13 @@
 package com.damaba.damaba.application.photographer
 
-import com.damaba.damaba.application.port.inbound.photographer.ExistsPhotographerNicknameUseCase
-import com.damaba.damaba.application.port.inbound.photographer.FindPhotographerListUseCase
-import com.damaba.damaba.application.port.inbound.photographer.FindSavedPhotographerListUseCase
-import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
-import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
-import com.damaba.damaba.application.port.inbound.photographer.UnsavePhotographerUseCase
-import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerPageUseCase
-import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerProfileUseCase
+import com.damaba.damaba.application.photographer.dto.ExistsPhotographerNicknameQuery
+import com.damaba.damaba.application.photographer.dto.FindPhotographerListQuery
+import com.damaba.damaba.application.photographer.dto.FindSavedPhotographerListQuery
+import com.damaba.damaba.application.photographer.dto.RegisterPhotographerCommand
+import com.damaba.damaba.application.photographer.dto.SavePhotographerCommand
+import com.damaba.damaba.application.photographer.dto.UnsavePhotographerCommand
+import com.damaba.damaba.application.photographer.dto.UpdatePhotographerPageCommand
+import com.damaba.damaba.application.photographer.dto.UpdatePhotographerProfileCommand
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.photographer.Photographer
@@ -84,7 +84,7 @@ class PhotographerServiceTest {
     @Test
     fun `사진작가 리스트를 조회한다`() {
         // given
-        val query = FindPhotographerListUseCase.Query(
+        val query = FindPhotographerListQuery(
             requestUserId = null,
             regions = setOf(RegionFilterCondition("서울", "강남구"), RegionFilterCondition("대전", "중구")),
             photographyTypes = setOf(PhotographyType.PROFILE, PhotographyType.SELF),
@@ -131,7 +131,7 @@ class PhotographerServiceTest {
     @Test
     fun `사진작가 리스트를 조회한다_`() {
         // given
-        val query = FindPhotographerListUseCase.Query(
+        val query = FindPhotographerListQuery(
             requestUserId = null,
             regions = setOf(RegionFilterCondition("서울", "강남구"), RegionFilterCondition("대전", "중구")),
             photographyTypes = setOf(PhotographyType.PROFILE, PhotographyType.SELF),
@@ -179,7 +179,7 @@ class PhotographerServiceTest {
     fun `저장된 사진작가 리스트를 조회한다`() {
         // given
         val requestUser = createUser()
-        val query = FindSavedPhotographerListUseCase.Query(
+        val query = FindSavedPhotographerListQuery(
             requestUserId = requestUser.id,
             page = randomInt(min = 1),
             pageSize = randomInt(min = 5, max = 10),
@@ -222,7 +222,7 @@ class PhotographerServiceTest {
         every { userRepo.existsNickname(nickname) } returns expectedResult
 
         // when
-        val actualResult = sut.existsNickname(ExistsPhotographerNicknameUseCase.Query(nickname))
+        val actualResult = sut.existsNickname(ExistsPhotographerNicknameQuery(nickname))
 
         // then
         verify { userRepo.existsNickname(nickname) }
@@ -235,7 +235,7 @@ class PhotographerServiceTest {
         // given
         val userId = randomLong()
         val unregisteredUser = createUser(id = userId, type = UserType.UNDEFINED)
-        val command = RegisterPhotographerUseCase.Command(
+        val command = RegisterPhotographerCommand(
             userId = userId,
             nickname = randomString(len = 10),
             gender = Gender.FEMALE,
@@ -267,7 +267,7 @@ class PhotographerServiceTest {
         // given
         val userId = randomLong()
         val registeredUser = createUser(id = userId, type = UserType.PHOTOGRAPHER)
-        val command = RegisterPhotographerUseCase.Command(
+        val command = RegisterPhotographerCommand(
             userId = userId,
             nickname = randomString(len = 10),
             gender = Gender.FEMALE,
@@ -292,7 +292,7 @@ class PhotographerServiceTest {
         // given
         val userId = randomLong()
         val unregisteredUser = createUser(id = userId, type = UserType.UNDEFINED)
-        val command = RegisterPhotographerUseCase.Command(
+        val command = RegisterPhotographerCommand(
             userId = userId,
             nickname = randomString(len = 10),
             gender = Gender.FEMALE,
@@ -319,7 +319,7 @@ class PhotographerServiceTest {
     @Test
     fun `사진작가를 저장한다`() {
         // given
-        val command = SavePhotographerUseCase.Command(requestUserId = randomLong(), photographerId = randomLong())
+        val command = SavePhotographerCommand(requestUserId = randomLong(), photographerId = randomLong())
         every {
             photographerSaveRepo.existsByUserIdAndPhotographerId(command.requestUserId, command.photographerId)
         } returns false
@@ -352,7 +352,7 @@ class PhotographerServiceTest {
     @Test
     fun `사진작가를 저장한다, 만약 이미 저장한 사진작가라면 예외가 발생한다`() {
         // given
-        val command = SavePhotographerUseCase.Command(requestUserId = randomLong(), photographerId = randomLong())
+        val command = SavePhotographerCommand(requestUserId = randomLong(), photographerId = randomLong())
         every {
             photographerSaveRepo.existsByUserIdAndPhotographerId(command.requestUserId, command.photographerId)
         } returns true
@@ -379,7 +379,7 @@ class PhotographerServiceTest {
             id = photographerId,
             mainPhotographyTypes = setOf(PhotographyType.PROFILE),
         )
-        val command = UpdatePhotographerProfileUseCase.Command(
+        val command = UpdatePhotographerProfileCommand(
             photographerId = photographerId,
             nickname = originalPhotographer.nickname,
             profileImage = originalPhotographer.profileImage,
@@ -417,7 +417,7 @@ class PhotographerServiceTest {
             mainPhotographyTypes = setOf(PhotographyType.PROFILE),
             profileImage = null,
         )
-        val command = UpdatePhotographerProfileUseCase.Command(
+        val command = UpdatePhotographerProfileCommand(
             photographerId = photographerId,
             nickname = originalPhotographer.nickname,
             profileImage = originalPhotographer.profileImage,
@@ -455,7 +455,7 @@ class PhotographerServiceTest {
             mainPhotographyTypes = setOf(PhotographyType.PROFILE),
         )
         val originalProfileImageUrl = originalPhotographer.profileImage!!.url
-        val command = UpdatePhotographerProfileUseCase.Command(
+        val command = UpdatePhotographerProfileCommand(
             photographerId = photographerId,
             nickname = randomString(len = 10),
             profileImage = createImage(name = "newImage", url = "https://new-image.jpg"),
@@ -496,7 +496,7 @@ class PhotographerServiceTest {
             id = photographerId,
             mainPhotographyTypes = setOf(PhotographyType.PROFILE),
         )
-        val command = UpdatePhotographerProfileUseCase.Command(
+        val command = UpdatePhotographerProfileCommand(
             photographerId = photographerId,
             nickname = randomString(len = 10),
             profileImage = createImage(name = "newImage", url = "https://new-image.jpg"),
@@ -525,7 +525,7 @@ class PhotographerServiceTest {
             id = photographerId,
             mainPhotographyTypes = setOf(PhotographyType.PROFILE),
         )
-        val command = UpdatePhotographerPageUseCase.Command(
+        val command = UpdatePhotographerPageCommand(
             photographerId = photographerId,
             portfolio = generateRandomList(maxSize = 3) { createImage() },
             address = null,
@@ -559,7 +559,7 @@ class PhotographerServiceTest {
     @Test
     fun `사진작가를 저장 해제한다`() {
         // given
-        val command = UnsavePhotographerUseCase.Command(requestUserId = randomLong(), photographerId = randomLong())
+        val command = UnsavePhotographerCommand(requestUserId = randomLong(), photographerId = randomLong())
         val photographerSave = createPhotographerSave()
         every {
             photographerSaveRepo.findByUserIdAndPhotographerId(command.requestUserId, command.photographerId)
@@ -578,7 +578,7 @@ class PhotographerServiceTest {
     @Test
     fun `사진작가를 저장 해제한다, 만약 저장한 적 없는 사진작가라면 예외가 발생한다`() {
         // given
-        val command = UnsavePhotographerUseCase.Command(requestUserId = randomLong(), photographerId = randomLong())
+        val command = UnsavePhotographerCommand(requestUserId = randomLong(), photographerId = randomLong())
         every {
             photographerSaveRepo.findByUserIdAndPhotographerId(command.requestUserId, command.photographerId)
         } returns null

@@ -1,6 +1,7 @@
 package com.damaba.damaba.controller.auth
 
-import com.damaba.damaba.application.port.inbound.auth.OAuthLoginUseCase
+import com.damaba.damaba.application.auth.OAuthLoginService
+import com.damaba.damaba.application.auth.dto.OAuthLoginCommand
 import com.damaba.damaba.controller.auth.request.OAuthLoginRequest
 import com.damaba.damaba.controller.auth.response.OAuthLoginResponse
 import com.damaba.damaba.domain.user.constant.LoginType
@@ -19,7 +20,7 @@ import java.net.URI
 
 @Tag(name = "인증 관련 API")
 @RestController
-class AuthController(private val oAuthLoginUseCase: OAuthLoginUseCase) {
+class AuthController(private val oAuthLoginService: OAuthLoginService) {
     @Operation(
         summary = "OAuth 로그인",
         description = "<p>로그인을 수행합니다. 만약 신규 유저라면, 신규 유저 데이터를 생성 및 저장합니다." +
@@ -32,8 +33,8 @@ class AuthController(private val oAuthLoginUseCase: OAuthLoginUseCase) {
     )
     @PostMapping("/api/v1/auth/login")
     fun oAuthLoginV1(@RequestBody request: OAuthLoginRequest): ResponseEntity<OAuthLoginResponse> {
-        val (isNewUser, user, accessToken, refreshToken) = oAuthLoginUseCase.oAuthLogin(
-            OAuthLoginUseCase.Command(loginType = LoginType.KAKAO, authKey = request.authKey),
+        val (isNewUser, user, accessToken, refreshToken) = oAuthLoginService.oAuthLogin(
+            OAuthLoginCommand(loginType = LoginType.KAKAO, authKey = request.authKey),
         )
 
         val response = OAuthLoginResponse(
