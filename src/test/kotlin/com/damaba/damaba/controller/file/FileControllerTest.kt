@@ -3,7 +3,7 @@ package com.damaba.damaba.controller.file
 import com.damaba.damaba.application.file.FileService
 import com.damaba.damaba.application.file.dto.UploadFilesCommand
 import com.damaba.damaba.config.ControllerTestConfig
-import com.damaba.damaba.controller.file.request.UploadFilesRequest
+import com.damaba.damaba.controller.file.dto.UploadFilesRequest
 import com.damaba.damaba.domain.file.FileType
 import com.damaba.damaba.util.RandomTestUtils
 import com.damaba.damaba.util.fixture.FileFixture.createFile

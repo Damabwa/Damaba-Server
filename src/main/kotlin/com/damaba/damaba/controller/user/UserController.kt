@@ -2,10 +2,10 @@ package com.damaba.damaba.controller.user
 
 import com.damaba.damaba.application.user.UserService
 import com.damaba.damaba.application.user.dto.ExistsUserNicknameQuery
-import com.damaba.damaba.controller.user.request.RegisterUserRequest
-import com.damaba.damaba.controller.user.request.UpdateMyProfileRequest
-import com.damaba.damaba.controller.user.response.ExistsUserNicknameResponse
-import com.damaba.damaba.controller.user.response.UserResponse
+import com.damaba.damaba.controller.user.dto.ExistsUserNicknameResponse
+import com.damaba.damaba.controller.user.dto.RegisterUserRequest
+import com.damaba.damaba.controller.user.dto.UpdateMyProfileRequest
+import com.damaba.damaba.controller.user.dto.UserResponse
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.mapper.UserMapper
 import io.swagger.v3.oas.annotations.Operation
