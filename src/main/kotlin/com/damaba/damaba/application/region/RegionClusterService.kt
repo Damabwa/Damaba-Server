@@ -1,4 +1,4 @@
-package com.damaba.damaba.application.service.region
+package com.damaba.damaba.application.region
 
 import com.damaba.damaba.application.port.inbound.region.FindRegionClustersUseCase
 import com.damaba.damaba.domain.region.RegionCluster

@@ -1,4 +1,4 @@
-package com.damaba.damaba.application.service.photographer
+package com.damaba.damaba.application.photographer
 
 import com.damaba.damaba.application.port.inbound.photographer.ExistsPhotographerNicknameUseCase
 import com.damaba.damaba.application.port.inbound.photographer.FindPhotographerListUseCase
