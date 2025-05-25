@@ -72,7 +72,7 @@ class PhotographerControllerTest @Autowired constructor(
         val expectedResult = createPhotographer(id = id)
         every { photographerService.getPhotographer(id) } returns expectedResult
 
-        // when & then
+        // when and then
         mvc.perform(
             get("/api/v1/photographers/{photographerId}", id),
         ).andExpect(status().isOk)
@@ -107,7 +107,7 @@ class PhotographerControllerTest @Autowired constructor(
             )
         } returns expectedResult
 
-        // when & then
+        // when and then
         val requestBuilder = get("/api/v1/photographers/list")
         regions.forEach { region ->
             requestBuilder.param(
@@ -166,7 +166,7 @@ class PhotographerControllerTest @Autowired constructor(
             )
         } returns expectedResult
 
-        // when & then
+        // when and then
         mvc.perform(
             get("/api/v1/photographers/list")
                 .param("sort", sort.name)
@@ -197,7 +197,7 @@ class PhotographerControllerTest @Autowired constructor(
         val page = 1
         val pageSize = randomInt(min = 5, max = 15)
 
-        // when & then
+        // when and then
         mvc.perform(
             get("/api/v1/photographers/list")
                 .param("regions", "경기 수원 원천")
@@ -229,7 +229,7 @@ class PhotographerControllerTest @Autowired constructor(
             )
         } returns expectedResult
 
-        // when & then
+        // when and then
         mvc.perform(
             get("/api/v1/photographers/saved")
                 .param("page", page.toString())
@@ -262,7 +262,7 @@ class PhotographerControllerTest @Autowired constructor(
             )
         } returns expectedResult
 
-        // when & then
+        // when and then
         mvc.perform(
             get("/api/v1/photographers/nicknames/existence")
                 .param("nickname", nickname),
@@ -291,7 +291,7 @@ class PhotographerControllerTest @Autowired constructor(
         val expectedResult = createPhotographer(id = userId)
         every { photographerService.register(request.toCommand(userId)) } returns expectedResult
 
-        // when & then
+        // when and then
         mvc.perform(
             post("/api/v1/photographers/me/registration")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -309,7 +309,7 @@ class PhotographerControllerTest @Autowired constructor(
         val command = SavePhotographerCommand(requestUserId = reqUser.id, photographerId = photographerId)
         every { photographerService.savePhotographer(command) } just runs
 
-        // when & then
+        // when and then
         mvc.perform(
             post("/api/v1/photographers/$photographerId/save")
                 .withAuthUser(reqUser),
@@ -332,7 +332,7 @@ class PhotographerControllerTest @Autowired constructor(
             photographerService.updatePhotographerProfile(requestBody.toCommand(photographerId))
         } returns expectedResult
 
-        // when & then
+        // when and then
         mvc.perform(
             put("/api/v1/photographers/me/profile")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -358,7 +358,7 @@ class PhotographerControllerTest @Autowired constructor(
             photographerService.updatePhotographerPage(requestBody.toCommand(photographerId))
         } returns expectedResult
 
-        // when & then
+        // when and then
         mvc.perform(
             put("/api/v1/photographers/me/page")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -376,7 +376,7 @@ class PhotographerControllerTest @Autowired constructor(
         val command = UnsavePhotographerCommand(requestUserId = reqUser.id, photographerId = photographerId)
         every { photographerService.unsavePhotographer(command) } just runs
 
-        // when & then
+        // when and then
         mvc.perform(
             delete("/api/v1/photographers/$photographerId/unsave")
                 .withAuthUser(reqUser),

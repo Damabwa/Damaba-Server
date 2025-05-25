@@ -56,7 +56,7 @@ class AuthControllerTest @Autowired constructor(
             oAuthLoginService.oAuthLogin(OAuthLoginCommand(requestBody.loginType, requestBody.authKey))
         } returns expectedResult
 
-        // when & then
+        // when and then
         mvc.perform(
             post("/api/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -84,7 +84,7 @@ class AuthControllerTest @Autowired constructor(
             oAuthLoginService.oAuthLogin(OAuthLoginCommand(requestBody.loginType, requestBody.authKey))
         } returns expectedResult
 
-        // when & then
+        // when and then
         mvc.perform(
             post("/api/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
