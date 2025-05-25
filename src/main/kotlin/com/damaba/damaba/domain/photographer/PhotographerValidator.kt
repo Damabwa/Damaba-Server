@@ -6,13 +6,13 @@ import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.region.Region
 
 object PhotographerValidator {
-    private val NICKNAME_PATTERN = "^[a-zA-Zㄱ-ㅎ가-힣0-9\\s]{1,15}$".toRegex()
+    private val NICKNAME_PATTERN = "^[a-zA-Zㄱ-ㅎ가-힣0-9\\s]{1,18}$".toRegex()
     private const val PORTFOLIO_MAX_SIZE = 10
     private const val DESCRIPTION_MAX_LEN = 500
 
     fun validateNickname(nickname: String) {
         if (nickname.isBlank() || !nickname.matches(NICKNAME_PATTERN)) {
-            throw ValidationException("유효하지 않은 닉네임입니다. 닉네임은 한글, 영문, 숫자, 공백으로 이루어진 15글자 이내여야 합니다.")
+            throw ValidationException("유효하지 않은 닉네임입니다. 닉네임은 한글, 영문, 숫자, 공백으로 이루어진 18글자 이내여야 합니다.")
         }
     }
 
