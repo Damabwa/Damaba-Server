@@ -35,7 +35,7 @@ class RegionClusterControllerTest @Autowired constructor(
         val expectedResult = createRegionClusters()
         every { regionClusterService.findRegionClusters() } returns expectedResult
 
-        // when & then
+        // when and then
         mvc.perform(
             get("/api/v1/region-clusters"),
         ).andExpect(status().isOk)

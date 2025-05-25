@@ -83,7 +83,7 @@ class PromotionControllerTest @Autowired constructor(
         val expectedResult = createPromotion(id = promotionId)
         every { promotionService.getPromotion(promotionId) } returns expectedResult
 
-        // when & then
+        // when and then
         mvc.perform(
             get("/api/v1/promotions/$promotionId"),
         ).andExpect(status().isOk)
@@ -100,7 +100,7 @@ class PromotionControllerTest @Autowired constructor(
             promotionService.getPromotionDetail(GetPromotionDetailQuery(null, promotionId))
         } returns expectedResult
 
-        // when & then
+        // when and then
         mvc.perform(
             get("/api/v1/promotions/$promotionId/details"),
         ).andExpect(status().isOk)
@@ -118,7 +118,7 @@ class PromotionControllerTest @Autowired constructor(
             promotionService.getPromotionDetail(GetPromotionDetailQuery(requestUser.id, promotionId))
         } returns expectedResult
 
-        // when & then
+        // when and then
         mvc.perform(
             get("/api/v1/promotions/$promotionId/details")
                 .withAuthUser(requestUser),
@@ -161,7 +161,7 @@ class PromotionControllerTest @Autowired constructor(
             )
         } returns expectedResult
 
-        // when & then
+        // when and then
         val requestBuilder = get("/api/v1/promotions/list")
         regions.forEach { region ->
             requestBuilder.param(
@@ -226,7 +226,7 @@ class PromotionControllerTest @Autowired constructor(
             )
         } returns expectedResult
 
-        // when & then
+        // when and then
         mvc.perform(
             get("/api/v1/promotions/list")
                 .param("sortType", sortType.name)
@@ -260,7 +260,7 @@ class PromotionControllerTest @Autowired constructor(
         val page = 1
         val pageSize = randomInt(min = 5, max = 15)
 
-        // when & then
+        // when and then
         mvc.perform(
             get("/api/v1/promotions/list")
                 .param("regions", "경기 수원 원천")
@@ -292,7 +292,7 @@ class PromotionControllerTest @Autowired constructor(
             )
         } returns expectedResult
 
-        // when & then
+        // when and then
         mvc.perform(
             get("/api/v1/promotions/saved")
                 .param("page", page.toString())
@@ -333,7 +333,7 @@ class PromotionControllerTest @Autowired constructor(
         val expectedResult = createPromotion(authorId = requestUser.id)
         every { promotionService.postPromotion(any(PostPromotionCommand::class)) } returns expectedResult
 
-        // when & then
+        // when and then
         mvc.perform(
             post("/api/v1/promotions")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -353,7 +353,7 @@ class PromotionControllerTest @Autowired constructor(
         val command = SavePromotionCommand(userId = requester.id, promotionId = promotionId)
         every { promotionService.savePromotion(command) } just runs
 
-        // when & then
+        // when and then
         mvc.perform(
             post("/api/v1/promotions/$promotionId/save")
                 .with(authentication(createAuthenticationToken(requester))),
@@ -408,7 +408,7 @@ class PromotionControllerTest @Autowired constructor(
         )
         every { promotionService.updatePromotion(command) } returns expectedResult
 
-        // when & then
+        // when and then
         mvc.perform(
             put("/api/v1/promotions/$promotionId")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -434,7 +434,7 @@ class PromotionControllerTest @Autowired constructor(
         val command = DeletePromotionCommand(requestUser = requestUser, promotionId = promotionId)
         every { promotionService.deletePromotion(command) } just runs
 
-        // when & then
+        // when and then
         mvc.perform(
             delete("/api/v1/promotions/$promotionId")
                 .withAuthUser(requestUser),
@@ -450,7 +450,7 @@ class PromotionControllerTest @Autowired constructor(
         val command = UnsavePromotionCommand(userId = requester.id, promotionId = promotionId)
         every { promotionService.unsavePromotion(command) } just runs
 
-        // when & then
+        // when and then
         mvc.perform(
             delete("/api/v1/promotions/$promotionId/unsave")
                 .with(authentication(createAuthenticationToken(requester))),
