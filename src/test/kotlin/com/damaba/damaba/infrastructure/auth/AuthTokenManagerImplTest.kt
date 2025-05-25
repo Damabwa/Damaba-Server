@@ -45,7 +45,7 @@ class AuthTokenManagerImplTest {
         // given
         val validToken = sut.createAccessToken(createUser()).value
 
-        // when & then
+        // when and then
         assertThatCode { sut.validateAccessToken(validToken) }.doesNotThrowAnyException()
     }
 
