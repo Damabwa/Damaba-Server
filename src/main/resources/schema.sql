@@ -24,23 +24,23 @@ CREATE TABLE `user`
     profile_image_url  VARCHAR(255),
     gender             VARCHAR(255) NOT NULL,
     instagram_id       VARCHAR(30),
-    created_at         DATETIME     NOT NULL,
-    updated_at         DATETIME     NOT NULL,
+    created_at         TIMESTAMP    NOT NULL,
+    updated_at         TIMESTAMP    NOT NULL,
     PRIMARY KEY (id)
 );
 CREATE INDEX idx__user__o_auth_login_uid ON `user` (o_auth_login_uid);
 
 CREATE TABLE photographer
 (
-    user_id       BIGINT   NOT NULL COMMENT '(FK) id of user',
+    user_id       BIGINT    NOT NULL COMMENT '(FK) id of user',
     contact_link  VARCHAR(255),
     description   VARCHAR(500),
     sido          VARCHAR(255),
     sigungu       VARCHAR(255),
     road_address  VARCHAR(255),
     jibun_address VARCHAR(255),
-    created_at    DATETIME NOT NULL,
-    updated_at    DATETIME NOT NULL,
+    created_at    TIMESTAMP NOT NULL,
+    updated_at    TIMESTAMP NOT NULL,
     PRIMARY KEY (user_id)
 );
 CREATE INDEX fk_idx__photographer__user_id ON photographer (user_id);
@@ -50,8 +50,8 @@ CREATE TABLE photographer_photography_type
     id               BIGINT       NOT NULL AUTO_INCREMENT,
     photographer_id  BIGINT       NOT NULL COMMENT '(FK) id of photographer',
     photography_type VARCHAR(255) NOT NULL,
-    created_at       DATETIME     NOT NULL,
-    updated_at       DATETIME     NOT NULL,
+    created_at       TIMESTAMP    NOT NULL,
+    updated_at       TIMESTAMP    NOT NULL,
     PRIMARY KEY (id)
 );
 CREATE INDEX fk_idx__photographer_photography_type__photographer_id ON photographer_photography_type (photographer_id);
@@ -62,8 +62,8 @@ CREATE TABLE photographer_active_region
     photographer_id BIGINT COMMENT '(FK) id of photographer',
     category        VARCHAR(255) NOT NULL,
     name            VARCHAR(255) NOT NULL,
-    created_at      DATETIME     NOT NULL,
-    updated_at      DATETIME     NOT NULL,
+    created_at      TIMESTAMP    NOT NULL,
+    updated_at      TIMESTAMP    NOT NULL,
     PRIMARY KEY (id)
 );
 CREATE INDEX fk_idx__photographer_active_region__photographer_id ON photographer_active_region (photographer_id);
@@ -74,9 +74,9 @@ CREATE TABLE photographer_portfolio_image
     photographer_id BIGINT COMMENT '(FK) id of photographer',
     name            VARCHAR(255) NOT NULL,
     url             VARCHAR(255) NOT NULL UNIQUE,
-    created_at      DATETIME     NOT NULL,
-    updated_at      DATETIME     NOT NULL,
-    deleted_at      DATETIME,
+    created_at      TIMESTAMP    NOT NULL,
+    updated_at      TIMESTAMP    NOT NULL,
+    deleted_at      TIMESTAMP,
     created_by      BIGINT       NOT NULL,
     updated_by      BIGINT       NOT NULL,
     PRIMARY KEY (id)
@@ -89,9 +89,9 @@ CREATE TABLE user_profile_image
     user_id    BIGINT       NOT NULL COMMENT '(FK) id of user',
     name       VARCHAR(255) NOT NULL,
     url        VARCHAR(255) NOT NULL UNIQUE,
-    created_at DATETIME     NOT NULL,
-    updated_at DATETIME     NOT NULL,
-    deleted_at DATETIME,
+    created_at TIMESTAMP    NOT NULL,
+    updated_at TIMESTAMP    NOT NULL,
+    deleted_at TIMESTAMP,
     created_by BIGINT       NOT NULL,
     updated_by BIGINT       NOT NULL,
     PRIMARY KEY (id)
@@ -100,11 +100,11 @@ CREATE INDEX idx__user_profile_image__url ON user_profile_image (url);
 
 CREATE TABLE photographer_save
 (
-    id              BIGINT   NOT NULL AUTO_INCREMENT,
-    user_id         BIGINT   NOT NULL COMMENT '(FK) id of request user',
-    photographer_id BIGINT   NOT NULL COMMENT '(FK) id of photographer(user)',
-    created_at      DATETIME NOT NULL,
-    updated_at      DATETIME NOT NULL,
+    id              BIGINT    NOT NULL AUTO_INCREMENT,
+    user_id         BIGINT    NOT NULL COMMENT '(FK) id of request user',
+    photographer_id BIGINT    NOT NULL COMMENT '(FK) id of photographer(user)',
+    created_at      TIMESTAMP NOT NULL,
+    updated_at      TIMESTAMP NOT NULL,
     PRIMARY KEY (id)
 );
 CREATE INDEX idx__photographer_save__user_id ON photographer_save (user_id);
@@ -121,9 +121,9 @@ CREATE TABLE promotion
     started_at     DATE,
     ended_at       DATE,
     view_count     BIGINT       NOT NULL DEFAULT 0,
-    created_at     DATETIME     NOT NULL,
-    updated_at     DATETIME     NOT NULL,
-    deleted_at     DATETIME,
+    created_at     TIMESTAMP    NOT NULL,
+    updated_at     TIMESTAMP    NOT NULL,
+    deleted_at     TIMESTAMP,
     PRIMARY KEY (id)
 );
 
@@ -132,8 +132,8 @@ CREATE TABLE promotion_photography_type
     id           BIGINT       NOT NULL AUTO_INCREMENT,
     promotion_id BIGINT       NOT NULL COMMENT '(FK) id of promotion',
     type         VARCHAR(255) NOT NULL,
-    created_at   DATETIME     NOT NULL,
-    updated_at   DATETIME     NOT NULL,
+    created_at   TIMESTAMP    NOT NULL,
+    updated_at   TIMESTAMP    NOT NULL,
     PRIMARY KEY (id)
 );
 CREATE INDEX fk_idx__promotion_photography_type__promotion_id ON promotion_photography_type (promotion_id);
@@ -144,9 +144,9 @@ CREATE TABLE promotion_image
     promotion_id BIGINT       NOT NULL COMMENT '(FK) id of promotion',
     name         VARCHAR(255) NOT NULL,
     url          VARCHAR(255) NOT NULL UNIQUE,
-    created_at   DATETIME     NOT NULL,
-    updated_at   DATETIME     NOT NULL,
-    deleted_at   DATETIME,
+    created_at   TIMESTAMP    NOT NULL,
+    updated_at   TIMESTAMP    NOT NULL,
+    deleted_at   TIMESTAMP,
     created_by   BIGINT       NOT NULL,
     updated_by   BIGINT       NOT NULL,
     PRIMARY KEY (id)
@@ -159,8 +159,8 @@ CREATE TABLE promotion_active_region
     promotion_id BIGINT       NOT NULL COMMENT '(FK) id of promotion',
     category     VARCHAR(255) NOT NULL,
     name         VARCHAR(255) NOT NULL,
-    created_at   DATETIME     NOT NULL,
-    updated_at   DATETIME     NOT NULL,
+    created_at   TIMESTAMP    NOT NULL,
+    updated_at   TIMESTAMP    NOT NULL,
     PRIMARY KEY (id)
 );
 CREATE INDEX fk_idx__promotion_active_region__promotion_id ON promotion_active_region (promotion_id);
@@ -170,19 +170,19 @@ CREATE TABLE promotion_hashtag
     id           BIGINT       NOT NULL AUTO_INCREMENT,
     promotion_id BIGINT       NOT NULL COMMENT '(FK) id of promotion',
     content      VARCHAR(255) NOT NULL,
-    created_at   DATETIME     NOT NULL,
-    updated_at   DATETIME     NOT NULL,
+    created_at   TIMESTAMP    NOT NULL,
+    updated_at   TIMESTAMP    NOT NULL,
     PRIMARY KEY (id)
 );
 CREATE INDEX fk_idx__promotion_hashtag__promotion_id ON promotion_hashtag (promotion_id);
 
 CREATE TABLE promotion_save
 (
-    id           BIGINT   NOT NULL AUTO_INCREMENT,
-    user_id      BIGINT   NOT NULL COMMENT '(FK) id of user',
-    promotion_id BIGINT   NOT NULL COMMENT '(FK) id of promotion',
-    created_at   DATETIME NOT NULL,
-    updated_at   DATETIME NOT NULL,
+    id           BIGINT    NOT NULL AUTO_INCREMENT,
+    user_id      BIGINT    NOT NULL COMMENT '(FK) id of user',
+    promotion_id BIGINT    NOT NULL COMMENT '(FK) id of promotion',
+    created_at   TIMESTAMP NOT NULL,
+    updated_at   TIMESTAMP NOT NULL,
     PRIMARY KEY (id)
 );
 CREATE INDEX fk_idx__promotion_save__user_id ON promotion_save (user_id);
