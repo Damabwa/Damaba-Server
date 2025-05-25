@@ -1,14 +1,14 @@
 package com.damaba.damaba.controller.promotion
 
-import com.damaba.damaba.application.port.inbound.promotion.DeletePromotionUseCase
-import com.damaba.damaba.application.port.inbound.promotion.FindPromotionListUseCase
-import com.damaba.damaba.application.port.inbound.promotion.FindSavedPromotionListUseCase
-import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
-import com.damaba.damaba.application.port.inbound.promotion.GetPromotionUseCase
-import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
-import com.damaba.damaba.application.port.inbound.promotion.SavePromotionUseCase
-import com.damaba.damaba.application.port.inbound.promotion.UnsavePromotionUseCase
-import com.damaba.damaba.application.port.inbound.promotion.UpdatePromotionUseCase
+import com.damaba.damaba.application.promotion.PromotionService
+import com.damaba.damaba.application.promotion.dto.DeletePromotionCommand
+import com.damaba.damaba.application.promotion.dto.FindPromotionListQuery
+import com.damaba.damaba.application.promotion.dto.FindSavedPromotionListQuery
+import com.damaba.damaba.application.promotion.dto.GetPromotionDetailQuery
+import com.damaba.damaba.application.promotion.dto.PostPromotionCommand
+import com.damaba.damaba.application.promotion.dto.SavePromotionCommand
+import com.damaba.damaba.application.promotion.dto.UnsavePromotionCommand
+import com.damaba.damaba.application.promotion.dto.UpdatePromotionCommand
 import com.damaba.damaba.config.ControllerTestConfig
 import com.damaba.damaba.controller.common.request.ImageRequest
 import com.damaba.damaba.controller.promotion.request.PostPromotionRequest
@@ -67,47 +67,13 @@ import kotlin.test.Test
 class PromotionControllerTest @Autowired constructor(
     private val mvc: MockMvc,
     private val mapper: ObjectMapper,
-
-    private val getPromotionUseCase: GetPromotionUseCase,
-    private val getPromotionDetailUseCase: GetPromotionDetailUseCase,
-    private val findPromotionListUseCase: FindPromotionListUseCase,
-    private val findSavedPromotionListUseCase: FindSavedPromotionListUseCase,
-    private val postPromotionUseCase: PostPromotionUseCase,
-    private val updatePromotionUseCase: UpdatePromotionUseCase,
-    private val deletePromotionUseCase: DeletePromotionUseCase,
-
-    private val savePromotionUseCase: SavePromotionUseCase,
-    private val unsavePromotionUseCase: UnsavePromotionUseCase,
+    private val promotionService: PromotionService,
 ) {
 
     @TestConfiguration
     class MockBeanSetUp {
         @Bean
-        fun getPromotionUseCase(): GetPromotionUseCase = mockk()
-
-        @Bean
-        fun getPromotionDetailUseCase(): GetPromotionDetailUseCase = mockk()
-
-        @Bean
-        fun findPromotionListUseCase(): FindPromotionListUseCase = mockk()
-
-        @Bean
-        fun findSavedPromotionListUseCase(): FindSavedPromotionListUseCase = mockk()
-
-        @Bean
-        fun postPromotionUseCase(): PostPromotionUseCase = mockk()
-
-        @Bean
-        fun updatePromotionUseCase(): UpdatePromotionUseCase = mockk()
-
-        @Bean
-        fun deletePromotionUseCase(): DeletePromotionUseCase = mockk()
-
-        @Bean
-        fun savePromotionUseCase(): SavePromotionUseCase = mockk()
-
-        @Bean
-        fun unsavePromotionUseCase(): UnsavePromotionUseCase = mockk()
+        fun promotionService(): PromotionService = mockk()
     }
 
     @Test
@@ -115,14 +81,14 @@ class PromotionControllerTest @Autowired constructor(
         // given
         val promotionId = randomLong(positive = true)
         val expectedResult = createPromotion(id = promotionId)
-        every { getPromotionUseCase.getPromotion(promotionId) } returns expectedResult
+        every { promotionService.getPromotion(promotionId) } returns expectedResult
 
         // when & then
         mvc.perform(
             get("/api/v1/promotions/$promotionId"),
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(expectedResult.id))
-        verify { getPromotionUseCase.getPromotion(promotionId) }
+        verify { promotionService.getPromotion(promotionId) }
     }
 
     @Test
@@ -131,7 +97,7 @@ class PromotionControllerTest @Autowired constructor(
         val promotionId = randomLong(positive = true)
         val expectedResult = createPromotionDetail(id = promotionId, author = null)
         every {
-            getPromotionDetailUseCase.getPromotionDetail(GetPromotionDetailUseCase.Query(null, promotionId))
+            promotionService.getPromotionDetail(GetPromotionDetailQuery(null, promotionId))
         } returns expectedResult
 
         // when & then
@@ -139,7 +105,7 @@ class PromotionControllerTest @Autowired constructor(
             get("/api/v1/promotions/$promotionId/details"),
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(expectedResult.id))
-        verify { getPromotionDetailUseCase.getPromotionDetail(GetPromotionDetailUseCase.Query(null, promotionId)) }
+        verify { promotionService.getPromotionDetail(GetPromotionDetailQuery(null, promotionId)) }
     }
 
     @Test
@@ -149,7 +115,7 @@ class PromotionControllerTest @Autowired constructor(
         val promotionId = randomLong(positive = true)
         val expectedResult = createPromotionDetail(id = promotionId, author = null)
         every {
-            getPromotionDetailUseCase.getPromotionDetail(GetPromotionDetailUseCase.Query(requestUser.id, promotionId))
+            promotionService.getPromotionDetail(GetPromotionDetailQuery(requestUser.id, promotionId))
         } returns expectedResult
 
         // when & then
@@ -159,7 +125,7 @@ class PromotionControllerTest @Autowired constructor(
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(expectedResult.id))
         verify {
-            getPromotionDetailUseCase.getPromotionDetail(GetPromotionDetailUseCase.Query(requestUser.id, promotionId))
+            promotionService.getPromotionDetail(GetPromotionDetailQuery(requestUser.id, promotionId))
         }
     }
 
@@ -181,9 +147,9 @@ class PromotionControllerTest @Autowired constructor(
             totalPage = randomInt(min = 1, max = 10),
         )
         every {
-            findPromotionListUseCase.findPromotionList(
-                FindPromotionListUseCase.Query(
-                    reqUserId = reqUser.id,
+            promotionService.findPromotionList(
+                FindPromotionListQuery(
+                    requestUserId = reqUser.id,
                     type = type,
                     progressStatus = progressStatus,
                     regions = regions,
@@ -218,9 +184,9 @@ class PromotionControllerTest @Autowired constructor(
             .andExpect(jsonPath("$.pageSize").value(expectedResult.pageSize))
             .andExpect(jsonPath("$.totalPage").value(expectedResult.totalPage))
         verify {
-            findPromotionListUseCase.findPromotionList(
-                FindPromotionListUseCase.Query(
-                    reqUserId = reqUser.id,
+            promotionService.findPromotionList(
+                FindPromotionListQuery(
+                    requestUserId = reqUser.id,
                     type = type,
                     progressStatus = progressStatus,
                     regions = regions,
@@ -246,9 +212,9 @@ class PromotionControllerTest @Autowired constructor(
             totalPage = randomInt(min = 1, max = 10),
         )
         every {
-            findPromotionListUseCase.findPromotionList(
-                FindPromotionListUseCase.Query(
-                    reqUserId = null,
+            promotionService.findPromotionList(
+                FindPromotionListQuery(
+                    requestUserId = null,
                     type = null,
                     progressStatus = null,
                     regions = emptySet(),
@@ -272,9 +238,9 @@ class PromotionControllerTest @Autowired constructor(
             .andExpect(jsonPath("$.pageSize").value(expectedResult.pageSize))
             .andExpect(jsonPath("$.totalPage").value(expectedResult.totalPage))
         verify {
-            findPromotionListUseCase.findPromotionList(
-                FindPromotionListUseCase.Query(
-                    reqUserId = null,
+            promotionService.findPromotionList(
+                FindPromotionListQuery(
+                    requestUserId = null,
                     type = null,
                     progressStatus = null,
                     regions = emptySet(),
@@ -317,8 +283,8 @@ class PromotionControllerTest @Autowired constructor(
             totalPage = randomInt(min = 1, max = 10),
         )
         every {
-            findSavedPromotionListUseCase.findSavedPromotionList(
-                FindSavedPromotionListUseCase.Query(
+            promotionService.findSavedPromotionList(
+                FindSavedPromotionListQuery(
                     requestUserId = requestUser.id,
                     page = page,
                     pageSize = pageSize,
@@ -338,8 +304,8 @@ class PromotionControllerTest @Autowired constructor(
             .andExpect(jsonPath("$.pageSize").value(expectedResult.pageSize))
             .andExpect(jsonPath("$.totalPage").value(expectedResult.totalPage))
         verify {
-            findSavedPromotionListUseCase.findSavedPromotionList(
-                FindSavedPromotionListUseCase.Query(
+            promotionService.findSavedPromotionList(
+                FindSavedPromotionListQuery(
                     requestUserId = requestUser.id,
                     page = page,
                     pageSize = pageSize,
@@ -365,7 +331,7 @@ class PromotionControllerTest @Autowired constructor(
             hashtags = generateRandomSet(maxSize = 3) { randomString() },
         )
         val expectedResult = createPromotion(authorId = requestUser.id)
-        every { postPromotionUseCase.postPromotion(any(PostPromotionUseCase.Command::class)) } returns expectedResult
+        every { promotionService.postPromotion(any(PostPromotionCommand::class)) } returns expectedResult
 
         // when & then
         mvc.perform(
@@ -376,7 +342,7 @@ class PromotionControllerTest @Autowired constructor(
         ).andExpect(status().isCreated)
             .andExpect(jsonPath("$.id").value(expectedResult.id))
             .andExpect(jsonPath("$.authorId").value(requestUser.id))
-        verify { postPromotionUseCase.postPromotion(any(PostPromotionUseCase.Command::class)) }
+        verify { promotionService.postPromotion(any(PostPromotionCommand::class)) }
     }
 
     @Test
@@ -384,15 +350,15 @@ class PromotionControllerTest @Autowired constructor(
         // given
         val requester = createUser()
         val promotionId = randomLong()
-        val command = SavePromotionUseCase.Command(userId = requester.id, promotionId = promotionId)
-        every { savePromotionUseCase.savePromotion(command) } just runs
+        val command = SavePromotionCommand(userId = requester.id, promotionId = promotionId)
+        every { promotionService.savePromotion(command) } just runs
 
         // when & then
         mvc.perform(
             post("/api/v1/promotions/$promotionId/save")
                 .with(authentication(createAuthenticationToken(requester))),
         ).andExpect(status().isNoContent)
-        verify { savePromotionUseCase.savePromotion(command) }
+        verify { promotionService.savePromotion(command) }
     }
 
     @Test
@@ -412,7 +378,7 @@ class PromotionControllerTest @Autowired constructor(
             activeRegions = setOf(createRegionRequest()),
             hashtags = setOf(randomString()),
         )
-        val command = UpdatePromotionUseCase.Command(
+        val command = UpdatePromotionCommand(
             requestUserId = requestUser.id,
             promotionId = promotionId,
             promotionType = request.promotionType,
@@ -440,7 +406,7 @@ class PromotionControllerTest @Autowired constructor(
             activeRegions = command.activeRegions,
             hashtags = command.hashtags,
         )
-        every { updatePromotionUseCase.updatePromotion(command) } returns expectedResult
+        every { promotionService.updatePromotion(command) } returns expectedResult
 
         // when & then
         mvc.perform(
@@ -457,7 +423,7 @@ class PromotionControllerTest @Autowired constructor(
             .andExpect(jsonPath("$.externalLink").value(expectedResult.externalLink))
             .andExpect(jsonPath("$.startedAt").value(expectedResult.startedAt.toString()))
             .andExpect(jsonPath("$.endedAt").value(expectedResult.endedAt.toString()))
-        verify { updatePromotionUseCase.updatePromotion(command) }
+        verify { promotionService.updatePromotion(command) }
     }
 
     @Test
@@ -465,15 +431,15 @@ class PromotionControllerTest @Autowired constructor(
         // given
         val requestUser = createUser(id = 1L)
         val promotionId = randomLong()
-        val command = DeletePromotionUseCase.Command(requestUser = requestUser, promotionId = promotionId)
-        every { deletePromotionUseCase.deletePromotion(command) } just runs
+        val command = DeletePromotionCommand(requestUser = requestUser, promotionId = promotionId)
+        every { promotionService.deletePromotion(command) } just runs
 
         // when & then
         mvc.perform(
             delete("/api/v1/promotions/$promotionId")
                 .withAuthUser(requestUser),
         ).andExpect(status().isNoContent)
-        verify { deletePromotionUseCase.deletePromotion(command) }
+        verify { promotionService.deletePromotion(command) }
     }
 
     @Test
@@ -481,14 +447,14 @@ class PromotionControllerTest @Autowired constructor(
         // given
         val requester = createUser()
         val promotionId = randomLong()
-        val command = UnsavePromotionUseCase.Command(userId = requester.id, promotionId = promotionId)
-        every { unsavePromotionUseCase.unsavePromotion(command) } just runs
+        val command = UnsavePromotionCommand(userId = requester.id, promotionId = promotionId)
+        every { promotionService.unsavePromotion(command) } just runs
 
         // when & then
         mvc.perform(
             delete("/api/v1/promotions/$promotionId/unsave")
                 .with(authentication(createAuthenticationToken(requester))),
         ).andExpect(status().isNoContent)
-        verify { unsavePromotionUseCase.unsavePromotion(command) }
+        verify { promotionService.unsavePromotion(command) }
     }
 }

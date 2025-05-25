@@ -1,32 +1,38 @@
 package com.damaba.damaba.application.user
 
-import com.damaba.damaba.application.port.inbound.user.ExistsUserNicknameUseCase
-import com.damaba.damaba.application.port.inbound.user.GetUserUseCase
-import com.damaba.damaba.application.port.inbound.user.RegisterUserUseCase
-import com.damaba.damaba.application.port.inbound.user.UpdateUserProfileUseCase
+import com.damaba.damaba.application.user.dto.ExistsUserNicknameQuery
+import com.damaba.damaba.application.user.dto.RegisterUserCommand
+import com.damaba.damaba.application.user.dto.UpdateUserProfileCommand
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.domain.user.exception.NicknameAlreadyExistsException
 import com.damaba.damaba.domain.user.exception.UserAlreadyRegisteredException
+import com.damaba.damaba.domain.user.exception.UserNotFoundException
 import com.damaba.damaba.infrastructure.user.UserRepository
 import com.damaba.damaba.mapper.UserMapper
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class UserService(private val userRepo: UserRepository) :
-    GetUserUseCase,
-    ExistsUserNicknameUseCase,
-    UpdateUserProfileUseCase,
-    RegisterUserUseCase {
+class UserService(private val userRepo: UserRepository) {
 
     @Transactional(readOnly = true)
-    override fun getUser(userId: Long): User = userRepo.getById(userId)
+    fun getUser(userId: Long): User = userRepo.getById(userId)
 
     @Transactional(readOnly = true)
-    override fun existsNickname(query: ExistsUserNicknameUseCase.Query): Boolean = userRepo.existsNickname(query.nickname)
+    fun existsNickname(query: ExistsUserNicknameQuery): Boolean = userRepo.existsNickname(query.nickname)
 
+    /**
+     * 유저를 등록한다. 즉, 유저 등록 정보를 수정한다.
+     * '유저 등록 정보'란 회원가입 시 유저에게 입력받는 정보를 의미한다.
+     *
+     * @param command
+     * @return 등록된 유저
+     * @throws UserNotFoundException `userId`에 해당하는 유저를 찾을 수 없는 경우
+     * @throws UserAlreadyRegisteredException 이미 등록된 유저인 경우
+     * @throws NicknameAlreadyExistsException `nickname`을 다른 유저가 이미 사용중인 경우
+     */
     @Transactional
-    override fun register(command: RegisterUserUseCase.Command): User {
+    fun register(command: RegisterUserCommand): User {
         val user = userRepo.getById(command.userId)
 
         if (user.isRegistrationCompleted) {
@@ -45,7 +51,7 @@ class UserService(private val userRepo: UserRepository) :
     }
 
     @Transactional
-    override fun updateUserProfile(command: UpdateUserProfileUseCase.Command): User {
+    fun updateUserProfile(command: UpdateUserProfileCommand): User {
         val user = userRepo.getById(command.userId)
 
         if ((user.nickname != command.nickname) && userRepo.existsNickname(command.nickname)) {

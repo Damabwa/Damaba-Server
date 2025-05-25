@@ -1,6 +1,6 @@
 package com.damaba.damaba.controller.user.request
 
-import com.damaba.damaba.application.port.inbound.user.UpdateUserProfileUseCase
+import com.damaba.damaba.application.user.dto.UpdateUserProfileCommand
 import com.damaba.damaba.controller.common.request.ImageRequest
 import com.damaba.damaba.mapper.ImageMapper
 import io.swagger.v3.oas.annotations.media.Schema
@@ -15,7 +15,7 @@ data class UpdateMyProfileRequest(
     @Schema(description = "프로필 이미지")
     val profileImage: ImageRequest?,
 ) {
-    fun toCommand(requestUserId: Long): UpdateUserProfileUseCase.Command = UpdateUserProfileUseCase.Command(
+    fun toCommand(requestUserId: Long) = UpdateUserProfileCommand(
         userId = requestUserId,
         nickname = this.nickname,
         instagramId = this.instagramId,

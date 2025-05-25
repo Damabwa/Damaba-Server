@@ -1,14 +1,13 @@
 package com.damaba.damaba.application.promotion
 
-import com.damaba.damaba.application.port.inbound.promotion.DeletePromotionUseCase
-import com.damaba.damaba.application.port.inbound.promotion.FindPromotionListUseCase
-import com.damaba.damaba.application.port.inbound.promotion.FindSavedPromotionListUseCase
-import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
-import com.damaba.damaba.application.port.inbound.promotion.GetPromotionUseCase
-import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
-import com.damaba.damaba.application.port.inbound.promotion.SavePromotionUseCase
-import com.damaba.damaba.application.port.inbound.promotion.UnsavePromotionUseCase
-import com.damaba.damaba.application.port.inbound.promotion.UpdatePromotionUseCase
+import com.damaba.damaba.application.promotion.dto.DeletePromotionCommand
+import com.damaba.damaba.application.promotion.dto.FindPromotionListQuery
+import com.damaba.damaba.application.promotion.dto.FindSavedPromotionListQuery
+import com.damaba.damaba.application.promotion.dto.GetPromotionDetailQuery
+import com.damaba.damaba.application.promotion.dto.PostPromotionCommand
+import com.damaba.damaba.application.promotion.dto.SavePromotionCommand
+import com.damaba.damaba.application.promotion.dto.UnsavePromotionCommand
+import com.damaba.damaba.application.promotion.dto.UpdatePromotionCommand
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.TransactionalLock
 import com.damaba.damaba.domain.common.constant.LockType.PESSIMISTIC
@@ -33,22 +32,12 @@ class PromotionService(
     private val userRepo: UserRepository,
     private val promotionRepo: PromotionRepository,
     private val promotionSaveRepo: PromotionSaveRepository,
-) : GetPromotionUseCase,
-    GetPromotionDetailUseCase,
-    FindPromotionListUseCase,
-    FindSavedPromotionListUseCase,
-    PostPromotionUseCase,
-    UpdatePromotionUseCase,
-    DeletePromotionUseCase,
-
-    SavePromotionUseCase,
-    UnsavePromotionUseCase {
-
+) {
     @Transactional(readOnly = true)
-    override fun getPromotion(promotionId: Long): Promotion = promotionRepo.getById(promotionId)
+    fun getPromotion(promotionId: Long): Promotion = promotionRepo.getById(promotionId)
 
     @TransactionalLock(lockType = PESSIMISTIC, domainType = Promotion::class, idFieldName = "query.promotionId")
-    override fun getPromotionDetail(query: GetPromotionDetailUseCase.Query): PromotionDetail {
+    fun getPromotionDetail(query: GetPromotionDetailQuery): PromotionDetail {
         val promotion = promotionRepo.getById(query.promotionId)
 
         promotion.incrementViewCount()
@@ -65,10 +54,10 @@ class PromotionService(
     }
 
     @Transactional(readOnly = true)
-    override fun findPromotionList(
-        query: FindPromotionListUseCase.Query,
+    fun findPromotionList(
+        query: FindPromotionListQuery,
     ): Pagination<PromotionListItem> = promotionRepo.findPromotionList(
-        query.reqUserId,
+        query.requestUserId,
         query.type,
         query.progressStatus,
         query.regions,
@@ -79,8 +68,8 @@ class PromotionService(
     )
 
     @Transactional(readOnly = true)
-    override fun findSavedPromotionList(
-        query: FindSavedPromotionListUseCase.Query,
+    fun findSavedPromotionList(
+        query: FindSavedPromotionListQuery,
     ): Pagination<PromotionListItem> = promotionRepo.findSavedPromotionList(
         requestUserId = query.requestUserId,
         page = query.page,
@@ -88,7 +77,7 @@ class PromotionService(
     )
 
     @Transactional
-    override fun postPromotion(command: PostPromotionUseCase.Command): Promotion = promotionRepo.create(
+    fun postPromotion(command: PostPromotionCommand): Promotion = promotionRepo.create(
         Promotion.create(
             authorId = command.authorId,
             promotionType = command.promotionType,
@@ -105,7 +94,7 @@ class PromotionService(
     )
 
     @Transactional
-    override fun savePromotion(command: SavePromotionUseCase.Command) {
+    fun savePromotion(command: SavePromotionCommand) {
         if (promotionSaveRepo.existsByUserIdAndPromotionId(command.userId, command.promotionId)) {
             throw AlreadyPromotionSaveException()
         }
@@ -113,7 +102,7 @@ class PromotionService(
     }
 
     @Transactional
-    override fun updatePromotion(command: UpdatePromotionUseCase.Command): Promotion {
+    fun updatePromotion(command: UpdatePromotionCommand): Promotion {
         val promotion = promotionRepo.getById(id = command.promotionId)
         if (promotion.authorId != command.requestUserId) {
             throw PromotionUpdatePermissionDeniedException()
@@ -134,7 +123,7 @@ class PromotionService(
     }
 
     @Transactional
-    override fun deletePromotion(command: DeletePromotionUseCase.Command) {
+    fun deletePromotion(command: DeletePromotionCommand) {
         val requestUser = command.requestUser
         val promotion = promotionRepo.getById(command.promotionId)
         if (!requestUser.isAdmin && promotion.authorId != requestUser.id) {
@@ -144,7 +133,7 @@ class PromotionService(
     }
 
     @Transactional
-    override fun unsavePromotion(command: UnsavePromotionUseCase.Command) {
+    fun unsavePromotion(command: UnsavePromotionCommand) {
         val promotionSave = promotionSaveRepo.getByUserIdAndPromotionId(command.userId, command.promotionId)
         promotionSaveRepo.delete(promotionSave)
     }

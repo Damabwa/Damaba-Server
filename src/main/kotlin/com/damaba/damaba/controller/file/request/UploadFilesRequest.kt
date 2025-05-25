@@ -1,6 +1,6 @@
 package com.damaba.damaba.controller.file.request
 
-import com.damaba.damaba.application.port.inbound.file.UploadFilesUseCase
+import com.damaba.damaba.application.file.dto.UploadFilesCommand
 import com.damaba.damaba.domain.file.FileType
 import com.damaba.damaba.domain.file.UploadFile
 import io.swagger.v3.oas.annotations.media.Schema
@@ -13,7 +13,7 @@ data class UploadFilesRequest(
     @Schema(description = "업로드할 이미지 리스트")
     val files: List<MultipartFile>,
 ) {
-    fun toCommand() = UploadFilesUseCase.Command(
+    fun toCommand() = UploadFilesCommand(
         fileType = fileType,
         files = this.files.map { multipartFile ->
             UploadFile(

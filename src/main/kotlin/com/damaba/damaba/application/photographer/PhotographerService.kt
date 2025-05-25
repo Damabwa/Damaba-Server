@@ -1,14 +1,13 @@
 package com.damaba.damaba.application.photographer
 
-import com.damaba.damaba.application.port.inbound.photographer.ExistsPhotographerNicknameUseCase
-import com.damaba.damaba.application.port.inbound.photographer.FindPhotographerListUseCase
-import com.damaba.damaba.application.port.inbound.photographer.FindSavedPhotographerListUseCase
-import com.damaba.damaba.application.port.inbound.photographer.GetPhotographerUseCase
-import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
-import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
-import com.damaba.damaba.application.port.inbound.photographer.UnsavePhotographerUseCase
-import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerPageUseCase
-import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerProfileUseCase
+import com.damaba.damaba.application.photographer.dto.ExistsPhotographerNicknameQuery
+import com.damaba.damaba.application.photographer.dto.FindPhotographerListQuery
+import com.damaba.damaba.application.photographer.dto.FindSavedPhotographerListQuery
+import com.damaba.damaba.application.photographer.dto.RegisterPhotographerCommand
+import com.damaba.damaba.application.photographer.dto.SavePhotographerCommand
+import com.damaba.damaba.application.photographer.dto.UnsavePhotographerCommand
+import com.damaba.damaba.application.photographer.dto.UpdatePhotographerPageCommand
+import com.damaba.damaba.application.photographer.dto.UpdatePhotographerProfileCommand
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.domain.photographer.PhotographerListItem
@@ -30,45 +29,9 @@ class PhotographerService(
     private val userRepo: UserRepository,
     private val photographerRepo: PhotographerRepository,
     private val photographerSaveRepo: PhotographerSaveRepository,
-) : GetPhotographerUseCase,
-    FindPhotographerListUseCase,
-    FindSavedPhotographerListUseCase,
-    ExistsPhotographerNicknameUseCase,
-    RegisterPhotographerUseCase,
-    UpdatePhotographerProfileUseCase,
-    UpdatePhotographerPageUseCase,
-    SavePhotographerUseCase,
-    UnsavePhotographerUseCase {
-
-    @Transactional(readOnly = true)
-    override fun getPhotographer(id: Long): Photographer = photographerRepo.getById(id)
-
-    @Transactional(readOnly = true)
-    override fun findPhotographerList(
-        query: FindPhotographerListUseCase.Query,
-    ): Pagination<PhotographerListItem> = photographerRepo.findPhotographerList(
-        requestUserId = query.requestUserId,
-        regions = query.regions,
-        photographyTypes = query.photographyTypes,
-        sort = query.sort,
-        page = query.page,
-        pageSize = query.pageSize,
-    )
-
-    @Transactional(readOnly = true)
-    override fun findSavedPhotographerList(
-        query: FindSavedPhotographerListUseCase.Query,
-    ): Pagination<PhotographerListItem> = photographerRepo.findSavedPhotographerList(
-        requestUserId = query.requestUserId,
-        page = query.page,
-        pageSize = query.pageSize,
-    )
-
-    @Transactional(readOnly = true)
-    override fun existsNickname(query: ExistsPhotographerNicknameUseCase.Query): Boolean = userRepo.existsNickname(query.nickname)
-
+) {
     @Transactional
-    override fun register(command: RegisterPhotographerUseCase.Command): Photographer {
+    fun register(command: RegisterPhotographerCommand): Photographer {
         val user: User = userRepo.getById(command.userId)
         if (user.isRegistrationCompleted) {
             throw UserAlreadyRegisteredException()
@@ -91,7 +54,44 @@ class PhotographerService(
     }
 
     @Transactional
-    override fun updatePhotographerProfile(command: UpdatePhotographerProfileUseCase.Command): Photographer {
+    fun savePhotographer(command: SavePhotographerCommand) {
+        if (photographerSaveRepo.existsByUserIdAndPhotographerId(command.requestUserId, command.photographerId)) {
+            throw AlreadyPhotographerSaveException()
+        }
+        photographerSaveRepo.create(
+            PhotographerSave.create(userId = command.requestUserId, photographerId = command.photographerId),
+        )
+    }
+
+    @Transactional(readOnly = true)
+    fun getPhotographer(id: Long): Photographer = photographerRepo.getById(id)
+
+    @Transactional(readOnly = true)
+    fun findPhotographerList(
+        query: FindPhotographerListQuery,
+    ): Pagination<PhotographerListItem> = photographerRepo.findPhotographerList(
+        requestUserId = query.requestUserId,
+        regions = query.regions,
+        photographyTypes = query.photographyTypes,
+        sort = query.sort,
+        page = query.page,
+        pageSize = query.pageSize,
+    )
+
+    @Transactional(readOnly = true)
+    fun findSavedPhotographerList(
+        query: FindSavedPhotographerListQuery,
+    ): Pagination<PhotographerListItem> = photographerRepo.findSavedPhotographerList(
+        requestUserId = query.requestUserId,
+        page = query.page,
+        pageSize = query.pageSize,
+    )
+
+    @Transactional(readOnly = true)
+    fun existsNickname(query: ExistsPhotographerNicknameQuery): Boolean = userRepo.existsNickname(query.nickname)
+
+    @Transactional
+    fun updatePhotographerProfile(command: UpdatePhotographerProfileCommand): Photographer {
         val photographer = photographerRepo.getById(command.photographerId)
 
         if (photographer.nickname != command.nickname && userRepo.existsNickname(command.nickname)) {
@@ -108,24 +108,14 @@ class PhotographerService(
     }
 
     @Transactional
-    override fun updatePhotographerPage(command: UpdatePhotographerPageUseCase.Command): Photographer {
+    fun updatePhotographerPage(command: UpdatePhotographerPageCommand): Photographer {
         val photographer = photographerRepo.getById(command.photographerId)
         photographer.updatePage(PhotographerMapper.INSTANCE.toPhotographerPage(command))
         return photographerRepo.update(photographer)
     }
 
     @Transactional
-    override fun savePhotographer(command: SavePhotographerUseCase.Command) {
-        if (photographerSaveRepo.existsByUserIdAndPhotographerId(command.requestUserId, command.photographerId)) {
-            throw AlreadyPhotographerSaveException()
-        }
-        photographerSaveRepo.create(
-            PhotographerSave.create(userId = command.requestUserId, photographerId = command.photographerId),
-        )
-    }
-
-    @Transactional
-    override fun unsavePhotographer(command: UnsavePhotographerUseCase.Command) {
+    fun unsavePhotographer(command: UnsavePhotographerCommand) {
         val photographerSave =
             photographerSaveRepo.findByUserIdAndPhotographerId(command.requestUserId, command.photographerId)
                 ?: throw PhotographerSaveNotFoundException()

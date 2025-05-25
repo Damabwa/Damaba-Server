@@ -1,14 +1,11 @@
 package com.damaba.damaba.controller.photographer
 
-import com.damaba.damaba.application.port.inbound.photographer.ExistsPhotographerNicknameUseCase
-import com.damaba.damaba.application.port.inbound.photographer.FindPhotographerListUseCase
-import com.damaba.damaba.application.port.inbound.photographer.FindSavedPhotographerListUseCase
-import com.damaba.damaba.application.port.inbound.photographer.GetPhotographerUseCase
-import com.damaba.damaba.application.port.inbound.photographer.RegisterPhotographerUseCase
-import com.damaba.damaba.application.port.inbound.photographer.SavePhotographerUseCase
-import com.damaba.damaba.application.port.inbound.photographer.UnsavePhotographerUseCase
-import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerPageUseCase
-import com.damaba.damaba.application.port.inbound.photographer.UpdatePhotographerProfileUseCase
+import com.damaba.damaba.application.photographer.PhotographerService
+import com.damaba.damaba.application.photographer.dto.ExistsPhotographerNicknameQuery
+import com.damaba.damaba.application.photographer.dto.FindPhotographerListQuery
+import com.damaba.damaba.application.photographer.dto.FindSavedPhotographerListQuery
+import com.damaba.damaba.application.photographer.dto.SavePhotographerCommand
+import com.damaba.damaba.application.photographer.dto.UnsavePhotographerCommand
 import com.damaba.damaba.controller.photographer.request.RegisterPhotographerRequest
 import com.damaba.damaba.controller.photographer.request.UpdateMyPhotographerPageRequest
 import com.damaba.damaba.controller.photographer.request.UpdateMyPhotographerProfileRequest
@@ -42,18 +39,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @Tag(name = "사진작가 관련 API")
 @RestController
-class PhotographerController(
-    private val getPhotographerUseCase: GetPhotographerUseCase,
-    private val findPhotographerListUseCase: FindPhotographerListUseCase,
-    private val findSavedPhotographerListUseCase: FindSavedPhotographerListUseCase,
-    private val existsPhotographerNicknameUseCase: ExistsPhotographerNicknameUseCase,
-    private val registerPhotographerUseCase: RegisterPhotographerUseCase,
-    private val updatePhotographerProfileUseCase: UpdatePhotographerProfileUseCase,
-    private val updatePhotographerPageUseCase: UpdatePhotographerPageUseCase,
-
-    private val savePhotographerUseCase: SavePhotographerUseCase,
-    private val unsavePhotographerUseCase: UnsavePhotographerUseCase,
-) {
+class PhotographerController(private val photographerService: PhotographerService) {
     @Operation(
         summary = "사진작가 조회",
         description = "사진작가를 조회합니다.",
@@ -64,7 +50,7 @@ class PhotographerController(
     )
     @GetMapping("/api/v1/photographers/{photographerId}")
     fun getPhotographerProfileV1(@PathVariable photographerId: Long): PhotographerResponse {
-        val photographer = getPhotographerUseCase.getPhotographer(photographerId)
+        val photographer = photographerService.getPhotographer(photographerId)
         return PhotographerMapper.INSTANCE.toPhotographerResponse(photographer)
     }
 
@@ -105,8 +91,8 @@ class PhotographerController(
             }
         }?.toSet()
 
-        val photographerList = findPhotographerListUseCase.findPhotographerList(
-            FindPhotographerListUseCase.Query(
+        val photographerList = photographerService.findPhotographerList(
+            FindPhotographerListQuery(
                 requestUserId = reqUser?.id,
                 regions = regionConditions ?: emptySet(),
                 photographyTypes = photographyTypes ?: emptySet(),
@@ -129,8 +115,8 @@ class PhotographerController(
         @RequestParam(defaultValue = "0") @Parameter(description = "페이지 번호. 0부터 시작합니다.") page: Int,
         @RequestParam(defaultValue = "10") @Parameter(description = "페이지 크기") pageSize: Int,
     ): Pagination<PhotographerListItemResponse> {
-        val photographerList = findSavedPhotographerListUseCase.findSavedPhotographerList(
-            FindSavedPhotographerListUseCase.Query(
+        val photographerList = photographerService.findSavedPhotographerList(
+            FindSavedPhotographerListQuery(
                 requestUserId = requestUser.id,
                 page = page,
                 pageSize = pageSize,
@@ -148,9 +134,7 @@ class PhotographerController(
         @Parameter(description = "사용 여부를 확인할 닉네임", example = "홍길동")
         @RequestParam nickname: String,
     ): ExistsPhotographerNicknameResponse {
-        val doesNicknameExists = existsPhotographerNicknameUseCase.existsNickname(
-            ExistsPhotographerNicknameUseCase.Query(nickname),
-        )
+        val doesNicknameExists = photographerService.existsNickname(ExistsPhotographerNicknameQuery(nickname))
         return ExistsPhotographerNicknameResponse(nickname, doesNicknameExists)
     }
 
@@ -175,7 +159,7 @@ class PhotographerController(
         @AuthenticationPrincipal requester: User,
         @RequestBody request: RegisterPhotographerRequest,
     ): PhotographerResponse {
-        val photographer = registerPhotographerUseCase.register(request.toCommand(requester.id))
+        val photographer = photographerService.register(request.toCommand(requester.id))
         return PhotographerMapper.INSTANCE.toPhotographerResponse(photographer)
     }
 
@@ -193,8 +177,8 @@ class PhotographerController(
         @AuthenticationPrincipal reqUser: User,
         @PathVariable photographerId: Long,
     ): ResponseEntity<Unit> {
-        savePhotographerUseCase.savePhotographer(
-            SavePhotographerUseCase.Command(requestUserId = reqUser.id, photographerId = photographerId),
+        photographerService.savePhotographer(
+            SavePhotographerCommand(requestUserId = reqUser.id, photographerId = photographerId),
         )
         return ResponseEntity.noContent().build()
     }
@@ -215,7 +199,7 @@ class PhotographerController(
         @RequestBody request: UpdateMyPhotographerProfileRequest,
     ): PhotographerResponse {
         val updatedPhotographer =
-            updatePhotographerProfileUseCase.updatePhotographerProfile(request.toCommand(reqUser.id))
+            photographerService.updatePhotographerProfile(request.toCommand(reqUser.id))
         return PhotographerMapper.INSTANCE.toPhotographerResponse(updatedPhotographer)
     }
 
@@ -230,7 +214,7 @@ class PhotographerController(
         @AuthenticationPrincipal reqUser: User,
         @RequestBody request: UpdateMyPhotographerPageRequest,
     ): PhotographerResponse {
-        val updatedPhotographer = updatePhotographerPageUseCase.updatePhotographerPage(request.toCommand(reqUser.id))
+        val updatedPhotographer = photographerService.updatePhotographerPage(request.toCommand(reqUser.id))
         return PhotographerMapper.INSTANCE.toPhotographerResponse(updatedPhotographer)
     }
 
@@ -248,8 +232,8 @@ class PhotographerController(
         @AuthenticationPrincipal reqUser: User,
         @PathVariable photographerId: Long,
     ): ResponseEntity<Unit> {
-        unsavePhotographerUseCase.unsavePhotographer(
-            UnsavePhotographerUseCase.Command(requestUserId = reqUser.id, photographerId = photographerId),
+        photographerService.unsavePhotographer(
+            UnsavePhotographerCommand(requestUserId = reqUser.id, photographerId = photographerId),
         )
         return ResponseEntity.noContent().build()
     }

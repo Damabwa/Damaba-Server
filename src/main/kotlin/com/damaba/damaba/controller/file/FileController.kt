@@ -1,6 +1,6 @@
 package com.damaba.damaba.controller.file
 
-import com.damaba.damaba.application.port.inbound.file.UploadFilesUseCase
+import com.damaba.damaba.application.file.FileService
 import com.damaba.damaba.controller.file.request.UploadFilesRequest
 import com.damaba.damaba.controller.file.response.UploadFilesResponse
 import io.swagger.v3.oas.annotations.Operation
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @Tag(name = "파일 관련 API")
 @RestController
-class FileController(private val uploadFilesUseCase: UploadFilesUseCase) {
+class FileController(private val fileService: FileService) {
     @Operation(
         summary = "Upload files",
         description = "<p>파일을 업로드합니다." +
@@ -25,7 +25,7 @@ class FileController(private val uploadFilesUseCase: UploadFilesUseCase) {
     )
     @PostMapping("/api/v1/files", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun uploadFilesV1(@ModelAttribute request: UploadFilesRequest): ResponseEntity<UploadFilesResponse> {
-        val uploadedFiles = uploadFilesUseCase.uploadFiles(request.toCommand())
+        val uploadedFiles = fileService.uploadFiles(request.toCommand())
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(UploadFilesResponse(uploadedFiles))

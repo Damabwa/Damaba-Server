@@ -1,13 +1,13 @@
 package com.damaba.damaba.application.promotion
 
-import com.damaba.damaba.application.port.inbound.promotion.DeletePromotionUseCase
-import com.damaba.damaba.application.port.inbound.promotion.FindPromotionListUseCase
-import com.damaba.damaba.application.port.inbound.promotion.FindSavedPromotionListUseCase
-import com.damaba.damaba.application.port.inbound.promotion.GetPromotionDetailUseCase
-import com.damaba.damaba.application.port.inbound.promotion.PostPromotionUseCase
-import com.damaba.damaba.application.port.inbound.promotion.SavePromotionUseCase
-import com.damaba.damaba.application.port.inbound.promotion.UnsavePromotionUseCase
-import com.damaba.damaba.application.port.inbound.promotion.UpdatePromotionUseCase
+import com.damaba.damaba.application.promotion.dto.DeletePromotionCommand
+import com.damaba.damaba.application.promotion.dto.FindPromotionListQuery
+import com.damaba.damaba.application.promotion.dto.FindSavedPromotionListQuery
+import com.damaba.damaba.application.promotion.dto.GetPromotionDetailQuery
+import com.damaba.damaba.application.promotion.dto.PostPromotionCommand
+import com.damaba.damaba.application.promotion.dto.SavePromotionCommand
+import com.damaba.damaba.application.promotion.dto.UnsavePromotionCommand
+import com.damaba.damaba.application.promotion.dto.UpdatePromotionCommand
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.promotion.Promotion
@@ -112,7 +112,7 @@ class PromotionServiceTest {
             } returns expectedIsSaved
 
             // when
-            val result = sut.getPromotionDetail(GetPromotionDetailUseCase.Query(requestUserId, promotionId))
+            val result = sut.getPromotionDetail(GetPromotionDetailQuery(requestUserId, promotionId))
 
             // then
             verify { promotionRepo.getById(promotionId) }
@@ -142,7 +142,7 @@ class PromotionServiceTest {
             every { promotionSaveRepo.countByPromotionId(promotionId) } returns expectedSaveCount
 
             // when
-            val result = sut.getPromotionDetail(GetPromotionDetailUseCase.Query(requestUserId, promotionId))
+            val result = sut.getPromotionDetail(GetPromotionDetailQuery(requestUserId, promotionId))
 
             // then
             verify { promotionRepo.getById(promotionId) }
@@ -173,7 +173,7 @@ class PromotionServiceTest {
             } returns expectedIsSaved
 
             // when
-            val result = sut.getPromotionDetail(GetPromotionDetailUseCase.Query(requestUserId, promotionId))
+            val result = sut.getPromotionDetail(GetPromotionDetailQuery(requestUserId, promotionId))
 
             // then
             verify { promotionRepo.getById(promotionId) }
@@ -191,7 +191,7 @@ class PromotionServiceTest {
         @Test
         fun `프로모션 리스트를 조회한다`() {
             // given
-            val query = FindSavedPromotionListUseCase.Query(
+            val query = FindSavedPromotionListQuery(
                 requestUserId = randomLong(),
                 page = 1,
                 pageSize = randomInt(min = 5, max = 10),
@@ -228,8 +228,8 @@ class PromotionServiceTest {
         @Test
         fun `저장된 프로모션 리스트를 조회한다`() {
             // given
-            val query = FindPromotionListUseCase.Query(
-                reqUserId = null,
+            val query = FindPromotionListQuery(
+                requestUserId = null,
                 type = PromotionType.FREE,
                 progressStatus = PromotionProgressStatus.ONGOING,
                 regions = setOf(RegionFilterCondition("서울", "강남구"), RegionFilterCondition("대전", "중구")),
@@ -246,7 +246,7 @@ class PromotionServiceTest {
             )
             every {
                 promotionRepo.findPromotionList(
-                    requestUserId = query.reqUserId,
+                    requestUserId = query.requestUserId,
                     type = query.type,
                     progressStatus = query.progressStatus,
                     regions = query.regions,
@@ -263,7 +263,7 @@ class PromotionServiceTest {
             // then
             verify {
                 promotionRepo.findPromotionList(
-                    requestUserId = query.reqUserId,
+                    requestUserId = query.requestUserId,
                     type = query.type,
                     progressStatus = query.progressStatus,
                     regions = query.regions,
@@ -305,7 +305,7 @@ class PromotionServiceTest {
             every { promotionSaveRepo.create(any(PromotionSave::class)) } just runs
 
             // when
-            sut.savePromotion(SavePromotionUseCase.Command(userId, promotionId))
+            sut.savePromotion(SavePromotionCommand(userId, promotionId))
 
             // then
             verify { promotionSaveRepo.existsByUserIdAndPromotionId(userId, promotionId) }
@@ -321,7 +321,7 @@ class PromotionServiceTest {
             every { promotionSaveRepo.existsByUserIdAndPromotionId(userId, promotionId) } returns true
 
             // when
-            val ex = catchThrowable { sut.savePromotion(SavePromotionUseCase.Command(userId, promotionId)) }
+            val ex = catchThrowable { sut.savePromotion(SavePromotionCommand(userId, promotionId)) }
 
             // then
             verify { promotionSaveRepo.existsByUserIdAndPromotionId(userId, promotionId) }
@@ -365,7 +365,7 @@ class PromotionServiceTest {
 
             // when
             val result = sut.updatePromotion(
-                command = UpdatePromotionUseCase.Command(
+                command = UpdatePromotionCommand(
                     requestUserId = authorId,
                     promotionId = promotionId,
                     promotionType = newPromotionType,
@@ -402,7 +402,7 @@ class PromotionServiceTest {
             // when
             val ex = catchThrowable {
                 sut.updatePromotion(
-                    command = UpdatePromotionUseCase.Command(
+                    command = UpdatePromotionCommand(
                         requestUserId = requestUserId,
                         promotionId = promotionId,
                         promotionType = PromotionType.FREE,
@@ -436,7 +436,7 @@ class PromotionServiceTest {
 
             // when
             sut.deletePromotion(
-                DeletePromotionUseCase.Command(requestUser = author, promotionId = promotionId),
+                DeletePromotionCommand(requestUser = author, promotionId = promotionId),
             )
 
             // then
@@ -458,7 +458,7 @@ class PromotionServiceTest {
 
             // when
             sut.deletePromotion(
-                DeletePromotionUseCase.Command(requestUser = admin, promotionId = promotionId),
+                DeletePromotionCommand(requestUser = admin, promotionId = promotionId),
             )
 
             // then
@@ -480,7 +480,7 @@ class PromotionServiceTest {
             // when
             val ex = catchThrowable {
                 sut.deletePromotion(
-                    DeletePromotionUseCase.Command(
+                    DeletePromotionCommand(
                         requestUser = requestUser,
                         promotionId = promotionId,
                     ),
@@ -503,7 +503,7 @@ class PromotionServiceTest {
             every { promotionSaveRepo.delete(promotionSave) } just runs
 
             // when
-            sut.unsavePromotion(UnsavePromotionUseCase.Command(userId, promotionId))
+            sut.unsavePromotion(UnsavePromotionCommand(userId, promotionId))
 
             // then
             verify { promotionSaveRepo.getByUserIdAndPromotionId(userId, promotionId) }
@@ -511,7 +511,7 @@ class PromotionServiceTest {
             confirmVerifiedEveryMocks()
         }
 
-        private fun createPostPromotionCommand() = PostPromotionUseCase.Command(
+        private fun createPostPromotionCommand() = PostPromotionCommand(
             authorId = randomLong(),
             promotionType = PromotionType.FREE,
             title = randomString(len = 10),
@@ -546,7 +546,7 @@ class PromotionServiceTest {
             repeat(repeatTime) {
                 futures.add(
                     CompletableFuture.runAsync {
-                        promotionService.getPromotionDetail(GetPromotionDetailUseCase.Query(null, promotion.id))
+                        promotionService.getPromotionDetail(GetPromotionDetailQuery(null, promotion.id))
                     },
                 )
             }
