@@ -2,8 +2,8 @@ package com.damaba.damaba.controller.auth
 
 import com.damaba.damaba.application.auth.OAuthLoginService
 import com.damaba.damaba.application.auth.dto.OAuthLoginCommand
-import com.damaba.damaba.controller.auth.request.OAuthLoginRequest
-import com.damaba.damaba.controller.auth.response.OAuthLoginResponse
+import com.damaba.damaba.controller.auth.dto.OAuthLoginRequest
+import com.damaba.damaba.controller.auth.dto.OAuthLoginResponse
 import com.damaba.damaba.domain.user.constant.LoginType
 import com.damaba.damaba.mapper.AuthTokenMapper
 import com.damaba.damaba.mapper.UserMapper

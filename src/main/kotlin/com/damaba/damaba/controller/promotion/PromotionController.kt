@@ -7,11 +7,11 @@ import com.damaba.damaba.application.promotion.dto.FindSavedPromotionListQuery
 import com.damaba.damaba.application.promotion.dto.GetPromotionDetailQuery
 import com.damaba.damaba.application.promotion.dto.SavePromotionCommand
 import com.damaba.damaba.application.promotion.dto.UnsavePromotionCommand
-import com.damaba.damaba.controller.promotion.request.PostPromotionRequest
-import com.damaba.damaba.controller.promotion.request.UpdatePromotionRequest
-import com.damaba.damaba.controller.promotion.response.PromotionDetailResponse
-import com.damaba.damaba.controller.promotion.response.PromotionListItemResponse
-import com.damaba.damaba.controller.promotion.response.PromotionResponse
+import com.damaba.damaba.controller.promotion.dto.PostPromotionRequest
+import com.damaba.damaba.controller.promotion.dto.PromotionDetailResponse
+import com.damaba.damaba.controller.promotion.dto.PromotionListItemResponse
+import com.damaba.damaba.controller.promotion.dto.PromotionResponse
+import com.damaba.damaba.controller.promotion.dto.UpdatePromotionRequest
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.exception.ValidationException

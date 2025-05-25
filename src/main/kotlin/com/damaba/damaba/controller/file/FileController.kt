@@ -1,8 +1,8 @@
 package com.damaba.damaba.controller.file
 
 import com.damaba.damaba.application.file.FileService
-import com.damaba.damaba.controller.file.request.UploadFilesRequest
-import com.damaba.damaba.controller.file.response.UploadFilesResponse
+import com.damaba.damaba.controller.file.dto.UploadFilesRequest
+import com.damaba.damaba.controller.file.dto.UploadFilesResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag

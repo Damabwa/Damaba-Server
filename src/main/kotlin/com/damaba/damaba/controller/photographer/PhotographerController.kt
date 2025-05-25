@@ -6,11 +6,11 @@ import com.damaba.damaba.application.photographer.dto.FindPhotographerListQuery
 import com.damaba.damaba.application.photographer.dto.FindSavedPhotographerListQuery
 import com.damaba.damaba.application.photographer.dto.SavePhotographerCommand
 import com.damaba.damaba.application.photographer.dto.UnsavePhotographerCommand
-import com.damaba.damaba.controller.photographer.request.RegisterPhotographerRequest
-import com.damaba.damaba.controller.photographer.request.UpdateMyPhotographerPageRequest
-import com.damaba.damaba.controller.photographer.request.UpdateMyPhotographerProfileRequest
-import com.damaba.damaba.controller.photographer.response.ExistsPhotographerNicknameResponse
-import com.damaba.damaba.controller.photographer.response.PhotographerResponse
+import com.damaba.damaba.controller.photographer.dto.ExistsPhotographerNicknameResponse
+import com.damaba.damaba.controller.photographer.dto.PhotographerResponse
+import com.damaba.damaba.controller.photographer.dto.RegisterPhotographerRequest
+import com.damaba.damaba.controller.photographer.dto.UpdateMyPhotographerPageRequest
+import com.damaba.damaba.controller.photographer.dto.UpdateMyPhotographerProfileRequest
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.exception.ValidationException
