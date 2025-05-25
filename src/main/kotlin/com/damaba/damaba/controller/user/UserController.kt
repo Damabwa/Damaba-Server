@@ -1,9 +1,7 @@
 package com.damaba.damaba.controller.user
 
-import com.damaba.damaba.application.port.inbound.user.ExistsUserNicknameUseCase
-import com.damaba.damaba.application.port.inbound.user.GetUserUseCase
-import com.damaba.damaba.application.port.inbound.user.RegisterUserUseCase
-import com.damaba.damaba.application.port.inbound.user.UpdateUserProfileUseCase
+import com.damaba.damaba.application.user.UserService
+import com.damaba.damaba.application.user.dto.ExistsUserNicknameQuery
 import com.damaba.damaba.controller.user.request.RegisterUserRequest
 import com.damaba.damaba.controller.user.request.UpdateMyProfileRequest
 import com.damaba.damaba.controller.user.response.ExistsUserNicknameResponse
@@ -27,12 +25,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @Tag(name = "유저 관련 API")
 @RestController
-class UserController(
-    private val getUserUseCase: GetUserUseCase,
-    private val existsUserNicknameUseCase: ExistsUserNicknameUseCase,
-    private val updateUserProfileUseCase: UpdateUserProfileUseCase,
-    private val registerUserUseCase: RegisterUserUseCase,
-) {
+class UserController(private val userService: UserService) {
     @Operation(
         summary = "내 정보 조회",
         description = "내 정보를 조회합니다.",
@@ -40,7 +33,7 @@ class UserController(
     )
     @GetMapping("/api/v1/users/me")
     fun getMyInfoV1(@AuthenticationPrincipal requestUser: User): UserResponse {
-        val me = getUserUseCase.getUser(requestUser.id)
+        val me = userService.getUser(requestUser.id)
         return UserMapper.INSTANCE.toUserResponse(me)
     }
 
@@ -55,7 +48,7 @@ class UserController(
             example = "치와와",
         ) @RequestParam nickname: String,
     ): ExistsUserNicknameResponse {
-        val doesNicknameExists = existsUserNicknameUseCase.existsNickname(ExistsUserNicknameUseCase.Query(nickname))
+        val doesNicknameExists = userService.existsNickname(ExistsUserNicknameQuery(nickname))
         return ExistsUserNicknameResponse(nickname, doesNicknameExists)
     }
 
@@ -80,7 +73,7 @@ class UserController(
         @AuthenticationPrincipal requester: User,
         @RequestBody request: RegisterUserRequest,
     ): UserResponse {
-        val user = registerUserUseCase.register(request.toCommand(requester.id))
+        val user = userService.register(request.toCommand(requester.id))
         return UserMapper.INSTANCE.toUserResponse(user)
     }
 
@@ -100,7 +93,7 @@ class UserController(
         @AuthenticationPrincipal requestUser: User,
         @RequestBody request: UpdateMyProfileRequest,
     ): UserResponse {
-        val updatedUser = updateUserProfileUseCase.updateUserProfile(request.toCommand(requestUserId = requestUser.id))
+        val updatedUser = userService.updateUserProfile(request.toCommand(requestUserId = requestUser.id))
         return UserMapper.INSTANCE.toUserResponse(updatedUser)
     }
 }

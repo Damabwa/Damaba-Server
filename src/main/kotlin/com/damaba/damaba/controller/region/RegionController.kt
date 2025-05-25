@@ -1,7 +1,6 @@
 package com.damaba.damaba.controller.region
 
-import com.damaba.damaba.application.port.inbound.region.FindRegionCategoriesUseCase
-import com.damaba.damaba.application.port.inbound.region.FindRegionGroupsUseCase
+import com.damaba.damaba.application.region.RegionService
 import com.damaba.damaba.controller.region.response.RegionCategoriesResponse
 import com.damaba.damaba.controller.region.response.RegionGroupsResponse
 import com.damaba.damaba.mapper.RegionMapper
@@ -12,13 +11,10 @@ import org.springframework.web.bind.annotation.RestController
 
 @Tag(name = "Region(지역) 관련 API", description = "담아봐 서비스 내에서 다루는 지역에 대한 API입니다.")
 @RestController
-class RegionController(
-    private val findRegionCategoriesUseCase: FindRegionCategoriesUseCase,
-    private val findRegionGroupsUseCase: FindRegionGroupsUseCase,
-) {
+class RegionController(private val regionService: RegionService) {
     @GetMapping("/api/v1/regions/categories")
     fun findRegionCategories(): RegionCategoriesResponse {
-        val categories = findRegionCategoriesUseCase.findRegionCategories()
+        val categories = regionService.findRegionCategories()
         return RegionCategoriesResponse(categories)
     }
 
@@ -29,7 +25,7 @@ class RegionController(
     )
     @GetMapping("/api/v1/regions/groups")
     fun findRegionGroupsV1(): RegionGroupsResponse {
-        val regionGroupResponses = findRegionGroupsUseCase.findRegionGroups()
+        val regionGroupResponses = regionService.findRegionGroups()
             .map { RegionMapper.INSTANCE.toRegionGroupResponse(it) }
         return RegionGroupsResponse(regionGroupResponses)
     }

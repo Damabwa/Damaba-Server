@@ -1,6 +1,6 @@
 package com.damaba.damaba.mapper
 
-import com.damaba.damaba.application.port.inbound.user.UpdateUserProfileUseCase
+import com.damaba.damaba.application.user.dto.UpdateUserProfileCommand
 import com.damaba.damaba.controller.user.response.UserResponse
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.domain.user.UserProfile
@@ -11,7 +11,7 @@ import org.mapstruct.factory.Mappers
 interface UserMapper {
     fun toUserResponse(user: User): UserResponse
 
-    fun toUserProfile(command: UpdateUserProfileUseCase.Command): UserProfile
+    fun toUserProfile(command: UpdateUserProfileCommand): UserProfile
 
     companion object {
         val INSTANCE: UserMapper = Mappers.getMapper(UserMapper::class.java)

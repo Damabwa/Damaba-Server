@@ -1,6 +1,8 @@
 package com.damaba.damaba.controller.auth
 
-import com.damaba.damaba.application.port.inbound.auth.OAuthLoginUseCase
+import com.damaba.damaba.application.auth.OAuthLoginService
+import com.damaba.damaba.application.auth.dto.OAuthLoginCommand
+import com.damaba.damaba.application.auth.dto.OAuthLoginResult
 import com.damaba.damaba.config.ControllerTestConfig
 import com.damaba.damaba.controller.auth.request.OAuthLoginRequest
 import com.damaba.damaba.domain.user.constant.LoginType
@@ -31,12 +33,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 class AuthControllerTest @Autowired constructor(
     private val mvc: MockMvc,
     private val mapper: ObjectMapper,
-    private val oAuthLoginUseCase: OAuthLoginUseCase,
+    private val oAuthLoginService: OAuthLoginService,
 ) {
     @TestConfiguration
     class TestBeanSetUp {
         @Bean
-        fun oAuthLoginUseCase() = mockk<OAuthLoginUseCase>()
+        fun oAuthLoginService() = mockk<OAuthLoginService>()
     }
 
     @Test
@@ -44,14 +46,14 @@ class AuthControllerTest @Autowired constructor(
         // given
         val kakaoAccessToken = randomString()
         val requestBody = OAuthLoginRequest(loginType = LoginType.KAKAO, authKey = kakaoAccessToken)
-        val expectedResult = OAuthLoginUseCase.Result(
+        val expectedResult = OAuthLoginResult(
             isNewUser = false,
             user = createUser(),
             accessToken = createAccessToken(),
             refreshToken = createRefreshToken(),
         )
         every {
-            oAuthLoginUseCase.oAuthLogin(OAuthLoginUseCase.Command(requestBody.loginType, requestBody.authKey))
+            oAuthLoginService.oAuthLogin(OAuthLoginCommand(requestBody.loginType, requestBody.authKey))
         } returns expectedResult
 
         // when & then
@@ -64,7 +66,7 @@ class AuthControllerTest @Autowired constructor(
             .andExpect(jsonPath("$.user.id").value(expectedResult.user.id))
             .andExpect(jsonPath("$.accessToken.value").value(expectedResult.accessToken.value))
             .andExpect(jsonPath("$.refreshToken.value").value(expectedResult.refreshToken.value))
-        verify { oAuthLoginUseCase.oAuthLogin(OAuthLoginUseCase.Command(requestBody.loginType, requestBody.authKey)) }
+        verify { oAuthLoginService.oAuthLogin(OAuthLoginCommand(requestBody.loginType, requestBody.authKey)) }
     }
 
     @Test
@@ -72,14 +74,14 @@ class AuthControllerTest @Autowired constructor(
         // given
         val kakaoAccessToken = randomString()
         val requestBody = OAuthLoginRequest(loginType = LoginType.KAKAO, authKey = kakaoAccessToken)
-        val expectedResult = OAuthLoginUseCase.Result(
+        val expectedResult = OAuthLoginResult(
             isNewUser = true,
             user = createUser(),
             accessToken = createAccessToken(),
             refreshToken = createRefreshToken(),
         )
         every {
-            oAuthLoginUseCase.oAuthLogin(OAuthLoginUseCase.Command(requestBody.loginType, requestBody.authKey))
+            oAuthLoginService.oAuthLogin(OAuthLoginCommand(requestBody.loginType, requestBody.authKey))
         } returns expectedResult
 
         // when & then
@@ -92,6 +94,6 @@ class AuthControllerTest @Autowired constructor(
             .andExpect(jsonPath("$.user.id").value(expectedResult.user.id))
             .andExpect(jsonPath("$.accessToken.value").value(expectedResult.accessToken.value))
             .andExpect(jsonPath("$.refreshToken.value").value(expectedResult.refreshToken.value))
-        verify { oAuthLoginUseCase.oAuthLogin(OAuthLoginUseCase.Command(requestBody.loginType, requestBody.authKey)) }
+        verify { oAuthLoginService.oAuthLogin(OAuthLoginCommand(requestBody.loginType, requestBody.authKey)) }
     }
 }

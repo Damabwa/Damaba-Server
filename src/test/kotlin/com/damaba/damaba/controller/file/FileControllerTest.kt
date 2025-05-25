@@ -1,6 +1,7 @@
 package com.damaba.damaba.controller.file
 
-import com.damaba.damaba.application.port.inbound.file.UploadFilesUseCase
+import com.damaba.damaba.application.file.FileService
+import com.damaba.damaba.application.file.dto.UploadFilesCommand
 import com.damaba.damaba.config.ControllerTestConfig
 import com.damaba.damaba.controller.file.request.UploadFilesRequest
 import com.damaba.damaba.domain.file.FileType
@@ -30,12 +31,12 @@ import kotlin.test.Test
 @WebMvcTest(controllers = [FileController::class])
 class FileControllerTest @Autowired constructor(
     private val mvc: MockMvc,
-    private val uploadFilesUseCase: UploadFilesUseCase,
+    private val fileService: FileService,
 ) {
     @TestConfiguration
     class TestBeanSetUp {
         @Bean
-        fun uploadFilesUseCase(): UploadFilesUseCase = mockk()
+        fun fileService(): FileService = mockk()
     }
 
     @Test
@@ -47,7 +48,7 @@ class FileControllerTest @Autowired constructor(
         )
         val expectedResult = List(request.files.size) { createFile() }
         every {
-            uploadFilesUseCase.uploadFiles(any(UploadFilesUseCase.Command::class))
+            fileService.uploadFiles(any(UploadFilesCommand::class))
         } returns expectedResult
 
         // when & then
