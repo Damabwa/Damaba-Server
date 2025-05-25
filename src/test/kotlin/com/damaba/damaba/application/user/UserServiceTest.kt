@@ -238,7 +238,7 @@ class UserServiceTest {
             profileImage = newProfileImageUrl,
         )
         every { userRepo.getById(userId) } returns user
-        every { userRepo.deleteByUrl(originalProfileImage.url) } just runs
+        every { userRepo.deleteProfileImageByUrl(originalProfileImage.url) } just runs
         every { userRepo.update(user) } returns expectedResult
 
         // when
@@ -247,7 +247,7 @@ class UserServiceTest {
         // then
         verifyOrder {
             userRepo.getById(userId)
-            userRepo.deleteByUrl(originalProfileImage.url)
+            userRepo.deleteProfileImageByUrl(originalProfileImage.url)
             userRepo.update(user)
         }
         confirmVerifiedEveryMocks()

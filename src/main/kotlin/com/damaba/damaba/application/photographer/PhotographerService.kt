@@ -99,7 +99,7 @@ class PhotographerService(
         }
         photographer.profileImage?.let { originalProfileImage ->
             if (originalProfileImage != command.profileImage) {
-                userRepo.deleteByUrl(originalProfileImage.url)
+                userRepo.deleteProfileImageByUrl(originalProfileImage.url)
             }
         }
 
