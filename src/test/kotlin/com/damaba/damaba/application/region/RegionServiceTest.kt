@@ -1,4 +1,4 @@
-package com.damaba.damaba.application.service.region
+package com.damaba.damaba.application.region
 
 import com.damaba.damaba.infrastructure.region.RegionRepository
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList

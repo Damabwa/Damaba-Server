@@ -1,4 +1,4 @@
-package com.damaba.damaba.application.service.region
+package com.damaba.damaba.application.region
 
 import com.damaba.damaba.application.port.inbound.region.FindRegionCategoriesUseCase
 import com.damaba.damaba.application.port.inbound.region.FindRegionGroupsUseCase

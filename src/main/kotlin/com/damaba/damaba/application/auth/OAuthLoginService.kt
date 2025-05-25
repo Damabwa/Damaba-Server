@@ -1,4 +1,4 @@
-package com.damaba.damaba.application.service.auth
+package com.damaba.damaba.application.auth
 
 import com.damaba.damaba.application.port.inbound.auth.OAuthLoginUseCase
 import com.damaba.damaba.domain.auth.RefreshToken
