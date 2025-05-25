@@ -51,7 +51,7 @@ class FileControllerTest @Autowired constructor(
             fileService.uploadFiles(any(UploadFilesCommand::class))
         } returns expectedResult
 
-        // when & then
+        // when and then
         val requestBuilder = multipart("/api/v1/files")
         request.files.forEach { file -> requestBuilder.file("files", file.bytes) }
         mvc.perform(

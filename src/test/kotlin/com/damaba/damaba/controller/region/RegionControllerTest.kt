@@ -41,7 +41,7 @@ class RegionControllerTest @Autowired constructor(
         val expectedResult = generateRandomList(maxSize = 10) { randomString() }
         every { regionService.findRegionCategories() } returns expectedResult
 
-        // when & then
+        // when and then
         mvc.perform(
             get("/api/v1/regions/categories"),
         ).andExpect(status().isOk)
@@ -55,7 +55,7 @@ class RegionControllerTest @Autowired constructor(
         val expectedResult = createRegionGroups()
         every { regionService.findRegionGroups() } returns expectedResult
 
-        // when & then
+        // when and then
         mvc.perform(
             get("/api/v1/regions/groups"),
         ).andExpect(status().isOk)

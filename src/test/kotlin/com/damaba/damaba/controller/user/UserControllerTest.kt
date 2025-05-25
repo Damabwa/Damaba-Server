@@ -53,7 +53,7 @@ class UserControllerTest @Autowired constructor(
         val me = createUser(id = userId)
         every { userService.getUser(userId) } returns me
 
-        // when & then
+        // when and then
         mvc.perform(
             get("/api/v1/users/me")
                 .withAuthUser(me),
@@ -79,7 +79,7 @@ class UserControllerTest @Autowired constructor(
         )
         every { userService.updateUserProfile(request.toCommand(requestUser.id)) } returns expectedResult
 
-        // when & then
+        // when and then
         mvc.perform(
             put("/api/v1/users/me/profile")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -102,7 +102,7 @@ class UserControllerTest @Autowired constructor(
         val expectedResult = randomBoolean()
         every { userService.existsNickname(ExistsUserNicknameQuery(nickname)) } returns expectedResult
 
-        // when & then
+        // when and then
         mvc.perform(
             get("/api/v1/users/nicknames/existence")
                 .queryParam("nickname", nickname),
@@ -129,7 +129,7 @@ class UserControllerTest @Autowired constructor(
         )
         every { userService.register(request.toCommand(requester.id)) } returns expectedResult
 
-        // when & then
+        // when and then
         mvc.perform(
             post("/api/v1/users/me/registration")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
