@@ -14,7 +14,7 @@ import org.junit.jupiter.params.provider.ValueSource
 import kotlin.test.Test
 
 class PhotographerValidatorTest {
-    @ValueSource(strings = ["", "overFifteenCharacters", "withSC!@#$%^"])
+    @ValueSource(strings = ["", "overEighteenCharacters", "withSC!@#$%^"])
     @ParameterizedTest
     fun `유효하지 않은 닉네임이 주어지고, 닉네임 검증을 수행하면, 예외가 발생한다`(invalidNickname: String) {
         assertThrows<ValidationException> { PhotographerValidator.validateNickname(invalidNickname) }
