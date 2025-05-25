@@ -1,4 +1,4 @@
-package com.damaba.damaba.application.service.promotion
+package com.damaba.damaba.application.promotion
 
 import com.damaba.damaba.application.port.inbound.promotion.DeletePromotionUseCase
 import com.damaba.damaba.application.port.inbound.promotion.FindPromotionListUseCase
