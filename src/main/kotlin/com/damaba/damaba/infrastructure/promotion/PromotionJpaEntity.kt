@@ -5,7 +5,7 @@ import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.domain.region.Region
-import com.damaba.damaba.infrastructure.common.BaseJpaTimeEntity
+import com.damaba.damaba.infrastructure.common.TimeTrackedJpaEntity
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -30,7 +30,7 @@ class PromotionJpaEntity(
     startedAt: LocalDate?,
     endedAt: LocalDate?,
     viewCount: Long,
-) : BaseJpaTimeEntity() {
+) : TimeTrackedJpaEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

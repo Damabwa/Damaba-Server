@@ -4,7 +4,7 @@ import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.domain.region.Region
-import com.damaba.damaba.infrastructure.common.BaseJpaTimeEntity
+import com.damaba.damaba.infrastructure.common.TimeTrackedJpaEntity
 import com.damaba.damaba.infrastructure.user.UserJpaEntity
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
@@ -22,7 +22,7 @@ class PhotographerJpaEntity(
     contactLink: String?,
     description: String?,
     address: PhotographerAddressJpaEmbeddable?,
-) : BaseJpaTimeEntity() {
+) : TimeTrackedJpaEntity() {
     @Column(name = "contact_link", nullable = true)
     var contactLink: String? = contactLink
         private set

@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 
 @EntityListeners(AuditingEntityListener::class)
 @MappedSuperclass
-abstract class BaseJpaTimeEntity protected constructor(
+abstract class TimeTrackedJpaEntity protected constructor(
     createdAt: LocalDateTime = LocalDateTime.MIN,
     updatedAt: LocalDateTime = LocalDateTime.MIN,
 ) {

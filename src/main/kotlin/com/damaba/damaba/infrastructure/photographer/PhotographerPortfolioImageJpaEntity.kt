@@ -1,7 +1,7 @@
 package com.damaba.damaba.infrastructure.photographer
 
 import com.damaba.damaba.domain.file.Image
-import com.damaba.damaba.infrastructure.common.BaseJpaEntity
+import com.damaba.damaba.infrastructure.common.ActorAndTimeTrackedJpaEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
@@ -19,7 +19,7 @@ class PhotographerPortfolioImageJpaEntity(
     photographer: PhotographerJpaEntity,
     name: String,
     url: String,
-) : BaseJpaEntity() {
+) : ActorAndTimeTrackedJpaEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

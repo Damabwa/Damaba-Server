@@ -1,6 +1,6 @@
 package com.damaba.damaba.infrastructure.promotion
 
-import com.damaba.damaba.infrastructure.common.BaseJpaTimeEntity
+import com.damaba.damaba.infrastructure.common.TimeTrackedJpaEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
@@ -16,7 +16,7 @@ import jakarta.persistence.Table
 class PromotionHashtagJpaEntity(
     promotion: PromotionJpaEntity,
     content: String,
-) : BaseJpaTimeEntity() {
+) : TimeTrackedJpaEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

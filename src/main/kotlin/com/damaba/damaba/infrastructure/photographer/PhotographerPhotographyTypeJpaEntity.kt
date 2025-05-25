@@ -1,7 +1,7 @@
 package com.damaba.damaba.infrastructure.photographer
 
 import com.damaba.damaba.domain.common.constant.PhotographyType
-import com.damaba.damaba.infrastructure.common.BaseJpaTimeEntity
+import com.damaba.damaba.infrastructure.common.TimeTrackedJpaEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -19,7 +19,7 @@ import jakarta.persistence.Table
 class PhotographerPhotographyTypeJpaEntity(
     photographer: PhotographerJpaEntity,
     photographyType: PhotographyType,
-) : BaseJpaTimeEntity() {
+) : TimeTrackedJpaEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
