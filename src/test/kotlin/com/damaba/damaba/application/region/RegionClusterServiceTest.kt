@@ -1,4 +1,4 @@
-package com.damaba.damaba.application.service.region
+package com.damaba.damaba.application.region
 
 import com.damaba.damaba.infrastructure.region.RegionClusterRepository
 import com.damaba.damaba.util.fixture.RegionFixture.createRegionClusters

@@ -1,4 +1,4 @@
-package com.damaba.damaba.application.service.user
+package com.damaba.damaba.application.user
 
 import com.damaba.damaba.application.port.inbound.user.ExistsUserNicknameUseCase
 import com.damaba.damaba.application.port.inbound.user.RegisterUserUseCase

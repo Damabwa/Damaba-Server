@@ -1,4 +1,4 @@
-package com.damaba.damaba.application.service.file
+package com.damaba.damaba.application.file
 
 import com.damaba.damaba.application.port.inbound.file.UploadFilesUseCase
 import com.damaba.damaba.domain.file.File
