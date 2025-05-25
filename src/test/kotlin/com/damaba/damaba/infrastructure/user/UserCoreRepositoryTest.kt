@@ -288,7 +288,7 @@ class UserCoreRepositoryTest @Autowired constructor(
         )
 
         // when
-        userCoreRepository.deleteByUrl(profileImageUrl)
+        userCoreRepository.deleteProfileImageByUrl(profileImageUrl)
 
         // then
         assertThat(userProfileImageJpaRepository.findByUrl(profileImageUrl)).isNull()
@@ -300,7 +300,7 @@ class UserCoreRepositoryTest @Autowired constructor(
         val profileImageUrl = randomUrl()
 
         // when
-        userCoreRepository.deleteByUrl(profileImageUrl)
+        userCoreRepository.deleteProfileImageByUrl(profileImageUrl)
 
         // then
         assertThat(userProfileImageJpaRepository.findByUrl(profileImageUrl)).isNull()

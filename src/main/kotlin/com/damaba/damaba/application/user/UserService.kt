@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UserService(private val userRepo: UserRepository) {
-
     @Transactional(readOnly = true)
     fun getUser(userId: Long): User = userRepo.getById(userId)
 
@@ -59,7 +58,7 @@ class UserService(private val userRepo: UserRepository) {
         }
         user.profileImage?.let { originalProfileImage ->
             if (originalProfileImage != command.profileImage) {
-                userRepo.deleteByUrl(originalProfileImage.url)
+                userRepo.deleteProfileImageByUrl(originalProfileImage.url)
             }
         }
 

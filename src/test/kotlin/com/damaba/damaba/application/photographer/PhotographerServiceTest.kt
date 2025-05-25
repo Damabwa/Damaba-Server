@@ -471,7 +471,7 @@ class PhotographerServiceTest {
         )
         every { photographerRepo.getById(photographerId) } returns originalPhotographer
         every { userRepo.existsNickname(command.nickname) } returns false
-        every { userRepo.deleteByUrl(originalProfileImageUrl) } just runs
+        every { userRepo.deleteProfileImageByUrl(originalProfileImageUrl) } just runs
         every { photographerRepo.update(expectedResult) } returns expectedResult
 
         // when
@@ -481,7 +481,7 @@ class PhotographerServiceTest {
         verifyOrder {
             photographerRepo.getById(photographerId)
             userRepo.existsNickname(command.nickname)
-            userRepo.deleteByUrl(originalProfileImageUrl)
+            userRepo.deleteProfileImageByUrl(originalProfileImageUrl)
             photographerRepo.update(expectedResult)
         }
         confirmVerifiedEveryMocks()

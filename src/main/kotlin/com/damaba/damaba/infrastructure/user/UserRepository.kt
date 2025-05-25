@@ -53,5 +53,5 @@ interface UserRepository {
      *
      * @param profileImageUrl 삭제할 프로필 이미지의 url
      */
-    fun deleteByUrl(profileImageUrl: String)
+    fun deleteProfileImageByUrl(profileImageUrl: String)
 }
