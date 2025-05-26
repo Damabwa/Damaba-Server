@@ -7,13 +7,19 @@ import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.domain.user.exception.NicknameAlreadyExistsException
 import com.damaba.damaba.domain.user.exception.UserAlreadyRegisteredException
 import com.damaba.damaba.domain.user.exception.UserNotFoundException
+import com.damaba.damaba.infrastructure.photographer.PhotographerSaveRepository
+import com.damaba.damaba.infrastructure.promotion.PromotionSaveRepository
 import com.damaba.damaba.infrastructure.user.UserRepository
 import com.damaba.damaba.mapper.UserMapper
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class UserService(private val userRepo: UserRepository) {
+class UserService(
+    private val userRepo: UserRepository,
+    private val photographerSaveRepo: PhotographerSaveRepository,
+    private val promotionSaveRepo: PromotionSaveRepository,
+) {
     @Transactional(readOnly = true)
     fun getUser(userId: Long): User = userRepo.getById(userId)
 
@@ -64,5 +70,13 @@ class UserService(private val userRepo: UserRepository) {
 
         user.updateProfile(UserMapper.INSTANCE.toUserProfile(command))
         return userRepo.update(user)
+    }
+
+    @Transactional
+    fun deleteUser(userId: Long) {
+        val user = userRepo.getById(userId)
+        photographerSaveRepo.deleteAllByUserId(userId)
+        promotionSaveRepo.deleteAllByUserId(userId)
+        userRepo.delete(user)
     }
 }

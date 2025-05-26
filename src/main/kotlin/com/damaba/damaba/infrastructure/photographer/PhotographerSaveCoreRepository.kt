@@ -29,4 +29,8 @@ class PhotographerSaveCoreRepository(
     override fun delete(photographerSave: PhotographerSave) {
         photographerSaveJpaRepository.deleteById(photographerSave.id)
     }
+
+    override fun deleteAllByUserId(userId: Long) {
+        photographerSaveJpaRepository.deleteAllByUserId(userId)
+    }
 }

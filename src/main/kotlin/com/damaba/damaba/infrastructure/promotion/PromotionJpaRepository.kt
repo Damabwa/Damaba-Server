@@ -13,6 +13,9 @@ interface PromotionJpaRepository :
     @Query("SELECT p From PromotionJpaEntity p WHERE p.deletedAt IS NULL AND p.id = :id")
     override fun findById(id: Long): Optional<PromotionJpaEntity>
 
+    @Query("SELECT p From PromotionJpaEntity p WHERE p.deletedAt IS NULL AND p.authorId = :authorId")
+    fun findAllByAuthorId(authorId: Long): List<PromotionJpaEntity>
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT 1 FROM PromotionJpaEntity p WHERE p.deletedAt IS NULL AND p.id = :id")
     fun acquirePessimisticLockById(id: Long)

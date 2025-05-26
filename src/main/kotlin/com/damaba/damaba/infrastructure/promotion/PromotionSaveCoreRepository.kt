@@ -34,4 +34,8 @@ class PromotionSaveCoreRepository(
     override fun delete(promotionSave: PromotionSave) {
         promotionSaveJpaRepository.deleteById(promotionSave.id)
     }
+
+    override fun deleteAllByUserId(userId: Long) {
+        promotionSaveJpaRepository.deleteAllByUserId(userId)
+    }
 }

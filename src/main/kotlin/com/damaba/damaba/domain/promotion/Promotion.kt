@@ -8,7 +8,7 @@ import java.time.LocalDate
 
 class Promotion(
     val id: Long,
-    val authorId: Long?,
+    authorId: Long?,
     promotionType: PromotionType,
     title: String,
     content: String,
@@ -21,6 +21,9 @@ class Promotion(
     activeRegions: Set<Region>,
     hashtags: Set<String>,
 ) {
+    var authorId: Long? = authorId
+        private set
+
     var promotionType: PromotionType = promotionType
         private set
 
@@ -118,5 +121,9 @@ class Promotion(
             activeRegions = activeRegions,
             hashtags = hashtags,
         )
+    }
+
+    fun removeAuthor() {
+        this.authorId = null
     }
 }

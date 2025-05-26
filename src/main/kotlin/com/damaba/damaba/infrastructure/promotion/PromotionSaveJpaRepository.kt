@@ -6,4 +6,5 @@ interface PromotionSaveJpaRepository : JpaRepository<PromotionSaveJpaEntity, Lon
     fun findByUserIdAndPromotionId(userId: Long, promotionId: Long): PromotionSaveJpaEntity?
     fun existsByUserIdAndPromotionId(userId: Long, promotionId: Long): Boolean
     fun countByPromotionId(promotionId: Long): Long
+    fun deleteAllByUserId(userId: Long)
 }

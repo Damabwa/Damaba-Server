@@ -18,6 +18,8 @@ interface PromotionRepository {
      */
     fun create(promotion: Promotion): Promotion
 
+    fun findPromotionsByAuthorId(authorId: Long): List<Promotion>
+
     fun findPromotionList(
         requestUserId: Long?,
         type: PromotionType?,

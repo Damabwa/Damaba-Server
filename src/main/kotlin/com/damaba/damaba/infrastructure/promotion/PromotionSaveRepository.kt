@@ -12,4 +12,6 @@ interface PromotionSaveRepository {
     fun existsByUserIdAndPromotionId(userId: Long, promotionId: Long): Boolean
 
     fun delete(promotionSave: PromotionSave)
+
+    fun deleteAllByUserId(userId: Long)
 }

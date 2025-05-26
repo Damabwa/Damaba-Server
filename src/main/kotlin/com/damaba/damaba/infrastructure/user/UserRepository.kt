@@ -48,6 +48,13 @@ interface UserRepository {
     fun update(user: User): User
 
     /**
+     * 유저를 삭제한다.
+     *
+     * @param user 삭제할 유저
+     */
+    fun delete(user: User)
+
+    /**
      * 프로필 이미지를 삭제한다.
      * `profileImageUrl`에 해당하는 이미지가 존재하지 않는 경우 무시된다.
      *

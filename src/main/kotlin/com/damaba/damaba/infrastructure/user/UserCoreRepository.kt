@@ -46,6 +46,16 @@ class UserCoreRepository(
         return userJpaEntity.toUser()
     }
 
+    override fun delete(user: User) {
+        val profileImage = user.profileImage
+        if (profileImage != null) {
+            userProfileImageJpaRepository.findByUrl(profileImage.url)?.delete()
+        }
+
+        val userJpaEntity = getUserJpaEntityById(user.id)
+        userJpaRepository.delete(userJpaEntity)
+    }
+
     override fun deleteProfileImageByUrl(profileImageUrl: String) {
         userProfileImageJpaRepository.findByUrl(profileImageUrl)?.delete()
     }
