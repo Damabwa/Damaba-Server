@@ -39,11 +39,8 @@ class PhotographerJpaEntity(
     var mainPhotographyTypes: MutableSet<PhotographerPhotographyTypeJpaEntity> = mutableSetOf()
         private set
 
-    @OneToMany(mappedBy = "photographer", cascade = [CascadeType.PERSIST])
-    private var _portfolio: MutableList<PhotographerPortfolioImageJpaEntity> = mutableListOf()
-
-    val portfolio: List<PhotographerPortfolioImageJpaEntity>
-        get() = _portfolio.filter { it.deletedAt == null }
+    @OneToMany(mappedBy = "photographer", cascade = [CascadeType.ALL], orphanRemoval = true)
+    private var portfolio: MutableList<PhotographerPortfolioImageJpaEntity> = mutableListOf()
 
     @OneToMany(mappedBy = "photographer", cascade = [CascadeType.ALL], orphanRemoval = true)
     var activeRegions: MutableSet<PhotographerActiveRegionJpaEntity> = mutableSetOf()
@@ -94,18 +91,18 @@ class PhotographerJpaEntity(
 
     private fun updatePortfolio(portfolio: List<Image>) {
         val portfolioUrls = portfolio.map { it.url }
-        this._portfolio.filter { !it.isDeleted() }.forEach {
+        this.portfolio.filter { !it.isDeleted() }.forEach {
             if (it.url !in portfolioUrls) {
                 it.delete()
             }
         }
 
-        val existingPortfolioMap = this._portfolio.associateBy { it.url }
+        val existingPortfolioMap = this.portfolio.associateBy { it.url }
         val newPortfolio = portfolio.map { image ->
             existingPortfolioMap[image.url] ?: PhotographerPortfolioImageJpaEntity.from(this, image)
         }
-        this._portfolio.clear()
-        this._portfolio.addAll(newPortfolio)
+        this.portfolio.clear()
+        this.portfolio.addAll(newPortfolio)
     }
 
     companion object {
@@ -121,7 +118,7 @@ class PhotographerJpaEntity(
                     PhotographerPhotographyTypeJpaEntity(photographerJpaEntity, it)
                 },
             )
-            photographerJpaEntity._portfolio.addAll(
+            photographerJpaEntity.portfolio.addAll(
                 photographer.portfolio.map { PhotographerPortfolioImageJpaEntity.from(photographerJpaEntity, it) },
             )
             photographerJpaEntity.activeRegions.addAll(

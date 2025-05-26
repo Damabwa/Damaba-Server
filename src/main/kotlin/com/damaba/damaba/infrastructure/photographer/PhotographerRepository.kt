@@ -51,4 +51,5 @@ interface PhotographerRepository {
      * @return 수정된 사진작가
      */
     fun update(photographer: Photographer): Photographer
+    fun delete(photographer: Photographer)
 }

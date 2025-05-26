@@ -20,6 +20,8 @@ class PromotionCoreRepository(
 ) : PromotionRepository {
     override fun getById(id: Long): Promotion = getJpaEntityById(id).toPromotion()
 
+    override fun findPromotionsByAuthorId(authorId: Long): List<Promotion> = promotionJpaRepository.findAllByAuthorId(authorId).map { it.toPromotion() }
+
     override fun findPromotionList(
         requestUserId: Long?,
         type: PromotionType?,
