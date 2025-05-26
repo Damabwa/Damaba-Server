@@ -1,5 +1,6 @@
 package com.damaba.damaba.controller.user
 
+import com.damaba.damaba.application.photographer.PhotographerService
 import com.damaba.damaba.application.user.UserService
 import com.damaba.damaba.application.user.dto.ExistsUserNicknameQuery
 import com.damaba.damaba.controller.user.dto.ExistsUserNicknameResponse
@@ -7,6 +8,7 @@ import com.damaba.damaba.controller.user.dto.RegisterUserRequest
 import com.damaba.damaba.controller.user.dto.UpdateMyProfileRequest
 import com.damaba.damaba.controller.user.dto.UserResponse
 import com.damaba.damaba.domain.user.User
+import com.damaba.damaba.domain.user.constant.UserType
 import com.damaba.damaba.mapper.UserMapper
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -16,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -25,7 +28,10 @@ import org.springframework.web.bind.annotation.RestController
 
 @Tag(name = "유저 관련 API")
 @RestController
-class UserController(private val userService: UserService) {
+class UserController(
+    private val userService: UserService,
+    private val photographerService: PhotographerService,
+) {
     @Operation(
         summary = "내 정보 조회",
         description = "내 정보를 조회합니다.",
@@ -95,5 +101,24 @@ class UserController(private val userService: UserService) {
     ): UserResponse {
         val updatedUser = userService.updateUserProfile(request.toCommand(requestUserId = requestUser.id))
         return UserMapper.INSTANCE.toUserResponse(updatedUser)
+    }
+
+    @Operation(
+        summary = "내 프로필 수정",
+        description = "<p>내 프로필을 수정합니다. 요청된 정보들로 기존 유저 정보를 변경(overwrite)합니다." +
+            "<p>정보가 변경되지 않은 항목이더라도 요청 데이터에 모두 담아야 합니다. 그 때문에 변경되지 않은 항목은 기존 값을 그대로 담아 요청해야 합니다.",
+        security = [SecurityRequirement(name = "access-token")],
+    )
+    @ApiResponses(
+        ApiResponse(responseCode = "204"),
+        ApiResponse(responseCode = "404", description = "유저를 찾을 수 없는 경우", content = [Content()]),
+    )
+    @DeleteMapping("/api/v1/users/me")
+    fun deleteMeV1(@AuthenticationPrincipal requestUser: User) {
+        val user = userService.getUser(requestUser.id)
+        when (user.type) {
+            UserType.USER, UserType.UNDEFINED -> userService.deleteUser(requestUser.id)
+            UserType.PHOTOGRAPHER -> photographerService.deletePhotographer(requestUser.id)
+        }
     }
 }

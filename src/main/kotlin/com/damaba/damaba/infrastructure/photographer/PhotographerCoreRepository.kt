@@ -104,6 +104,19 @@ class PhotographerCoreRepository(
         return photographerJpaEntity.toPhotographer(userJpaEntity)
     }
 
+    override fun delete(photographer: Photographer) {
+        val photographerJpaEntity = getPhotographerJpaEntityById(photographer.id)
+        photographerJpaRepository.delete(photographerJpaEntity)
+
+        val profileImage = photographer.profileImage
+        if (profileImage != null) {
+            userProfileImageJpaRepository.findByUrl(profileImage.url)?.delete()
+        }
+
+        val userJpaEntity = getUserJpaEntityById(photographer.id)
+        userJpaRepository.delete(userJpaEntity)
+    }
+
     private fun getUserJpaEntityById(id: Long): UserJpaEntity = userJpaRepository.findById(id).orElseThrow { UserNotFoundException() }
 
     private fun getPhotographerJpaEntityById(id: Long): PhotographerJpaEntity = photographerJpaRepository.findById(id).orElseThrow { PhotographerNotFoundException() }

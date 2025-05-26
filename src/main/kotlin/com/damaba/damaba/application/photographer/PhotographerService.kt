@@ -19,6 +19,8 @@ import com.damaba.damaba.domain.user.exception.NicknameAlreadyExistsException
 import com.damaba.damaba.domain.user.exception.UserAlreadyRegisteredException
 import com.damaba.damaba.infrastructure.photographer.PhotographerRepository
 import com.damaba.damaba.infrastructure.photographer.PhotographerSaveRepository
+import com.damaba.damaba.infrastructure.promotion.PromotionRepository
+import com.damaba.damaba.infrastructure.promotion.PromotionSaveRepository
 import com.damaba.damaba.infrastructure.user.UserRepository
 import com.damaba.damaba.mapper.PhotographerMapper
 import org.springframework.stereotype.Service
@@ -29,6 +31,8 @@ class PhotographerService(
     private val userRepo: UserRepository,
     private val photographerRepo: PhotographerRepository,
     private val photographerSaveRepo: PhotographerSaveRepository,
+    private val promotionRepo: PromotionRepository,
+    private val promotionSaveRepo: PromotionSaveRepository,
 ) {
     @Transactional
     fun register(command: RegisterPhotographerCommand): Photographer {
@@ -112,6 +116,20 @@ class PhotographerService(
         val photographer = photographerRepo.getById(command.photographerId)
         photographer.updatePage(PhotographerMapper.INSTANCE.toPhotographerPage(command))
         return photographerRepo.update(photographer)
+    }
+
+    @Transactional
+    fun deletePhotographer(photographerId: Long) {
+        promotionRepo.findPromotionsByAuthorId(photographerId)
+            .forEach { promotion ->
+                promotion.removeAuthor()
+                promotionRepo.update(promotion)
+            }
+
+        val photographer = photographerRepo.getById(photographerId)
+        photographerSaveRepo.deleteAllByUserId(photographerId)
+        promotionSaveRepo.deleteAllByUserId(photographerId)
+        photographerRepo.delete(photographer)
     }
 
     @Transactional

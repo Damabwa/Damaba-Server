@@ -10,4 +10,6 @@ interface PhotographerSaveRepository {
     fun findByUserIdAndPhotographerId(userId: Long, photographerId: Long): PhotographerSave?
 
     fun delete(photographerSave: PhotographerSave)
+
+    fun deleteAllByUserId(userId: Long)
 }
