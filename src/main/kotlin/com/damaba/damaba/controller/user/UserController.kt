@@ -104,9 +104,8 @@ class UserController(
     }
 
     @Operation(
-        summary = "내 프로필 수정",
-        description = "<p>내 프로필을 수정합니다. 요청된 정보들로 기존 유저 정보를 변경(overwrite)합니다." +
-            "<p>정보가 변경되지 않은 항목이더라도 요청 데이터에 모두 담아야 합니다. 그 때문에 변경되지 않은 항목은 기존 값을 그대로 담아 요청해야 합니다.",
+        summary = "회원 탈퇴",
+        description = "회원 탈퇴합니다.",
         security = [SecurityRequirement(name = "access-token")],
     )
     @ApiResponses(
