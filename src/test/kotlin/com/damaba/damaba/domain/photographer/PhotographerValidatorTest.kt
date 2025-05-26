@@ -84,7 +84,7 @@ class PhotographerValidatorTest {
         @JvmStatic
         private fun invalidActiveRegionsProvider() = listOf(
             Arguments.of(setOf<Region>()),
-            Arguments.of(List(4) { createRegion() }.toSet()),
+            Arguments.of(List(5 + 1) { createRegion() }.toSet()),
         )
     }
 }

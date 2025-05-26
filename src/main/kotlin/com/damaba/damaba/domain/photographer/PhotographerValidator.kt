@@ -29,8 +29,8 @@ object PhotographerValidator {
         if (activeRegions.isEmpty()) {
             throw ValidationException("활동 지역은 최소 한 개 이상 선택해야 합니다.")
         }
-        if (activeRegions.size > 3) {
-            throw ValidationException("활동 지역은 최대 3개까지 선택 가능합니다.")
+        if (activeRegions.size > 5) {
+            throw ValidationException("활동 지역은 최대 5개까지 선택 가능합니다.")
         }
     }
 
