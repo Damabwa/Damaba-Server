@@ -72,6 +72,9 @@ class PhotographerController(private val photographerService: PhotographerServic
         @RequestParam(required = false)
         @Parameter(description = "촬영 종류")
         photographyTypes: Set<PhotographyType>?,
+        @RequestParam(required = false)
+        @Parameter(description = "검색 키워드")
+        searchKeyword: String?,
         @RequestParam(defaultValue = "LATEST")
         @Parameter(description = "정렬 기준")
         sort: PhotographerSortType,
@@ -96,6 +99,7 @@ class PhotographerController(private val photographerService: PhotographerServic
                 requestUserId = reqUser?.id,
                 regions = regionConditions ?: emptySet(),
                 photographyTypes = photographyTypes ?: emptySet(),
+                searchKeyword = searchKeyword,
                 sort = sort,
                 page = page,
                 pageSize = pageSize,

@@ -9,6 +9,7 @@ data class FindPhotographerListQuery(
     val requestUserId: Long?,
     val regions: Set<RegionFilterCondition>,
     val photographyTypes: Set<PhotographyType>,
+    val searchKeyword: String?,
     val sort: PhotographerSortType,
     val page: Int,
     val pageSize: Int,

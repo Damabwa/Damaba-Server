@@ -24,6 +24,7 @@ interface PhotographerRepository {
         requestUserId: Long?,
         regions: Set<RegionFilterCondition>,
         photographyTypes: Set<PhotographyType>,
+        searchKeyword: String?,
         sort: PhotographerSortType,
         page: Int,
         pageSize: Int,

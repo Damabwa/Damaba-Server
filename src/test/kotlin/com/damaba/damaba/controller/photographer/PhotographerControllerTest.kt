@@ -85,6 +85,7 @@ class PhotographerControllerTest @Autowired constructor(
         val requestUser = createUser()
         val regions = setOf(RegionFilterCondition("서울", "강남구"), RegionFilterCondition("대전", null))
         val photographyTypes = setOf(PhotographyType.PROFILE, PhotographyType.SELF)
+        val searchKeyword = randomString()
         val sort = PhotographerSortType.LATEST
         val page = 1
         val pageSize = randomInt(min = 5, max = 15)
@@ -100,6 +101,7 @@ class PhotographerControllerTest @Autowired constructor(
                     requestUserId = requestUser.id,
                     regions = regions,
                     photographyTypes = photographyTypes,
+                    searchKeyword = searchKeyword,
                     sort = sort,
                     page = page,
                     pageSize = pageSize,
@@ -117,6 +119,7 @@ class PhotographerControllerTest @Autowired constructor(
         }
         photographyTypes.forEach { photographyType -> requestBuilder.param("photographyTypes", photographyType.name) }
         requestBuilder
+            .param("searchKeyword", searchKeyword)
             .param("sort", sort.name)
             .param("page", page.toString())
             .param("pageSize", pageSize.toString())
@@ -133,6 +136,7 @@ class PhotographerControllerTest @Autowired constructor(
                     requestUserId = requestUser.id,
                     regions = regions,
                     photographyTypes = photographyTypes,
+                    searchKeyword = searchKeyword,
                     sort = sort,
                     page = page,
                     pageSize = pageSize,
@@ -159,6 +163,7 @@ class PhotographerControllerTest @Autowired constructor(
                     requestUserId = null,
                     regions = emptySet(),
                     photographyTypes = emptySet(),
+                    searchKeyword = null,
                     sort = sort,
                     page = page,
                     pageSize = pageSize,
@@ -183,6 +188,7 @@ class PhotographerControllerTest @Autowired constructor(
                     requestUserId = null,
                     regions = emptySet(),
                     photographyTypes = emptySet(),
+                    searchKeyword = null,
                     sort = sort,
                     page = page,
                     pageSize = pageSize,

@@ -19,6 +19,7 @@ class PhotographerJdslRepository(private val photographerJpaRepository: Photogra
         requestUserId: Long?,
         regions: Set<RegionFilterCondition>,
         photographyTypes: Set<PhotographyType>,
+        searchKeyword: String?,
         sort: PhotographerSortType,
         pageable: Pageable,
     ): Page<PhotographerListItem> {
@@ -44,6 +45,14 @@ class PhotographerJdslRepository(private val photographerJpaRepository: Photogra
             // 촬영 종류 필터링
             if (photographyTypes.isNotEmpty()) {
                 conditions += path(PhotographerPhotographyTypeJpaEntity::photographyType).`in`(photographyTypes)
+            }
+
+            // 검색 기능 반영
+            if (searchKeyword != null) {
+                conditions += path(UserJpaEntity::nickname).like("%$searchKeyword%")
+                    .or(path(PhotographerJpaEntity::description).like("%$searchKeyword%"))
+                    .or(path(PhotographerActiveRegionJpaEntity::category).like("%$searchKeyword%"))
+                    .or(path(PhotographerActiveRegionJpaEntity::name).like("%$searchKeyword%"))
             }
 
             val saveCountQuery = select(count(PhotographerSaveJpaEntity::id))

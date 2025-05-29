@@ -77,6 +77,7 @@ class PhotographerService(
         requestUserId = query.requestUserId,
         regions = query.regions,
         photographyTypes = query.photographyTypes,
+        searchKeyword = query.searchKeyword,
         sort = query.sort,
         page = query.page,
         pageSize = query.pageSize,
