@@ -137,6 +137,7 @@ class PromotionControllerTest @Autowired constructor(
         val progressStatus = PromotionProgressStatus.ONGOING
         val regions = setOf(RegionFilterCondition("서울", "강남구"), RegionFilterCondition("대전", null))
         val photographyTypes = setOf(PhotographyType.PROFILE, PhotographyType.SELF)
+        val searchKeyword = randomString()
         val sortType = PromotionSortType.LATEST
         val page = 1
         val pageSize = randomInt(min = 5, max = 15)
@@ -154,6 +155,7 @@ class PromotionControllerTest @Autowired constructor(
                     progressStatus = progressStatus,
                     regions = regions,
                     photographyTypes = photographyTypes,
+                    searchKeyword = searchKeyword,
                     sortType = sortType,
                     page = page,
                     pageSize = pageSize,
@@ -173,6 +175,7 @@ class PromotionControllerTest @Autowired constructor(
         requestBuilder
             .param("type", type.name)
             .param("progressStatus", progressStatus.name)
+            .param("searchKeyword", searchKeyword)
             .param("sortType", sortType.name)
             .param("page", page.toString())
             .param("pageSize", pageSize.toString())
@@ -191,6 +194,7 @@ class PromotionControllerTest @Autowired constructor(
                     progressStatus = progressStatus,
                     regions = regions,
                     photographyTypes = photographyTypes,
+                    searchKeyword = searchKeyword,
                     sortType = sortType,
                     page = page,
                     pageSize = pageSize,
@@ -219,6 +223,7 @@ class PromotionControllerTest @Autowired constructor(
                     progressStatus = null,
                     regions = emptySet(),
                     photographyTypes = emptySet(),
+                    searchKeyword = null,
                     sortType = sortType,
                     page = page,
                     pageSize = pageSize,
@@ -245,6 +250,7 @@ class PromotionControllerTest @Autowired constructor(
                     progressStatus = null,
                     regions = emptySet(),
                     photographyTypes = emptySet(),
+                    searchKeyword = null,
                     sortType = sortType,
                     page = page,
                     pageSize = pageSize,

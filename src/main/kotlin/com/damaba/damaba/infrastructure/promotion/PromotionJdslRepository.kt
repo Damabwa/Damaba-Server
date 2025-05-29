@@ -24,6 +24,7 @@ class PromotionJdslRepository(private val promotionJpaRepository: PromotionJpaRe
         progressStatus: PromotionProgressStatus?,
         regions: Set<RegionFilterCondition>,
         photographyTypes: Set<PhotographyType>,
+        searchKeyword: String?,
         sortType: PromotionSortType,
         pageable: Pageable,
     ): Page<PromotionListItem> {
@@ -72,6 +73,15 @@ class PromotionJdslRepository(private val promotionJpaRepository: PromotionJpaRe
                 conditions += or(*regionConditions.toTypedArray())
             }
 
+            // 검색 기능 반영
+            if (searchKeyword != null) {
+                conditions += path(PromotionJpaEntity::title).like("%$searchKeyword%")
+                    .or(path(PromotionJpaEntity::content).like("%$searchKeyword%"))
+                    .or(path(PromotionActiveRegionJpaEntity::category).like("%$searchKeyword%"))
+                    .or(path(PromotionActiveRegionJpaEntity::name).like("%$searchKeyword%"))
+                    .or(path(PromotionHashtagJpaEntity::content).like("%$searchKeyword%"))
+            }
+
             val saveCountQuery = select(count(PromotionSaveJpaEntity::id))
                 .from(entity(PromotionSaveJpaEntity::class))
                 .where(path(PromotionSaveJpaEntity::promotionId).eq(path(PromotionJpaEntity::id)))
@@ -102,6 +112,10 @@ class PromotionJdslRepository(private val promotionJpaRepository: PromotionJpaRe
                 ),
                 leftJoin(PromotionActiveRegionJpaEntity::class).on(
                     path(PromotionActiveRegionJpaEntity::promotion)(PromotionJpaEntity::id)
+                        .eq(path(PromotionJpaEntity::id)),
+                ),
+                leftJoin(PromotionHashtagJpaEntity::class).on(
+                    path(PromotionHashtagJpaEntity::promotion)(PromotionJpaEntity::id)
                         .eq(path(PromotionJpaEntity::id)),
                 ),
             ).whereAnd(

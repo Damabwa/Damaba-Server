@@ -105,6 +105,9 @@ class PromotionController(private val promotionService: PromotionService) {
         @RequestParam(required = false)
         @Parameter(description = "촬영 종류")
         photographyTypes: Set<PhotographyType>?,
+        @RequestParam(required = false)
+        @Parameter(description = "검색 키워드")
+        searchKeyword: String?,
         @RequestParam(defaultValue = "LATEST")
         @Parameter(description = "정렬 기준")
         sortType: PromotionSortType,
@@ -131,6 +134,7 @@ class PromotionController(private val promotionService: PromotionService) {
                 progressStatus = progressStatus,
                 regions = regionConditions ?: emptySet(),
                 photographyTypes = photographyTypes ?: emptySet(),
+                searchKeyword = searchKeyword,
                 sortType = sortType,
                 page = page,
                 pageSize = pageSize,

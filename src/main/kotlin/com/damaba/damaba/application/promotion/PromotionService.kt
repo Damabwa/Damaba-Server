@@ -54,14 +54,13 @@ class PromotionService(
     }
 
     @Transactional(readOnly = true)
-    fun findPromotionList(
-        query: FindPromotionListQuery,
-    ): Pagination<PromotionListItem> = promotionRepo.findPromotionList(
+    fun findPromotionList(query: FindPromotionListQuery): Pagination<PromotionListItem> = promotionRepo.findPromotionList(
         query.requestUserId,
         query.type,
         query.progressStatus,
         query.regions,
         query.photographyTypes,
+        query.searchKeyword,
         query.sortType,
         query.page,
         query.pageSize,
