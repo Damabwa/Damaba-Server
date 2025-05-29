@@ -26,6 +26,7 @@ interface PromotionRepository {
         progressStatus: PromotionProgressStatus?,
         regions: Set<RegionFilterCondition>,
         photographyTypes: Set<PhotographyType>,
+        searchKeyword: String?,
         sortType: PromotionSortType,
         page: Int,
         pageSize: Int,

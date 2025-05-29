@@ -22,6 +22,8 @@ import com.damaba.damaba.domain.user.exception.NicknameAlreadyExistsException
 import com.damaba.damaba.domain.user.exception.UserAlreadyRegisteredException
 import com.damaba.damaba.infrastructure.photographer.PhotographerRepository
 import com.damaba.damaba.infrastructure.photographer.PhotographerSaveRepository
+import com.damaba.damaba.infrastructure.promotion.PromotionRepository
+import com.damaba.damaba.infrastructure.promotion.PromotionSaveRepository
 import com.damaba.damaba.infrastructure.user.UserRepository
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomSet
@@ -51,10 +53,14 @@ class PhotographerServiceTest {
     private val userRepo: UserRepository = mockk()
     private val photographerRepo: PhotographerRepository = mockk()
     private val photographerSaveRepo: PhotographerSaveRepository = mockk()
+    private val promotionRepo: PromotionRepository = mockk()
+    private val promotionSaveRepo: PromotionSaveRepository = mockk()
     private val sut: PhotographerService = PhotographerService(
         userRepo,
         photographerRepo,
         photographerSaveRepo,
+        promotionRepo,
+        promotionSaveRepo,
     )
 
     private fun confirmVerifiedEveryMocks() {
@@ -62,6 +68,8 @@ class PhotographerServiceTest {
             userRepo,
             photographerRepo,
             photographerSaveRepo,
+            promotionRepo,
+            promotionSaveRepo,
         )
     }
 
@@ -88,6 +96,7 @@ class PhotographerServiceTest {
             requestUserId = null,
             regions = setOf(RegionFilterCondition("서울", "강남구"), RegionFilterCondition("대전", "중구")),
             photographyTypes = setOf(PhotographyType.PROFILE, PhotographyType.SELF),
+            searchKeyword = null,
             sort = PhotographerSortType.LATEST,
             page = randomInt(min = 1),
             pageSize = randomInt(min = 5, max = 10),
@@ -103,6 +112,7 @@ class PhotographerServiceTest {
                 requestUserId = query.requestUserId,
                 regions = query.regions,
                 photographyTypes = query.photographyTypes,
+                searchKeyword = null,
                 sort = query.sort,
                 page = query.page,
                 pageSize = query.pageSize,
@@ -118,6 +128,7 @@ class PhotographerServiceTest {
                 requestUserId = query.requestUserId,
                 regions = query.regions,
                 photographyTypes = query.photographyTypes,
+                searchKeyword = null,
                 sort = query.sort,
                 page = query.page,
                 pageSize = query.pageSize,
@@ -135,6 +146,7 @@ class PhotographerServiceTest {
             requestUserId = null,
             regions = setOf(RegionFilterCondition("서울", "강남구"), RegionFilterCondition("대전", "중구")),
             photographyTypes = setOf(PhotographyType.PROFILE, PhotographyType.SELF),
+            searchKeyword = null,
             sort = PhotographerSortType.LATEST,
             page = randomInt(min = 1),
             pageSize = randomInt(min = 5, max = 10),
@@ -150,6 +162,7 @@ class PhotographerServiceTest {
                 requestUserId = query.requestUserId,
                 regions = query.regions,
                 photographyTypes = query.photographyTypes,
+                searchKeyword = null,
                 sort = query.sort,
                 page = query.page,
                 pageSize = query.pageSize,
@@ -165,6 +178,7 @@ class PhotographerServiceTest {
                 requestUserId = query.requestUserId,
                 regions = query.regions,
                 photographyTypes = query.photographyTypes,
+                searchKeyword = null,
                 sort = query.sort,
                 page = query.page,
                 pageSize = query.pageSize,

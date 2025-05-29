@@ -8,6 +8,8 @@ import com.damaba.damaba.domain.user.constant.Gender
 import com.damaba.damaba.domain.user.constant.UserType
 import com.damaba.damaba.domain.user.exception.NicknameAlreadyExistsException
 import com.damaba.damaba.domain.user.exception.UserAlreadyRegisteredException
+import com.damaba.damaba.infrastructure.photographer.PhotographerSaveRepository
+import com.damaba.damaba.infrastructure.promotion.PromotionSaveRepository
 import com.damaba.damaba.infrastructure.user.UserRepository
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomBoolean
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
@@ -28,10 +30,12 @@ import kotlin.test.Test
 
 class UserServiceTest {
     private val userRepo: UserRepository = mockk()
-    private val sut = UserService(userRepo)
+    private val photographerSaveRepo: PhotographerSaveRepository = mockk()
+    private val promotionSaveRepo: PromotionSaveRepository = mockk()
+    private val sut = UserService(userRepo, photographerSaveRepo, promotionSaveRepo)
 
     private fun confirmVerifiedEveryMocks() {
-        confirmVerified(userRepo)
+        confirmVerified(userRepo, photographerSaveRepo, promotionSaveRepo)
     }
 
     @Test

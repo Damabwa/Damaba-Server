@@ -28,6 +28,7 @@ class PromotionCoreRepository(
         progressStatus: PromotionProgressStatus?,
         regions: Set<RegionFilterCondition>,
         photographyTypes: Set<PhotographyType>,
+        searchKeyword: String?,
         sortType: PromotionSortType,
         page: Int,
         pageSize: Int,
@@ -37,6 +38,7 @@ class PromotionCoreRepository(
         progressStatus = progressStatus,
         regions = regions,
         photographyTypes = photographyTypes,
+        searchKeyword = searchKeyword,
         sortType = sortType,
         pageable = PageRequest.of(page, pageSize),
     ).toPagination()

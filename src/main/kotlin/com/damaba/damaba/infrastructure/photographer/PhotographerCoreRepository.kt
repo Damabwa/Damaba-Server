@@ -33,6 +33,7 @@ class PhotographerCoreRepository(
         requestUserId: Long?,
         regions: Set<RegionFilterCondition>,
         photographyTypes: Set<PhotographyType>,
+        searchKeyword: String?,
         sort: PhotographerSortType,
         page: Int,
         pageSize: Int,
@@ -40,6 +41,7 @@ class PhotographerCoreRepository(
         requestUserId = requestUserId,
         regions = regions,
         photographyTypes = photographyTypes,
+        searchKeyword = searchKeyword,
         sort = sort,
         pageable = PageRequest.of(page, pageSize),
     ).toPagination()

@@ -13,6 +13,7 @@ data class FindPromotionListQuery(
     val progressStatus: PromotionProgressStatus?,
     val regions: Set<RegionFilterCondition>,
     val photographyTypes: Set<PhotographyType>,
+    val searchKeyword: String?,
     val sortType: PromotionSortType,
     val page: Int,
     val pageSize: Int,
