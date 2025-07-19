@@ -1,6 +1,6 @@
 package com.damaba.damaba.mapper
 
-import com.damaba.damaba.application.user.dto.UpdateUserProfileCommand
+import com.damaba.damaba.application.user.UpdateUserProfileCommand
 import com.damaba.damaba.controller.user.dto.UserResponse
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.domain.user.UserProfile

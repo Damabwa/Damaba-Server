@@ -1,4 +1,6 @@
-package com.damaba.damaba.application.user.dto
+@file:Suppress("ktlint:standard:filename")
+
+package com.damaba.damaba.application.user
 
 import com.damaba.damaba.domain.user.UserValidator
 

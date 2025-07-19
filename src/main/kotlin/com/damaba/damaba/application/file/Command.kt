@@ -1,4 +1,6 @@
-package com.damaba.damaba.application.file.dto
+@file:Suppress("ktlint:standard:filename")
+
+package com.damaba.damaba.application.file
 
 import com.damaba.damaba.domain.file.FileType
 import com.damaba.damaba.domain.file.UploadFile

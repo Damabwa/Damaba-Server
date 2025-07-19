@@ -1,7 +1,7 @@
 package com.damaba.damaba.controller.file
 
 import com.damaba.damaba.application.file.FileService
-import com.damaba.damaba.application.file.dto.UploadFilesCommand
+import com.damaba.damaba.application.file.UploadFilesCommand
 import com.damaba.damaba.config.ControllerTestConfig
 import com.damaba.damaba.controller.file.dto.UploadFilesRequest
 import com.damaba.damaba.domain.file.FileType

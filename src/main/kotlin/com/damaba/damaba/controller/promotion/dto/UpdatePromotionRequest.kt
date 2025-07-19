@@ -1,6 +1,6 @@
 package com.damaba.damaba.controller.promotion.dto
 
-import com.damaba.damaba.application.promotion.dto.UpdatePromotionCommand
+import com.damaba.damaba.application.promotion.UpdatePromotionCommand
 import com.damaba.damaba.controller.common.dto.ImageRequest
 import com.damaba.damaba.controller.region.dto.RegionRequest
 import com.damaba.damaba.domain.common.constant.PhotographyType

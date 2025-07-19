@@ -1,4 +1,6 @@
-package com.damaba.damaba.application.auth.dto
+@file:Suppress("ktlint:standard:filename")
+
+package com.damaba.damaba.application.auth
 
 import com.damaba.damaba.domain.exception.ValidationException
 import com.damaba.damaba.domain.user.constant.LoginType

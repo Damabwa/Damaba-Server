@@ -1,11 +1,11 @@
 package com.damaba.damaba.controller.photographer
 
+import com.damaba.damaba.application.photographer.ExistsPhotographerNicknameQuery
+import com.damaba.damaba.application.photographer.FindPhotographerListQuery
+import com.damaba.damaba.application.photographer.FindSavedPhotographerListQuery
 import com.damaba.damaba.application.photographer.PhotographerService
-import com.damaba.damaba.application.photographer.dto.ExistsPhotographerNicknameQuery
-import com.damaba.damaba.application.photographer.dto.FindPhotographerListQuery
-import com.damaba.damaba.application.photographer.dto.FindSavedPhotographerListQuery
-import com.damaba.damaba.application.photographer.dto.SavePhotographerCommand
-import com.damaba.damaba.application.photographer.dto.UnsavePhotographerCommand
+import com.damaba.damaba.application.photographer.SavePhotographerCommand
+import com.damaba.damaba.application.photographer.UnsavePhotographerCommand
 import com.damaba.damaba.controller.photographer.dto.ExistsPhotographerNicknameResponse
 import com.damaba.damaba.controller.photographer.dto.PhotographerResponse
 import com.damaba.damaba.controller.photographer.dto.RegisterPhotographerRequest

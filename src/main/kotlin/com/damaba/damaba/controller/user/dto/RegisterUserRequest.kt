@@ -1,6 +1,6 @@
 package com.damaba.damaba.controller.user.dto
 
-import com.damaba.damaba.application.user.dto.RegisterUserCommand
+import com.damaba.damaba.application.user.RegisterUserCommand
 import com.damaba.damaba.domain.user.constant.Gender
 import io.swagger.v3.oas.annotations.media.Schema
 

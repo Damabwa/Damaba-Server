@@ -1,6 +1,6 @@
 package com.damaba.damaba.controller.photographer.dto
 
-import com.damaba.damaba.application.photographer.dto.UpdatePhotographerProfileCommand
+import com.damaba.damaba.application.photographer.UpdatePhotographerProfileCommand
 import com.damaba.damaba.controller.common.dto.ImageRequest
 import com.damaba.damaba.controller.region.dto.RegionRequest
 import com.damaba.damaba.domain.common.constant.PhotographyType

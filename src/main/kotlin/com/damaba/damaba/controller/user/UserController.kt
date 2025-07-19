@@ -1,8 +1,8 @@
 package com.damaba.damaba.controller.user
 
 import com.damaba.damaba.application.photographer.PhotographerService
+import com.damaba.damaba.application.user.ExistsUserNicknameQuery
 import com.damaba.damaba.application.user.UserService
-import com.damaba.damaba.application.user.dto.ExistsUserNicknameQuery
 import com.damaba.damaba.controller.user.dto.ExistsUserNicknameResponse
 import com.damaba.damaba.controller.user.dto.RegisterUserRequest
 import com.damaba.damaba.controller.user.dto.UpdateMyProfileRequest

@@ -1,6 +1,6 @@
 package com.damaba.damaba.controller.photographer.dto
 
-import com.damaba.damaba.application.photographer.dto.UpdatePhotographerPageCommand
+import com.damaba.damaba.application.photographer.UpdatePhotographerPageCommand
 import com.damaba.damaba.controller.common.dto.AddressRequest
 import com.damaba.damaba.controller.common.dto.ImageRequest
 import com.damaba.damaba.mapper.AddressMapper

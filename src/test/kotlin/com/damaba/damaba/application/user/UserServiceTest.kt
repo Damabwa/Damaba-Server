@@ -1,8 +1,5 @@
 package com.damaba.damaba.application.user
 
-import com.damaba.damaba.application.user.dto.ExistsUserNicknameQuery
-import com.damaba.damaba.application.user.dto.RegisterUserCommand
-import com.damaba.damaba.application.user.dto.UpdateUserProfileCommand
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.user.constant.Gender
 import com.damaba.damaba.domain.user.constant.UserType

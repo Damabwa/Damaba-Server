@@ -1,14 +1,14 @@
 package com.damaba.damaba.controller.promotion
 
+import com.damaba.damaba.application.promotion.DeletePromotionCommand
+import com.damaba.damaba.application.promotion.FindPromotionListQuery
+import com.damaba.damaba.application.promotion.FindSavedPromotionListQuery
+import com.damaba.damaba.application.promotion.GetPromotionDetailQuery
+import com.damaba.damaba.application.promotion.PostPromotionCommand
 import com.damaba.damaba.application.promotion.PromotionService
-import com.damaba.damaba.application.promotion.dto.DeletePromotionCommand
-import com.damaba.damaba.application.promotion.dto.FindPromotionListQuery
-import com.damaba.damaba.application.promotion.dto.FindSavedPromotionListQuery
-import com.damaba.damaba.application.promotion.dto.GetPromotionDetailQuery
-import com.damaba.damaba.application.promotion.dto.PostPromotionCommand
-import com.damaba.damaba.application.promotion.dto.SavePromotionCommand
-import com.damaba.damaba.application.promotion.dto.UnsavePromotionCommand
-import com.damaba.damaba.application.promotion.dto.UpdatePromotionCommand
+import com.damaba.damaba.application.promotion.SavePromotionCommand
+import com.damaba.damaba.application.promotion.UnsavePromotionCommand
+import com.damaba.damaba.application.promotion.UpdatePromotionCommand
 import com.damaba.damaba.config.ControllerTestConfig
 import com.damaba.damaba.controller.common.dto.ImageRequest
 import com.damaba.damaba.controller.promotion.dto.PostPromotionRequest

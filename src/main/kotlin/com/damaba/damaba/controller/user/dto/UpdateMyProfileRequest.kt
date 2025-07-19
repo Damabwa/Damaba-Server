@@ -1,6 +1,6 @@
 package com.damaba.damaba.controller.user.dto
 
-import com.damaba.damaba.application.user.dto.UpdateUserProfileCommand
+import com.damaba.damaba.application.user.UpdateUserProfileCommand
 import com.damaba.damaba.controller.common.dto.ImageRequest
 import com.damaba.damaba.mapper.ImageMapper
 import io.swagger.v3.oas.annotations.media.Schema

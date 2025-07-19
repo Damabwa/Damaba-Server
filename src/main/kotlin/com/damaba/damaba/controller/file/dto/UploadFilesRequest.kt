@@ -1,6 +1,6 @@
 package com.damaba.damaba.controller.file.dto
 
-import com.damaba.damaba.application.file.dto.UploadFilesCommand
+import com.damaba.damaba.application.file.UploadFilesCommand
 import com.damaba.damaba.domain.file.FileType
 import com.damaba.damaba.domain.file.UploadFile
 import io.swagger.v3.oas.annotations.media.Schema
