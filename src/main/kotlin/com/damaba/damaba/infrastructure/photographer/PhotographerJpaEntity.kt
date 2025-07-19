@@ -40,7 +40,8 @@ class PhotographerJpaEntity(
         private set
 
     @OneToMany(mappedBy = "photographer", cascade = [CascadeType.ALL], orphanRemoval = true)
-    private var portfolio: MutableList<PhotographerPortfolioImageJpaEntity> = mutableListOf()
+    var portfolio: MutableList<PhotographerPortfolioImageJpaEntity> = mutableListOf()
+        private set
 
     @OneToMany(mappedBy = "photographer", cascade = [CascadeType.ALL], orphanRemoval = true)
     var activeRegions: MutableSet<PhotographerActiveRegionJpaEntity> = mutableSetOf()

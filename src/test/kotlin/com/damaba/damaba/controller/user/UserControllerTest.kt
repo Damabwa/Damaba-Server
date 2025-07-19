@@ -1,5 +1,6 @@
 package com.damaba.damaba.controller.user
 
+import com.damaba.damaba.application.photographer.PhotographerService
 import com.damaba.damaba.application.user.UserService
 import com.damaba.damaba.application.user.dto.ExistsUserNicknameQuery
 import com.damaba.damaba.config.ControllerTestConfig
@@ -39,11 +40,15 @@ class UserControllerTest @Autowired constructor(
     private val mvc: MockMvc,
     private val mapper: ObjectMapper,
     private val userService: UserService,
+    private val photographerService: PhotographerService,
 ) {
     @TestConfiguration
     class TestBeanSetUp {
         @Bean
         fun userService(): UserService = mockk()
+
+        @Bean
+        fun photographerService(): PhotographerService = mockk()
     }
 
     @Test
