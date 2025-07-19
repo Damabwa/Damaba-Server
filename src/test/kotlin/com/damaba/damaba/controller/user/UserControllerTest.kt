@@ -4,9 +4,7 @@ import com.damaba.damaba.application.photographer.PhotographerService
 import com.damaba.damaba.application.user.ExistsUserNicknameQuery
 import com.damaba.damaba.application.user.UserService
 import com.damaba.damaba.config.ControllerTestConfig
-import com.damaba.damaba.controller.common.dto.ImageRequest
-import com.damaba.damaba.controller.user.dto.RegisterUserRequest
-import com.damaba.damaba.controller.user.dto.UpdateMyProfileRequest
+import com.damaba.damaba.controller.common.ImageRequest
 import com.damaba.damaba.domain.user.constant.Gender
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomBoolean
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong

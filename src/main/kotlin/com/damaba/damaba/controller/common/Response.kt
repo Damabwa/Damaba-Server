@@ -1,8 +1,8 @@
-package com.damaba.damaba.controller.common.dto
+package com.damaba.damaba.controller.common
 
 import io.swagger.v3.oas.annotations.media.Schema
 
-data class AddressRequest(
+data class AddressResponse(
     @Schema(description = "시/도 이름", example = "경기")
     val sido: String,
 
@@ -14,4 +14,12 @@ data class AddressRequest(
 
     @Schema(description = "지번 주소", example = "경기 성남시 분당구 백현동 532")
     val jibunAddress: String,
+)
+
+data class ImageResponse(
+    @Schema(description = "Image name", example = "apple.jpg")
+    val name: String,
+
+    @Schema(description = "Image url", example = "https://damaba-file-server/apple.jpg")
+    val url: String,
 )

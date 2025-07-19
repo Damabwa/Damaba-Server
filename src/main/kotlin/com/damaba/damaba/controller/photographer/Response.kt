@@ -1,14 +1,22 @@
-package com.damaba.damaba.controller.photographer.dto
+package com.damaba.damaba.controller.photographer
 
-import com.damaba.damaba.controller.common.dto.AddressResponse
-import com.damaba.damaba.controller.common.dto.ImageResponse
-import com.damaba.damaba.controller.region.dto.RegionResponse
+import com.damaba.damaba.controller.common.AddressResponse
+import com.damaba.damaba.controller.common.ImageResponse
+import com.damaba.damaba.controller.region.RegionResponse
 import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.user.constant.Gender
 import com.damaba.damaba.domain.user.constant.LoginType
 import com.damaba.damaba.domain.user.constant.UserRoleType
 import com.damaba.damaba.domain.user.constant.UserType
 import io.swagger.v3.oas.annotations.media.Schema
+
+data class ExistsPhotographerNicknameResponse(
+    @Schema(description = "닉네임", example = "말티즈")
+    val nickname: String,
+
+    @Schema(description = "닉네임의 사용 여부. 사용중인 닉네임이라면 <code>true</code>, 사용중이지 않다면 <code>false</code>")
+    val exists: Boolean,
+)
 
 data class PhotographerResponse(
     @Schema(description = "Id of user", example = "1")

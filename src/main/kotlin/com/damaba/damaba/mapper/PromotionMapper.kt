@@ -1,8 +1,8 @@
 package com.damaba.damaba.mapper
 
-import com.damaba.damaba.controller.promotion.dto.PromotionDetailResponse
-import com.damaba.damaba.controller.promotion.dto.PromotionListItemResponse
-import com.damaba.damaba.controller.promotion.dto.PromotionResponse
+import com.damaba.damaba.controller.promotion.PromotionDetailResponse
+import com.damaba.damaba.controller.promotion.PromotionListItemResponse
+import com.damaba.damaba.controller.promotion.PromotionResponse
 import com.damaba.damaba.domain.promotion.Promotion
 import com.damaba.damaba.domain.promotion.PromotionDetail
 import com.damaba.damaba.domain.promotion.PromotionListItem

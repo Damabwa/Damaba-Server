@@ -10,10 +10,8 @@ import com.damaba.damaba.application.promotion.SavePromotionCommand
 import com.damaba.damaba.application.promotion.UnsavePromotionCommand
 import com.damaba.damaba.application.promotion.UpdatePromotionCommand
 import com.damaba.damaba.config.ControllerTestConfig
-import com.damaba.damaba.controller.common.dto.ImageRequest
-import com.damaba.damaba.controller.promotion.dto.PostPromotionRequest
-import com.damaba.damaba.controller.promotion.dto.UpdatePromotionRequest
-import com.damaba.damaba.controller.region.dto.RegionRequest
+import com.damaba.damaba.controller.common.ImageRequest
+import com.damaba.damaba.controller.region.RegionRequest
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.promotion.constant.PromotionProgressStatus

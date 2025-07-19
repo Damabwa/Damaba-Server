@@ -1,4 +1,6 @@
-package com.damaba.damaba.controller.auth.dto
+@file:Suppress("ktlint:standard:filename")
+
+package com.damaba.damaba.controller.auth
 
 import com.damaba.damaba.domain.user.constant.LoginType
 import io.swagger.v3.oas.annotations.media.Schema

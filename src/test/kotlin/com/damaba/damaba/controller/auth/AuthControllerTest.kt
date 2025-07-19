@@ -4,7 +4,6 @@ import com.damaba.damaba.application.auth.OAuthLoginCommand
 import com.damaba.damaba.application.auth.OAuthLoginResult
 import com.damaba.damaba.application.auth.OAuthLoginService
 import com.damaba.damaba.config.ControllerTestConfig
-import com.damaba.damaba.controller.auth.dto.OAuthLoginRequest
 import com.damaba.damaba.domain.user.constant.LoginType
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.fixture.AuthFixture.createAccessToken

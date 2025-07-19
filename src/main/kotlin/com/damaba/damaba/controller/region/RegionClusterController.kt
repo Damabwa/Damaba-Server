@@ -1,7 +1,6 @@
 package com.damaba.damaba.controller.region
 
 import com.damaba.damaba.application.region.RegionClusterService
-import com.damaba.damaba.controller.region.dto.RegionClustersResponse
 import com.damaba.damaba.mapper.RegionMapper
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.GetMapping

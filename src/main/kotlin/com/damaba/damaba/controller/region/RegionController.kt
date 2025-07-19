@@ -1,8 +1,6 @@
 package com.damaba.damaba.controller.region
 
 import com.damaba.damaba.application.region.RegionService
-import com.damaba.damaba.controller.region.dto.RegionCategoriesResponse
-import com.damaba.damaba.controller.region.dto.RegionGroupsResponse
 import com.damaba.damaba.mapper.RegionMapper
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag

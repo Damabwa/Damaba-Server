@@ -1,4 +1,6 @@
-package com.damaba.damaba.controller.file.dto
+@file:Suppress("ktlint:standard:filename")
+
+package com.damaba.damaba.controller.file
 
 import com.damaba.damaba.domain.file.File
 import io.swagger.v3.oas.annotations.media.Schema

@@ -1,7 +1,16 @@
-package com.damaba.damaba.controller.auth.dto
+package com.damaba.damaba.controller.auth
 
-import com.damaba.damaba.controller.user.dto.UserResponse
+import com.damaba.damaba.controller.user.UserResponse
 import io.swagger.v3.oas.annotations.media.Schema
+import java.time.LocalDateTime
+
+data class AuthTokenResponse(
+    @Schema(description = "token value", example = "eyJ0eXAiOiJKV1QiLC.eyJzdWIiOiIxIiwicm9sZ.Fp7RNDCv9QQghS2cTC")
+    val value: String,
+
+    @Schema(description = "토큰 만료 시각")
+    val expiresAt: LocalDateTime,
+)
 
 data class OAuthLoginResponse(
     @Schema(description = "회원가입 과정(닉네임, 성별 입력 등)을 완료했는지 여부")
