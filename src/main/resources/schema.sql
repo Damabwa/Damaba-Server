@@ -11,6 +11,7 @@ DROP TABLE IF EXISTS promotion_image;
 DROP TABLE IF EXISTS promotion_active_region;
 DROP TABLE IF EXISTS promotion_hashtag;
 DROP TABLE IF EXISTS promotion_save;
+DROP TABLE IF EXISTS term;
 
 CREATE TABLE `user`
 (
@@ -183,6 +184,16 @@ CREATE TABLE promotion_save
     promotion_id BIGINT    NOT NULL COMMENT '(FK) id of promotion',
     created_at   TIMESTAMP NOT NULL,
     updated_at   TIMESTAMP NOT NULL,
+    PRIMARY KEY (id)
+);
+CREATE TABLE term
+(
+    id          BIGINT          NOT NULL AUTO_INCREMENT,
+    user_id     BIGINT          NOT NULL COMMENT '(FK) id of user',
+    type        VARCHAR(255)    NOT NULL,
+    agreed      BOOLEAN         NOT NULL,
+    created_at  TIMESTAMP       NOT NULL ,
+    updated_at  TIMESTAMP       NOT NULL,
     PRIMARY KEY (id)
 );
 CREATE INDEX fk_idx__promotion_save__user_id ON promotion_save (user_id);
