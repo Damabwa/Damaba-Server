@@ -46,7 +46,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./Dockerfile.dev
+          file: ./Dockerfile-dev
           push: true
           tags: ${{ secrets.DEV_DOCKER_REPO }}:latest
 
