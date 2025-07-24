@@ -48,7 +48,7 @@ jobs:
           context: .
           file: ./Dockerfile.dev
           push: true
-          tags: ${{ secrets.DOCKER_REPO_DEV }}:latest
+          tags: ${{ secrets.DOCKER_REPO_DEV }}
 
       - name: Executing remote ssh commands with docker compose for Continuous Delivery
         if: ${{ !failure() }}
