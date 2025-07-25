@@ -27,8 +27,7 @@ class TermJpaEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    var id: Long? = null
-        private set
+    val id: Long = 0
 
     @Column(name = "agreed", nullable = false)
     var agreed: Boolean = agreed
@@ -46,6 +45,6 @@ class TermJpaEntity(
             userId = term.userId,
             type = term.type,
             agreed = term.agreed,
-        ).apply { id = term.id.takeIf { it != 0L } }
+        )
     }
 }

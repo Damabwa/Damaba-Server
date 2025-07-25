@@ -71,7 +71,6 @@ class TermController(
             TermMetadataResponse(
                 type = it,
                 required = it.required,
-                detailUrl = it.detailUrl,
             )
         }
         return ResponseEntity.ok(metadata)
