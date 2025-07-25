@@ -1,7 +1,7 @@
 package com.damaba.damaba.domain.term
 
 class Term(
-    val id: Long?,
+    val id: Long,
     val userId: Long,
     val type: TermType,
     agreed: Boolean,
