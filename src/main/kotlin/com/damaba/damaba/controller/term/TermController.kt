@@ -8,28 +8,47 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
-@Tag(name = "서비스 약관 동의 API")
+@Tag(name = "서비스 약관 동의 관련 API")
 @RestController
+@RequestMapping("/api/v1/terms")
 class TermController(
     private val termService: TermService,
 ) {
+    /**
+     * 일반 유저의 서비스 약관 동의 목록 조회 (type, required)
+     */
     @Operation(
-        summary = "약관 메타데이터 조회",
-        description = "모든 약관 종류(type), 필수 여부(required)를 반환한다.",
+        summary = "회원용 약관 목록 조회",
+        description = "가입 시 일반 유저가 동의해야 하는 약관 동의 목록 조회",
     )
     @ApiResponses(
         ApiResponse(responseCode = "200"),
     )
-    @GetMapping("/api/v1/terms/metadata")
-    fun getTermMetadata(): ResponseEntity<List<TermMetadataResponse>> {
-        val metadata = TermType.values().map {
-            TermMetadataResponse(
-                type = it,
-                required = it.required,
-            )
-        }
-        return ResponseEntity.ok(metadata)
+    @GetMapping("/user")
+    fun getUserTerms(): ResponseEntity<List<TermMetadataResponse>> {
+        val userTerms = TermType.values()
+            .filter { it != TermType.PHOTOGRAPHER_TERMS }
+            .map { TermMetadataResponse(type = it, required = it.required) }
+        return ResponseEntity.ok(userTerms)
+    }
+
+    /**
+     * 사진 작가의 서비스 약관 동의 목록 조회 (type, required)
+     */
+    @Operation(
+        summary = "작가용 약관 목록 조회",
+        description = "가입 시 작가가 동의해야 하는 약관 동의 목록 조회",
+    )
+    @ApiResponses(
+        ApiResponse(responseCode = "200"),
+    )
+    @GetMapping("/photographer")
+    fun getPhotographerTerms(): ResponseEntity<List<TermMetadataResponse>> {
+        val photographerTerms = TermType.values()
+            .map { TermMetadataResponse(type = it, required = it.required) }
+        return ResponseEntity.ok(photographerTerms)
     }
 }
