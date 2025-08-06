@@ -19,7 +19,16 @@ data class RegisterUserRequest(
     @Schema(description = "인스타 아이디", example = "damaba.unofficial")
     val instagramId: String?,
 
-    @Schema(description = "동의한 약관 목록")
+    @Schema(
+        description = "동의한 약관 목록",
+        example = """
+            [
+                { "type": "AGE_CONFIRMATION", "agreed": true },
+                { "type": "SERVICE_TERMS",    "agreed": true },
+                { "type": "PRIVACY_TERMS",    "agreed": true }
+            ]
+        """,
+    )
     val agreements: List<AgreementRequestItem>,
 ) {
     fun toCommand(requestUserId: Long) = RegisterUserCommand(
