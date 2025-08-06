@@ -49,7 +49,7 @@ class PostPromotionUseCaseCommandTest {
         fun invalidTitleProvider() = listOf(
             Arguments.of(" "),
             Arguments.of("A"),
-            Arguments.of(randomString(len = 30)),
+            Arguments.of(randomString(len = 30 + 1)),
         )
 
         @JvmStatic
@@ -114,7 +114,7 @@ class UpdatePromotionCommandTest {
         fun invalidTitleProvider() = listOf(
             Arguments.of(" "),
             Arguments.of("A"),
-            Arguments.of(randomString(len = 30)),
+            Arguments.of(randomString(len = 30 + 1)),
         )
 
         @JvmStatic
