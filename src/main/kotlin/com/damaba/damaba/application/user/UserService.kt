@@ -1,5 +1,8 @@
 package com.damaba.damaba.application.user
 
+import com.damaba.damaba.application.term.AcceptUserTermsCommand
+import com.damaba.damaba.application.term.TermItem
+import com.damaba.damaba.application.term.TermService
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.domain.user.exception.NicknameAlreadyExistsException
 import com.damaba.damaba.domain.user.exception.UserAlreadyRegisteredException
@@ -16,6 +19,7 @@ class UserService(
     private val userRepo: UserRepository,
     private val photographerSaveRepo: PhotographerSaveRepository,
     private val promotionSaveRepo: PromotionSaveRepository,
+    private val termService: TermService,
 ) {
     @Transactional(readOnly = true)
     fun getUser(userId: Long): User = userRepo.getById(userId)
@@ -49,7 +53,16 @@ class UserService(
             gender = command.gender,
             instagramId = command.instagramId,
         )
-        return userRepo.update(user)
+        val saved = userRepo.update(user)
+
+        val termItems: List<TermItem> = command.terms
+        termService.acceptUserTerms(
+            AcceptUserTermsCommand(
+                userId = saved.id,
+                terms = termItems,
+            ),
+        )
+        return saved
     }
 
     @Transactional

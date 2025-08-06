@@ -1,5 +1,7 @@
 package com.damaba.damaba.application.photographer
 
+import com.damaba.damaba.application.term.AcceptPhotographerTermsCommand
+import com.damaba.damaba.application.term.TermService
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.domain.photographer.PhotographerListItem
@@ -25,6 +27,7 @@ class PhotographerService(
     private val photographerSaveRepo: PhotographerSaveRepository,
     private val promotionRepo: PromotionRepository,
     private val promotionSaveRepo: PromotionSaveRepository,
+    private val termService: TermService,
 ) {
     @Transactional
     fun register(command: RegisterPhotographerCommand): Photographer {
@@ -46,7 +49,16 @@ class PhotographerService(
             mainPhotographyTypes = command.mainPhotographyTypes,
             activeRegions = command.activeRegions,
         )
-        return photographerRepo.createIfUserExists(photographer)
+        val saved = photographerRepo.createIfUserExists(photographer)
+
+        termService.acceptPhotographerTerms(
+            AcceptPhotographerTermsCommand(
+                userId = saved.id,
+                terms = command.terms,
+            ),
+        )
+
+        return saved
     }
 
     @Transactional

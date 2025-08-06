@@ -3,10 +3,13 @@ package com.damaba.damaba.controller.photographer
 import com.damaba.damaba.application.photographer.RegisterPhotographerCommand
 import com.damaba.damaba.application.photographer.UpdatePhotographerPageCommand
 import com.damaba.damaba.application.photographer.UpdatePhotographerProfileCommand
+import com.damaba.damaba.application.term.TermItem
 import com.damaba.damaba.controller.common.AddressRequest
 import com.damaba.damaba.controller.common.ImageRequest
 import com.damaba.damaba.controller.region.RegionRequest
+import com.damaba.damaba.controller.term.AgreementRequestItem
 import com.damaba.damaba.domain.common.constant.PhotographyType
+import com.damaba.damaba.domain.term.TermType
 import com.damaba.damaba.domain.user.constant.Gender
 import com.damaba.damaba.mapper.AddressMapper
 import com.damaba.damaba.mapper.ImageMapper
@@ -20,6 +23,7 @@ data class RegisterPhotographerRequest(
     val profileImage: ImageRequest,
     val mainPhotographyTypes: Set<PhotographyType>,
     val activeRegions: Set<RegionRequest>,
+    val agreements: List<AgreementRequestItem>,
 ) {
     fun toCommand(requesterId: Long) = RegisterPhotographerCommand(
         userId = requesterId,
@@ -29,6 +33,7 @@ data class RegisterPhotographerRequest(
         profileImage = ImageMapper.INSTANCE.toImage(profileImage),
         mainPhotographyTypes = mainPhotographyTypes,
         activeRegions = activeRegions.map { regionRequest -> RegionMapper.INSTANCE.toRegion(regionRequest) }.toSet(),
+        terms = agreements.map { TermItem(it.type, it.agreed) },
     )
 }
 
@@ -68,5 +73,13 @@ data class UpdateMyPhotographerProfileRequest(
         profileImage = this.profileImage?.let { ImageMapper.INSTANCE.toImage(it) },
         mainPhotographyTypes = this.mainPhotographyTypes,
         activeRegions = this.activeRegions.map { RegionMapper.INSTANCE.toRegion(it) }.toSet(),
+    )
+
+    data class AgreementRequestItem(
+        @Schema(description = "약관 종류", example = "SERVICE_TERMS")
+        val type: TermType,
+
+        @Schema(description = "사용자 동의 여부", example = "ture")
+        val agreed: Boolean,
     )
 }
