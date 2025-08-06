@@ -1,8 +1,5 @@
 package com.damaba.damaba.application.user
 
-import com.damaba.damaba.application.user.dto.ExistsUserNicknameQuery
-import com.damaba.damaba.application.user.dto.RegisterUserCommand
-import com.damaba.damaba.application.user.dto.UpdateUserProfileCommand
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.user.constant.Gender
 import com.damaba.damaba.domain.user.constant.UserType
@@ -286,5 +283,28 @@ class UserServiceTest {
         }
         confirmVerifiedEveryMocks()
         assertThat(ex).isInstanceOf(NicknameAlreadyExistsException::class.java)
+    }
+
+    @Test
+    fun `유저를 삭제한다`() {
+        // given
+        val userId = randomLong()
+        val user = createUser(id = userId)
+        every { userRepo.getById(userId) } returns user
+        every { photographerSaveRepo.deleteAllByUserId(userId) } just runs
+        every { promotionSaveRepo.deleteAllByUserId(userId) } just runs
+        every { userRepo.delete(user) } just runs
+
+        // when
+        sut.deleteUser(userId)
+
+        // then
+        verifyOrder {
+            userRepo.getById(userId)
+            photographerSaveRepo.deleteAllByUserId(userId)
+            promotionSaveRepo.deleteAllByUserId(userId)
+            userRepo.delete(user)
+        }
+        confirmVerifiedEveryMocks()
     }
 }

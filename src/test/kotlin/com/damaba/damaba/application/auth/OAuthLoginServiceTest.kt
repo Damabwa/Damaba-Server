@@ -1,6 +1,5 @@
 package com.damaba.damaba.application.auth
 
-import com.damaba.damaba.application.auth.dto.OAuthLoginCommand
 import com.damaba.damaba.domain.auth.RefreshToken
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.domain.user.constant.LoginType

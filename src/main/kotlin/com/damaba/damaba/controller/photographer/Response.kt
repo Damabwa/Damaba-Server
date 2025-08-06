@@ -1,0 +1,63 @@
+package com.damaba.damaba.controller.photographer
+
+import com.damaba.damaba.controller.common.AddressResponse
+import com.damaba.damaba.controller.common.ImageResponse
+import com.damaba.damaba.controller.region.RegionResponse
+import com.damaba.damaba.domain.common.constant.PhotographyType
+import com.damaba.damaba.domain.user.constant.Gender
+import com.damaba.damaba.domain.user.constant.LoginType
+import com.damaba.damaba.domain.user.constant.UserRoleType
+import com.damaba.damaba.domain.user.constant.UserType
+import io.swagger.v3.oas.annotations.media.Schema
+
+data class ExistsPhotographerNicknameResponse(
+    @Schema(description = "닉네임", example = "말티즈")
+    val nickname: String,
+
+    @Schema(description = "닉네임의 사용 여부. 사용중인 닉네임이라면 <code>true</code>, 사용중이지 않다면 <code>false</code>")
+    val exists: Boolean,
+)
+
+data class PhotographerResponse(
+    @Schema(description = "Id of user", example = "1")
+    val id: Long,
+
+    @Schema(description = "User type")
+    val type: UserType,
+
+    @Schema(description = "User roles")
+    val roles: Set<UserRoleType>,
+
+    @Schema(description = "사용하는 로그인 종류")
+    val loginType: LoginType,
+
+    @Schema(description = "닉네임", example = "홍길동")
+    val nickname: String,
+
+    @Schema(description = "프로필 이미지")
+    val profileImage: ImageResponse?,
+
+    @Schema(description = "성별")
+    val gender: Gender,
+
+    @Schema(description = "(Nullable) 인스타 아이디", example = "damaba.official")
+    val instagramId: String?,
+
+    @Schema(description = "주력 촬영 종류")
+    val mainPhotographyTypes: Set<PhotographyType>,
+
+    @Schema(description = "(Nullable) 대표 링크", example = "https://damaba-contact.com")
+    val contactLink: String?,
+
+    @Schema(description = "(Nullable) 상세 소개", example = "안녕하세요. 수원에서 주로...")
+    val description: String?,
+
+    @Schema(description = "(Nullable) 상세주소")
+    val address: AddressResponse?,
+
+    @Schema(description = "포트폴리오")
+    val portfolio: List<ImageResponse>,
+
+    @Schema(description = "활동 지역")
+    val activeRegions: Set<RegionResponse>,
+)

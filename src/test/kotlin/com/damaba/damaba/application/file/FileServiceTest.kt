@@ -1,6 +1,5 @@
 package com.damaba.damaba.application.file
 
-import com.damaba.damaba.application.file.dto.UploadFilesCommand
 import com.damaba.damaba.domain.file.FileType
 import com.damaba.damaba.infrastructure.file.FileStorageManager
 import com.damaba.damaba.util.RandomTestUtils.Companion.generateRandomList

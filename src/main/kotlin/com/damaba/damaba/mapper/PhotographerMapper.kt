@@ -1,8 +1,8 @@
 package com.damaba.damaba.mapper
 
-import com.damaba.damaba.application.photographer.dto.UpdatePhotographerPageCommand
-import com.damaba.damaba.application.photographer.dto.UpdatePhotographerProfileCommand
-import com.damaba.damaba.controller.photographer.dto.PhotographerResponse
+import com.damaba.damaba.application.photographer.UpdatePhotographerPageCommand
+import com.damaba.damaba.application.photographer.UpdatePhotographerProfileCommand
+import com.damaba.damaba.controller.photographer.PhotographerResponse
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.domain.photographer.PhotographerListItem
 import com.damaba.damaba.domain.photographer.PhotographerListItemResponse

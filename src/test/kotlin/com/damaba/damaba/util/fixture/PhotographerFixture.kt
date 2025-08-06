@@ -22,7 +22,6 @@ import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomUrl
 import com.damaba.damaba.util.fixture.AddressFixture.createAddress
 import com.damaba.damaba.util.fixture.FileFixture.createImage
-import org.springframework.test.util.ReflectionTestUtils
 
 object PhotographerFixture {
     fun createPhotographer(
@@ -104,7 +103,7 @@ object PhotographerFixture {
             address = address,
         )
         photographerJpaEntity.mainPhotographyTypes.addAll(mainPhotographyTypes)
-        ReflectionTestUtils.setField(photographerJpaEntity, "_portfolio", portfolio)
+        photographerJpaEntity.portfolio.addAll(portfolio)
         photographerJpaEntity.activeRegions.addAll(activeRegions)
         return photographerJpaEntity
     }

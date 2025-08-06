@@ -1,13 +1,5 @@
 package com.damaba.damaba.application.promotion
 
-import com.damaba.damaba.application.promotion.dto.DeletePromotionCommand
-import com.damaba.damaba.application.promotion.dto.FindPromotionListQuery
-import com.damaba.damaba.application.promotion.dto.FindSavedPromotionListQuery
-import com.damaba.damaba.application.promotion.dto.GetPromotionDetailQuery
-import com.damaba.damaba.application.promotion.dto.PostPromotionCommand
-import com.damaba.damaba.application.promotion.dto.SavePromotionCommand
-import com.damaba.damaba.application.promotion.dto.UnsavePromotionCommand
-import com.damaba.damaba.application.promotion.dto.UpdatePromotionCommand
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.TransactionalLock
 import com.damaba.damaba.domain.common.constant.LockType.PESSIMISTIC

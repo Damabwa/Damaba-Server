@@ -1,0 +1,13 @@
+@file:Suppress("ktlint:standard:filename")
+
+package com.damaba.damaba.controller.region
+
+import io.swagger.v3.oas.annotations.media.Schema
+
+data class RegionRequest(
+    @Schema(description = "지역 카테고리", example = "서울")
+    val category: String,
+
+    @Schema(description = "지역 이름", example = "강남구")
+    val name: String,
+)

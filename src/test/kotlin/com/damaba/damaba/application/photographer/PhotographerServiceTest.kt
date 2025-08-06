@@ -1,13 +1,5 @@
 package com.damaba.damaba.application.photographer
 
-import com.damaba.damaba.application.photographer.dto.ExistsPhotographerNicknameQuery
-import com.damaba.damaba.application.photographer.dto.FindPhotographerListQuery
-import com.damaba.damaba.application.photographer.dto.FindSavedPhotographerListQuery
-import com.damaba.damaba.application.photographer.dto.RegisterPhotographerCommand
-import com.damaba.damaba.application.photographer.dto.SavePhotographerCommand
-import com.damaba.damaba.application.photographer.dto.UnsavePhotographerCommand
-import com.damaba.damaba.application.photographer.dto.UpdatePhotographerPageCommand
-import com.damaba.damaba.application.photographer.dto.UpdatePhotographerProfileCommand
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.photographer.Photographer
@@ -35,6 +27,7 @@ import com.damaba.damaba.util.fixture.FileFixture.createImage
 import com.damaba.damaba.util.fixture.PhotographerFixture.createPhotographer
 import com.damaba.damaba.util.fixture.PhotographerFixture.createPhotographerListItem
 import com.damaba.damaba.util.fixture.PhotographerFixture.createPhotographerSave
+import com.damaba.damaba.util.fixture.PromotionFixture.createPromotion
 import com.damaba.damaba.util.fixture.RegionFixture.createRegion
 import com.damaba.damaba.util.fixture.UserFixture.createUser
 import io.mockk.confirmVerified
@@ -568,6 +561,59 @@ class PhotographerServiceTest {
         }
         confirmVerifiedEveryMocks()
         assertThat(result).isEqualTo(expectedResult)
+    }
+
+    @Test
+    fun `사진작가를 삭제한다`() {
+        // given
+        val photographerId = randomLong()
+        val photographer = createPhotographer(id = photographerId)
+        val promotions = generateRandomList(maxSize = 3) { createPromotion(authorId = photographerId) }
+        every { promotionRepo.findPromotionsByAuthorId(photographerId) } returns promotions
+        promotions.forEach { promotion ->
+            every { promotionRepo.update(promotion) } returns promotion
+        }
+        every { photographerRepo.getById(photographerId) } returns photographer
+        every { photographerSaveRepo.deleteAllByUserId(photographerId) } just runs
+        every { promotionSaveRepo.deleteAllByUserId(photographerId) } just runs
+        every { photographerRepo.delete(photographer) } just runs
+
+        // when
+        sut.deletePhotographer(photographerId)
+
+        // then
+        verify { promotionRepo.findPromotionsByAuthorId(photographerId) }
+        promotions.forEach { promotion ->
+            verify { promotionRepo.update(promotion) }
+        }
+        verify { photographerRepo.getById(photographerId) }
+        verify { photographerSaveRepo.deleteAllByUserId(photographerId) }
+        verify { promotionSaveRepo.deleteAllByUserId(photographerId) }
+        verify { photographerRepo.delete(photographer) }
+        confirmVerifiedEveryMocks()
+    }
+
+    @Test
+    fun `사진작가를 삭제한다, 관련 프로모션이 없는 경우`() {
+        // given
+        val photographerId = randomLong()
+        val photographer = createPhotographer(id = photographerId)
+        every { promotionRepo.findPromotionsByAuthorId(photographerId) } returns emptyList()
+        every { photographerRepo.getById(photographerId) } returns photographer
+        every { photographerSaveRepo.deleteAllByUserId(photographerId) } just runs
+        every { promotionSaveRepo.deleteAllByUserId(photographerId) } just runs
+        every { photographerRepo.delete(photographer) } just runs
+
+        // when
+        sut.deletePhotographer(photographerId)
+
+        // then
+        verify { promotionRepo.findPromotionsByAuthorId(photographerId) }
+        verify { photographerRepo.getById(photographerId) }
+        verify { photographerSaveRepo.deleteAllByUserId(photographerId) }
+        verify { promotionSaveRepo.deleteAllByUserId(photographerId) }
+        verify { photographerRepo.delete(photographer) }
+        confirmVerifiedEveryMocks()
     }
 
     @Test

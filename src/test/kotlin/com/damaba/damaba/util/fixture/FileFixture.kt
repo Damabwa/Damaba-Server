@@ -1,6 +1,6 @@
 package com.damaba.damaba.util.fixture
 
-import com.damaba.damaba.controller.common.dto.ImageRequest
+import com.damaba.damaba.controller.common.ImageRequest
 import com.damaba.damaba.domain.file.File
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.file.UploadFile

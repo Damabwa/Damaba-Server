@@ -1,7 +1,7 @@
 package com.damaba.damaba.mapper
 
-import com.damaba.damaba.controller.common.dto.AddressRequest
-import com.damaba.damaba.controller.common.dto.AddressResponse
+import com.damaba.damaba.controller.common.AddressRequest
+import com.damaba.damaba.controller.common.AddressResponse
 import com.damaba.damaba.domain.common.Address
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers

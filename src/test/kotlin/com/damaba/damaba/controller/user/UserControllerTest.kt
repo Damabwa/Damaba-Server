@@ -1,12 +1,12 @@
 package com.damaba.damaba.controller.user
 
+import com.damaba.damaba.application.photographer.PhotographerService
+import com.damaba.damaba.application.user.ExistsUserNicknameQuery
 import com.damaba.damaba.application.user.UserService
-import com.damaba.damaba.application.user.dto.ExistsUserNicknameQuery
 import com.damaba.damaba.config.ControllerTestConfig
-import com.damaba.damaba.controller.common.dto.ImageRequest
-import com.damaba.damaba.controller.user.dto.RegisterUserRequest
-import com.damaba.damaba.controller.user.dto.UpdateMyProfileRequest
+import com.damaba.damaba.controller.common.ImageRequest
 import com.damaba.damaba.domain.user.constant.Gender
+import com.damaba.damaba.domain.user.constant.UserType
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomBoolean
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
@@ -15,7 +15,9 @@ import com.damaba.damaba.util.fixture.UserFixture.createUser
 import com.damaba.damaba.util.withAuthUser
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.runs
 import io.mockk.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -25,6 +27,7 @@ import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
@@ -39,11 +42,15 @@ class UserControllerTest @Autowired constructor(
     private val mvc: MockMvc,
     private val mapper: ObjectMapper,
     private val userService: UserService,
+    private val photographerService: PhotographerService,
 ) {
     @TestConfiguration
     class TestBeanSetUp {
         @Bean
         fun userService(): UserService = mockk()
+
+        @Bean
+        fun photographerService(): PhotographerService = mockk()
     }
 
     @Test
@@ -141,5 +148,53 @@ class UserControllerTest @Autowired constructor(
             .andExpect(jsonPath("$.gender").value(expectedResult.gender.toString()))
             .andExpect(jsonPath("$.instagramId").value(expectedResult.instagramId))
         verify { userService.register(request.toCommand(requester.id)) }
+    }
+
+    @Test
+    fun `일반 유저가 회원 탈퇴하면, 유저 삭제 서비스가 호출된다`() {
+        // given
+        val requestUser = createUser(type = UserType.USER)
+        every { userService.getUser(requestUser.id) } returns requestUser
+        every { userService.deleteUser(requestUser.id) } just runs
+
+        // when and then
+        mvc.perform(
+            delete("/api/v1/users/me")
+                .withAuthUser(requestUser),
+        ).andExpect(status().isOk)
+        verify { userService.getUser(requestUser.id) }
+        verify { userService.deleteUser(requestUser.id) }
+    }
+
+    @Test
+    fun `등록되지 않은 유저가 회원 탈퇴하면, 유저 삭제 서비스가 호출된다`() {
+        // given
+        val requestUser = createUser(type = UserType.UNDEFINED)
+        every { userService.getUser(requestUser.id) } returns requestUser
+        every { userService.deleteUser(requestUser.id) } just runs
+
+        // when and then
+        mvc.perform(
+            delete("/api/v1/users/me")
+                .withAuthUser(requestUser),
+        ).andExpect(status().isOk)
+        verify { userService.getUser(requestUser.id) }
+        verify { userService.deleteUser(requestUser.id) }
+    }
+
+    @Test
+    fun `사진작가가 회원 탈퇴하면, 사진작가 삭제 서비스가 호출된다`() {
+        // given
+        val requestUser = createUser(type = UserType.PHOTOGRAPHER)
+        every { userService.getUser(requestUser.id) } returns requestUser
+        every { photographerService.deletePhotographer(requestUser.id) } just runs
+
+        // when and then
+        mvc.perform(
+            delete("/api/v1/users/me")
+                .withAuthUser(requestUser),
+        ).andExpect(status().isOk)
+        verify { userService.getUser(requestUser.id) }
+        verify { photographerService.deletePhotographer(requestUser.id) }
     }
 }

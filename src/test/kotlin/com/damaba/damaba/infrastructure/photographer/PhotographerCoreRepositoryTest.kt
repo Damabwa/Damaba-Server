@@ -215,6 +215,44 @@ class PhotographerCoreRepositoryTest @Autowired constructor(
     }
 
     @Test
+    fun `검색 키워드가 주어지고, 사진작가 리스트를 조회하면, 검색 결과가 반환된다`() {
+        // given
+        val user1 = userJpaRepository.save(createUserJpaEntity())
+        photographerCoreRepository.createIfUserExists(
+            createPhotographer(
+                id = user1.id,
+                mainPhotographyTypes = setOf(PhotographyType.SNAP),
+                activeRegions = setOf(createRegion(category = "RegionA", name = "CityA")),
+            ),
+        )
+        val user2 = userJpaRepository.save(createUserJpaEntity())
+        photographerCoreRepository.createIfUserExists(
+            createPhotographer(
+                id = user2.id,
+                mainPhotographyTypes = setOf(PhotographyType.SNAP),
+                activeRegions = setOf(createRegion(category = "RegionB", name = "CityB")),
+            ),
+        )
+        val searchKeyword = "City"
+        val page = 0
+        val pageSize = 10
+
+        // when
+        val photographers = photographerCoreRepository.findPhotographerList(
+            requestUserId = null,
+            regions = emptySet(),
+            photographyTypes = emptySet(),
+            searchKeyword = searchKeyword,
+            sort = PhotographerSortType.LATEST,
+            page = page,
+            pageSize = pageSize,
+        )
+
+        // then
+        assertThat(photographers.items).hasSize(2)
+    }
+
+    @Test
     fun `저장된 사진작가 리스트를 조회한다`() {
         // given
         val user1 = userJpaRepository.save(createUserJpaEntity())
@@ -456,6 +494,26 @@ class PhotographerCoreRepositoryTest @Autowired constructor(
         // then
         val foundPhotographer = photographerCoreRepository.getById(userJpaEntity.id)
         assertThat(foundPhotographer).isEqualTo(updatedPhotographer) // update가 반환한 작가가 조회된 작가와 같아야 함
+    }
+
+    @Test
+    fun `작가를 삭제한다`() {
+        // given
+        val userJpaEntity = userJpaRepository.save(createUserJpaEntity())
+        val photographerJpaEntity = photographerCoreRepository.createIfUserExists(
+            createPhotographer(
+                id = userJpaEntity.id,
+                mainPhotographyTypes = setOf(PhotographyType.PROFILE),
+                activeRegions = setOf(Region("서울", "강남구")),
+            ),
+        )
+
+        // when
+        photographerCoreRepository.delete(photographerJpaEntity)
+
+        // then
+        val foundUser = userJpaRepository.findById(userJpaEntity.id)
+        assertThat(foundUser).isEmpty
     }
 
     private fun assertEquals(photographer: Photographer, userJpaEntity: UserJpaEntity) {
