@@ -284,4 +284,27 @@ class UserServiceTest {
         confirmVerifiedEveryMocks()
         assertThat(ex).isInstanceOf(NicknameAlreadyExistsException::class.java)
     }
+
+    @Test
+    fun `유저를 삭제한다`() {
+        // given
+        val userId = randomLong()
+        val user = createUser(id = userId)
+        every { userRepo.getById(userId) } returns user
+        every { photographerSaveRepo.deleteAllByUserId(userId) } just runs
+        every { promotionSaveRepo.deleteAllByUserId(userId) } just runs
+        every { userRepo.delete(user) } just runs
+
+        // when
+        sut.deleteUser(userId)
+
+        // then
+        verifyOrder {
+            userRepo.getById(userId)
+            photographerSaveRepo.deleteAllByUserId(userId)
+            promotionSaveRepo.deleteAllByUserId(userId)
+            userRepo.delete(user)
+        }
+        confirmVerifiedEveryMocks()
+    }
 }
