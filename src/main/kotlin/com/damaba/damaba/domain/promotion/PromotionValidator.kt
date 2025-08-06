@@ -4,8 +4,8 @@ import com.damaba.damaba.domain.exception.ValidationException
 
 object PromotionValidator {
     fun validateTitle(title: String) {
-        if (title.isBlank() || title.length < 3 || title.length > 20) {
-            throw ValidationException("프로모션 제목은 3~20 글자여야 합니다.")
+        if (title.isBlank() || title.length < 3 || title.length > 30) {
+            throw ValidationException("프로모션 제목은 3~30 글자여야 합니다.")
         }
     }
 
