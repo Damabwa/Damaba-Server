@@ -58,7 +58,7 @@ class UserService(
         if (command.terms.isNotEmpty()) {
             val termList: List<Term> = command.terms.map { item: TermItem ->
                 Term(
-                    id = null,
+                    id = 0L,
                     userId = saved.id,
                     type = item.type,
                     agreed = item.agreed,
