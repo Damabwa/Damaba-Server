@@ -4,6 +4,7 @@ spring:
   jpa:
     properties:
       hibernate:
+        ddl-auto: update
         format_sql: true
     defer-datasource-initialization: false
 
