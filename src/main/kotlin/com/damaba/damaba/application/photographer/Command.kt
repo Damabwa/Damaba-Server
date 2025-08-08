@@ -1,10 +1,12 @@
 package com.damaba.damaba.application.photographer
 
+import com.damaba.damaba.application.term.TermItem
 import com.damaba.damaba.domain.common.Address
 import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.photographer.PhotographerValidator
 import com.damaba.damaba.domain.region.Region
+import com.damaba.damaba.domain.term.TermValidator
 import com.damaba.damaba.domain.user.UserValidator
 import com.damaba.damaba.domain.user.constant.Gender
 
@@ -16,12 +18,14 @@ data class RegisterPhotographerCommand(
     val profileImage: Image,
     val mainPhotographyTypes: Set<PhotographyType>,
     val activeRegions: Set<Region>,
+    val terms: List<TermItem>,
 ) {
     init {
         PhotographerValidator.validateNickname(nickname)
         if (instagramId != null) UserValidator.validateInstagramId(instagramId)
         PhotographerValidator.validateMainPhotographyTypes(mainPhotographyTypes)
         PhotographerValidator.validateActiveRegions(activeRegions)
+        TermValidator.validatePhotographerRequired(terms)
     }
 }
 

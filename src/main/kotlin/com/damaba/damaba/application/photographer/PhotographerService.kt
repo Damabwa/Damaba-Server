@@ -1,11 +1,13 @@
 package com.damaba.damaba.application.photographer
 
+import com.damaba.damaba.application.term.TermItem
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.photographer.Photographer
 import com.damaba.damaba.domain.photographer.PhotographerListItem
 import com.damaba.damaba.domain.photographer.PhotographerSave
 import com.damaba.damaba.domain.photographer.exception.AlreadyPhotographerSaveException
 import com.damaba.damaba.domain.photographer.exception.PhotographerSaveNotFoundException
+import com.damaba.damaba.domain.term.Term
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.domain.user.exception.NicknameAlreadyExistsException
 import com.damaba.damaba.domain.user.exception.UserAlreadyRegisteredException
@@ -13,6 +15,7 @@ import com.damaba.damaba.infrastructure.photographer.PhotographerRepository
 import com.damaba.damaba.infrastructure.photographer.PhotographerSaveRepository
 import com.damaba.damaba.infrastructure.promotion.PromotionRepository
 import com.damaba.damaba.infrastructure.promotion.PromotionSaveRepository
+import com.damaba.damaba.infrastructure.term.TermRepository
 import com.damaba.damaba.infrastructure.user.UserRepository
 import com.damaba.damaba.mapper.PhotographerMapper
 import org.springframework.stereotype.Service
@@ -25,6 +28,7 @@ class PhotographerService(
     private val photographerSaveRepo: PhotographerSaveRepository,
     private val promotionRepo: PromotionRepository,
     private val promotionSaveRepo: PromotionSaveRepository,
+    private val termRepo: TermRepository,
 ) {
     @Transactional
     fun register(command: RegisterPhotographerCommand): Photographer {
@@ -46,7 +50,21 @@ class PhotographerService(
             mainPhotographyTypes = command.mainPhotographyTypes,
             activeRegions = command.activeRegions,
         )
-        return photographerRepo.createIfUserExists(photographer)
+        val saved = photographerRepo.createIfUserExists(photographer)
+
+        if (command.terms.isNotEmpty()) {
+            val termList: List<Term> = command.terms.map { item: TermItem ->
+                Term(
+                    id = null,
+                    userId = saved.id,
+                    type = item.type,
+                    agreed = item.agreed,
+                )
+            }
+            termRepo.saveAll(termList)
+        }
+
+        return saved
     }
 
     @Transactional
