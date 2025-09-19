@@ -15,6 +15,7 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
+import jakarta.persistence.OrderBy
 import jakarta.persistence.Table
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -74,6 +75,7 @@ class PromotionJpaEntity(
         private set
 
     @OneToMany(mappedBy = "promotion", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OrderBy("type ASC")
     var photographyTypes: MutableSet<PromotionPhotographyTypeJpaEntity> = mutableSetOf()
         private set
 
@@ -84,10 +86,12 @@ class PromotionJpaEntity(
         get() = _images.filter { image -> image.deletedAt == null }.toList()
 
     @OneToMany(mappedBy = "promotion", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OrderBy("category ASC, name ASC")
     var activeRegions: MutableSet<PromotionActiveRegionJpaEntity> = mutableSetOf()
         private set
 
     @OneToMany(mappedBy = "promotion", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OrderBy("content ASC")
     var hashtags: MutableSet<PromotionHashtagJpaEntity> = mutableSetOf()
         private set
 
@@ -101,10 +105,10 @@ class PromotionJpaEntity(
         startedAt = this.startedAt,
         endedAt = this.endedAt,
         viewCount = this.viewCount,
-        photographyTypes = this.photographyTypes.map { it.type }.toSet(),
+        photographyTypes = this.photographyTypes.map { it.type }.toCollection(LinkedHashSet()),
         images = this.images.map { it.toImage() },
-        activeRegions = this.activeRegions.map { it.toRegion() }.toSet(),
-        hashtags = this.hashtags.map { it.content }.toSet(),
+        activeRegions = this.activeRegions.map { it.toRegion() }.toCollection(LinkedHashSet()),
+        hashtags = this.hashtags.map { it.content }.toCollection(LinkedHashSet()),
     )
 
     fun update(promotion: Promotion) {

@@ -12,6 +12,7 @@ import jakarta.persistence.Embedded
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
+import jakarta.persistence.OrderBy
 import jakarta.persistence.Table
 
 @Table(name = "photographer")
@@ -36,6 +37,7 @@ class PhotographerJpaEntity(
         private set
 
     @OneToMany(mappedBy = "photographer", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OrderBy("photographyType ASC")
     var mainPhotographyTypes: MutableSet<PhotographerPhotographyTypeJpaEntity> = mutableSetOf()
         private set
 
@@ -44,6 +46,7 @@ class PhotographerJpaEntity(
         private set
 
     @OneToMany(mappedBy = "photographer", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OrderBy("category ASC, name ASC")
     var activeRegions: MutableSet<PhotographerActiveRegionJpaEntity> = mutableSetOf()
         private set
 
@@ -60,9 +63,9 @@ class PhotographerJpaEntity(
         contactLink = this.contactLink,
         description = this.description,
         address = this.address?.toAddress(),
-        mainPhotographyTypes = this.mainPhotographyTypes.map { it.photographyType }.toSet(),
+        mainPhotographyTypes = this.mainPhotographyTypes.map { it.photographyType }.toCollection(LinkedHashSet()),
         portfolio = this.portfolio.map { it.toImage() },
-        activeRegions = this.activeRegions.map { it.toRegion() }.toSet(),
+        activeRegions = this.activeRegions.map { it.toRegion() }.toCollection(LinkedHashSet()),
     )
 
     fun update(photographer: Photographer) {
