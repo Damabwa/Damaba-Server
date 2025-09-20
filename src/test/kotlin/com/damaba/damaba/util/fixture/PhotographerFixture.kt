@@ -4,6 +4,7 @@ import com.damaba.damaba.domain.common.Address
 import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.photographer.Photographer
+import com.damaba.damaba.domain.photographer.PhotographerDetail
 import com.damaba.damaba.domain.photographer.PhotographerListItem
 import com.damaba.damaba.domain.photographer.PhotographerSave
 import com.damaba.damaba.domain.region.Region
@@ -70,6 +71,42 @@ object PhotographerFixture {
         profileImage = profileImage,
         isSaved = isSaved,
         mainPhotographyTypes = mainPhotographyTypes,
+    )
+
+    fun createPhotographerDetail(
+        id: Long = randomLong(),
+        type: UserType = UserType.PHOTOGRAPHER,
+        roles: Set<UserRoleType> = setOf(UserRoleType.USER),
+        loginType: LoginType = LoginType.KAKAO,
+        nickname: String = randomString(len = 7),
+        profileImage: Image? = Image(randomString(), randomUrl()),
+        gender: Gender = Gender.MALE,
+        instagramId: String? = randomString(len = 30),
+        mainPhotographyTypes: Set<PhotographyType> = setOf(PhotographyType.PROFILE),
+        contactLink: String? = randomString(),
+        description: String? = randomString(),
+        address: Address? = createAddress(),
+        portfolio: List<Image> = emptyList(),
+        activeRegions: Set<Region> = emptySet(),
+        saveCount: Int = 0,
+        isSaved: Boolean = randomBoolean(),
+    ) = PhotographerDetail(
+        id = id,
+        type = type,
+        roles = roles,
+        loginType = loginType,
+        nickname = nickname,
+        profileImage = profileImage,
+        gender = gender,
+        instagramId = instagramId,
+        mainPhotographyTypes = mainPhotographyTypes,
+        contactLink = contactLink,
+        description = description,
+        address = address,
+        portfolio = portfolio,
+        activeRegions = activeRegions,
+        saveCount = saveCount,
+        isSaved = isSaved,
     )
 
     fun createPhotographerSave(

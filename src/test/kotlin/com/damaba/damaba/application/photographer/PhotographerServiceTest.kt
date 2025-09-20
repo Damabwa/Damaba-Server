@@ -83,6 +83,58 @@ class PhotographerServiceTest {
     }
 
     @Test
+    fun `사진작가 id가 주어지고, 사진작가를 상세 조회한다`() {
+        // given
+        val photographerId = randomLong()
+        val requestUserId = randomLong()
+        val photographer = createPhotographer(id = photographerId)
+        val saveCount = randomInt(max = 10)
+        val isSaved = true
+
+        every { photographerRepo.getById(photographerId) } returns photographer
+        every { photographerSaveRepo.countByPhotographerId(photographerId) } returns saveCount
+        every {
+            photographerSaveRepo.existsByUserIdAndPhotographerId(requestUserId, photographerId)
+        } returns isSaved
+
+        // when
+        val actualResult = sut.getPhotographerDetail(GetPhotographerDetailQuery(requestUserId, photographerId))
+
+        // then
+        verify { photographerRepo.getById(photographerId) }
+        verify { photographerSaveRepo.countByPhotographerId(photographerId) }
+        verify { photographerSaveRepo.existsByUserIdAndPhotographerId(requestUserId, photographerId) }
+        confirmVerifiedEveryMocks()
+
+        assertThat(actualResult.id).isEqualTo(photographer.id)
+        assertThat(actualResult.saveCount).isEqualTo(saveCount)
+        assertThat(actualResult.isSaved).isEqualTo(isSaved)
+    }
+
+    @Test
+    fun `요청자 정보 없이 사진작가 id가 주어지고, 사진작가를 상세 조회한다`() {
+        // given
+        val photographerId = randomLong()
+        val photographer = createPhotographer(id = photographerId)
+        val saveCount = randomInt(max = 10)
+
+        every { photographerRepo.getById(photographerId) } returns photographer
+        every { photographerSaveRepo.countByPhotographerId(photographerId) } returns saveCount
+
+        // when
+        val actualResult = sut.getPhotographerDetail(GetPhotographerDetailQuery(null, photographerId))
+
+        // then
+        verify { photographerRepo.getById(photographerId) }
+        verify { photographerSaveRepo.countByPhotographerId(photographerId) }
+        confirmVerifiedEveryMocks()
+
+        assertThat(actualResult.id).isEqualTo(photographer.id)
+        assertThat(actualResult.saveCount).isEqualTo(saveCount)
+        assertThat(actualResult.isSaved).isFalse()
+    }
+
+    @Test
     fun `사진작가 리스트를 조회한다`() {
         // given
         val query = FindPhotographerListQuery(

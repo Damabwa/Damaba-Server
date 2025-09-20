@@ -17,6 +17,9 @@ class PhotographerSaveCoreRepository(
         photographerId: Long,
     ): Boolean = photographerSaveJpaRepository.existsByUserIdAndPhotographerId(userId, photographerId)
 
+    override fun countByPhotographerId(photographerId: Long): Int =
+        photographerSaveJpaRepository.countByPhotographerId(photographerId)
+
     override fun create(photographerSave: PhotographerSave) {
         photographerSaveJpaRepository.save(
             PhotographerSaveJpaEntity(
