@@ -1,11 +1,14 @@
 package com.damaba.damaba.application.user
 
+import com.damaba.damaba.application.term.TermItem
+import com.damaba.damaba.domain.term.Term
 import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.domain.user.exception.NicknameAlreadyExistsException
 import com.damaba.damaba.domain.user.exception.UserAlreadyRegisteredException
 import com.damaba.damaba.domain.user.exception.UserNotFoundException
 import com.damaba.damaba.infrastructure.photographer.PhotographerSaveRepository
 import com.damaba.damaba.infrastructure.promotion.PromotionSaveRepository
+import com.damaba.damaba.infrastructure.term.TermRepository
 import com.damaba.damaba.infrastructure.user.UserRepository
 import com.damaba.damaba.mapper.UserMapper
 import org.springframework.stereotype.Service
@@ -16,6 +19,7 @@ class UserService(
     private val userRepo: UserRepository,
     private val photographerSaveRepo: PhotographerSaveRepository,
     private val promotionSaveRepo: PromotionSaveRepository,
+    private val termRepo: TermRepository,
 ) {
     @Transactional(readOnly = true)
     fun getUser(userId: Long): User = userRepo.getById(userId)
@@ -49,7 +53,20 @@ class UserService(
             gender = command.gender,
             instagramId = command.instagramId,
         )
-        return userRepo.update(user)
+        val saved = userRepo.update(user)
+
+        if (command.terms.isNotEmpty()) {
+            val termList: List<Term> = command.terms.map { item: TermItem ->
+                Term(
+                    id = 0L,
+                    userId = saved.id,
+                    type = item.type,
+                    agreed = item.agreed,
+                )
+            }
+            termRepo.saveAll(termList)
+        }
+        return saved
     }
 
     @Transactional
