@@ -2,6 +2,7 @@ package com.damaba.damaba.application.photographer
 
 import com.damaba.damaba.domain.common.Pagination
 import com.damaba.damaba.domain.photographer.Photographer
+import com.damaba.damaba.domain.photographer.PhotographerDetail
 import com.damaba.damaba.domain.photographer.PhotographerListItem
 import com.damaba.damaba.domain.photographer.PhotographerSave
 import com.damaba.damaba.domain.photographer.exception.AlreadyPhotographerSaveException
@@ -61,6 +62,37 @@ class PhotographerService(
 
     @Transactional(readOnly = true)
     fun getPhotographer(id: Long): Photographer = photographerRepo.getById(id)
+
+    @Transactional(readOnly = true)
+    fun getPhotographerDetail(query: GetPhotographerDetailQuery): PhotographerDetail {
+        val photographer = photographerRepo.getById(query.photographerId)
+
+        val saveCount = photographerSaveRepo.countByPhotographerId(query.photographerId)
+        val isSaved = if (query.requestUserId != null) {
+            photographerSaveRepo.existsByUserIdAndPhotographerId(query.requestUserId, query.photographerId)
+        } else {
+            false
+        }
+
+        return PhotographerDetail(
+            id = photographer.id,
+            type = photographer.type,
+            roles = photographer.roles,
+            loginType = photographer.loginType,
+            nickname = photographer.nickname,
+            profileImage = photographer.profileImage,
+            gender = photographer.gender,
+            instagramId = photographer.instagramId,
+            mainPhotographyTypes = photographer.mainPhotographyTypes,
+            contactLink = photographer.contactLink,
+            description = photographer.description,
+            address = photographer.address,
+            portfolio = photographer.portfolio,
+            activeRegions = photographer.activeRegions,
+            saveCount = saveCount,
+            isSaved = isSaved,
+        )
+    }
 
     @Transactional(readOnly = true)
     fun findPhotographerList(

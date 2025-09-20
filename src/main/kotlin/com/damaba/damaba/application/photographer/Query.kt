@@ -35,3 +35,8 @@ data class FindSavedPhotographerListQuery(
         PageValidator.validate(page, pageSize)
     }
 }
+
+data class GetPhotographerDetailQuery(
+    val requestUserId: Long?,
+    val photographerId: Long,
+)

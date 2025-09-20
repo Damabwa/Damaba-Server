@@ -3,6 +3,7 @@ package com.damaba.damaba.controller.photographer
 import com.damaba.damaba.application.photographer.ExistsPhotographerNicknameQuery
 import com.damaba.damaba.application.photographer.FindPhotographerListQuery
 import com.damaba.damaba.application.photographer.FindSavedPhotographerListQuery
+import com.damaba.damaba.application.photographer.GetPhotographerDetailQuery
 import com.damaba.damaba.application.photographer.PhotographerService
 import com.damaba.damaba.application.photographer.SavePhotographerCommand
 import com.damaba.damaba.application.photographer.UnsavePhotographerCommand
@@ -36,17 +37,48 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class PhotographerController(private val photographerService: PhotographerService) {
     @Operation(
-        summary = "사진작가 조회",
-        description = "사진작가를 조회합니다.",
+        summary = "사진작가 단건 조회",
+        description = "<p><code>photographerId</code>에 해당하는 사진작가를 단건 조회합니다." +
+            "<p>사진작가 상세 정보가 필요한 경우 '사진작가 상세 조회 API'를 사용해주세요.",
     )
     @ApiResponses(
         ApiResponse(responseCode = "200"),
-        ApiResponse(responseCode = "404", description = "`photographerId`에 해당하는 사진작가를 찾을 수 없는 경우", content = []),
+        ApiResponse(
+            responseCode = "404",
+            description = "`photographerId`에 해당하는 사진작가를 찾을 수 없는 경우",
+            content = [Content()],
+        ),
     )
     @GetMapping("/api/v1/photographers/{photographerId}")
-    fun getPhotographerProfileV1(@PathVariable photographerId: Long): PhotographerResponse {
+    fun getPhotographerV1(@PathVariable photographerId: Long): PhotographerResponse {
         val photographer = photographerService.getPhotographer(photographerId)
         return PhotographerMapper.INSTANCE.toPhotographerResponse(photographer)
+    }
+
+    @Operation(
+        summary = "사진작가 상세 조회",
+        description = "<p><code>photographerId</code>에 해당하는 사진작가의 상세 정보를 조회합니다.",
+    )
+    @ApiResponses(
+        ApiResponse(responseCode = "200"),
+        ApiResponse(
+            responseCode = "404",
+            description = "`photographerId`에 해당하는 사진작가를 찾을 수 없는 경우",
+            content = [Content()],
+        ),
+    )
+    @GetMapping("/api/v1/photographers/{photographerId}/details")
+    fun getPhotographerDetailV1(
+        @AuthenticationPrincipal requestUser: User?,
+        @PathVariable photographerId: Long,
+    ): PhotographerDetailResponse {
+        val photographerDetail = photographerService.getPhotographerDetail(
+            GetPhotographerDetailQuery(
+                requestUserId = requestUser?.id,
+                photographerId = photographerId,
+            ),
+        )
+        return PhotographerMapper.INSTANCE.toPhotographerDetailResponse(photographerDetail)
     }
 
     @Operation(

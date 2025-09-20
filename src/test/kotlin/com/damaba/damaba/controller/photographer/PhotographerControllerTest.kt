@@ -3,6 +3,7 @@ package com.damaba.damaba.controller.photographer
 import com.damaba.damaba.application.photographer.ExistsPhotographerNicknameQuery
 import com.damaba.damaba.application.photographer.FindPhotographerListQuery
 import com.damaba.damaba.application.photographer.FindSavedPhotographerListQuery
+import com.damaba.damaba.application.photographer.GetPhotographerDetailQuery
 import com.damaba.damaba.application.photographer.PhotographerService
 import com.damaba.damaba.application.photographer.SavePhotographerCommand
 import com.damaba.damaba.application.photographer.UnsavePhotographerCommand
@@ -21,6 +22,7 @@ import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.fixture.FileFixture.createImage
 import com.damaba.damaba.util.fixture.FileFixture.createImageRequest
 import com.damaba.damaba.util.fixture.PhotographerFixture.createPhotographer
+import com.damaba.damaba.util.fixture.PhotographerFixture.createPhotographerDetail
 import com.damaba.damaba.util.fixture.PhotographerFixture.createPhotographerListItem
 import com.damaba.damaba.util.fixture.RegionFixture.createRegionRequest
 import com.damaba.damaba.util.fixture.UserFixture.createUser
@@ -74,6 +76,48 @@ class PhotographerControllerTest @Autowired constructor(
             get("/api/v1/photographers/{photographerId}", id),
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(expectedResult.id))
+    }
+
+    @Test
+    fun `사진작가 id가 주어지고, 사진작가를 상세 조회한다`() {
+        // given
+        val photographerId = randomLong()
+        val expectedResult = createPhotographerDetail(id = photographerId)
+        every {
+            photographerService.getPhotographerDetail(GetPhotographerDetailQuery(null, photographerId))
+        } returns expectedResult
+
+        // when and then
+        mvc.perform(
+            get("/api/v1/photographers/$photographerId/details"),
+        ).andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").value(expectedResult.id))
+            .andExpect(jsonPath("$.saveCount").value(expectedResult.saveCount))
+            .andExpect(jsonPath("$.isSaved").value(expectedResult.isSaved))
+        verify { photographerService.getPhotographerDetail(GetPhotographerDetailQuery(null, photographerId)) }
+    }
+
+    @Test
+    fun `요청자 정보와 사진작가 id가 주어지고, 사진작가를 상세 조회한다`() {
+        // given
+        val requestUser = createUser()
+        val photographerId = randomLong()
+        val expectedResult = createPhotographerDetail(id = photographerId, isSaved = true)
+        every {
+            photographerService.getPhotographerDetail(GetPhotographerDetailQuery(requestUser.id, photographerId))
+        } returns expectedResult
+
+        // when and then
+        mvc.perform(
+            get("/api/v1/photographers/$photographerId/details")
+                .withAuthUser(requestUser),
+        ).andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").value(expectedResult.id))
+            .andExpect(jsonPath("$.saveCount").value(expectedResult.saveCount))
+            .andExpect(jsonPath("$.isSaved").value(expectedResult.isSaved))
+        verify {
+            photographerService.getPhotographerDetail(GetPhotographerDetailQuery(requestUser.id, photographerId))
+        }
     }
 
     @Test

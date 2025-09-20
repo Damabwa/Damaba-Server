@@ -2,8 +2,10 @@ package com.damaba.damaba.mapper
 
 import com.damaba.damaba.application.photographer.UpdatePhotographerPageCommand
 import com.damaba.damaba.application.photographer.UpdatePhotographerProfileCommand
+import com.damaba.damaba.controller.photographer.PhotographerDetailResponse
 import com.damaba.damaba.controller.photographer.PhotographerResponse
 import com.damaba.damaba.domain.photographer.Photographer
+import com.damaba.damaba.domain.photographer.PhotographerDetail
 import com.damaba.damaba.domain.photographer.PhotographerListItem
 import com.damaba.damaba.domain.photographer.PhotographerListItemResponse
 import com.damaba.damaba.domain.photographer.PhotographerPage
@@ -15,6 +17,9 @@ import org.mapstruct.factory.Mappers
 @Mapper(uses = [AddressMapper::class, ImageMapper::class])
 interface PhotographerMapper {
     fun toPhotographerResponse(photographer: Photographer): PhotographerResponse
+
+    @Mapping(source = "saved", target = "isSaved")
+    fun toPhotographerDetailResponse(photographerDetail: PhotographerDetail): PhotographerDetailResponse
 
     @Mapping(source = "saved", target = "isSaved")
     fun toPhotographerListItemResponse(photographerListItem: PhotographerListItem): PhotographerListItemResponse

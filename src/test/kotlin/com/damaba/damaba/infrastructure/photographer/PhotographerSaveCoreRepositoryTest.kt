@@ -85,6 +85,37 @@ class PhotographerSaveCoreRepositoryTest @Autowired constructor(
     }
 
     @Test
+    fun `photographerId가 주어지고, 해당 사진작가의 저장된 수를 조회한다`() {
+        // given
+        val photographerId = randomLong()
+        val userId1 = randomLong()
+        val userId2 = randomLong()
+        val userId3 = randomLong()
+
+        sut.create(PhotographerSave.create(userId1, photographerId))
+        sut.create(PhotographerSave.create(userId2, photographerId))
+        sut.create(PhotographerSave.create(userId3, photographerId))
+
+        // when
+        val result = sut.countByPhotographerId(photographerId)
+
+        // then
+        assertThat(result).isEqualTo(3)
+    }
+
+    @Test
+    fun `저장 이력이 없는 photographerId가 주어지고, 저장된 수를 조회하면 0이 반환된다`() {
+        // given
+        val photographerId = randomLong()
+
+        // when
+        val result = sut.countByPhotographerId(photographerId)
+
+        // then
+        assertThat(result).isEqualTo(0)
+    }
+
+    @Test
     fun `사진작가 저장 이력을 삭제한다`() {
         // given
         val userId = randomLong()

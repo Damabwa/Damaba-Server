@@ -61,3 +61,53 @@ data class PhotographerResponse(
     @Schema(description = "활동 지역")
     val activeRegions: Set<RegionResponse>,
 )
+
+data class PhotographerDetailResponse(
+    @Schema(description = "Id of user", example = "1")
+    val id: Long,
+
+    @Schema(description = "User type")
+    val type: UserType,
+
+    @Schema(description = "User roles")
+    val roles: Set<UserRoleType>,
+
+    @Schema(description = "사용하는 로그인 종류")
+    val loginType: LoginType,
+
+    @Schema(description = "닉네임", example = "홍길동")
+    val nickname: String,
+
+    @Schema(description = "프로필 이미지")
+    val profileImage: ImageResponse?,
+
+    @Schema(description = "성별")
+    val gender: Gender,
+
+    @Schema(description = "(Nullable) 인스타 아이디", example = "damaba.official")
+    val instagramId: String?,
+
+    @Schema(description = "주력 촬영 종류")
+    val mainPhotographyTypes: Set<PhotographyType>,
+
+    @Schema(description = "(Nullable) 대표 링크", example = "https://damaba-contact.com")
+    val contactLink: String?,
+
+    @Schema(description = "(Nullable) 상세 소개", example = "안녕하세요. 수원에서 주로...")
+    val description: String?,
+
+    @Schema(description = "(Nullable) 상세주소")
+    val address: AddressResponse?,
+
+    @Schema(description = "포트폴리오")
+    val portfolio: List<ImageResponse>,
+
+    @Schema(description = "활동 지역")
+    val activeRegions: Set<RegionResponse>,
+
+    @Schema(description = "저장된 수", example = "5")
+    val saveCount: Int,
+
+    @Schema(description = "사진작가 저장 여부. 이미 저장한 사진작가라면 <code>true</code>")
+    val isSaved: Boolean,
+)
