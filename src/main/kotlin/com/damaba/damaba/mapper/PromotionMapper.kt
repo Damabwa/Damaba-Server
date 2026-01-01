@@ -13,15 +13,19 @@ import org.mapstruct.factory.Mappers
 
 @Mapper(uses = [UserMapper::class, ImageMapper::class, RegionMapper::class])
 interface PromotionMapper {
+    @Mapping(source = "authorHidden", target = "isAuthorHidden")
     fun toPromotionResponse(promotion: Promotion): PromotionResponse
 
     @Mapping(source = "saved", target = "isSaved")
+    @Mapping(source = "authorHidden", target = "isAuthorHidden")
     fun toPromotionDetailResponse(promotionDetail: PromotionDetail): PromotionDetailResponse
 
     @Mapping(source = "saved", target = "isSaved")
+    @Mapping(source = "authorHidden", target = "isAuthorHidden")
     fun toPromotionListItemResponse(promotionListItem: PromotionListItem): PromotionListItemResponse
 
     @Mapping(source = "promotion.id", target = "id")
+    @Mapping(source = "promotion.authorHidden", target = "isAuthorHidden")
     fun toPromotionDetail(
         promotion: Promotion,
         author: User?,
@@ -30,6 +34,7 @@ interface PromotionMapper {
     ): PromotionDetail
 
     @Mapping(source = "promotion.id", target = "id")
+    @Mapping(source = "promotion.authorHidden", target = "isAuthorHidden")
     fun toPromotionListItem(
         promotion: Promotion,
         author: User?,

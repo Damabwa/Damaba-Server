@@ -112,18 +112,19 @@ CREATE INDEX idx__photographer_save__photographer_id ON photographer_save (photo
 
 CREATE TABLE promotion
 (
-    id             BIGINT       NOT NULL AUTO_INCREMENT,
-    author_id      BIGINT COMMENT '(FK) id of user(author)',
-    promotion_type VARCHAR(255) NOT NULL,
-    title          VARCHAR(20)  NOT NULL,
-    content        VARCHAR(500) NOT NULL,
-    external_link  VARCHAR(255),
-    started_at     DATE,
-    ended_at       DATE,
-    view_count     BIGINT       NOT NULL DEFAULT 0,
-    created_at     TIMESTAMP    NOT NULL,
-    updated_at     TIMESTAMP    NOT NULL,
-    deleted_at     TIMESTAMP,
+    id               BIGINT       NOT NULL AUTO_INCREMENT,
+    author_id        BIGINT COMMENT '(FK) id of user(author)',
+    is_author_hidden BOOLEAN      NOT NULL DEFAULT FALSE,
+    promotion_type   VARCHAR(255) NOT NULL,
+    title            VARCHAR(20)  NOT NULL,
+    content          VARCHAR(500) NOT NULL,
+    external_link    VARCHAR(255),
+    started_at       DATE,
+    ended_at         DATE,
+    view_count       BIGINT       NOT NULL DEFAULT 0,
+    created_at       TIMESTAMP    NOT NULL,
+    updated_at       TIMESTAMP    NOT NULL,
+    deleted_at       TIMESTAMP,
     PRIMARY KEY (id)
 );
 

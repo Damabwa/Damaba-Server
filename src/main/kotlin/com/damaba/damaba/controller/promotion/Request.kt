@@ -6,6 +6,7 @@ import com.damaba.damaba.controller.common.ImageRequest
 import com.damaba.damaba.controller.region.RegionRequest
 import com.damaba.damaba.domain.common.constant.PhotographyType
 import com.damaba.damaba.domain.promotion.constant.PromotionType
+import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.mapper.ImageMapper
 import com.damaba.damaba.mapper.RegionMapper
 import io.swagger.v3.oas.annotations.media.Schema
@@ -30,6 +31,9 @@ data class PostPromotionRequest(
     @Schema(description = "이벤트 종료일")
     val endedAt: LocalDate?,
 
+    @Schema(description = "작성자 정보 숨김 여부. 관리자만 true로 설정할 수 있습니다.", example = "false")
+    val isAuthorHidden: Boolean = false,
+
     @Schema(description = "촬영 종류")
     val photographyTypes: Set<PhotographyType>,
 
@@ -42,14 +46,15 @@ data class PostPromotionRequest(
     @Schema(description = "해시태그 리스트", example = "[\"수원핫플\", \"스냅사진\"]")
     val hashtags: Set<String>,
 ) {
-    fun toCommand(requestUserId: Long) = PostPromotionCommand(
-        authorId = requestUserId,
+    fun toCommand(requestUser: User) = PostPromotionCommand(
+        requestUser = requestUser,
         promotionType = promotionType,
         title = title,
         content = content,
         externalLink = externalLink,
         startedAt = startedAt,
         endedAt = endedAt,
+        isAuthorHidden = isAuthorHidden,
         photographyTypes = photographyTypes,
         images = images.map { ImageMapper.INSTANCE.toImage(it) },
         activeRegions = activeRegions.map { regionRequest -> RegionMapper.INSTANCE.toRegion(regionRequest) }.toSet(),

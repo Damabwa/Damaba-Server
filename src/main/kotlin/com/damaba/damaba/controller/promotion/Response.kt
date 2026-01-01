@@ -37,6 +37,9 @@ data class PromotionResponse(
     @Schema(description = "조회수", example = "15")
     val viewCount: Long,
 
+    @Schema(description = "작성자 정보 숨김 여부", example = "false")
+    val isAuthorHidden: Boolean,
+
     @Schema(description = "촬영 종류 리스트")
     val photographyTypes: Set<PhotographyType>,
 
@@ -84,6 +87,9 @@ data class PromotionDetailResponse(
     @Schema(description = "게시글 저장 여부. 이미 저장한 게시글이라면 <code>true</code>")
     val isSaved: Boolean,
 
+    @Schema(description = "작성자 정보 숨김 여부", example = "false")
+    val isAuthorHidden: Boolean,
+
     @Schema(description = "촬영 종류 리스트")
     val photographyTypes: Set<PhotographyType>,
 
@@ -118,6 +124,9 @@ data class PromotionListItemResponse(
 
     @Schema(description = "게시글 저장 여부. 이미 저장한 게시글이라면 <code>true</code>")
     val isSaved: Boolean,
+
+    @Schema(description = "작성자 정보 숨김 여부", example = "false")
+    val isAuthorHidden: Boolean,
 
     @Schema(description = "촬영 종류")
     val photographyTypes: Set<PhotographyType>,

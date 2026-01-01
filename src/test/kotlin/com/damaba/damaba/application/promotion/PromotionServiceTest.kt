@@ -507,13 +507,14 @@ class PromotionServiceTest {
         }
 
         private fun createPostPromotionCommand() = PostPromotionCommand(
-            authorId = randomLong(),
+            requestUser = createUser(),
             promotionType = PromotionType.FREE,
             title = randomString(len = 10),
             content = randomString(),
             externalLink = randomString(),
             startedAt = randomLocalDate(),
             endedAt = randomLocalDate(),
+            isAuthorHidden = false,
             photographyTypes = setOf(PhotographyType.SNAP),
             images = generateRandomList(maxSize = 10) { createImage() },
             activeRegions = generateRandomSet(maxSize = 5) { createRegion() },
