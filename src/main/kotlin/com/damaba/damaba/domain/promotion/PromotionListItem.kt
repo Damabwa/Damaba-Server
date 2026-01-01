@@ -17,6 +17,7 @@ data class PromotionListItem(
     val endedAt: LocalDate?,
     val saveCount: Long,
     val isSaved: Boolean,
+    val isAuthorHidden: Boolean,
     val photographyTypes: Set<PhotographyType>,
     val images: List<Image>,
     val activeRegions: Set<Region>,

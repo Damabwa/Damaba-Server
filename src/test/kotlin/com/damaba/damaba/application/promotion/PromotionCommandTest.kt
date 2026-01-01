@@ -6,9 +6,11 @@ import com.damaba.damaba.domain.file.File
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.promotion.constant.PromotionType
 import com.damaba.damaba.domain.region.Region
+import com.damaba.damaba.domain.user.User
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomLong
 import com.damaba.damaba.util.RandomTestUtils.Companion.randomString
 import com.damaba.damaba.util.fixture.FileFixture.createImage
+import com.damaba.damaba.util.fixture.UserFixture.createUser
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
 import org.junit.jupiter.params.ParameterizedTest
@@ -59,21 +61,24 @@ class PostPromotionUseCaseCommandTest {
         )
 
         private fun createCommand(
+            requestUser: User = createUser(),
             title: String = "Valid title",
             content: String = "Valid content",
             promotionType: PromotionType = PromotionType.FREE,
+            isAuthorHidden: Boolean = false,
             photographyTypes: Set<PhotographyType> = setOf(PhotographyType.SNAP),
             images: List<File> = List(3) { createImage() },
             activeRegions: Set<Region> = setOf(Region("서울", "강남구")),
             hashtags: Set<String> = setOf("tag1", "tag2"),
         ) = PostPromotionCommand(
-            authorId = randomLong(),
+            requestUser = requestUser,
             promotionType = promotionType,
             title = title,
             content = content,
             externalLink = "https://example.com",
             startedAt = LocalDate.now(),
             endedAt = LocalDate.now().plusDays(1),
+            isAuthorHidden = isAuthorHidden,
             photographyTypes = photographyTypes,
             images = images,
             activeRegions = activeRegions,

@@ -169,7 +169,7 @@ class PromotionController(private val promotionService: PromotionService) {
         @AuthenticationPrincipal requestUser: User,
         @RequestBody request: PostPromotionRequest,
     ): ResponseEntity<PromotionResponse> {
-        val promotion = promotionService.postPromotion(request.toCommand(requestUser.id))
+        val promotion = promotionService.postPromotion(request.toCommand(requestUser))
         return ResponseEntity
             .created(URI.create("/api/v*/promotions/${promotion.id}"))
             .body(PromotionMapper.INSTANCE.toPromotionResponse(promotion))

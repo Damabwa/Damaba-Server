@@ -16,12 +16,16 @@ class Promotion(
     startedAt: LocalDate?,
     endedAt: LocalDate?,
     viewCount: Long,
+    isAuthorHidden: Boolean,
     photographyTypes: Set<PhotographyType>,
     images: List<Image>,
     activeRegions: Set<Region>,
     hashtags: Set<String>,
 ) {
     var authorId: Long? = authorId
+        private set
+
+    var isAuthorHidden: Boolean = isAuthorHidden
         private set
 
     var promotionType: PromotionType = promotionType
@@ -102,6 +106,7 @@ class Promotion(
             externalLink: String?,
             startedAt: LocalDate?,
             endedAt: LocalDate?,
+            isAuthorHidden: Boolean,
             photographyTypes: Set<PhotographyType>,
             images: List<Image>,
             activeRegions: Set<Region>,
@@ -116,6 +121,7 @@ class Promotion(
             startedAt = startedAt,
             endedAt = endedAt,
             viewCount = 0,
+            isAuthorHidden = isAuthorHidden,
             photographyTypes = photographyTypes,
             images = images,
             activeRegions = activeRegions,

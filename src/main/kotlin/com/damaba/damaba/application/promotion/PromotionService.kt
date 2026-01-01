@@ -70,13 +70,14 @@ class PromotionService(
     @Transactional
     fun postPromotion(command: PostPromotionCommand): Promotion = promotionRepo.create(
         Promotion.create(
-            authorId = command.authorId,
+            authorId = command.requestUser.id,
             promotionType = command.promotionType,
             title = command.title,
             content = command.content,
             externalLink = command.externalLink,
             startedAt = command.startedAt,
             endedAt = command.endedAt,
+            isAuthorHidden = command.isAuthorHidden,
             photographyTypes = command.photographyTypes,
             images = command.images.map { file -> Image(file.name, file.url) },
             activeRegions = command.activeRegions.map { region -> Region(region.category, region.name) }.toSet(),

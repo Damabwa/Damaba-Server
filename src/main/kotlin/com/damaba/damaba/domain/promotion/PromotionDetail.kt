@@ -19,6 +19,7 @@ data class PromotionDetail(
     val viewCount: Long,
     val saveCount: Long,
     val isSaved: Boolean,
+    val isAuthorHidden: Boolean,
     val photographyTypes: Set<PhotographyType>,
     val images: List<Image>,
     val activeRegions: Set<Region>,

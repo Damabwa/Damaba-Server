@@ -6,24 +6,29 @@ import com.damaba.damaba.domain.file.File
 import com.damaba.damaba.domain.file.Image
 import com.damaba.damaba.domain.promotion.PromotionValidator
 import com.damaba.damaba.domain.promotion.constant.PromotionType
+import com.damaba.damaba.domain.promotion.exception.PromotionAuthorHiddenPermissionDeniedException
 import com.damaba.damaba.domain.region.Region
 import com.damaba.damaba.domain.user.User
 import java.time.LocalDate
 
 data class PostPromotionCommand(
-    val authorId: Long,
+    val requestUser: User,
     val promotionType: PromotionType,
     val title: String,
     val content: String,
     val externalLink: String?,
     val startedAt: LocalDate?,
     val endedAt: LocalDate?,
+    val isAuthorHidden: Boolean,
     val photographyTypes: Set<PhotographyType>,
     val images: List<File>,
     val activeRegions: Set<Region>,
     val hashtags: Set<String>,
 ) {
     init {
+        if (isAuthorHidden && !requestUser.isAdmin) {
+            throw PromotionAuthorHiddenPermissionDeniedException()
+        }
         PromotionValidator.validateTitle(title)
         PromotionValidator.validateContent(content)
         if (images.isEmpty() || images.size > 10) {

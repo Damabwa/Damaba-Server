@@ -31,6 +31,7 @@ class PromotionJpaEntity(
     startedAt: LocalDate?,
     endedAt: LocalDate?,
     viewCount: Long,
+    isAuthorHidden: Boolean,
 ) : TimeTrackedJpaEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -70,6 +71,10 @@ class PromotionJpaEntity(
     var viewCount: Long = viewCount
         private set
 
+    @Column(name = "is_author_hidden", nullable = false)
+    var isAuthorHidden: Boolean = isAuthorHidden
+        private set
+
     @Column(name = "deleted_at")
     var deletedAt: LocalDateTime? = null
         private set
@@ -105,6 +110,7 @@ class PromotionJpaEntity(
         startedAt = this.startedAt,
         endedAt = this.endedAt,
         viewCount = this.viewCount,
+        isAuthorHidden = this.isAuthorHidden,
         photographyTypes = this.photographyTypes.map { it.type }.toCollection(LinkedHashSet()),
         images = this.images.map { it.toImage() },
         activeRegions = this.activeRegions.map { it.toRegion() }.toCollection(LinkedHashSet()),
@@ -183,6 +189,7 @@ class PromotionJpaEntity(
                 startedAt = promotion.startedAt,
                 endedAt = promotion.endedAt,
                 viewCount = promotion.viewCount,
+                isAuthorHidden = promotion.isAuthorHidden,
             )
             promotionJpaEntity.photographyTypes.addAll(
                 promotion.photographyTypes.map {
