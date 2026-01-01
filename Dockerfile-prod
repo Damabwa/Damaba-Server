@@ -1,4 +1,4 @@
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /spring
 ARG BUILD_FILE=./build/libs/damaba-0.0.1.jar
 COPY ${BUILD_FILE} /damaba/app.jar
